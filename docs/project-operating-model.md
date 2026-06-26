@@ -86,3 +86,13 @@ Cada artefacto, tarea o decisión debe contribuir al menos a uno de estos objeti
 * consolidar aprendizaje aplicable.
 
 Lo que no contribuya a alguno de estos objetivos se pospondrá o eliminará.
+
+## 9. Métricas de éxito
+
+MVP Success Criteria
+
+1. Ninguna invariante rota.
+2. Simulación de 5000 asistentes completada.
+3. Tiempo promedio de asignación < 2 segundos.
+4. Fairness Score aceptable.
+5. Sin asignaciones duplicadas.
