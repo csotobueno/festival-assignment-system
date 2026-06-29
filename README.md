@@ -20,3 +20,19 @@ Under active discovery and domain modeling.
 - [Domain Glossary](docs/glossary.md)
 - [Critical Invariants](docs/critical-invariants.md)
 - [Domain Blueprint v1](docs/domain-blueprint-v1.md)
+
+## Repository structure
+
+```text
+src/
+├── Festival.Api
+├── Festival.Application
+├── Festival.Domain
+└── Festival.Infrastructure
+```
+
+The backend follows an inward dependency direction:
+```
+API → Application → Domain
+Infrastructure → Application and Domain
+```
