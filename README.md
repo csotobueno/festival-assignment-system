@@ -16,4 +16,7 @@ Under active discovery and domain modeling.
 
 ## Documentation
 
-* [Project Operating Model](docs/project-operating-model.md)
+- [Project Operating Model](docs/project-operating-model.md)
+- [Domain Glossary](docs/glossary.md)
+- [Critical Invariants](docs/critical-invariants.md)
+- [Domain Blueprint v1](docs/domain-blueprint-v1.md)

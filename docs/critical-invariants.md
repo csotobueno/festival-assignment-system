@@ -264,6 +264,31 @@ No puede existir una Assignment incompleta.
 
 ---
 
+## INV-08 — AssignmentRequest Outcome Consistency
+
+### Rule
+
+El estado de una AssignmentRequest debe ser consistente con las Assignments que produjo.
+
+### Valid states
+
+- Completed: una Assignment por cada Attendee solicitado.
+- Rejected: ninguna Assignment.
+- Failed: ninguna Assignment confirmada.
+
+### Invalid states
+
+- Completed sin todas las Assignments.
+- Rejected con Assignments persistidas.
+- Failed con Assignments parciales.
+- Más Assignments que integrantes solicitados.
+
+### Expected behavior
+
+La creación de Assignments y la transición de la AssignmentRequest deben confirmarse como una única operación consistente.
+
+---
+
 # Request and Use-Case Validations
 
 Las siguientes reglas deben validarse antes de intentar realizar una asignación, pero no sustituyen la protección de las invariantes.
