@@ -70,4 +70,79 @@ public sealed class AssignmentGroup
             Array.AsReadOnly(ids),
             groupSize);
     }
+
+    public void EnsureValidResult(IEnumerable<Assignment> assignments)
+    {
+        ArgumentNullException.ThrowIfNull(assignments);
+
+        var results = assignments.ToArray();
+
+        if (results.Any(assignment => assignment is null))
+        {
+            throw new ArgumentException(
+                "Assignments cannot contain null values.",
+                nameof(assignments));
+        }
+
+        if (results.Any(assignment => assignment.AssignmentRequestId != AssignmentRequestId))
+        {
+            throw new ArgumentException(
+                "All assignments must belong to the assignment group's assignment request.",
+                nameof(assignments));
+        }
+
+        if (results.Any(assignment => assignment.FestivalDayId != FestivalDayId))
+        {
+            throw new ArgumentException(
+                "All assignments must belong to the assignment group's festival day.",
+                nameof(assignments));
+        }
+
+        var resultAttendeeIds = results
+            .Select(assignment => assignment.AttendeeId)
+            .ToArray();
+
+        if (resultAttendeeIds.Distinct().Count() != resultAttendeeIds.Length)
+        {
+            throw new ArgumentException(
+                "Assignment result cannot contain duplicate attendees.",
+                nameof(assignments));
+        }
+
+        if (!resultAttendeeIds.ToHashSet().SetEquals(AttendeeIds))
+        {
+            throw new ArgumentException(
+                "Assignment result must contain exactly one assignment per attendee in the group.",
+                nameof(assignments));
+        }
+
+        if (results.Select(assignment => assignment.ZoneId).Distinct().Count() != 1)
+        {
+            throw new ArgumentException(
+                "Assignment result must belong to a single zone.",
+                nameof(assignments));
+        }
+
+        if (results.Select(assignment => assignment.RowCode).Distinct().Count() != 1)
+        {
+            throw new ArgumentException(
+                "Assignment result must belong to a single row.",
+                nameof(assignments));
+        }
+
+        var orderedSpotNumbers = results
+            .Select(assignment => assignment.SpotNumber.Value)
+            .OrderBy(value => value)
+            .ToArray();
+
+        for (var index = 1; index < orderedSpotNumbers.Length; index++)
+        {
+            if (orderedSpotNumbers[index] != orderedSpotNumbers[index - 1] + 1)
+            {
+                throw new ArgumentException(
+                    "Assignment result must contain consecutive spot numbers.",
+                    nameof(assignments));
+            }
+        }
+    }
 }
