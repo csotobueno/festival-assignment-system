@@ -1,7 +1,7 @@
 using Festival.Domain.FestivalDays;
 using Festival.Domain.Spots;
 
-namespace Festival.Application.Assignments;
+namespace Festival.Application.Assignments.Ports;
 
 public interface IAvailableSpotProvider
 {

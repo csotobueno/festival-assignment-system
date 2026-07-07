@@ -1,7 +1,7 @@
 using Festival.Domain.Attendees;
 using Festival.Domain.FestivalDays;
 
-namespace Festival.Application.Assignments;
+namespace Festival.Application.Assignments.ProcessAssignmentRequest;
 
 public sealed class ProcessAssignmentRequestCommand
 {

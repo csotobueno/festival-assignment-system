@@ -1,6 +1,6 @@
 using Festival.Domain.Attendees;
 
-namespace Festival.Application.Assignments;
+namespace Festival.Application.Assignments.Ports;
 
 public interface IAttendeeCodeResolver
 {

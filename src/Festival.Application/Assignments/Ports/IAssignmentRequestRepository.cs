@@ -1,8 +1,8 @@
 using Festival.Domain.Assignments;
 
-namespace Festival.Application.Assignments;
+namespace Festival.Application.Assignments.Ports;
 
-public interface IAssignmentRequestStore
+public interface IAssignmentRequestRepository
 {
     Task SaveAsync(
         AssignmentRequest assignmentRequest,

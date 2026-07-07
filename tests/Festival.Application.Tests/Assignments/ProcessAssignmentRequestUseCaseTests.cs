@@ -1,4 +1,5 @@
-using Festival.Application.Assignments;
+using Festival.Application.Assignments.Ports;
+using Festival.Application.Assignments.ProcessAssignmentRequest;
 using Festival.Domain.Assignments;
 using Festival.Domain.Attendees;
 using Festival.Domain.FestivalDays;
@@ -69,7 +70,7 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         await context.UseCase.ExecuteAsync(context.Command);
 
         var savedRequest = Assert.Single(
-            context.AssignmentRequestStore.SavedRequests);
+            context.AssignmentRequestRepository.SavedRequests);
 
         Assert.Equal(
             AssignmentRequestStatus.Completed,
@@ -91,7 +92,7 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         await context.UseCase.ExecuteAsync(context.Command);
 
         var savedRequest = Assert.Single(
-            context.AssignmentRequestStore.SavedRequests);
+            context.AssignmentRequestRepository.SavedRequests);
 
         Assert.Equal(
             AssignmentRequestStatus.Rejected,
@@ -115,8 +116,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         await successfulContext.UseCase.ExecuteAsync(
             successfulContext.Command);
 
-        Assert.Single(successfulContext.AssignmentStore.SavedBatches);
-        Assert.Single(successfulContext.AssignmentStore.SavedBatches[0]);
+        Assert.Single(successfulContext.AssignmentRepository.SavedBatches);
+        Assert.Single(successfulContext.AssignmentRepository.SavedBatches[0]);
 
         var rejectedContext = CreateContext(
             attendeeCount: 2,
@@ -128,7 +129,7 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         await rejectedContext.UseCase.ExecuteAsync(
             rejectedContext.Command);
 
-        Assert.Empty(rejectedContext.AssignmentStore.SavedBatches);
+        Assert.Empty(rejectedContext.AssignmentRepository.SavedBatches);
     }
 
     [Fact]
@@ -201,9 +202,9 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         var result = await context.UseCase.ExecuteAsync(context.Command);
 
         var savedRequest = Assert.Single(
-            context.AssignmentRequestStore.SavedRequests);
+            context.AssignmentRequestRepository.SavedRequests);
         var savedAssignment = Assert.Single(
-            context.AssignmentStore.SavedBatches.Single());
+            context.AssignmentRepository.SavedBatches.Single());
         var output = Assert.Single(result.Assignments);
 
         Assert.Equal(RequestedAt, savedRequest.RequestedAt);
@@ -233,14 +234,15 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         var attendeeResolver = new FakeAttendeeCodeResolver(attendeeIds);
         var availableSpotProvider = new FakeAvailableSpotProvider(
             availableSpots);
-        var assignmentRequestStore = new FakeAssignmentRequestStore();
-        var assignmentStore = new FakeAssignmentStore();
+        var assignmentRequestRepository =
+            new FakeAssignmentRequestRepository();
+        var assignmentRepository = new FakeAssignmentRepository();
 
         var useCase = new ProcessAssignmentRequestUseCase(
             attendeeResolver,
             availableSpotProvider,
-            assignmentRequestStore,
-            assignmentStore);
+            assignmentRequestRepository,
+            assignmentRepository);
 
         var command = new ProcessAssignmentRequestCommand(
             FestivalDayId.Create(
@@ -253,8 +255,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
             useCase,
             command,
             attendeeResolver,
-            assignmentRequestStore,
-            assignmentStore);
+            assignmentRequestRepository,
+            assignmentRepository);
     }
 
     private static Spot CreateSpot(
@@ -279,8 +281,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         ProcessAssignmentRequestUseCase UseCase,
         ProcessAssignmentRequestCommand Command,
         FakeAttendeeCodeResolver AttendeeResolver,
-        FakeAssignmentRequestStore AssignmentRequestStore,
-        FakeAssignmentStore AssignmentStore);
+        FakeAssignmentRequestRepository AssignmentRequestRepository,
+        FakeAssignmentRepository AssignmentRepository);
 
     private sealed class FakeAttendeeCodeResolver : IAttendeeCodeResolver
     {
@@ -318,8 +320,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         }
     }
 
-    private sealed class FakeAssignmentRequestStore
-        : IAssignmentRequestStore
+    private sealed class FakeAssignmentRequestRepository
+        : IAssignmentRequestRepository
     {
         public List<AssignmentRequest> SavedRequests { get; } = [];
 
@@ -333,7 +335,7 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         }
     }
 
-    private sealed class FakeAssignmentStore : IAssignmentStore
+    private sealed class FakeAssignmentRepository : IAssignmentRepository
     {
         public List<IReadOnlyList<Assignment>> SavedBatches { get; } = [];
 

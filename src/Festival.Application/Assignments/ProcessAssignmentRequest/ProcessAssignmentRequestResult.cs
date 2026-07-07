@@ -4,7 +4,7 @@ using Festival.Domain.FestivalDays;
 using Festival.Domain.Spots;
 using Festival.Domain.Zones;
 
-namespace Festival.Application.Assignments;
+namespace Festival.Application.Assignments.ProcessAssignmentRequest;
 
 public sealed class ProcessAssignmentRequestResult
 {
@@ -24,7 +24,7 @@ public sealed class ProcessAssignmentRequestResult
 
     public string? RejectionMessage { get; }
 
-    public IReadOnlyList<AssignmentOutput> Assignments { get; }
+    public IReadOnlyList<ProcessedAssignmentOutput> Assignments { get; }
 
     private ProcessAssignmentRequestResult(
         AssignmentRequestId assignmentRequestId,
@@ -33,7 +33,7 @@ public sealed class ProcessAssignmentRequestResult
         DateTimeOffset? resolvedAt,
         string? rejectionCode,
         string? rejectionMessage,
-        IReadOnlyList<AssignmentOutput> assignments)
+        IReadOnlyList<ProcessedAssignmentOutput> assignments)
     {
         AssignmentRequestId = assignmentRequestId;
         Status = status;
@@ -44,15 +44,38 @@ public sealed class ProcessAssignmentRequestResult
         Assignments = assignments;
     }
 
-    internal static ProcessAssignmentRequestResult Assigned(
+    public static ProcessAssignmentRequestResult Assigned(
         AssignmentRequest request,
         IEnumerable<Assignment> assignments)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(assignments);
 
-        var assignmentOutputs = assignments
-            .Select(AssignmentOutput.FromAssignment)
+        if (request.Status != AssignmentRequestStatus.Completed)
+        {
+            throw new ArgumentException(
+                "Assigned result requires a completed assignment request.",
+                nameof(request));
+        }
+
+        var items = assignments.ToArray();
+
+        if (items.Any(assignment => assignment is null))
+        {
+            throw new ArgumentException(
+                "Assignments cannot contain null values.",
+                nameof(assignments));
+        }
+
+        if (items.Length == 0)
+        {
+            throw new ArgumentException(
+                "Assigned result must contain at least one assignment.",
+                nameof(assignments));
+        }
+
+        var assignmentOutputs = items
+            .Select(ProcessedAssignmentOutput.FromAssignment)
             .ToArray();
 
         return new ProcessAssignmentRequestResult(
@@ -65,23 +88,37 @@ public sealed class ProcessAssignmentRequestResult
             Array.AsReadOnly(assignmentOutputs));
     }
 
-    internal static ProcessAssignmentRequestResult Rejected(
+    public static ProcessAssignmentRequestResult Rejected(
         AssignmentRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
+
+        if (request.Status != AssignmentRequestStatus.Rejected)
+        {
+            throw new ArgumentException(
+                "Rejected result requires a rejected assignment request.",
+                nameof(request));
+        }
+
+        if (request.Rejection is null)
+        {
+            throw new ArgumentException(
+                "Rejected result requires a rejection reason.",
+                nameof(request));
+        }
 
         return new ProcessAssignmentRequestResult(
             request.Id,
             request.Status,
             request.RequestedAt,
             request.ResolvedAt,
-            request.Rejection?.Code,
-            request.Rejection?.Message,
-            Array.AsReadOnly(Array.Empty<AssignmentOutput>()));
+            request.Rejection.Code,
+            request.Rejection.Message,
+            Array.AsReadOnly(Array.Empty<ProcessedAssignmentOutput>()));
     }
 }
 
-public sealed class AssignmentOutput
+public sealed class ProcessedAssignmentOutput
 {
     public AssignmentId AssignmentId { get; }
 
@@ -101,7 +138,7 @@ public sealed class AssignmentOutput
 
     public DateTimeOffset AssignedAt { get; }
 
-    private AssignmentOutput(
+    private ProcessedAssignmentOutput(
         AssignmentId assignmentId,
         AssignmentRequestId assignmentRequestId,
         FestivalDayId festivalDayId,
@@ -123,11 +160,12 @@ public sealed class AssignmentOutput
         AssignedAt = assignedAt;
     }
 
-    internal static AssignmentOutput FromAssignment(Assignment assignment)
+    internal static ProcessedAssignmentOutput FromAssignment(
+        Assignment assignment)
     {
         ArgumentNullException.ThrowIfNull(assignment);
 
-        return new AssignmentOutput(
+        return new ProcessedAssignmentOutput(
             assignment.Id,
             assignment.AssignmentRequestId,
             assignment.FestivalDayId,

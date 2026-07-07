@@ -1,6 +1,7 @@
+using Festival.Application.Assignments.Ports;
 using Festival.Domain.Assignments;
 
-namespace Festival.Application.Assignments;
+namespace Festival.Application.Assignments.ProcessAssignmentRequest;
 
 public sealed class ProcessAssignmentRequestUseCase
 {
@@ -9,24 +10,24 @@ public sealed class ProcessAssignmentRequestUseCase
 
     private readonly IAttendeeCodeResolver attendeeCodeResolver;
     private readonly IAvailableSpotProvider availableSpotProvider;
-    private readonly IAssignmentRequestStore assignmentRequestStore;
-    private readonly IAssignmentStore assignmentStore;
+    private readonly IAssignmentRequestRepository assignmentRequestRepository;
+    private readonly IAssignmentRepository assignmentRepository;
     private readonly AssignmentEngine assignmentEngine;
 
     public ProcessAssignmentRequestUseCase(
         IAttendeeCodeResolver attendeeCodeResolver,
         IAvailableSpotProvider availableSpotProvider,
-        IAssignmentRequestStore assignmentRequestStore,
-        IAssignmentStore assignmentStore)
+        IAssignmentRequestRepository assignmentRequestRepository,
+        IAssignmentRepository assignmentRepository)
     {
         this.attendeeCodeResolver = attendeeCodeResolver
             ?? throw new ArgumentNullException(nameof(attendeeCodeResolver));
         this.availableSpotProvider = availableSpotProvider
             ?? throw new ArgumentNullException(nameof(availableSpotProvider));
-        this.assignmentRequestStore = assignmentRequestStore
-            ?? throw new ArgumentNullException(nameof(assignmentRequestStore));
-        this.assignmentStore = assignmentStore
-            ?? throw new ArgumentNullException(nameof(assignmentStore));
+        this.assignmentRequestRepository = assignmentRequestRepository
+            ?? throw new ArgumentNullException(nameof(assignmentRequestRepository));
+        this.assignmentRepository = assignmentRepository
+            ?? throw new ArgumentNullException(nameof(assignmentRepository));
         assignmentEngine = new AssignmentEngine();
     }
 
@@ -70,11 +71,11 @@ public sealed class ProcessAssignmentRequestUseCase
         {
             assignmentRequest.Complete(command.AssignedAt);
 
-            await assignmentRequestStore.SaveAsync(
+            await assignmentRequestRepository.SaveAsync(
                 assignmentRequest,
                 cancellationToken);
 
-            await assignmentStore.SaveAsync(
+            await assignmentRepository.SaveAsync(
                 assignmentEngineResult.Assignments,
                 cancellationToken);
 
@@ -89,7 +90,7 @@ public sealed class ProcessAssignmentRequestUseCase
                 "No contiguous spots are available for the requested assignment group."),
             command.AssignedAt);
 
-        await assignmentRequestStore.SaveAsync(
+        await assignmentRequestRepository.SaveAsync(
             assignmentRequest,
             cancellationToken);
 
