@@ -1,8 +1,8 @@
 using Festival.Domain.Assignments;
 
-namespace Festival.Application.Assignments;
+namespace Festival.Application.Assignments.Ports;
 
-public interface IAssignmentStore
+public interface IAssignmentRepository
 {
     Task SaveAsync(
         IEnumerable<Assignment> assignments,
