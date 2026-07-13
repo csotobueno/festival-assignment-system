@@ -18,7 +18,8 @@ public sealed class ProcessAssignmentRequestUseCase
         IAttendeeCodeResolver attendeeCodeResolver,
         IAvailableSpotProvider availableSpotProvider,
         IAssignmentRequestRepository assignmentRequestRepository,
-        IAssignmentRepository assignmentRepository)
+        IAssignmentRepository assignmentRepository,
+        AssignmentEngine assignmentEngine)
     {
         this.attendeeCodeResolver = attendeeCodeResolver
             ?? throw new ArgumentNullException(nameof(attendeeCodeResolver));
@@ -28,7 +29,8 @@ public sealed class ProcessAssignmentRequestUseCase
             ?? throw new ArgumentNullException(nameof(assignmentRequestRepository));
         this.assignmentRepository = assignmentRepository
             ?? throw new ArgumentNullException(nameof(assignmentRepository));
-        assignmentEngine = new AssignmentEngine();
+        this.assignmentEngine = assignmentEngine
+            ?? throw new ArgumentNullException(nameof(assignmentEngine));
     }
 
     public async Task<ProcessAssignmentRequestResult> ExecuteAsync(

@@ -242,7 +242,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
             attendeeResolver,
             availableSpotProvider,
             assignmentRequestRepository,
-            assignmentRepository);
+            assignmentRepository,
+            new AssignmentEngine());
 
         var command = new ProcessAssignmentRequestCommand(
             FestivalDayId.Create(
