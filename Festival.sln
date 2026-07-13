@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festival.Domain.Tests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festival.Application.Tests", "tests\Festival.Application.Tests\Festival.Application.Tests.csproj", "{7D2615C7-BE75-4C83-A99E-02F53969773A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festival.Infrastructure.Tests", "tests\Festival.Infrastructure.Tests\Festival.Infrastructure.Tests.csproj", "{DF75DD32-5BDD-41FB-8C5C-C1189C428A29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{7D2615C7-BE75-4C83-A99E-02F53969773A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D2615C7-BE75-4C83-A99E-02F53969773A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D2615C7-BE75-4C83-A99E-02F53969773A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF75DD32-5BDD-41FB-8C5C-C1189C428A29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF75DD32-5BDD-41FB-8C5C-C1189C428A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF75DD32-5BDD-41FB-8C5C-C1189C428A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF75DD32-5BDD-41FB-8C5C-C1189C428A29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{35E13B8D-05F1-433C-8BE7-008DAF50DCD6} = {ED368F37-836D-415B-87BF-D24A334FF7CD}
@@ -60,5 +66,6 @@ Global
 		{B107FA5D-5A69-49E1-A029-F1083293187A} = {ED368F37-836D-415B-87BF-D24A334FF7CD}
 		{0FC89C66-4C89-49B7-98D1-F36C5CF9773D} = {35EFE745-EF8D-48F1-ABD8-853210D1B37E}
 		{7D2615C7-BE75-4C83-A99E-02F53969773A} = {35EFE745-EF8D-48F1-ABD8-853210D1B37E}
+		{DF75DD32-5BDD-41FB-8C5C-C1189C428A29} = {35EFE745-EF8D-48F1-ABD8-853210D1B37E}
 	EndGlobalSection
 EndGlobal
