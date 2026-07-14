@@ -143,7 +143,11 @@ GroupSize influye en la búsqueda de Spots contiguos disponibles.
 
 Conjunto de Spots físicamente adyacentes que permite mantener juntos a todos los integrantes de un AssignmentGroup.
 
-La forma exacta de representar y comprobar la contigüidad todavía debe definirse.
+La contigüidad se define de la siguiente manera:
+
+* pertenecer a la misma fila;
+* tener números consecutivos;
+* formar un bloque completo igual al GroupSize.
 
 ---
 
@@ -189,6 +193,12 @@ La definición matemática y los criterios de aceptación de fairness se estable
 `AssignmentRequest` representa la intención enviada al sistema.
 
 `AssignmentGroup` representa el conjunto temporal e indivisible de asistentes que debe mantenerse físicamente unido durante la asignación.
+
+`AttendeeCode` es el identificador externo enviado en una `AssignmentRequest`.
+
+`AttendeeId` es la identidad interna utilizada después de que los códigos han sido resueltos.
+
+La protección contra duplicados se aplica en ambos niveles porque diferentes códigos no deben producir el mismo asistente más de una vez dentro de un `AssignmentGroup`.
 
 ---
 
