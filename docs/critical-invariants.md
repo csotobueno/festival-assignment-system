@@ -243,6 +243,7 @@ Cada Assignment debe relacionar exactamente:
 * un Attendee;
 * un Spot;
 * un FestivalDay.
+* la AssignmentRequest que lo originó.
 
 ### Invalid states
 
