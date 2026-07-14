@@ -1,5 +1,6 @@
 using Festival.Application.Assignments.Ports;
 using Festival.Infrastructure.Assignments.InMemory;
+using Festival.Infrastructure.Assignments.InMemory.Seed;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Festival.Infrastructure;
@@ -11,12 +12,12 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<
-            IAttendeeCodeResolver,
-            InMemoryAttendeeCodeResolver>();
-        services.AddSingleton<
-            IAvailableSpotProvider,
-            InMemoryAvailableSpotProvider>();
+        services.AddSingleton<IAttendeeCodeResolver>(
+            _ => new InMemoryAttendeeCodeResolver(
+                InMemoryAssignmentSeedData.Attendees));
+        services.AddSingleton<IAvailableSpotProvider>(
+            _ => new InMemoryAvailableSpotProvider(
+                InMemoryAssignmentSeedData.AvailableSpots));
         services.AddSingleton<
             IAssignmentRequestRepository,
             InMemoryAssignmentRequestRepository>();
