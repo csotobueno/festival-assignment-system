@@ -8,6 +8,9 @@ namespace Festival.Domain.Tests.Assignments;
 
 public sealed class AssignmentTests
 {
+    private static readonly DateTimeOffset AssignedAt =
+        new(2026, 7, 10, 9, 0, 0, TimeSpan.FromHours(-5));
+
     [Fact]
     public void Create_ShouldReturnAssignment_WhenDataIsValid()
     {
@@ -19,8 +22,6 @@ public sealed class AssignmentTests
         var zoneId = ZoneId.New();
         var rowCode = RowCode.Create("A");
         var spotNumber = SpotNumber.Create(10);
-        var assignedAt = new DateTimeOffset(
-            2026, 7, 10, 9, 0, 0, TimeSpan.FromHours(-5));
 
         var assignment = Assignment.Create(
             id,
@@ -31,7 +32,7 @@ public sealed class AssignmentTests
             zoneId,
             rowCode,
             spotNumber,
-            assignedAt);
+            AssignedAt);
 
         Assert.Equal(id, assignment.Id);
         Assert.Equal(assignmentRequestId, assignment.AssignmentRequestId);
@@ -41,7 +42,7 @@ public sealed class AssignmentTests
         Assert.Equal(zoneId, assignment.ZoneId);
         Assert.Equal(rowCode, assignment.RowCode);
         Assert.Equal(spotNumber, assignment.SpotNumber);
-        Assert.Equal(assignedAt, assignment.AssignedAt);
+        Assert.Equal(AssignedAt, assignment.AssignedAt);
     }
 
     [Fact]
@@ -57,7 +58,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("id", exception.ParamName);
     }
@@ -75,7 +76,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("assignmentRequestId", exception.ParamName);
     }
@@ -93,7 +94,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("festivalDayId", exception.ParamName);
     }
@@ -111,7 +112,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("attendeeId", exception.ParamName);
     }
@@ -129,7 +130,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("spotCode", exception.ParamName);
     }
@@ -147,7 +148,7 @@ public sealed class AssignmentTests
                 default,
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("zoneId", exception.ParamName);
     }
@@ -165,7 +166,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 null!,
                 SpotNumber.Create(10),
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("rowCode", exception.ParamName);
     }
@@ -183,7 +184,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 default,
-                DateTimeOffset.UtcNow));
+                AssignedAt));
 
         Assert.Equal("spotNumber", exception.ParamName);
     }
