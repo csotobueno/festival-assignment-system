@@ -233,6 +233,17 @@ No tiene por ahora:
 * ciclo de vida separado;
 * reutilización fuera de AssignmentRequest.
 
+
+### Protección contra asistentes duplicados
+
+La protección contra asistentes duplicados se aplica en dos límites distintos del dominio:
+
+AssignmentRequest rechaza AttendeeCodes duplicados para preservar la integridad de la solicitud externa tal como fue enviada.
+AssignmentGroup rechaza AttendeeIds duplicados después de que los códigos de los asistentes han sido resueltos a sus identidades internas.
+
+Estas validaciones son complementarias, no redundantes. No se debe permitir que diferentes códigos de asistente se resuelvan como el mismo asistente dentro de un grupo.
+
+
 ### Assignment
 
 Entity de resultado.
