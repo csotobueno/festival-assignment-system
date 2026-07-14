@@ -6,13 +6,14 @@ namespace Festival.Domain.Tests.Assignments;
 
 public sealed class AssignmentRequestTests
 {
+    private static readonly DateTimeOffset RequestedAt =
+        new(2026, 7, 10, 9, 0, 0, TimeSpan.FromHours(-5));
+
     [Fact]
     public void Create_ShouldReturnReceivedRequest_WhenDataIsValid()
     {
         var id = AssignmentRequestId.New();
         var festivalDayId = FestivalDayId.New();
-        var requestedAt = new DateTimeOffset(
-            2026, 7, 10, 9, 0, 0, TimeSpan.FromHours(-5));
 
         var request = AssignmentRequest.Create(
             id,
@@ -21,12 +22,12 @@ public sealed class AssignmentRequestTests
                 AttendeeCode.Create("ATT-001"),
                 AttendeeCode.Create("ATT-002")
             ],
-            requestedAt);
+            RequestedAt);
 
         Assert.Equal(id, request.Id);
         Assert.Equal(festivalDayId, request.FestivalDayId);
         Assert.Equal(2, request.RequestedAttendeeCodes.Count);
-        Assert.Equal(requestedAt, request.RequestedAt);
+        Assert.Equal(RequestedAt, request.RequestedAt);
         Assert.Equal(
             AssignmentRequestStatus.Received,
             request.Status);
@@ -43,7 +44,7 @@ public sealed class AssignmentRequestTests
                 default,
                 FestivalDayId.New(),
                 [AttendeeCode.Create("ATT-001")],
-                DateTimeOffset.UtcNow));
+                RequestedAt));
 
         Assert.Equal("id", exception.ParamName);
     }
@@ -56,7 +57,7 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 default,
                 [AttendeeCode.Create("ATT-001")],
-                DateTimeOffset.UtcNow));
+                RequestedAt));
 
         Assert.Equal("festivalDayId", exception.ParamName);
     }
@@ -69,7 +70,7 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 FestivalDayId.New(),
                 null!,
-                DateTimeOffset.UtcNow));
+                RequestedAt));
 
         Assert.Equal("attendeeCodes", exception.ParamName);
     }
@@ -82,7 +83,7 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 FestivalDayId.New(),
                 [],
-                DateTimeOffset.UtcNow));
+                RequestedAt));
 
         Assert.Equal("attendeeCodes", exception.ParamName);
     }
@@ -101,7 +102,7 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 FestivalDayId.New(),
                 codes,
-                DateTimeOffset.UtcNow));
+                RequestedAt));
 
         Assert.Equal("attendeeCodes", exception.ParamName);
     }
@@ -117,7 +118,7 @@ public sealed class AssignmentRequestTests
                     AttendeeCode.Create("ATT-001"),
                     AttendeeCode.Create("att-001")
                 ],
-                DateTimeOffset.UtcNow));
+                RequestedAt));
 
         Assert.Equal("attendeeCodes", exception.ParamName);
     }
