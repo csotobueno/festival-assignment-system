@@ -112,6 +112,9 @@ Tests should:
 * avoid testing private implementation details;
 * remain deterministic;
 * avoid using the current system clock.
+* use FluentAssertions in new tests when it improves readability;
+* prefer assertions about observable behavior;
+* not migrate unrelated existing tests only for stylistic consistency.
 
 Before completing any task, run:
 

@@ -1159,6 +1159,18 @@ The following decisions are intentionally deferred:
 * `RotationScore`.
 * API design for preliminary attendee verification.
 
+### Decision update
+
+The database engine and EF Core provider were deferred when this document was
+created. They have since been resolved by
+[ADR 0001: Select the MVP database engine](adr/0001-select-mvp-database-engine.md):
+
+* PostgreSQL is the relational database engine for the MVP.
+* Npgsql is the EF Core provider.
+
+The remaining decisions in this section continue to be deferred unless a later
+decision or implementation document resolves them.
+
 ---
 
 ## 15. Risks and implementation considerations

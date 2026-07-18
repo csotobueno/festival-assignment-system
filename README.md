@@ -4,41 +4,34 @@ Technical MVP for validating the viability of a fair, consistent, and scalable f
 
 ## Current stage
 
-**Stage 2 — Backend Foundation and Executable Domain: Completed**
+**Stage 3 — Persistence, Global Invariants and Concurrency: In progress**
 
-The project currently has an executable minimum assignment flow across Domain, Application, and Infrastructure.
+Stage 2 validated the executable minimum assignment flow across Domain,
+Application, and Infrastructure. Stage 3 is introducing the foundation needed
+for durable relational persistence and concurrent request handling.
 
-The system can:
+The current Stage 3 progress includes:
 
-* create and resolve an assignment request;
-* form an indivisible attendee group;
-* find a contiguous block of available spots;
-* generate one assignment per attendee;
-* complete a valid request;
-* reject a request when no sufficiently large contiguous block is available;
-* store the final result using in-memory infrastructure adapters.
+* the persistence model and transactional boundary have been defined;
+* PostgreSQL has been selected as the relational database engine for the MVP;
+* the EF Core and Npgsql Infrastructure foundation is being introduced;
+* the existing in-memory adapters remain available for fast technical
+  validation.
 
-The current implementation is intended for technical validation. It does not yet include production persistence, concurrency protection, fairness, or HTTP endpoints.
+Durable PostgreSQL persistence is not yet implemented. The EF Core model is not
+complete, and repositories, migrations, database constraints, transaction
+handling and PostgreSQL integration tests have not been implemented or
+validated. Global invariants are therefore not yet protected by the database.
 
-The next stage will focus on persistence, transactional boundaries, global invariants, and concurrency.
+The in-memory adapters are validation tools. They lose their state when the
+application stops and are not production persistence.
 
 ## Project status
 
-**Stage 2 technically validated. Preparing Stage 3.**
+**Stage 2 technically validated. Stage 3 in progress.**
 
-Validated using deterministic in-memory data:
+The executable assignment flow is already validated using deterministic in-memory infrastructure. The project is now introducing PostgreSQL persistence with EF Core and preparing the protection of transactional and global consistency rules.
 
-* 10 Attendees;
-* 1 FestivalDay;
-* 2 Zones;
-* 2 Rows per Zone;
-* 4 Spots per Row;
-* 16 Spots total.
-
-Validated flows:
-
-* successful assignment for a group of 3 Attendees;
-* rejected assignment for a group of 5 Attendees when no sufficiently large contiguous block exists.
 
 ## Documentation
 
@@ -47,6 +40,8 @@ Validated flows:
 * [Critical Invariants](docs/critical-invariants.md)
 * [Domain Blueprint v1](docs/domain-blueprint-v1.md)
 * [Stage 2 Technical Validation](docs/stage-2-technical-validation.md)
+* [Stage 3 Persistence Model and Transactional Boundary](docs/stage-3-persistence-model-and-transaction-boundary.md)
+* [ADR 0001: Select the MVP Database Engine](docs/adr/0001-select-mvp-database-engine.md)
 
 ## Repository structure
 
