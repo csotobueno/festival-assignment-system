@@ -10,14 +10,6 @@ public sealed record AssignmentRequestFailure
         string code,
         string message)
     {
-        Code = code;
-        Message = message;
-    }
-
-    public static AssignmentRequestFailure Create(
-        string? code,
-        string? message)
-    {
         if (string.IsNullOrWhiteSpace(code))
         {
             throw new ArgumentException(
@@ -32,8 +24,14 @@ public sealed record AssignmentRequestFailure
                 nameof(message));
         }
 
-        return new AssignmentRequestFailure(
-            code.Trim().ToUpperInvariant(),
-            message.Trim());
+        Code = code.Trim().ToUpperInvariant();
+        Message = message.Trim();
+    }
+
+    public static AssignmentRequestFailure Create(
+        string? code,
+        string? message)
+    {
+        return new AssignmentRequestFailure(code!, message!);
     }
 }

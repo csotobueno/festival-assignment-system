@@ -27,21 +27,12 @@ public sealed class AssignmentRequest
     private AssignmentRequest(
         AssignmentRequestId id,
         FestivalDayId festivalDayId,
-        IReadOnlyList<AttendeeCode> requestedAttendeeCodes,
-        DateTimeOffset requestedAt)
-    {
-        Id = id;
-        FestivalDayId = festivalDayId;
-        RequestedAttendeeCodes = requestedAttendeeCodes;
-        RequestedAt = requestedAt;
-        Status = AssignmentRequestStatus.Received;
-    }
-
-    public static AssignmentRequest Create(
-        AssignmentRequestId id,
-        FestivalDayId festivalDayId,
-        IEnumerable<AttendeeCode> attendeeCodes,
-        DateTimeOffset requestedAt)
+        IReadOnlyCollection<AttendeeCode> requestedAttendeeCodes,
+        DateTimeOffset requestedAt,
+        AssignmentRequestStatus status,
+        DateTimeOffset? resolvedAt,
+        AssignmentRequestRejection? rejection,
+        AssignmentRequestFailure? failure)
     {
         if (id == default)
         {
@@ -57,21 +48,21 @@ public sealed class AssignmentRequest
                 nameof(festivalDayId));
         }
 
-        ArgumentNullException.ThrowIfNull(attendeeCodes);
+        ArgumentNullException.ThrowIfNull(requestedAttendeeCodes);
 
-        var codes = attendeeCodes.ToArray();
+        var codes = requestedAttendeeCodes.ToArray();
 
         if (codes.Any(code => code is null))
         {
             throw new ArgumentException(
                 "Attendee codes cannot contain null values.",
-                nameof(attendeeCodes));
+                nameof(requestedAttendeeCodes));
         }
 
         if (codes.Length is < MinimumAttendeeCount or > MaximumAttendeeCount)
         {
             throw new ArgumentOutOfRangeException(
-                nameof(attendeeCodes),
+                nameof(requestedAttendeeCodes),
                 codes.Length,
                 "An assignment request must contain between 1 and 10 attendee codes.");
         }
@@ -80,14 +71,62 @@ public sealed class AssignmentRequest
         {
             throw new ArgumentException(
                 "An assignment request cannot contain duplicate attendee codes.",
-                nameof(attendeeCodes));
+                nameof(requestedAttendeeCodes));
         }
 
+        ValidateOutcomeConsistency(
+            requestedAt,
+            status,
+            resolvedAt,
+            rejection,
+            failure);
+
+        Id = id;
+        FestivalDayId = festivalDayId;
+        RequestedAttendeeCodes = Array.AsReadOnly(codes);
+        RequestedAt = requestedAt;
+        Status = status;
+        ResolvedAt = resolvedAt;
+        Rejection = rejection;
+        Failure = failure;
+    }
+
+    public static AssignmentRequest Create(
+        AssignmentRequestId id,
+        FestivalDayId festivalDayId,
+        IReadOnlyCollection<AttendeeCode> attendeeCodes,
+        DateTimeOffset requestedAt)
+    {
         return new AssignmentRequest(
             id,
             festivalDayId,
-            Array.AsReadOnly(codes),
-            requestedAt);
+            attendeeCodes,
+            requestedAt,
+            AssignmentRequestStatus.Received,
+            null,
+            null,
+            null);
+    }
+
+    internal static AssignmentRequest Rehydrate(
+        AssignmentRequestId id,
+        FestivalDayId festivalDayId,
+        IReadOnlyCollection<AttendeeCode> requestedAttendeeCodes,
+        DateTimeOffset requestedAt,
+        AssignmentRequestStatus status,
+        DateTimeOffset? resolvedAt,
+        AssignmentRequestRejection? rejection,
+        AssignmentRequestFailure? failure)
+    {
+        return new AssignmentRequest(
+            id,
+            festivalDayId,
+            requestedAttendeeCodes,
+            requestedAt,
+            status,
+            resolvedAt,
+            rejection,
+            failure);
     }
 
     public void Complete(DateTimeOffset completedAt)
@@ -135,6 +174,66 @@ public sealed class AssignmentRequest
             throw new ArgumentException(
                 "Resolution time cannot be earlier than request time.",
                 nameof(resolvedAt));
+        }
+    }
+
+    private static void ValidateOutcomeConsistency(
+        DateTimeOffset requestedAt,
+        AssignmentRequestStatus status,
+        DateTimeOffset? resolvedAt,
+        AssignmentRequestRejection? rejection,
+        AssignmentRequestFailure? failure)
+    {
+        if (resolvedAt is not null && resolvedAt.Value < requestedAt)
+        {
+            throw new ArgumentException(
+                "Resolution time cannot be earlier than request time.",
+                nameof(resolvedAt));
+        }
+
+        switch (status)
+        {
+            case AssignmentRequestStatus.Received:
+                if (resolvedAt is not null || rejection is not null || failure is not null)
+                {
+                    throw new InvalidOperationException(
+                        "A received assignment request cannot have an outcome.");
+                }
+
+                break;
+
+            case AssignmentRequestStatus.Completed:
+                if (resolvedAt is null || rejection is not null || failure is not null)
+                {
+                    throw new InvalidOperationException(
+                        "A completed assignment request must have only a resolution time.");
+                }
+
+                break;
+
+            case AssignmentRequestStatus.Rejected:
+                if (resolvedAt is null || rejection is null || failure is not null)
+                {
+                    throw new InvalidOperationException(
+                        "A rejected assignment request must have a resolution time and rejection data only.");
+                }
+
+                break;
+
+            case AssignmentRequestStatus.Failed:
+                if (resolvedAt is null || rejection is not null || failure is null)
+                {
+                    throw new InvalidOperationException(
+                        "A failed assignment request must have a resolution time and failure data only.");
+                }
+
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(
+                    nameof(status),
+                    status,
+                    "Assignment request status is not supported.");
         }
     }
 }

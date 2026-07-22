@@ -6,16 +6,31 @@ public sealed class FestivalDay
 
     public DateOnly Date { get; }
 
-    public AssignmentWindow AssignmentWindow { get; }
+    public AssignmentWindow AssignmentWindow { get; private set; } = null!;
+
+    private FestivalDay(
+        FestivalDayId id,
+        DateOnly date)
+    {
+        if (id == default)
+        {
+            throw new ArgumentException(
+                "Festival day ID is required.",
+                nameof(id));
+        }
+
+        Id = id;
+        Date = date;
+    }
 
     private FestivalDay(
         FestivalDayId id,
         DateOnly date,
         AssignmentWindow assignmentWindow)
+        : this(id, date)
     {
-        Id = id;
-        Date = date;
-        AssignmentWindow = assignmentWindow;
+        AssignmentWindow = assignmentWindow
+            ?? throw new ArgumentNullException(nameof(assignmentWindow));
     }
 
     public static FestivalDay Create(
@@ -23,15 +38,6 @@ public sealed class FestivalDay
         DateOnly date,
         AssignmentWindow assignmentWindow)
     {
-        if (id == default)
-        {
-            throw new ArgumentException(
-                "Festival day id is required.",
-                nameof(id));
-        }
-
-        ArgumentNullException.ThrowIfNull(assignmentWindow);
-
         return new FestivalDay(
             id,
             date,
