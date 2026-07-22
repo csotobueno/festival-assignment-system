@@ -5,6 +5,7 @@ using Festival.Domain.Spots;
 using Festival.Domain.Zones;
 using Festival.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Festival.Infrastructure.Persistence;
 
@@ -20,11 +21,20 @@ public sealed class FestivalDbContext(
 
     public DbSet<Spot> Spots => Set<Spot>();
 
-    internal DbSet<AssignmentRequestRow> AssignmentRequests => Set<AssignmentRequestRow>();
+    internal DbSet<AssignmentRequestRow> AssignmentRequests =>
+        Set<AssignmentRequestRow>();
 
-    internal DbSet<AssignmentRequestAttendeeRow> AssignmentRequestAttendees => Set<AssignmentRequestAttendeeRow>();
-    
+    internal DbSet<AssignmentRequestAttendeeRow> AssignmentRequestAttendees =>
+        Set<AssignmentRequestAttendeeRow>();
+
     public DbSet<Assignment> Assignments => Set<Assignment>();
+
+    protected override void ConfigureConventions(
+        ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Conventions.Remove(
+            typeof(ForeignKeyIndexConvention));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

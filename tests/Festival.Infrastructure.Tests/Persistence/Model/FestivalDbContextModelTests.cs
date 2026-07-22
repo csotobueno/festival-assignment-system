@@ -5,15 +5,28 @@ using Festival.Domain.FestivalDays;
 using Festival.Domain.Spots;
 using Festival.Domain.Zones;
 using Festival.Infrastructure.Persistence;
+using Festival.Infrastructure.Persistence.Configurations;
 using Festival.Infrastructure.Persistence.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Festival.Infrastructure.Tests.Persistence.Model;
 
 public sealed class FestivalDbContextModelTests
 {
+    private static readonly string[] ApprovedTables =
+    [
+        "AssignmentRequestAttendees",
+        "AssignmentRequests",
+        "Assignments",
+        "Attendees",
+        "FestivalDays",
+        "Spots",
+        "Zones"
+    ];
+
     [Fact]
     public void Model_ShouldContainExpectedEntityTypesAndTables()
     {
@@ -41,6 +54,43 @@ public sealed class FestivalDbContextModelTests
 
         context.Database.GetDbConnection().State.Should().Be(
             ConnectionState.Closed);
+    }
+
+    [Fact]
+    public void Model_ShouldContainOnlyApprovedTables()
+    {
+        using var context = CreateContext();
+
+        var tableNames = context.Model.GetEntityTypes()
+            .Select(entityType => entityType.GetTableName())
+            .Where(tableName => tableName is not null)
+            .Distinct()
+            .Order()
+            .ToArray();
+
+        tableNames.Should().Equal(ApprovedTables);
+    }
+
+    [Fact]
+    public void Model_ShouldContainOnlyExpectedEntityTypes()
+    {
+        using var context = CreateContext();
+
+        var entityClrTypes = context.Model.GetEntityTypes()
+            .Select(entityType => entityType.ClrType)
+            .ToArray();
+
+        entityClrTypes.Should().BeEquivalentTo(
+            [
+                typeof(Assignment),
+                typeof(AssignmentRequestAttendeeRow),
+                typeof(AssignmentRequestRow),
+                typeof(Attendee),
+                typeof(AssignmentWindow),
+                typeof(FestivalDay),
+                typeof(Spot),
+                typeof(Zone)
+            ]);
     }
 
     [Fact]
@@ -169,6 +219,125 @@ public sealed class FestivalDbContextModelTests
             .Should().Be("AssignmentWindowEnd");
         festivalDay.FindNavigation("AssignmentWindow")!
             .ForeignKey.IsRequired.Should().BeTrue();
+        assignmentWindow.GetTableName().Should().Be("FestivalDays");
+    }
+
+    [Fact]
+    public void FestivalDay_ShouldHaveAssignmentWindowCheckConstraint()
+    {
+        using var context = CreateContext();
+        var designTimeModel = context.GetService<IDesignTimeModel>().Model;
+        var festivalDay = GetEntityType(designTimeModel, typeof(FestivalDay));
+
+        var checkConstraint = festivalDay.GetCheckConstraints()
+            .Single(constraint =>
+                constraint.Name ==
+                "CK_FestivalDays_AssignmentWindow_StartBeforeEnd");
+
+        checkConstraint.Sql.Should()
+            .Be("\"AssignmentWindowStart\" < \"AssignmentWindowEnd\"");
+    }
+
+    [Fact]
+    public void Model_ShouldConfigureExpectedPostgreSqlColumnTypes()
+    {
+        using var context = CreateContext();
+
+        AssertColumnType(context.Model, typeof(Attendee), "Id", "uuid");
+        AssertColumnType(context.Model, typeof(FestivalDay), "Date", "date");
+        AssertColumnType(
+            context.Model,
+            typeof(FestivalDay),
+            "AssignmentWindow.Start",
+            "time without time zone");
+        AssertColumnType(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "RequestedAt",
+            "timestamp with time zone");
+        AssertColumnType(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "ResolvedAt",
+            "timestamp with time zone");
+        AssertColumnType(context.Model, typeof(Spot), "Number", "integer");
+        AssertColumnType(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "Status",
+            "character varying(32)");
+    }
+
+    [Fact]
+    public void Model_ShouldConfigureFinalStringLengths()
+    {
+        using var context = CreateContext();
+
+        AssertMaxLength(
+            context.Model,
+            typeof(Attendee),
+            "Code",
+            PersistenceLengths.AttendeeCode);
+        AssertMaxLength(
+            context.Model,
+            typeof(Attendee),
+            "Name",
+            PersistenceLengths.AttendeeName);
+        AssertMaxLength(
+            context.Model,
+            typeof(Zone),
+            "Name",
+            PersistenceLengths.ZoneName);
+        AssertMaxLength(
+            context.Model,
+            typeof(Spot),
+            "Code",
+            PersistenceLengths.SpotCode);
+        AssertMaxLength(
+            context.Model,
+            typeof(Spot),
+            "RowCode",
+            PersistenceLengths.RowCode);
+        AssertMaxLength(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "Status",
+            PersistenceLengths.AssignmentRequestStatus);
+        AssertMaxLength(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "RejectionCode",
+            PersistenceLengths.OutcomeCode);
+        AssertMaxLength(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "RejectionMessage",
+            PersistenceLengths.OutcomeMessage);
+        AssertMaxLength(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "FailureCode",
+            PersistenceLengths.OutcomeCode);
+        AssertMaxLength(
+            context.Model,
+            typeof(AssignmentRequestRow),
+            "FailureMessage",
+            PersistenceLengths.OutcomeMessage);
+        AssertMaxLength(
+            context.Model,
+            typeof(AssignmentRequestAttendeeRow),
+            "AttendeeCode",
+            PersistenceLengths.AttendeeCode);
+        AssertMaxLength(
+            context.Model,
+            typeof(Assignment),
+            "SpotCode",
+            PersistenceLengths.SpotCode);
+        AssertMaxLength(
+            context.Model,
+            typeof(Assignment),
+            "RowCode",
+            PersistenceLengths.RowCode);
     }
 
     [Fact]
@@ -191,6 +360,110 @@ public sealed class FestivalDbContextModelTests
         status.GetTypeMapping().Converter!.ProviderClrType.Should()
             .Be<string>();
         status.GetMaxLength().Should().Be(32);
+    }
+
+    [Fact]
+    public void Model_ShouldHaveOnlyExpectedShadowProperties()
+    {
+        using var context = CreateContext();
+
+        var shadowProperties = context.Model.GetEntityTypes()
+            .SelectMany(entityType => entityType.GetProperties()
+                .Where(property => property.IsShadowProperty())
+                .Select(property => new
+                {
+                    EntityType = entityType.ClrType,
+                    Property = property.Name
+                }))
+            .ToArray();
+
+        shadowProperties.Should().BeEquivalentTo(
+            [
+                new
+                {
+                    EntityType = typeof(AssignmentWindow),
+                    Property = "FestivalDayId"
+                }
+            ]);
+    }
+
+    [Fact]
+    public void Model_ShouldHaveOnlyExpectedRelationships()
+    {
+        using var context = CreateContext();
+
+        var relationships = context.Model.GetEntityTypes()
+            .SelectMany(entityType => entityType.GetForeignKeys()
+                .Select(foreignKey => new
+                {
+                    Dependent = entityType.ClrType,
+                    Principal = foreignKey.PrincipalEntityType.ClrType,
+                    Properties = string.Join(
+                        ",",
+                        foreignKey.Properties.Select(property => property.Name)),
+                    DeleteBehavior = foreignKey.DeleteBehavior
+                }))
+            .ToArray();
+
+        relationships.Should().BeEquivalentTo(
+            [
+                new
+                {
+                    Dependent = typeof(Assignment),
+                    Principal = typeof(AssignmentRequestRow),
+                    Properties = "AssignmentRequestId",
+                    DeleteBehavior = DeleteBehavior.Restrict
+                },
+                new
+                {
+                    Dependent = typeof(Assignment),
+                    Principal = typeof(Attendee),
+                    Properties = "AttendeeId",
+                    DeleteBehavior = DeleteBehavior.Restrict
+                },
+                new
+                {
+                    Dependent = typeof(Assignment),
+                    Principal = typeof(FestivalDay),
+                    Properties = "FestivalDayId",
+                    DeleteBehavior = DeleteBehavior.Restrict
+                },
+                new
+                {
+                    Dependent = typeof(Assignment),
+                    Principal = typeof(Spot),
+                    Properties = "SpotCode",
+                    DeleteBehavior = DeleteBehavior.Restrict
+                },
+                new
+                {
+                    Dependent = typeof(AssignmentWindow),
+                    Principal = typeof(FestivalDay),
+                    Properties = "FestivalDayId",
+                    DeleteBehavior = DeleteBehavior.Cascade
+                },
+                new
+                {
+                    Dependent = typeof(AssignmentRequestAttendeeRow),
+                    Principal = typeof(AssignmentRequestRow),
+                    Properties = "AssignmentRequestId",
+                    DeleteBehavior = DeleteBehavior.Cascade
+                },
+                new
+                {
+                    Dependent = typeof(AssignmentRequestRow),
+                    Principal = typeof(FestivalDay),
+                    Properties = "FestivalDayId",
+                    DeleteBehavior = DeleteBehavior.Restrict
+                },
+                new
+                {
+                    Dependent = typeof(Spot),
+                    Principal = typeof(Zone),
+                    Properties = "ZoneId",
+                    DeleteBehavior = DeleteBehavior.Restrict
+                }
+            ]);
     }
 
     [Fact]
@@ -277,6 +550,20 @@ public sealed class FestivalDbContextModelTests
             false,
             "FestivalDayId",
             "RequestedAt");
+
+        var indexes = context.Model.GetEntityTypes()
+            .SelectMany(entityType => entityType.GetIndexes()
+                .Select(index => new
+                {
+                    EntityType = entityType.ClrType,
+                    Properties = string.Join(
+                        ",",
+                        index.Properties.Select(property => property.Name)),
+                    index.IsUnique
+                }))
+            .ToArray();
+
+        indexes.Should().HaveCount(8);
     }
 
     [Fact]
@@ -381,8 +668,44 @@ public sealed class FestivalDbContextModelTests
         Type entityClrType,
         string propertyName)
     {
+        if (propertyName.StartsWith(
+            "AssignmentWindow.",
+            StringComparison.Ordinal))
+        {
+            var ownedType = GetEntityType(model, typeof(FestivalDay))
+                .FindNavigation("AssignmentWindow")!
+                .TargetEntityType;
+
+            return ownedType.FindProperty(
+                propertyName["AssignmentWindow.".Length..])!;
+        }
+
         return GetEntityType(model, entityClrType)
             .FindProperty(propertyName)!;
+    }
+
+    private static void AssertColumnType(
+        IModel model,
+        Type entityClrType,
+        string propertyName,
+        string expectedColumnType)
+    {
+        GetProperty(model, entityClrType, propertyName)
+            .GetColumnType()
+            .Should()
+            .Be(expectedColumnType);
+    }
+
+    private static void AssertMaxLength(
+        IModel model,
+        Type entityClrType,
+        string propertyName,
+        int expectedMaxLength)
+    {
+        GetProperty(model, entityClrType, propertyName)
+            .GetMaxLength()
+            .Should()
+            .Be(expectedMaxLength);
     }
 
     private static IProperty GetProperty(

@@ -32,6 +32,7 @@ internal sealed class AssignmentRequestAttendeeRowConfiguration
             .HasConversion(
                 code => code.Value,
                 value => AttendeeCode.Create(value))
+            .HasMaxLength(PersistenceLengths.AttendeeCode)
             .IsRequired();
 
         builder.HasOne(row => row.AssignmentRequest)

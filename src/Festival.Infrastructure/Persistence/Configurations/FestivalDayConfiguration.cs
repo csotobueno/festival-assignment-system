@@ -25,6 +25,10 @@ internal sealed class FestivalDayConfiguration
         builder.HasIndex(festivalDay => festivalDay.Date)
             .IsUnique();
 
+        builder.ToTable(table => table.HasCheckConstraint(
+            "CK_FestivalDays_AssignmentWindow_StartBeforeEnd",
+            "\"AssignmentWindowStart\" < \"AssignmentWindowEnd\""));
+
         builder.OwnsOne(
             festivalDay => festivalDay.AssignmentWindow,
             assignmentWindow =>

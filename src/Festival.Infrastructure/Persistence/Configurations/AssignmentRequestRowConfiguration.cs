@@ -32,22 +32,26 @@ internal sealed class AssignmentRequestRowConfiguration
 
         builder.Property(row => row.Status)
             .HasConversion<string>()
-            .HasMaxLength(PersistenceLengths.Status)
+            .HasMaxLength(PersistenceLengths.AssignmentRequestStatus)
             .IsRequired();
 
         builder.Property(row => row.ResolvedAt)
             .IsRequired(false);
 
         builder.Property(row => row.RejectionCode)
+            .HasMaxLength(PersistenceLengths.OutcomeCode)
             .IsRequired(false);
 
         builder.Property(row => row.RejectionMessage)
+            .HasMaxLength(PersistenceLengths.OutcomeMessage)
             .IsRequired(false);
 
         builder.Property(row => row.FailureCode)
+            .HasMaxLength(PersistenceLengths.OutcomeCode)
             .IsRequired(false);
 
         builder.Property(row => row.FailureMessage)
+            .HasMaxLength(PersistenceLengths.OutcomeMessage)
             .IsRequired(false);
 
         builder.HasOne<FestivalDay>()
