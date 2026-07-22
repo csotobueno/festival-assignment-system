@@ -42,7 +42,8 @@ internal sealed class AssignmentConfiguration
         builder.Property(assignment => assignment.SpotCode)
             .HasConversion(
                 code => code.Value,
-                value => SpotCode.Create(value));
+                value => SpotCode.Create(value))
+            .HasMaxLength(PersistenceLengths.SpotCode);
 
         builder.Property(assignment => assignment.ZoneId)
             .HasConversion(
@@ -52,7 +53,8 @@ internal sealed class AssignmentConfiguration
         builder.Property(assignment => assignment.RowCode)
             .HasConversion(
                 rowCode => rowCode.Value,
-                value => RowCode.Create(value));
+                value => RowCode.Create(value))
+            .HasMaxLength(PersistenceLengths.RowCode);
 
         builder.Property(assignment => assignment.SpotNumber)
             .HasConversion(

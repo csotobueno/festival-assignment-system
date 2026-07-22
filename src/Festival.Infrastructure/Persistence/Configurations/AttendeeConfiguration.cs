@@ -24,10 +24,11 @@ internal sealed class AttendeeConfiguration
             .HasConversion(
                 code => code.Value,
                 value => AttendeeCode.Create(value))
+            .HasMaxLength(PersistenceLengths.AttendeeCode)
             .IsRequired();
 
         builder.Property(attendee => attendee.Name)
-            .HasMaxLength(PersistenceLengths.Name)
+            .HasMaxLength(PersistenceLengths.AttendeeName)
             .IsRequired();
 
         builder.HasIndex(attendee => attendee.Code)

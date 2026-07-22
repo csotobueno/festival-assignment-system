@@ -17,7 +17,8 @@ internal sealed class SpotConfiguration : IEntityTypeConfiguration<Spot>
             .HasColumnName("SpotCode")
             .HasConversion(
                 code => code.Value,
-                value => SpotCode.Create(value));
+                value => SpotCode.Create(value))
+            .HasMaxLength(PersistenceLengths.SpotCode);
 
         builder.Property(spot => spot.ZoneId)
             .HasConversion(
@@ -27,7 +28,8 @@ internal sealed class SpotConfiguration : IEntityTypeConfiguration<Spot>
         builder.Property(spot => spot.RowCode)
             .HasConversion(
                 rowCode => rowCode.Value,
-                value => RowCode.Create(value));
+                value => RowCode.Create(value))
+            .HasMaxLength(PersistenceLengths.RowCode);
 
         builder.Property(spot => spot.Number)
             .HasColumnName("SpotNumber")
