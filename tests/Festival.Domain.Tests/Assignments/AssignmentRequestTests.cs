@@ -72,7 +72,7 @@ public sealed class AssignmentRequestTests
                 null!,
                 RequestedAt));
 
-        Assert.Equal("attendeeCodes", exception.ParamName);
+        Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public sealed class AssignmentRequestTests
                 [],
                 RequestedAt));
 
-        Assert.Equal("attendeeCodes", exception.ParamName);
+        Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public sealed class AssignmentRequestTests
                 codes,
                 RequestedAt));
 
-        Assert.Equal("attendeeCodes", exception.ParamName);
+        Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public sealed class AssignmentRequestTests
                 ],
                 RequestedAt));
 
-        Assert.Equal("attendeeCodes", exception.ParamName);
+        Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
 
     [Fact]
@@ -203,6 +203,114 @@ public sealed class AssignmentRequestTests
                 request.RequestedAt.AddSeconds(1)));
 
         Assert.Equal("failure", exception.ParamName);
+    }
+
+    [Fact]
+    public void Rehydrate_ShouldReturnRequest_WhenReceivedStateIsConsistent()
+    {
+        var request = AssignmentRequest.Rehydrate(
+            AssignmentRequestId.New(),
+            FestivalDayId.New(),
+            [AttendeeCode.Create("ATT-001")],
+            RequestedAt,
+            AssignmentRequestStatus.Received,
+            null,
+            null,
+            null);
+
+        Assert.Equal(AssignmentRequestStatus.Received, request.Status);
+        Assert.Null(request.ResolvedAt);
+        Assert.Null(request.Rejection);
+        Assert.Null(request.Failure);
+    }
+
+    [Fact]
+    public void Rehydrate_ShouldThrow_WhenReceivedRequestHasOutcomeData()
+    {
+        Assert.Throws<InvalidOperationException>(
+            () => AssignmentRequest.Rehydrate(
+                AssignmentRequestId.New(),
+                FestivalDayId.New(),
+                [AttendeeCode.Create("ATT-001")],
+                RequestedAt,
+                AssignmentRequestStatus.Received,
+                RequestedAt.AddSeconds(1),
+                null,
+                null));
+    }
+
+    [Fact]
+    public void Rehydrate_ShouldThrow_WhenCompletedRequestHasOutcomeDataOtherThanResolvedAt()
+    {
+        Assert.Throws<InvalidOperationException>(
+            () => AssignmentRequest.Rehydrate(
+                AssignmentRequestId.New(),
+                FestivalDayId.New(),
+                [AttendeeCode.Create("ATT-001")],
+                RequestedAt,
+                AssignmentRequestStatus.Completed,
+                RequestedAt.AddSeconds(1),
+                AssignmentRequestRejection.Create(
+                    "ATTENDEE_ALREADY_ASSIGNED",
+                    "An attendee already has an assignment."),
+                null));
+    }
+
+    [Fact]
+    public void Rehydrate_ShouldThrow_WhenRejectedRequestHasNoRejection()
+    {
+        Assert.Throws<InvalidOperationException>(
+            () => AssignmentRequest.Rehydrate(
+                AssignmentRequestId.New(),
+                FestivalDayId.New(),
+                [AttendeeCode.Create("ATT-001")],
+                RequestedAt,
+                AssignmentRequestStatus.Rejected,
+                RequestedAt.AddSeconds(1),
+                null,
+                null));
+    }
+
+    [Fact]
+    public void Rehydrate_ShouldThrow_WhenFailedRequestHasNoFailure()
+    {
+        Assert.Throws<InvalidOperationException>(
+            () => AssignmentRequest.Rehydrate(
+                AssignmentRequestId.New(),
+                FestivalDayId.New(),
+                [AttendeeCode.Create("ATT-001")],
+                RequestedAt,
+                AssignmentRequestStatus.Failed,
+                RequestedAt.AddSeconds(1),
+                null,
+                null));
+    }
+
+    [Theory]
+    [InlineData(AssignmentRequestStatus.Completed)]
+    [InlineData(AssignmentRequestStatus.Rejected)]
+    [InlineData(AssignmentRequestStatus.Failed)]
+    public void Rehydrate_ShouldThrow_WhenFinalRequestHasNoResolvedAt(
+        AssignmentRequestStatus status)
+    {
+        Assert.Throws<InvalidOperationException>(
+            () => AssignmentRequest.Rehydrate(
+                AssignmentRequestId.New(),
+                FestivalDayId.New(),
+                [AttendeeCode.Create("ATT-001")],
+                RequestedAt,
+                status,
+                null,
+                status == AssignmentRequestStatus.Rejected
+                    ? AssignmentRequestRejection.Create(
+                        "ATTENDEE_ALREADY_ASSIGNED",
+                        "An attendee already has an assignment.")
+                    : null,
+                status == AssignmentRequestStatus.Failed
+                    ? AssignmentRequestFailure.Create(
+                        "UNEXPECTED_ERROR",
+                        "An unexpected error occurred.")
+                    : null));
     }
 
     [Theory]

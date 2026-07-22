@@ -10,6 +10,12 @@ public sealed record AssignmentWindow
         TimeOnly start,
         TimeOnly end)
     {
+        if (start >= end)
+        {
+            throw new ArgumentException(
+                "Assignment window start must be earlier than its end.");
+        }
+
         Start = start;
         End = end;
     }
@@ -18,12 +24,6 @@ public sealed record AssignmentWindow
         TimeOnly start,
         TimeOnly end)
     {
-        if (start >= end)
-        {
-            throw new ArgumentException(
-                "Assignment window start must be earlier than its end.");
-        }
-
         return new AssignmentWindow(start, end);
     }
 

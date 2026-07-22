@@ -10,14 +10,6 @@ public sealed record AssignmentRequestRejection
         string code,
         string message)
     {
-        Code = code;
-        Message = message;
-    }
-
-    public static AssignmentRequestRejection Create(
-        string? code,
-        string? message)
-    {
         if (string.IsNullOrWhiteSpace(code))
         {
             throw new ArgumentException(
@@ -32,8 +24,14 @@ public sealed record AssignmentRequestRejection
                 nameof(message));
         }
 
-        return new AssignmentRequestRejection(
-            code.Trim().ToUpperInvariant(),
-            message.Trim());
+        Code = code.Trim().ToUpperInvariant();
+        Message = message.Trim();
+    }
+
+    public static AssignmentRequestRejection Create(
+        string? code,
+        string? message)
+    {
+        return new AssignmentRequestRejection(code!, message!);
     }
 }
