@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "Festival.sln",
+    "projects": [
+      "tests/Festival.Domain.Tests/Festival.Domain.Tests.csproj",
+      "tests/Festival.Application.Tests/Festival.Application.Tests.csproj",
+      "tests/Festival.Infrastructure.Tests/Festival.Infrastructure.Tests.csproj"
+    ]
+  }
+}
