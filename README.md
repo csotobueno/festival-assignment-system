@@ -43,6 +43,7 @@ The executable assignment flow is already validated using deterministic in-memor
 * [Domain Blueprint v1](docs/domain-blueprint-v1.md)
 * [Stage 2 Technical Validation](docs/stage-2-technical-validation.md)
 * [Stage 3 Persistence Model and Transactional Boundary](docs/stage-3-persistence-model-and-transaction-boundary.md)
+* [PostgreSQL Relational Model](docs/architecture/postgresql-relational-model.md)
 * [ADR 0001: Select the MVP Database Engine](docs/adr/0001-select-mvp-database-engine.md)
 
 ## Repository structure
