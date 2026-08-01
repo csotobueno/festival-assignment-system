@@ -1,5 +1,6 @@
 using System.Data;
 using Festival.Application.Assignments.Ports;
+using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.Persistence;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -75,6 +76,36 @@ public sealed class FestivalDbContextRegistrationTests
             .GetRequiredService<IUnitOfWork>();
 
         secondUnitOfWork.Should().NotBeSameAs(firstUnitOfWork);
+    }
+
+    [Fact]
+    public void AddPostgreSqlPersistence_ShouldRegisterPostgreSqlAdaptersAsScoped()
+    {
+        var services = new ServiceCollection();
+        var configuration = CreateConfiguration(ConnectionString);
+
+        services.AddPostgreSqlPersistence(configuration);
+
+        services.Should().ContainSingle(descriptor =>
+            descriptor.ServiceType == typeof(IAttendeeCodeResolver)
+            && descriptor.ImplementationType ==
+                typeof(PostgreSqlAttendeeCodeResolver)
+            && descriptor.Lifetime == ServiceLifetime.Scoped);
+        services.Should().ContainSingle(descriptor =>
+            descriptor.ServiceType == typeof(IAvailableSpotProvider)
+            && descriptor.ImplementationType ==
+                typeof(PostgreSqlAvailableSpotProvider)
+            && descriptor.Lifetime == ServiceLifetime.Scoped);
+        services.Should().ContainSingle(descriptor =>
+            descriptor.ServiceType == typeof(IAssignmentRequestRepository)
+            && descriptor.ImplementationType ==
+                typeof(PostgreSqlAssignmentRequestRepository)
+            && descriptor.Lifetime == ServiceLifetime.Scoped);
+        services.Should().ContainSingle(descriptor =>
+            descriptor.ServiceType == typeof(IAssignmentRepository)
+            && descriptor.ImplementationType ==
+                typeof(PostgreSqlAssignmentRepository)
+            && descriptor.Lifetime == ServiceLifetime.Scoped);
     }
 
     [Theory]

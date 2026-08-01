@@ -133,6 +133,119 @@ public sealed class ProcessAssignmentRequestUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_ShouldStageCompletedOutcomeBeforeSavingOnce()
+    {
+        var context = CreateContext(
+            attendeeCount: 1,
+            availableSpots:
+            [
+                CreateSpot(CreateZoneId(1), "A", 10)
+            ]);
+        using var cancellation = new CancellationTokenSource();
+
+        var result = await context.UseCase.ExecuteAsync(
+            context.Command,
+            cancellation.Token);
+
+        var savedRequest = Assert.Single(
+            context.AssignmentRequestRepository.SavedRequests);
+        Assert.Equal(AssignmentRequestStatus.Completed, savedRequest.Status);
+        Assert.Single(context.AssignmentRepository.SavedBatches);
+        Assert.Equal(1, context.UnitOfWork.InvocationCount);
+        Assert.Equal(
+            ["RequestRepository.AddAsync", "AssignmentRepository.AddAsync", "UnitOfWork.SaveChangesAsync"],
+            context.PersistenceEvents);
+        Assert.Equal(
+            cancellation.Token,
+            context.AttendeeResolver.ReceivedCancellationToken);
+        Assert.Equal(
+            cancellation.Token,
+            context.AvailableSpotProvider.ReceivedCancellationToken);
+        Assert.Equal(
+            cancellation.Token,
+            context.AssignmentRequestRepository.ReceivedCancellationToken);
+        Assert.Equal(
+            cancellation.Token,
+            context.AssignmentRepository.ReceivedCancellationToken);
+        Assert.Equal(
+            cancellation.Token,
+            context.UnitOfWork.ReceivedCancellationToken);
+        Assert.True(result.IsAssigned);
+        Assert.Single(result.Assignments);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ShouldStageRejectedOutcomeBeforeSavingOnce()
+    {
+        var context = CreateContext(
+            attendeeCount: 2,
+            availableSpots:
+            [
+                CreateSpot(CreateZoneId(1), "A", 10)
+            ]);
+        using var cancellation = new CancellationTokenSource();
+
+        var result = await context.UseCase.ExecuteAsync(
+            context.Command,
+            cancellation.Token);
+
+        var savedRequest = Assert.Single(
+            context.AssignmentRequestRepository.SavedRequests);
+        var rejection = Assert.IsType<AssignmentRequestRejection>(
+            savedRequest.Rejection);
+        Assert.Equal(AssignmentRequestStatus.Rejected, savedRequest.Status);
+        Assert.Equal(
+            ProcessAssignmentRequestUseCase.NoContiguousSpotsAvailableCode,
+            rejection.Code);
+        Assert.Equal(
+            "No contiguous spots are available for the requested assignment group.",
+            rejection.Message);
+        Assert.Empty(context.AssignmentRepository.SavedBatches);
+        Assert.Equal(1, context.UnitOfWork.InvocationCount);
+        Assert.Equal(
+            ["RequestRepository.AddAsync", "UnitOfWork.SaveChangesAsync"],
+            context.PersistenceEvents);
+        Assert.Equal(
+            cancellation.Token,
+            context.AttendeeResolver.ReceivedCancellationToken);
+        Assert.Equal(
+            cancellation.Token,
+            context.AvailableSpotProvider.ReceivedCancellationToken);
+        Assert.Equal(
+            cancellation.Token,
+            context.AssignmentRequestRepository.ReceivedCancellationToken);
+        Assert.Null(
+            context.AssignmentRepository.ReceivedCancellationToken);
+        Assert.Equal(
+            cancellation.Token,
+            context.UnitOfWork.ReceivedCancellationToken);
+        Assert.True(result.IsRejected);
+        Assert.Equal(rejection.Code, result.RejectionCode);
+        Assert.Equal(rejection.Message, result.RejectionMessage);
+        Assert.Empty(result.Assignments);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ShouldPropagateUnitOfWorkException()
+    {
+        var context = CreateContext(
+            attendeeCount: 1,
+            availableSpots:
+            [
+                CreateSpot(CreateZoneId(1), "A", 10)
+            ]);
+        var expectedException = new InvalidOperationException(
+            "Persistence failed.");
+        context.UnitOfWork.Exception = expectedException;
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => context.UseCase.ExecuteAsync(context.Command));
+
+        Assert.Same(expectedException, exception);
+        Assert.Equal(1, context.UnitOfWork.InvocationCount);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_ShouldLeaveContiguityZoneAndRowSelectionToAssignmentEngine()
     {
         var firstZone = CreateZoneId(1);
@@ -234,15 +347,19 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         var attendeeResolver = new FakeAttendeeCodeResolver(attendeeIds);
         var availableSpotProvider = new FakeAvailableSpotProvider(
             availableSpots);
+        var persistenceEvents = new List<string>();
         var assignmentRequestRepository =
-            new FakeAssignmentRequestRepository();
-        var assignmentRepository = new FakeAssignmentRepository();
+            new FakeAssignmentRequestRepository(persistenceEvents);
+        var assignmentRepository = new FakeAssignmentRepository(
+            persistenceEvents);
+        var unitOfWork = new FakeUnitOfWork(persistenceEvents);
 
         var useCase = new ProcessAssignmentRequestUseCase(
             attendeeResolver,
             availableSpotProvider,
             assignmentRequestRepository,
             assignmentRepository,
+            unitOfWork,
             new AssignmentEngine());
 
         var command = new ProcessAssignmentRequestCommand(
@@ -256,8 +373,11 @@ public sealed class ProcessAssignmentRequestUseCaseTests
             useCase,
             command,
             attendeeResolver,
+            availableSpotProvider,
             assignmentRequestRepository,
-            assignmentRepository);
+            assignmentRepository,
+            unitOfWork,
+            persistenceEvents);
     }
 
     private static Spot CreateSpot(
@@ -282,8 +402,11 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         ProcessAssignmentRequestUseCase UseCase,
         ProcessAssignmentRequestCommand Command,
         FakeAttendeeCodeResolver AttendeeResolver,
+        FakeAvailableSpotProvider AvailableSpotProvider,
         FakeAssignmentRequestRepository AssignmentRequestRepository,
-        FakeAssignmentRepository AssignmentRepository);
+        FakeAssignmentRepository AssignmentRepository,
+        FakeUnitOfWork UnitOfWork,
+        IReadOnlyList<string> PersistenceEvents);
 
     private sealed class FakeAttendeeCodeResolver : IAttendeeCodeResolver
     {
@@ -295,10 +418,14 @@ public sealed class ProcessAssignmentRequestUseCaseTests
 
         public IReadOnlyList<AttendeeId> AttendeeIds { get; }
 
+        public CancellationToken? ReceivedCancellationToken { get; private set; }
+
         public Task<IReadOnlyList<AttendeeId>> ResolveAttendeeIdsAsync(
             IEnumerable<AttendeeCode> attendeeCodes,
             CancellationToken cancellationToken = default)
         {
+            ReceivedCancellationToken = cancellationToken;
+
             return Task.FromResult(AttendeeIds);
         }
     }
@@ -306,6 +433,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
     private sealed class FakeAvailableSpotProvider : IAvailableSpotProvider
     {
         private readonly IReadOnlyList<Spot> availableSpots;
+
+        public CancellationToken? ReceivedCancellationToken { get; private set; }
 
         public FakeAvailableSpotProvider(
             IReadOnlyList<Spot> availableSpots)
@@ -317,6 +446,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
             FestivalDayId festivalDayId,
             CancellationToken cancellationToken = default)
         {
+            ReceivedCancellationToken = cancellationToken;
+
             return Task.FromResult(availableSpots);
         }
     }
@@ -324,13 +455,25 @@ public sealed class ProcessAssignmentRequestUseCaseTests
     private sealed class FakeAssignmentRequestRepository
         : IAssignmentRequestRepository
     {
+        private readonly List<string> persistenceEvents;
+
+        public FakeAssignmentRequestRepository(
+            List<string> persistenceEvents)
+        {
+            this.persistenceEvents = persistenceEvents;
+        }
+
         public List<AssignmentRequest> SavedRequests { get; } = [];
+
+        public CancellationToken? ReceivedCancellationToken { get; private set; }
 
         public Task AddAsync(
             AssignmentRequest assignmentRequest,
             CancellationToken cancellationToken = default)
         {
+            ReceivedCancellationToken = cancellationToken;
             SavedRequests.Add(assignmentRequest);
+            persistenceEvents.Add("RequestRepository.AddAsync");
 
             return Task.CompletedTask;
         }
@@ -338,15 +481,56 @@ public sealed class ProcessAssignmentRequestUseCaseTests
 
     private sealed class FakeAssignmentRepository : IAssignmentRepository
     {
+        private readonly List<string> persistenceEvents;
+
+        public FakeAssignmentRepository(List<string> persistenceEvents)
+        {
+            this.persistenceEvents = persistenceEvents;
+        }
+
         public List<IReadOnlyList<Assignment>> SavedBatches { get; } = [];
+
+        public CancellationToken? ReceivedCancellationToken { get; private set; }
 
         public Task AddAsync(
             IEnumerable<Assignment> assignments,
             CancellationToken cancellationToken = default)
         {
+            ReceivedCancellationToken = cancellationToken;
             SavedBatches.Add(Array.AsReadOnly(assignments.ToArray()));
+            persistenceEvents.Add("AssignmentRepository.AddAsync");
 
             return Task.CompletedTask;
+        }
+    }
+
+    private sealed class FakeUnitOfWork : IUnitOfWork
+    {
+        private readonly List<string> persistenceEvents;
+
+        public FakeUnitOfWork(List<string> persistenceEvents)
+        {
+            this.persistenceEvents = persistenceEvents;
+        }
+
+        public int InvocationCount { get; private set; }
+
+        public CancellationToken? ReceivedCancellationToken { get; private set; }
+
+        public int ReturnValue { get; init; }
+
+        public Exception? Exception { get; set; }
+
+        public Task<int> SaveChangesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            InvocationCount++;
+            ReceivedCancellationToken = cancellationToken;
+            persistenceEvents.Add("UnitOfWork.SaveChangesAsync");
+
+            return Exception is null
+                ? Task.FromResult(ReturnValue)
+                : Task.FromException<int>(Exception);
         }
     }
 }

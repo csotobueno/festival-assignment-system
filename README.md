@@ -21,20 +21,23 @@ The current Stage 3 progress includes:
   ports and stage new entities in a shared `FestivalDbContext`;
 * a minimal `IUnitOfWork` is implemented by `EfCoreUnitOfWork` and confirms all
   changes staged in that shared context through one `SaveChangesAsync` call;
+* `ProcessAssignmentRequestUseCase` stages final Completed or Rejected outcomes
+  and invokes `IUnitOfWork.SaveChangesAsync` exactly once before returning;
+* `AddPostgreSqlPersistence` explicitly registers the PostgreSQL resolver,
+  provider, repositories, context and Unit of Work with scoped lifetimes;
 * the existing in-memory adapters remain available for fast technical
   validation.
 
-Production persistence is not yet integrated into the assignment use case.
 Repository `AddAsync` methods continue to stage changes without committing
 them. `IUnitOfWork.SaveChangesAsync` is the single durable boundary for all
 pending changes in one shared `FestivalDbContext`; EF Core owns the transaction
-for that save, and no manual transaction API has been introduced. The Unit of
-Work is not yet integrated into `ProcessAssignmentRequestUseCase`, and the
-production repository configuration still has not switched from the in-memory
-adapters. Concurrent assignment processing and production exception
-translation also remain pending. The current migration, repositories, Unit of
-Work and integration tests protect and validate the persistence foundation, but
-do not make the production assignment flow durable through PostgreSQL yet.
+for that save, and no manual transaction API has been introduced. The API demo
+continues selecting the separate in-memory configuration; its
+`InMemoryUnitOfWork` is a no-op and is not a durable transaction. Selecting
+`AddPostgreSqlPersistence` makes Completed and Rejected use-case outcomes
+durable through PostgreSQL. No legitimate Failed branch currently exists, and
+PostgreSQL exceptions continue propagating. Conflict translation, rollback
+testing and concurrent assignment processing remain pending.
 
 The in-memory adapters are validation tools. They lose their state when the
 application stops and are not production persistence.

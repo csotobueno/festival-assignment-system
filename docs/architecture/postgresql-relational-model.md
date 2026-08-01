@@ -298,9 +298,13 @@ all pending state with one `FestivalDbContext.SaveChangesAsync` call. That
 single EF Core save is the current atomic persistence boundary, with transaction
 ownership left to EF Core and no manual transaction API.
 
-This boundary is currently validated independently of
-`ProcessAssignmentRequestUseCase`. The production assignment flow and final
-PostgreSQL repository wiring remain pending.
+`ProcessAssignmentRequestUseCase` now stages the final request outcome and any
+Assignments before invoking `IUnitOfWork.SaveChangesAsync` exactly once.
+Completed and Rejected flows are validated through a separate context against
+real PostgreSQL. `AddPostgreSqlPersistence` registers all PostgreSQL adapters
+and the Unit of Work as scoped services; the API demo still explicitly selects
+its separate in-memory configuration. Persistence conflict translation,
+rollback validation and concurrency handling remain pending.
 
 ## Diagram limitations
 
