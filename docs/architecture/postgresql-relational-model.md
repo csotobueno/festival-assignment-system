@@ -289,6 +289,19 @@ Dedicated indexes on `Assignments(AttendeeId)` and
 `Assignments(SpotCode)` remain deferred until repository query patterns
 justify them.
 
+### Durable persistence boundary
+
+The PostgreSQL repositories map and stage new request and Assignment state in a
+shared `FestivalDbContext`; they do not call `SaveChanges` themselves.
+`EfCoreUnitOfWork`, implementing the Application `IUnitOfWork` port, confirms
+all pending state with one `FestivalDbContext.SaveChangesAsync` call. That
+single EF Core save is the current atomic persistence boundary, with transaction
+ownership left to EF Core and no manual transaction API.
+
+This boundary is currently validated independently of
+`ProcessAssignmentRequestUseCase`. The production assignment flow and final
+PostgreSQL repository wiring remain pending.
+
 ## Diagram limitations
 
 Mermaid ER diagrams do not fully express all compound unique indexes, check
@@ -305,4 +318,3 @@ tests.
 - [README](../../README.md)
 - [EF Core persistence model](../../src/Festival.Infrastructure/Persistence/)
 - [Initial PostgreSQL migration](../../src/Festival.Infrastructure/Persistence/Migrations/20260722174748_InitialCreate.cs)
-

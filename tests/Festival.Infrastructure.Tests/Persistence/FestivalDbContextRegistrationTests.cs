@@ -1,4 +1,5 @@
 using System.Data;
+using Festival.Application.Assignments.Ports;
 using Festival.Infrastructure.Persistence;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,31 @@ public sealed class FestivalDbContextRegistrationTests
             .GetRequiredService<FestivalDbContext>();
 
         secondContext.Should().NotBeSameAs(firstContext);
+    }
+
+    [Fact]
+    public void AddPostgreSqlPersistence_ShouldRegisterUnitOfWorkAsScoped()
+    {
+        using var serviceProvider = CreateServiceProvider(ConnectionString);
+
+        IUnitOfWork firstUnitOfWork;
+
+        using (var firstScope = serviceProvider.CreateScope())
+        {
+            firstUnitOfWork = firstScope.ServiceProvider
+                .GetRequiredService<IUnitOfWork>();
+            var unitOfWorkResolvedAgain = firstScope.ServiceProvider
+                .GetRequiredService<IUnitOfWork>();
+
+            firstUnitOfWork.Should().BeOfType<EfCoreUnitOfWork>();
+            unitOfWorkResolvedAgain.Should().BeSameAs(firstUnitOfWork);
+        }
+
+        using var secondScope = serviceProvider.CreateScope();
+        var secondUnitOfWork = secondScope.ServiceProvider
+            .GetRequiredService<IUnitOfWork>();
+
+        secondUnitOfWork.Should().NotBeSameAs(firstUnitOfWork);
     }
 
     [Theory]

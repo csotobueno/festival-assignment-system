@@ -19,15 +19,22 @@ The current Stage 3 progress includes:
   foundation;
 * PostgreSQL adapters implement the four existing Application persistence
   ports and stage new entities in a shared `FestivalDbContext`;
+* a minimal `IUnitOfWork` is implemented by `EfCoreUnitOfWork` and confirms all
+  changes staged in that shared context through one `SaveChangesAsync` call;
 * the existing in-memory adapters remain available for fast technical
   validation.
 
 Production persistence is not yet integrated into the assignment use case.
-Repository `AddAsync` methods stage changes but do not commit them. Unit of Work,
-transaction orchestration, concurrent assignment processing and production
-exception translation have not been implemented. The current migration,
-repositories and integration tests protect and validate the persistence
-foundation, but do not make PostgreSQL persistence production-ready.
+Repository `AddAsync` methods continue to stage changes without committing
+them. `IUnitOfWork.SaveChangesAsync` is the single durable boundary for all
+pending changes in one shared `FestivalDbContext`; EF Core owns the transaction
+for that save, and no manual transaction API has been introduced. The Unit of
+Work is not yet integrated into `ProcessAssignmentRequestUseCase`, and the
+production repository configuration still has not switched from the in-memory
+adapters. Concurrent assignment processing and production exception
+translation also remain pending. The current migration, repositories, Unit of
+Work and integration tests protect and validate the persistence foundation, but
+do not make the production assignment flow durable through PostgreSQL yet.
 
 The in-memory adapters are validation tools. They lose their state when the
 application stops and are not production persistence.

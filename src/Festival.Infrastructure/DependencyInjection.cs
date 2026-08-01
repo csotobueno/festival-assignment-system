@@ -55,6 +55,7 @@ public static class DependencyInjection
             options => options.UseNpgsql(connectionString),
             contextLifetime: ServiceLifetime.Scoped,
             optionsLifetime: ServiceLifetime.Scoped);
+        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
 
         return services;
     }
