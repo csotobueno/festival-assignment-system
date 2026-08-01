@@ -1087,6 +1087,32 @@ UnitOfWork.SaveChangesAsync
 → persists the complete outcome atomically.
 ```
 
+### Implementation status
+
+The minimal Application `IUnitOfWork` contract and the Infrastructure
+`EfCoreUnitOfWork` adapter are now implemented. The adapter retains the injected
+shared `FestivalDbContext` and delegates directly to
+`FestivalDbContext.SaveChangesAsync(cancellationToken)`.
+
+The current responsibility split is:
+
+```text
+Repository AddAsync
+→ maps and stages entities in FestivalDbContext.
+
+IUnitOfWork.SaveChangesAsync
+→ durably confirms every change staged in that shared context.
+```
+
+PostgreSQL repository adapters do not call `SaveChanges` or
+`SaveChangesAsync`. One EF Core `SaveChangesAsync` operation is the current
+atomic persistence boundary, and EF Core owns the database transaction required
+for that operation. No manual begin, commit or rollback API has been added.
+
+`ProcessAssignmentRequestUseCase` does not use `IUnitOfWork` yet. Complete
+Application persistence integration and the production switch from in-memory
+repositories to PostgreSQL repositories remain pending.
+
 When using EF Core, one `SaveChangesAsync` call wraps the pending changes in a transaction when the provider supports transactions.
 
 This is sufficient for the initial flow because it requires only one durable persistence operation.
@@ -1257,10 +1283,16 @@ one shared persistence context
 one UnitOfWork.SaveChangesAsync
 ```
 
-The design is sufficiently defined to continue with:
+The implemented persistence boundary is:
 
-1. selecting the MVP database engine;
-2. adding EF Core and database test infrastructure;
-3. implementing the persistence model;
-4. validating constraints and transaction behavior;
-5. testing concurrent assignment conflicts.
+```text
+Repository AddAsync
+→ staged persistence state
+
+IUnitOfWork.SaveChangesAsync
+→ one durable EF Core persistence boundary
+```
+
+This boundary has been implemented and validated independently. Integrating it
+into `ProcessAssignmentRequestUseCase`, translating persistence conflicts and
+validating concurrency and rollback behavior remain later Stage 3 work.
