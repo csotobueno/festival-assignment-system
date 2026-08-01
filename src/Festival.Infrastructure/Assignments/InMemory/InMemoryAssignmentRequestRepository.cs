@@ -11,7 +11,7 @@ public sealed class InMemoryAssignmentRequestRepository
     public IReadOnlyList<AssignmentRequest> AssignmentRequests =>
         assignmentRequests.AsReadOnly();
 
-    public Task SaveAsync(
+    public Task AddAsync(
         AssignmentRequest assignmentRequest,
         CancellationToken cancellationToken = default)
     {

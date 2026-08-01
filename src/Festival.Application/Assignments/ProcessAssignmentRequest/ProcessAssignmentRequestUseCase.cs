@@ -73,11 +73,11 @@ public sealed class ProcessAssignmentRequestUseCase
         {
             assignmentRequest.Complete(command.AssignedAt);
 
-            await assignmentRequestRepository.SaveAsync(
+            await assignmentRequestRepository.AddAsync(
                 assignmentRequest,
                 cancellationToken);
 
-            await assignmentRepository.SaveAsync(
+            await assignmentRepository.AddAsync(
                 assignmentEngineResult.Assignments,
                 cancellationToken);
 
@@ -92,7 +92,7 @@ public sealed class ProcessAssignmentRequestUseCase
                 "No contiguous spots are available for the requested assignment group."),
             command.AssignedAt);
 
-        await assignmentRequestRepository.SaveAsync(
+        await assignmentRequestRepository.AddAsync(
             assignmentRequest,
             cancellationToken);
 

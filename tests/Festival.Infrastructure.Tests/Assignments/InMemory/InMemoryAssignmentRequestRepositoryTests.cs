@@ -14,12 +14,12 @@ public sealed class InMemoryAssignmentRequestRepositoryTests
         new(2026, 7, 10, 9, 1, 0, TimeSpan.FromHours(-5));
 
     [Fact]
-    public async Task SaveAsync_ShouldSaveAssignmentRequestInMemory()
+    public async Task AddAsync_ShouldAddAssignmentRequestInMemory()
     {
         var assignmentRequest = CreateAssignmentRequest();
         var repository = new InMemoryAssignmentRequestRepository();
 
-        await repository.SaveAsync(assignmentRequest);
+        await repository.AddAsync(assignmentRequest);
 
         var savedRequest = Assert.Single(repository.AssignmentRequests);
 
@@ -27,13 +27,13 @@ public sealed class InMemoryAssignmentRequestRepositoryTests
     }
 
     [Fact]
-    public async Task SaveAsync_ShouldPreserveSavedAssignmentRequestStatus()
+    public async Task AddAsync_ShouldPreserveAddedAssignmentRequestStatus()
     {
         var assignmentRequest = CreateAssignmentRequest();
         assignmentRequest.Complete(ResolvedAt);
         var repository = new InMemoryAssignmentRequestRepository();
 
-        await repository.SaveAsync(assignmentRequest);
+        await repository.AddAsync(assignmentRequest);
 
         var savedRequest = Assert.Single(repository.AssignmentRequests);
 

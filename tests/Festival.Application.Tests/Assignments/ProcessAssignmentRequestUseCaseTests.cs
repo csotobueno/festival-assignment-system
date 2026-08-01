@@ -326,7 +326,7 @@ public sealed class ProcessAssignmentRequestUseCaseTests
     {
         public List<AssignmentRequest> SavedRequests { get; } = [];
 
-        public Task SaveAsync(
+        public Task AddAsync(
             AssignmentRequest assignmentRequest,
             CancellationToken cancellationToken = default)
         {
@@ -340,7 +340,7 @@ public sealed class ProcessAssignmentRequestUseCaseTests
     {
         public List<IReadOnlyList<Assignment>> SavedBatches { get; } = [];
 
-        public Task SaveAsync(
+        public Task AddAsync(
             IEnumerable<Assignment> assignments,
             CancellationToken cancellationToken = default)
         {
