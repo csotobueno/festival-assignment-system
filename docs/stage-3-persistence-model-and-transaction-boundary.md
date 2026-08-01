@@ -1109,9 +1109,33 @@ PostgreSQL repository adapters do not call `SaveChanges` or
 atomic persistence boundary, and EF Core owns the database transaction required
 for that operation. No manual begin, commit or rollback API has been added.
 
-`ProcessAssignmentRequestUseCase` does not use `IUnitOfWork` yet. Complete
-Application persistence integration and the production switch from in-memory
-repositories to PostgreSQL repositories remain pending.
+`ProcessAssignmentRequestUseCase` now owns the confirmation point. It first
+transitions the request to its final state and then follows one of these
+sequences:
+
+```text
+Completed
+→ AssignmentRequestRepository.AddAsync
+→ AssignmentRepository.AddAsync
+→ IUnitOfWork.SaveChangesAsync once
+→ return Completed result
+
+Rejected
+→ AssignmentRequestRepository.AddAsync
+→ IUnitOfWork.SaveChangesAsync once
+→ return Rejected result
+```
+
+The use case passes the same cancellation token to every persistence port. It
+does not catch or translate persistence exceptions. No legitimate Application
+branch currently creates a Failed outcome, so durable Failed-flow integration
+remains deferred rather than being synthesized from broad exception handling.
+
+`AddPostgreSqlPersistence` explicitly registers the PostgreSQL adapters,
+`FestivalDbContext` and `EfCoreUnitOfWork` as scoped services so one request
+scope shares one context. The API demo continues using the separate in-memory
+configuration. Its `InMemoryUnitOfWork` returns zero after honoring cancellation
+and is a no-op, not a durable transaction or rollback simulation.
 
 When using EF Core, one `SaveChangesAsync` call wraps the pending changes in a transaction when the provider supports transactions.
 
@@ -1293,6 +1317,7 @@ IUnitOfWork.SaveChangesAsync
 → one durable EF Core persistence boundary
 ```
 
-This boundary has been implemented and validated independently. Integrating it
-into `ProcessAssignmentRequestUseCase`, translating persistence conflicts and
-validating concurrency and rollback behavior remain later Stage 3 work.
+This boundary has been integrated into `ProcessAssignmentRequestUseCase` for
+Completed and Rejected outcomes and validated through real PostgreSQL full-flow
+tests. Translating persistence conflicts and validating concurrency and rollback
+behavior remain later Stage 3 work.

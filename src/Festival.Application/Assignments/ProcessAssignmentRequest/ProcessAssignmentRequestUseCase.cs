@@ -12,6 +12,7 @@ public sealed class ProcessAssignmentRequestUseCase
     private readonly IAvailableSpotProvider availableSpotProvider;
     private readonly IAssignmentRequestRepository assignmentRequestRepository;
     private readonly IAssignmentRepository assignmentRepository;
+    private readonly IUnitOfWork unitOfWork;
     private readonly AssignmentEngine assignmentEngine;
 
     public ProcessAssignmentRequestUseCase(
@@ -19,6 +20,7 @@ public sealed class ProcessAssignmentRequestUseCase
         IAvailableSpotProvider availableSpotProvider,
         IAssignmentRequestRepository assignmentRequestRepository,
         IAssignmentRepository assignmentRepository,
+        IUnitOfWork unitOfWork,
         AssignmentEngine assignmentEngine)
     {
         this.attendeeCodeResolver = attendeeCodeResolver
@@ -29,6 +31,8 @@ public sealed class ProcessAssignmentRequestUseCase
             ?? throw new ArgumentNullException(nameof(assignmentRequestRepository));
         this.assignmentRepository = assignmentRepository
             ?? throw new ArgumentNullException(nameof(assignmentRepository));
+        this.unitOfWork = unitOfWork
+            ?? throw new ArgumentNullException(nameof(unitOfWork));
         this.assignmentEngine = assignmentEngine
             ?? throw new ArgumentNullException(nameof(assignmentEngine));
     }
@@ -81,6 +85,8 @@ public sealed class ProcessAssignmentRequestUseCase
                 assignmentEngineResult.Assignments,
                 cancellationToken);
 
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
             return ProcessAssignmentRequestResult.Assigned(
                 assignmentRequest,
                 assignmentEngineResult.Assignments);
@@ -95,6 +101,8 @@ public sealed class ProcessAssignmentRequestUseCase
         await assignmentRequestRepository.AddAsync(
             assignmentRequest,
             cancellationToken);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return ProcessAssignmentRequestResult.Rejected(assignmentRequest);
     }

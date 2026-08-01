@@ -1,6 +1,7 @@
 using Festival.Application.Assignments.Ports;
 using Festival.Infrastructure.Assignments.InMemory;
 using Festival.Infrastructure.Assignments.InMemory.Seed;
+using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,7 @@ public static class DependencyInjection
         services.AddSingleton<
             IAssignmentRepository,
             InMemoryAssignmentRepository>();
+        services.AddSingleton<IUnitOfWork, InMemoryUnitOfWork>();
 
         return services;
     }
@@ -55,6 +57,18 @@ public static class DependencyInjection
             options => options.UseNpgsql(connectionString),
             contextLifetime: ServiceLifetime.Scoped,
             optionsLifetime: ServiceLifetime.Scoped);
+        services.AddScoped<
+            IAttendeeCodeResolver,
+            PostgreSqlAttendeeCodeResolver>();
+        services.AddScoped<
+            IAvailableSpotProvider,
+            PostgreSqlAvailableSpotProvider>();
+        services.AddScoped<
+            IAssignmentRequestRepository,
+            PostgreSqlAssignmentRequestRepository>();
+        services.AddScoped<
+            IAssignmentRepository,
+            PostgreSqlAssignmentRepository>();
         services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
 
         return services;
