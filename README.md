@@ -17,13 +17,17 @@ The current Stage 3 progress includes:
 * the EF Core model and initial PostgreSQL migration have been introduced;
 * real PostgreSQL integration tests validate the current physical persistence
   foundation;
+* PostgreSQL adapters implement the four existing Application persistence
+  ports and stage new entities in a shared `FestivalDbContext`;
 * the existing in-memory adapters remain available for fast technical
   validation.
 
-Production persistence is not yet implemented. Repositories, transaction
-handling and concurrent assignment processing have not been implemented or
-validated. The current migration and integration tests protect and validate the
-database foundation, but do not make PostgreSQL persistence production-ready.
+Production persistence is not yet integrated into the assignment use case.
+Repository `AddAsync` methods stage changes but do not commit them. Unit of Work,
+transaction orchestration, concurrent assignment processing and production
+exception translation have not been implemented. The current migration,
+repositories and integration tests protect and validate the persistence
+foundation, but do not make PostgreSQL persistence production-ready.
 
 The in-memory adapters are validation tools. They lose their state when the
 application stops and are not production persistence.

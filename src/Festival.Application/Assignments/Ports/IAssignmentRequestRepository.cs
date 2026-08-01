@@ -4,7 +4,7 @@ namespace Festival.Application.Assignments.Ports;
 
 public interface IAssignmentRequestRepository
 {
-    Task SaveAsync(
+    Task AddAsync(
         AssignmentRequest assignmentRequest,
         CancellationToken cancellationToken = default);
 }

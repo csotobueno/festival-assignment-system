@@ -13,7 +13,7 @@ public sealed class InMemoryAssignmentRepository : IAssignmentRepository
     public IReadOnlyList<IReadOnlyList<Assignment>> SavedBatches =>
         savedBatches.AsReadOnly();
 
-    public Task SaveAsync(
+    public Task AddAsync(
         IEnumerable<Assignment> assignments,
         CancellationToken cancellationToken = default)
     {
