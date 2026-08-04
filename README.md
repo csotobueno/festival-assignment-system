@@ -23,6 +23,10 @@ The current Stage 3 progress includes:
   changes staged in that shared context through one `SaveChangesAsync` call;
 * `ProcessAssignmentRequestUseCase` stages final Completed or Rejected outcomes
   and invokes `IUnitOfWork.SaveChangesAsync` exactly once before returning;
+* known PostgreSQL assignment uniqueness violations are translated at the Unit
+  of Work boundary into stable Application persistence conflicts;
+* real PostgreSQL tests prove that each recognized conflict rolls back the
+  complete new request graph;
 * `AddPostgreSqlPersistence` explicitly registers the PostgreSQL resolver,
   provider, repositories, context and Unit of Work with scoped lifetimes;
 * the existing in-memory adapters remain available for fast technical
@@ -36,8 +40,9 @@ continues selecting the separate in-memory configuration; its
 `InMemoryUnitOfWork` is a no-op and is not a durable transaction. Selecting
 `AddPostgreSqlPersistence` makes Completed and Rejected use-case outcomes
 durable through PostgreSQL. No legitimate Failed branch currently exists, and
-PostgreSQL exceptions continue propagating. Conflict translation, rollback
-testing and concurrent assignment processing remain pending.
+recognized assignment uniqueness conflicts propagate as Application exceptions.
+Unknown PostgreSQL and EF Core errors continue propagating unchanged. API
+mapping and concurrent assignment processing remain pending.
 
 The in-memory adapters are validation tools. They lose their state when the
 application stops and are not production persistence.

@@ -303,8 +303,20 @@ Assignments before invoking `IUnitOfWork.SaveChangesAsync` exactly once.
 Completed and Rejected flows are validated through a separate context against
 real PostgreSQL. `AddPostgreSqlPersistence` registers all PostgreSQL adapters
 and the Unit of Work as scoped services; the API demo still explicitly selects
-its separate in-memory configuration. Persistence conflict translation,
-rollback validation and concurrency handling remain pending.
+its separate in-memory configuration.
+
+At this boundary, Infrastructure translates only PostgreSQL unique violations
+with SQLSTATE `23505` and one of the exact assignment index names into stable
+Application conflicts: Spot already assigned for a FestivalDay, Attendee already
+assigned for a FestivalDay, or duplicate Attendee Assignment within an
+AssignmentRequest. Unknown constraints and other errors continue propagating.
+The use case does not convert these exceptions into result statuses.
+
+Real PostgreSQL tests confirm that a recognized conflict during the single save
+leaves no durable row from the new `AssignmentRequest`, its attendee rows or its
+Assignments. Verification uses a separate context; the failed scoped context is
+discarded and is not repaired or retried. API mapping and concurrency validation
+remain pending.
 
 ## Diagram limitations
 

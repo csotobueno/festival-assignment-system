@@ -990,9 +990,10 @@ Examples:
 * unexpected technical exception;
 * partial persistence cannot be completed.
 
-A constraint violation caused by concurrency must later be translated into a controlled Application result.
-
-The exact user-facing result is deferred to the concurrency implementation tasks.
+Known assignment uniqueness violations are translated into stable Application
+persistence conflicts at the Unit of Work boundary. They are not converted into
+`ProcessAssignmentRequestResult` statuses. API mapping and the exact user-facing
+result remain deferred to later concurrency and API tasks.
 
 ---
 
@@ -1091,7 +1092,7 @@ UnitOfWork.SaveChangesAsync
 
 The minimal Application `IUnitOfWork` contract and the Infrastructure
 `EfCoreUnitOfWork` adapter are now implemented. The adapter retains the injected
-shared `FestivalDbContext` and delegates directly to
+shared `FestivalDbContext` and invokes
 `FestivalDbContext.SaveChangesAsync(cancellationToken)`.
 
 The current responsibility split is:
@@ -1108,6 +1109,30 @@ PostgreSQL repository adapters do not call `SaveChanges` or
 `SaveChangesAsync`. One EF Core `SaveChangesAsync` operation is the current
 atomic persistence boundary, and EF Core owns the database transaction required
 for that operation. No manual begin, commit or rollback API has been added.
+
+When that save fails with PostgreSQL SQLSTATE `23505`, Infrastructure inspects
+the exact physical constraint name and translates only these known assignment
+conflicts:
+
+| Physical unique index | Application conflict |
+| --- | --- |
+| `IX_Assignments_FestivalDayId_SpotCode` | `SpotAlreadyAssigned` |
+| `IX_Assignments_FestivalDayId_AttendeeId` | `AttendeeAlreadyAssigned` |
+| `IX_Assignments_AssignmentRequestId_AttendeeId` | `DuplicateRequestAssignment` |
+
+`AssignmentPersistenceConflictException` preserves the original
+`DbUpdateException` as its inner exception without exposing SQLSTATE, provider
+types or physical index names in its public contract. Non-unique PostgreSQL
+errors, unknown unique constraints and `DbUpdateException` instances without a
+matching `PostgresException` are not translated.
+
+Real PostgreSQL integration tests stage each new request row, attendee row and
+all new Assignments before the same single save. Each recognized conflict rolls
+back that complete new graph while leaving deliberately persisted setup rows
+unchanged. Durable rollback is inspected through a separate context. The MVP
+policy after any failed save is to discard the failed scoped
+`FestivalDbContext`; retry, ChangeTracker repair and reuse of that context are
+not supported.
 
 `ProcessAssignmentRequestUseCase` now owns the confirmation point. It first
 transitions the request to its final state and then follows one of these
@@ -1319,5 +1344,7 @@ IUnitOfWork.SaveChangesAsync
 
 This boundary has been integrated into `ProcessAssignmentRequestUseCase` for
 Completed and Rejected outcomes and validated through real PostgreSQL full-flow
-tests. Translating persistence conflicts and validating concurrency and rollback
-behavior remain later Stage 3 work.
+tests. Known assignment uniqueness conflicts are translated into stable
+Application exceptions, and real PostgreSQL tests validate complete rollback of
+the failed new request graph. Concurrent request orchestration and API mapping
+remain later Stage 3 work.
