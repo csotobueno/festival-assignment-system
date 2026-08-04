@@ -139,6 +139,21 @@ public sealed class EfCoreUnitOfWorkTests(
         (await verificationContext.Assignments.CountAsync()).Should().Be(0);
     }
 
+    [Fact]
+    public async Task SaveChangesAsync_ShouldPropagateUnknownDatabaseErrorWithoutTranslation()
+    {
+        await using var context = Fixture.CreateDbContext();
+        IUnitOfWork unitOfWork = new EfCoreUnitOfWork(context);
+        context.Assignments.Add(
+            IntegrationTestData.CreateAssignment(
+                Guid.Parse("50000000-0000-0000-0000-000000000499")));
+
+        var act = () => unitOfWork.SaveChangesAsync();
+
+        var exception = await act.Should().ThrowAsync<DbUpdateException>();
+        exception.Which.Should().BeOfType<DbUpdateException>();
+    }
+
     private async Task AssertRequestOutcomeIsNotDurableAsync()
     {
         await using var beforeSaveContext = Fixture.CreateDbContext();
