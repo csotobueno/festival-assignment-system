@@ -79,6 +79,37 @@ public sealed class FestivalDbContextRegistrationTests
     }
 
     [Fact]
+    public void AddPostgreSqlPersistence_ShouldCreateIndependentScopedPersistenceGraphs()
+    {
+        using var serviceProvider = CreateServiceProvider(ConnectionString);
+        using var scopeA = serviceProvider.CreateScope();
+        using var scopeB = serviceProvider.CreateScope();
+        var scopedServiceTypes = new[]
+        {
+            typeof(FestivalDbContext),
+            typeof(IAttendeeCodeResolver),
+            typeof(IAvailableSpotProvider),
+            typeof(IAssignmentRequestRepository),
+            typeof(IAssignmentRepository),
+            typeof(IUnitOfWork)
+        };
+
+        foreach (var serviceType in scopedServiceTypes)
+        {
+            var serviceA = scopeA.ServiceProvider
+                .GetRequiredService(serviceType);
+            var serviceB = scopeB.ServiceProvider
+                .GetRequiredService(serviceType);
+
+            scopeA.ServiceProvider.GetRequiredService(serviceType)
+                .Should().BeSameAs(serviceA);
+            scopeB.ServiceProvider.GetRequiredService(serviceType)
+                .Should().BeSameAs(serviceB);
+            serviceA.Should().NotBeSameAs(serviceB);
+        }
+    }
+
+    [Fact]
     public void AddPostgreSqlPersistence_ShouldRegisterPostgreSqlAdaptersAsScoped()
     {
         var services = new ServiceCollection();

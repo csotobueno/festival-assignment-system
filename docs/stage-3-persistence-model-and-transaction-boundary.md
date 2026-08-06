@@ -1162,6 +1162,51 @@ scope shares one context. The API demo continues using the separate in-memory
 configuration. Its `InMemoryUnitOfWork` returns zero after honoring cancellation
 and is a no-op, not a durable transaction or rollback simulation.
 
+### Concurrent assignment validation
+
+Real PostgreSQL integration tests now validate the global assignment
+invariants with two genuinely overlapping requests:
+
+```text
+request A in scope A and FestivalDbContext A
++
+request B in scope B and FestivalDbContext B
+→ both read valid pre-commit state
+→ both stage one complete request graph
+→ both reach the SaveChangesAsync boundary
+→ PostgreSQL unique constraints arbitrate
+→ one complete graph commits
+→ one complete graph rolls back
+→ the loser receives a stable Application conflict
+```
+
+The test composition starts from `AddPostgreSqlPersistence` and decorates the
+scoped `IUnitOfWork` only inside the integration-test project. The decorator
+records the pending request, attendee row and Assignment, then uses an async
+two-participant barrier before delegating once to the production
+`EfCoreUnitOfWork`. This guarantees that neither request can persist before
+both independent contexts have prepared their complete graphs.
+
+For Spot competition, both requests independently select the only available
+Spot. For Attendee competition, a test-only scoped decoration filters the real
+PostgreSQL availability result so each request selects a different valid Spot;
+the contested database invariant is therefore Attendee uniqueness rather than
+Spot uniqueness.
+
+Application availability checks are advisory under concurrency. A pre-check
+cannot guarantee global uniqueness because another scope can commit after the
+read. The PostgreSQL unique indexes are the final consistency boundary, and no
+winner is predetermined. The losing save is translated at the Unit of Work
+boundary, its whole graph is rolled back, and its failed scoped context is
+disposed without repair, reuse or retry. Durable verification always uses a
+fresh context after both request scopes end.
+
+The MVP adds no automatic retry, application lock, manual transaction,
+serializable isolation or database locking strategy. Retry, queueing or locking
+may be evaluated later only if measured contention becomes an operational
+concern. The current evidence does not make a performance or fairness claim
+under contention.
+
 When using EF Core, one `SaveChangesAsync` call wraps the pending changes in a transaction when the provider supports transactions.
 
 This is sufficient for the initial flow because it requires only one durable persistence operation.
@@ -1345,6 +1390,6 @@ IUnitOfWork.SaveChangesAsync
 This boundary has been integrated into `ProcessAssignmentRequestUseCase` for
 Completed and Rejected outcomes and validated through real PostgreSQL full-flow
 tests. Known assignment uniqueness conflicts are translated into stable
-Application exceptions, and real PostgreSQL tests validate complete rollback of
-the failed new request graph. Concurrent request orchestration and API mapping
-remain later Stage 3 work.
+Application exceptions. Deterministic concurrent tests validate one complete
+commit and one complete rollback when requests compete for the same Spot or
+Attendee. API mapping remains later Stage 3 work.

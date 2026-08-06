@@ -27,6 +27,9 @@ The current Stage 3 progress includes:
   of Work boundary into stable Application persistence conflicts;
 * real PostgreSQL tests prove that each recognized conflict rolls back the
   complete new request graph;
+* deterministic real PostgreSQL concurrency tests prove that overlapping
+  requests for the same Spot or Attendee produce one complete commit and one
+  complete rollback through independent scoped contexts;
 * `AddPostgreSqlPersistence` explicitly registers the PostgreSQL resolver,
   provider, repositories, context and Unit of Work with scoped lifetimes;
 * the existing in-memory adapters remain available for fast technical
@@ -41,8 +44,9 @@ continues selecting the separate in-memory configuration; its
 `AddPostgreSqlPersistence` makes Completed and Rejected use-case outcomes
 durable through PostgreSQL. No legitimate Failed branch currently exists, and
 recognized assignment uniqueness conflicts propagate as Application exceptions.
-Unknown PostgreSQL and EF Core errors continue propagating unchanged. API
-mapping and concurrent assignment processing remain pending.
+Unknown PostgreSQL and EF Core errors continue propagating unchanged. The
+current concurrency policy relies on PostgreSQL uniqueness constraints without
+retry or locking. API mapping remains pending.
 
 The in-memory adapters are validation tools. They lose their state when the
 application stops and are not production persistence.

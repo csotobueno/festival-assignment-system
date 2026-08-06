@@ -315,8 +315,13 @@ The use case does not convert these exceptions into result statuses.
 Real PostgreSQL tests confirm that a recognized conflict during the single save
 leaves no durable row from the new `AssignmentRequest`, its attendee rows or its
 Assignments. Verification uses a separate context; the failed scoped context is
-discarded and is not repaired or retried. API mapping and concurrency validation
-remain pending.
+discarded and is not repaired or retried. Deterministic concurrency tests use
+two independent scopes and contexts, hold both complete pending graphs at the
+single-save boundary, and then let these unique indexes arbitrate competing
+Spot and Attendee assignments. Exactly one graph commits and the other rolls
+back with the corresponding stable Application conflict. Availability reads
+remain advisory; no retry, manual transaction or locking mechanism is part of
+the current policy. API mapping remains pending.
 
 ## Diagram limitations
 
