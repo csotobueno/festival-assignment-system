@@ -23,6 +23,8 @@ technical decision gate.
 
 ## Documentation
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
+
 * [Project Operating Model](docs/project-operating-model.md)
 * [Domain Glossary](docs/glossary.md)
 * [Critical Invariants](docs/critical-invariants.md)
