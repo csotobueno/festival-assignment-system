@@ -38,8 +38,15 @@ La arquitectura se concretará progresivamente y solo cuando aparezca código qu
 * `docs/*`: cambios exclusivamente documentales.
 * `feature/*`: nuevas capacidades.
 * `fix/*`: correcciones.
+* `hotfix/*`: correcciones urgentes de producción.
+* `chore/*`: mantenimiento de tooling y del repositorio.
+* `test/*`: cambios exclusivamente de pruebas.
+* `refactor/*`: mejoras internas que preservan el comportamiento.
 
-El trabajo se integrará mediante Pull Requests.
+Cada trabajo comienza desde el último `origin/main` con
+`make start branch=<type>/<description>` y se integra mediante Pull Request.
+El flujo completo y las convenciones están documentados en
+[`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ## 5. Documentación esencial
 
