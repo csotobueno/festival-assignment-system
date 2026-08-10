@@ -68,11 +68,52 @@ El MVP técnico estará terminado cuando exista evidencia de que:
 
 ## 7. Roadmap
 
-1. Dominio esencial.
-2. Backend base y dominio ejecutable.
-3. Invariantes y reglas.
-4. Assignment Engine y fairness.
-5. Simulación y Decision Gate.
+1. **Stage 1 — Essential Domain: Completed.**
+2. **Stage 2 — Executable Domain/Application: Completed.** Version milestone: `v0.1.0`.
+3. **Stage 3 — Persistence, Global Invariants and Concurrency: Completed.** Version milestone: `v0.2.0`.
+4. **Stage 4 — Assignment Engine + Fairness: Next.**
+5. **Stage 5 — Simulation + Decision Gate: Pending.**
+
+### Stage 4 — Assignment Engine + Fairness
+
+Objective: build and refine the core assignment strategy and define measurable
+fairness.
+
+This stage will define Fairness v1 and `RotationScore`, introduce only the
+assignment policy abstractions demonstrated to be necessary, and implement Zone
+and contiguous Spot selection through a deterministic weighted MVP strategy.
+The strategy must have deterministic tests and integrate with the completed
+persistence foundation. Determinism is preferred during validation because it
+makes tests reproducible, scenarios comparable and fairness analysis less
+noisy. Determinism does not itself establish fairness.
+
+### Stage 5 — Simulation + Decision Gate
+
+Objective: evaluate whether the Stage 4 strategy is sufficiently fair and
+technically viable to justify building the full operational system.
+
+This stage will run deterministic simulation scenarios, measure fairness and
+distribution, examine edge cases, compare strategies and record an MVP
+viability conclusion with limitations and a next-step recommendation. Stage 5
+evaluates the fairness strategy built in Stage 4; it does not defer the core
+fairness implementation to Stage 5.
+
+### Current technical MVP hypothesis
+
+> Can the festival assign valid locations using a sufficiently fair assignment
+> policy while preserving the required business invariants?
+
+The technical MVP includes the Assignment Engine, Fairness Definition,
+`RotationScore`, justified assignment policies, Zone selection, contiguous Spot
+selection, a deterministic weighted strategy, persistence and concurrency
+correctness, simulation, fairness evaluation and the decision gate.
+
+The current technical MVP surface excludes the attendee-code validation
+endpoint or workflow; Attendee, Spot, Zone and FestivalDay CRUD; administration
+endpoints; assignment-query APIs not required for validation; Angular UI;
+authentication and authorization; an operational dashboard; advanced
+observability; and deployment hardening. Internal attendee-code resolution
+remains part of the existing architecture.
 
 ## 8. Principio Lean
 
