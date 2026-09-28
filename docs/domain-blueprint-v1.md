@@ -1,5 +1,17 @@
 # Domain Blueprint v1
 
+> **Contexto histórico — Stage 1.** Este documento conserva el modelo y las
+> decisiones iniciales, incluidas las que entonces estaban abiertas. La evidencia
+> posterior está en [stage-2](stage-2-technical-validation.md) y el
+> [cierre de stage-3](stages/stage-3-closure.md). La propuesta de fairness está en
+> [stage-4](stage-4/README.md); el alcance actual está en el
+> [modelo operativo](project-operating-model.md).
+>
+> En particular, stage-3 resolvió persistencia y concurrencia: los conflictos se
+> propagan como excepciones de Application y no se convierten automáticamente en
+> un estado `Failed` persistido. Los flujos operativos y de auditoría aquí
+> propuestos no deben interpretarse como capacidades ya implementadas.
+
 ## 1. Purpose
 
 Este documento consolida el modelo inicial del dominio para el MVP técnico del sistema de asignación de ubicaciones del festival.
@@ -464,6 +476,11 @@ Sin esta información no es posible validar la contigüidad física ni medir cor
 ---
 
 ## 16. Open Decisions
+
+> Esta lista registra las preguntas de stage-1. Persistencia y concurrencia se
+> resolvieron en stage-3; RotationScore tiene una hipótesis v1 en stage-4. El mapeo
+> de calidad y la selección se concretarán durante esa implementación. Se conserva
+> la lista original para mostrar la evolución de las decisiones.
 
 Las siguientes decisiones permanecen abiertas:
 
