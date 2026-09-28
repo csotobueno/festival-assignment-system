@@ -1,5 +1,14 @@
 # Stage 3 — Persistence Model and Transactional Boundary
 
+> **Document history.** This document retains the initial Stage 3 design and its
+> later implementation updates. Early proposals and deferred-decision lists are
+> historical context. For delivered behavior and remaining scope, use the
+> [Stage 3 closure](stages/stage-3-closure.md) and
+> [physical relational model](architecture/postgresql-relational-model.md).
+> In particular, HTTP mapping and durable failed-attempt auditing remain deferred;
+> they are not unfinished Stage 3 acceptance criteria. The next fairness proposal
+> is the [Stage 4 implementation guide](stage-4/README.md).
+
 ## 1. Context
 
 Stage 2 validated the assignment flow using deterministic in-memory adapters.

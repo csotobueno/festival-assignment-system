@@ -1,5 +1,9 @@
 # Stage 3 — Closure
 
+> This is the historical delivery record for Stage 3. Its evidence and decisions
+> are preserved. The [Stage 4 guide](../stage-4/README.md) develops the next
+> assignment and fairness proposal; it does not change what Stage 3 delivered.
+
 ## Objective
 
 Establish durable relational persistence and prove that global assignment

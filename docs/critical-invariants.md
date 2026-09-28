@@ -6,6 +6,11 @@ Una invariante es una condición que debe mantenerse verdadera en todo momento. 
 
 Las validaciones de entrada y las políticas de selección se documentan por separado, ya que cumplen responsabilidades diferentes.
 
+Las políticas de [fairness de stage-4](stage-4/fairness-definition-v1.md) operan
+sobre opciones válidas y nunca pueden relajar estas invariantes. El
+[cierre de stage-3](stages/stage-3-closure.md) describe las garantías implementadas
+y sus límites; este documento expresa las reglas del dominio.
+
 ---
 
 ## INV-01 — Unique Spot per FestivalDay
@@ -335,6 +340,12 @@ Por ejemplo, comprobar que un Spot está disponible antes de guardar no garantiz
 ---
 
 # Deferred Technical Decisions
+
+> Contexto histórico: esta sección expresa la separación inicial entre reglas y
+> mecanismos. Stage-3 ya concretó la persistencia atómica, las restricciones de
+> unicidad y el manejo de conflictos; véase el
+> [modelo relacional](architecture/postgresql-relational-model.md). Las reglas
+> locales de grupo siguen siendo responsabilidad del dominio.
 
 Durante las etapas de implementación se decidirá cómo proteger las invariantes mediante una combinación de mecanismos, que podría incluir:
 

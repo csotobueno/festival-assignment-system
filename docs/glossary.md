@@ -1,6 +1,6 @@
 # Domain Glossary
 
-Este documento define el lenguaje ubicuo inicial del sistema de asignación de ubicaciones del festival.
+Este documento define el lenguaje ubicuo del sistema de asignación de ubicaciones del festival. Las propuestas de stage-4 se identifican como hipótesis v1 pendientes de implementación y evaluación.
 
 Las definiciones describen conceptos del negocio y no decisiones técnicas de implementación.
 
@@ -72,7 +72,10 @@ Sector del recinto que agrupa varios Spots con características similares de ubi
 
 Todos los integrantes de un AssignmentGroup deben recibir Spots pertenecientes a la misma Zone.
 
-Las Zones tendrán diferentes niveles de calidad para efectos de rotación y fairness. La clasificación exacta de esa calidad todavía debe definirse.
+La propuesta de stage-4 interpreta la calidad mediante Experience Quality,
+relativa a las opciones elegibles del Attendee. El mapeo concreto de ubicaciones
+se definirá durante la implementación; una Zone no implica por sí sola una
+calidad universal para todos los asistentes.
 
 ---
 
@@ -163,16 +166,48 @@ No incluye múltiples asignaciones dentro de un mismo FestivalDay, porque esa si
 
 ## RotationScore
 
-Valor derivado del Assignment History de un Attendee.
+Valor derivado del Assignment History que estima la necesidad actual de
+recuperación de un Attendee. Un valor mayor representa mayor necesidad; un
+asistente sin historial comienza en cero.
 
-Resume su experiencia previa de ubicación y ayuda a comparar su situación con la de otros asistentes al decidir futuras asignaciones.
+La fórmula y los pesos provisionales se definen en
+[RotationScore v1](stage-4/rotation-score-v1.md#baseline-formula).
+El score no incluye inventario ni determina por sí solo una Zone o Spot.
 
-Todavía deben definirse:
+---
 
-* su escala;
-* su fórmula;
-* los pesos aplicados;
-* la forma de combinarlo dentro de un AssignmentGroup.
+## GroupRotationScore
+
+Promedio aritmético de los RotationScores individuales de todos los integrantes
+de una AssignmentGroup. Un integrante sin historial aporta cero. Orienta la
+calidad objetivo del grupo, sin reemplazar los historiales individuales.
+
+La fórmula, ejemplos y limitaciones están en
+[Group RotationScore](stage-4/rotation-score-v1.md#group-rotationscore).
+
+---
+
+## Experience Quality
+
+Clasificación de la experiencia de una Assignment como `Good`, `Medium` o `Bad`,
+interpretada respecto de las opciones elegibles del Attendee. La clasificación
+registrada permanece estable para el cálculo histórico.
+
+La [estrategia v1](stage-4/assignment-strategy-v1.md#6-eligibility-aware-experience-quality)
+identifica las decisiones de mapeo pendientes, incluyendo grupos con diferentes
+opciones elegibles.
+
+---
+
+## Target Quality
+
+Calidad objetivo estimada a partir del RotationScore individual o grupal.
+Es una referencia para seleccionar una opción disponible, no una garantía ni
+un límite máximo. La decisión considera además elegibilidad, factibilidad,
+inventario y fairness global conocido.
+
+La política inicial se concretará en
+[Assignment Strategy v1](stage-4/assignment-strategy-v1.md#3-determine-target-quality).
 
 ---
 
@@ -182,7 +217,10 @@ Propiedad del proceso de asignación mediante la cual las oportunidades de recib
 
 Fairness considera el historial de ubicaciones y busca evitar que los mismos asistentes reciban sistemáticamente las mejores o peores Zones.
 
-La definición matemática y los criterios de aceptación de fairness se establecerán antes de implementar el Assignment Engine completo.
+[Fairness Definition v1](stage-4/fairness-definition-v1.md) establece la hipótesis
+inicial. Stage-4 concretará reglas ejecutables y escenarios verificables durante
+la implementación. Stage-5 establecerá criterios provisionales de evaluación
+antes de analizar las simulaciones y medirá sus resultados.
 
 ---
 
@@ -228,11 +266,11 @@ Una Assignment representa una ubicación definitiva ya otorgada a un Attendee.
 
 # Deferred definitions
 
-Los siguientes conceptos o decisiones se definirán cuando el proyecto los necesite:
+La fórmula inicial de RotationScore y la contigüidad ya están documentadas.
+Permanecen pendientes, cuando el incremento correspondiente las requiera:
 
-* clasificación de calidad de las Zones;
-* representación física de la contigüidad;
-* fórmula de RotationScore;
-* definición medible de Fairness;
-* periodo diario habilitado para presentar AssignmentRequests;
+* mapeo de ubicaciones a Experience Quality y tratamiento de elegibilidad mixta;
+* política inicial de Target Quality, inventario y selección;
+* criterios cuantitativos de evaluación de fairness para stage-5;
+* horarios operativos concretos de la ventana diaria de asignación;
 * tratamiento detallado de errores durante la importación de asistentes.

@@ -12,9 +12,14 @@ deterministic validation of concurrent Spot and Attendee conflicts.
 
 **Stage 4 — Assignment Engine + Fairness: Next**
 
-Stage 4 will build and refine the assignment strategy and define measurable
-fairness. Stage 5 will then evaluate that strategy through simulation and a
-technical decision gate.
+Stage 4 has an [initial implementation guide](docs/stage-4/README.md); the
+fairness-aware engine is the next implementation stage. It will build a
+reproducible online baseline using attendee history across festival days.
+Stage 5 will evaluate that baseline through simulation and a technical decision
+gate, producing evidence for a proposal to the festival organization. Operational
+and business considerations will then be refined with the organization.
+The MVP validates technical feasibility and reliability; it does not deliver
+the complete operational system.
 
 ## Project status
 
@@ -32,6 +37,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 2 Technical Validation](docs/stage-2-technical-validation.md)
 * [Stage 3 Persistence Model and Transactional Boundary](docs/stage-3-persistence-model-and-transaction-boundary.md)
 * [Stage 3 Closure](docs/stages/stage-3-closure.md)
+* [Stage 4 — Initial Implementation Guide](docs/stage-4/README.md)
 * [Stage 3 Technical Lead Learnings](docs/learning/stage-3-technical-lead-learnings.md)
 * [PostgreSQL Relational Model](docs/architecture/postgresql-relational-model.md)
 * [ADR 0001: Select the MVP Database Engine](docs/adr/0001-select-mvp-database-engine.md)

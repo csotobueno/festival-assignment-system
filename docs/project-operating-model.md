@@ -14,7 +14,12 @@ Implementar el flujo mínimo necesario para simular diferentes escenarios de asi
 * comportamiento ante solicitudes concurrentes;
 * rendimiento con una cantidad representativa de asistentes.
 
-El MVP técnico no tiene como objetivo entregar todavía una aplicación preparada para producción.
+El MVP técnico busca comprobar la viabilidad y fiabilidad de asignar ubicaciones
+a diferentes Attendees durante varios días. No tiene como objetivo entregar el
+sistema operativo completo ni una aplicación preparada para producción.
+Al terminar stage-5, la evidencia y sus limitaciones servirán para proponer el
+sistema a la organización y validar con ella las consideraciones operativas y
+de negocio pendientes.
 
 ## 3. Arquitectura objetivo
 
@@ -62,7 +67,23 @@ Documentación inicialmente prevista:
 
 Otros documentos se crearán solo cuando exista una necesidad comprobada.
 
-## 6. Definition of Done del MVP técnico
+### Responsabilidad y evolución documental
+
+* El glosario define los términos y enlaza sus reglas detalladas.
+* Las invariantes definen las condiciones que ninguna política puede vulnerar.
+* El blueprint y los informes de etapas anteriores conservan el contexto y las
+  decisiones de su momento; una actualización posterior se identifica mediante
+  notas y enlaces, sin reescribir retrospectivamente esa evidencia.
+* El cierre de stage-3 y el modelo relacional describen la base persistente
+  implementada.
+* La [guía de stage-4](stage-4/README.md) contiene la propuesta inicial de fairness,
+  su fórmula y su plan de implementación. No constituye evidencia de entrega.
+
+Cuando una decisión evolucione, se documentará qué cambia, por qué y dónde queda
+la definición posterior. Las guías vigentes se actualizarán sin borrar el
+registro histórico de decisiones.
+
+## 6. Criterios de finalización del MVP técnico
 
 El MVP técnico estará terminado cuando exista evidencia de que:
 
@@ -73,54 +94,71 @@ El MVP técnico estará terminado cuando exista evidencia de que:
 * se ha evaluado el comportamiento concurrente;
 * existe una conclusión documentada sobre la viabilidad técnica.
 
-## 7. Roadmap
+## 7. Hoja de ruta
 
-1. **Stage 1 — Essential Domain: Completed.**
-2. **Stage 2 — Executable Domain/Application: Completed.** Version milestone: `v0.1.0`.
-3. **Stage 3 — Persistence, Global Invariants and Concurrency: Completed.** Version milestone: `v0.2.0`.
-4. **Stage 4 — Assignment Engine + Fairness: Next.**
-5. **Stage 5 — Simulation + Decision Gate: Pending.**
+1. **Etapa 1 — Dominio esencial: Completada.**
+2. **Etapa 2 — Dominio y Application ejecutables: Completada.** Hito de versión: `v0.1.0`.
+3. **Etapa 3 — Persistencia, invariantes globales y concurrencia: Completada.** Hito de versión: `v0.2.0`.
+4. **Etapa 4 — Motor de asignación y fairness: Próxima.**
+5. **Etapa 5 — Simulación y evaluación para la toma de decisiones: Pendiente.**
 
-### Stage 4 — Assignment Engine + Fairness
+### Etapa 4 — Motor de asignación y fairness
 
-Objective: build and refine the core assignment strategy and define measurable
-fairness.
+Objetivo: implementar una base mínima de asignación online determinista y
+permitir la medición de sus decisiones y los historiales resultantes.
 
-This stage will define Fairness v1 and `RotationScore`, introduce only the
-assignment policy abstractions demonstrated to be necessary, and implement Zone
-and contiguous Spot selection through a deterministic weighted MVP strategy.
-The strategy must have deterministic tests and integrate with the completed
-persistence foundation. Determinism is preferred during validation because it
-makes tests reproducible, scenarios comparable and fairness analysis less
-noisy. Determinism does not itself establish fairness.
+Los [documentos de stage-4](stage-4/README.md) son una guía inicial. La fórmula
+del score está suficientemente concretada para comenzar; el mapeo de calidad y
+las reglas de selección se harán explícitos cuando su incremento de
+implementación los requiera. La etapa 4 debe terminar con reglas provisionales
+reproducibles y escenarios de referencia, no solo con una intención conceptual.
+La calibración final y la evaluación cuantitativa de fairness corresponden a la
+etapa 5.
 
-### Stage 5 — Simulation + Decision Gate
+Esta etapa definirá Fairness v1 y `RotationScore`, introducirá únicamente las
+abstracciones de políticas de asignación cuya necesidad esté demostrada e
+implementará la selección de Zone y Spots contiguos mediante una estrategia
+ponderada determinista para el MVP. La estrategia debe contar con pruebas
+deterministas e integrarse con la base de persistencia ya completada. Se prefiere
+el determinismo durante la validación porque permite reproducir las pruebas,
+comparar los escenarios y reducir el ruido en el análisis de fairness.
+El determinismo no garantiza por sí mismo el fairness.
 
-Objective: evaluate whether the Stage 4 strategy is sufficiently fair and
-technically viable to justify building the full operational system.
+### Etapa 5 — Simulación y evaluación para la toma de decisiones
 
-This stage will run deterministic simulation scenarios, measure fairness and
-distribution, examine edge cases, compare strategies and record an MVP
-viability conclusion with limitations and a next-step recommendation. Stage 5
-evaluates the fairness strategy built in Stage 4; it does not defer the core
-fairness implementation to Stage 5.
+Objetivo: evaluar si la estrategia de la etapa 4 es suficientemente justa y
+técnicamente viable para justificar la construcción del sistema operativo completo.
 
-### Current technical MVP hypothesis
+Esta etapa ejecutará escenarios de simulación deterministas, medirá el fairness
+y la distribución, examinará casos límite, comparará estrategias y registrará
+una conclusión sobre la viabilidad del MVP, con sus limitaciones y una
+recomendación sobre el siguiente paso. La etapa 5 evalúa la estrategia de
+fairness construida en la etapa 4; la implementación central de fairness no se
+pospone hasta la etapa 5. Los criterios provisionales y medibles para clasificar
+las trayectorias deben registrarse antes de evaluar los resultados de las
+simulaciones. El resultado es evidencia para una propuesta a la organización,
+incluidas las limitaciones y las decisiones de negocio pendientes; no constituye
+aprobación de la organización ni preparación para producción.
 
-> Can the festival assign valid locations using a sufficiently fair assignment
-> policy while preserving the required business invariants?
+### Hipótesis actual del MVP técnico
 
-The technical MVP includes the Assignment Engine, Fairness Definition,
-`RotationScore`, justified assignment policies, Zone selection, contiguous Spot
-selection, a deterministic weighted strategy, persistence and concurrency
-correctness, simulation, fairness evaluation and the decision gate.
+> ¿Puede el festival asignar ubicaciones válidas mediante una política de
+> asignación suficientemente justa, preservando las invariantes de negocio
+> requeridas?
 
-The current technical MVP surface excludes the attendee-code validation
-endpoint or workflow; Attendee, Spot, Zone and FestivalDay CRUD; administration
-endpoints; assignment-query APIs not required for validation; Angular UI;
-authentication and authorization; an operational dashboard; advanced
-observability; and deployment hardening. Internal attendee-code resolution
-remains part of the existing architecture.
+El MVP técnico incluye el motor de asignación, la definición de fairness,
+`RotationScore`, políticas de asignación justificadas, selección de Zone,
+selección de Spots contiguos, una estrategia ponderada determinista, corrección
+de la persistencia y la concurrencia, simulación, evaluación de fairness y la
+evaluación para la toma de decisiones.
+
+El alcance actual del MVP técnico excluye el endpoint o flujo de validación de
+códigos de asistentes; el CRUD de Attendee, Spot, Zone y FestivalDay; los endpoints
+de administración; las APIs de consulta de asignaciones que no sean necesarias
+para la validación; la interfaz Angular; la autenticación y autorización; un
+panel operativo; la observabilidad avanzada; y el endurecimiento del despliegue.
+La resolución interna de códigos de asistentes sigue formando parte de la
+arquitectura existente.
 
 ## 8. Principio Lean
 
@@ -137,10 +175,17 @@ Lo que no contribuya a alguno de estos objetivos se pospondrá o eliminará.
 
 ## 9. Métricas de éxito
 
-MVP Success Criteria
+Criterios de éxito del MVP
 
 1. Ninguna invariante rota.
 2. Simulación de 5000 asistentes completada.
 3. Tiempo promedio de asignación < 2 segundos.
 4. Fairness Score aceptable.
 5. Sin asignaciones duplicadas.
+
+Estos objetivos orientan la evaluación de stage-5. “Fairness Score aceptable” es
+la formulación inicial del objetivo; no implica que ya exista una métrica escalar
+única. Stage-5 concretará los criterios provisionales antes de evaluar resultados,
+usando las dimensiones de [Fairness Definition v1](stage-4/fairness-definition-v1.md#stage-5-measurement-dimensions).
+La presimulación de stage-4 verifica escenarios y detecta problemas evidentes;
+no demuestra por sí sola el cumplimiento de estas metas.

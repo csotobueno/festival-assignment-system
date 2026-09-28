@@ -1,5 +1,10 @@
 # Stage 2 — Technical Validation Outcome
 
+> **Registro histórico del cierre de stage-2.** “Actual” y “pendiente” se refieren
+> a ese momento. Se conservan sus limitaciones y decisiones diferidas; la evolución
+> posterior está en el [cierre de stage-3](stages/stage-3-closure.md) y en la
+> [guía inicial de stage-4](stage-4/README.md).
+
 ## 1. Objective
 
 La Etapa 2 tuvo como objetivo convertir el modelo conceptual del festival en un dominio mínimo ejecutable y validar el flujo principal de asignación sin introducir todavía persistencia real, API HTTP, fairness ni concurrencia avanzada.
