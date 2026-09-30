@@ -365,6 +365,11 @@ G = GoodExperienceDeficit
 
 # Weight Interpretation
 
+The domain implementation exposes `RotationScore.Calculate(FairnessHistory)`
+and returns `decimal` for exact baseline arithmetic. It composes the three
+existing signal calculations, with the fixed v1 weights defined directly in
+`RotationScore`; the weights are not runtime-configurable.
+
 The initial weights encode the following conceptual hierarchy:
 
 ```text
