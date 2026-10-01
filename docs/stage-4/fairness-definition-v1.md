@@ -118,7 +118,8 @@ It does not deliberately create harm.
 
 An attendee with an accumulated unfavorable path should generally have a stronger need for a favorable future experience.
 
-This need is represented by the fairness model and contributes to the target quality selected for the current request.
+This need is represented by the fairness model. Sufficient recovery need justifies
+a `Good` target under the [Target Quality v1 policy](assignment-strategy-v1.md#3-determine-target-quality).
 
 This does not imply an absolute entitlement to a specific Zone or Spot.
 
@@ -155,7 +156,9 @@ An unfavorable experience does not guarantee that the next assignment will be fa
 
 Similarly, favorable previous assignments do not require the system to later assign an unfavorable experience.
 
-History influences the current fairness need.
+History influences the current fairness need. Low or negative recovery need
+does not justify intentional degradation, and prior favorable experience never
+creates an obligation to assign `Bad`.
 
 It does not dictate the next assignment.
 

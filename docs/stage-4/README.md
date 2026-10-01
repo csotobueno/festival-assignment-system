@@ -44,7 +44,7 @@ persistence foundation on which this proposal builds.
 2. Load each Attendee's available history of real previous assignments.
 3. Calculate individual RotationScores. For a group, use their arithmetic mean
    as GroupRotationScore; individual histories remain separate.
-4. Estimate a Target Quality: `Good`, `Medium` or `Bad`.
+4. Derive a [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality) reference: `Good` or `Medium`; `Bad` is only a possible actual outcome.
 5. Evaluate options that are eligible, physically feasible and currently available.
 6. Select a complete candidate considering individual or group fairness and the
    global fairness state accumulated so far.
