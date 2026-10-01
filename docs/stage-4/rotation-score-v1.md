@@ -768,6 +768,12 @@ Stage 5 may later evaluate whether small score differences need an equivalence m
 
 # Group RotationScore
 
+`GroupRotationScore.Calculate(IEnumerable<FairnessHistory>)` returns a `decimal`
+mean by calling `RotationScore.Calculate` independently for each member history.
+It rejects null collections and null entries, and reuses `GroupSize` to enforce
+the existing range of 1–10 members; an empty group is invalid. Each entry
+represents one current request member, without introducing persistent group identity.
+
 For Stage 4, group recovery need is approximated using the arithmetic mean of individual member scores:
 
 ```text
