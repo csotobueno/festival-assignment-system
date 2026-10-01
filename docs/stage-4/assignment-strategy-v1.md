@@ -165,61 +165,60 @@ It does not directly select a Zone or Spot.
 
 # 3. Determine Target Quality
 
-RotationScore helps determine a reasonable experience-quality objective for the current request.
-
-The initial quality model is:
-
-```text
-Good
-Medium
-Bad
-```
-
-Conceptually:
+Target Quality v1 expresses a reasonable quality objective derived only from
+current recovery need. The same policy consumes either an individual
+`RotationScore` or the arithmetic-mean `GroupRotationScore`:
 
 ```text
-higher recovery need
-→ stronger preference for Good
-
-approximately neutral recovery need
-→ Medium may be reasonable
-
-low recovery need
-→ lower need for scarce Good capacity
+score >= 1.00 → Target Quality = Good
+score < 1.00  → Target Quality = Medium
 ```
 
-However, this relationship should not be interpreted as a rigid entitlement.
+The boundary is inclusive: exactly `1.00` produces `Good`. There is no separate
+group threshold; Target Quality consumes the resulting group score without
+reassessing individual histories or internal dispersion.
 
-For example:
+The agreed threshold is a Stage 4 baseline hypothesis selected from representative
+histories, not by dividing the theoretical score range. The
+[threshold decision and alternatives](trade-offs-and-open-questions.md#target-quality-v1-threshold-decision)
+record the rationale; Stage 5 must validate and calibrate it. Implementation in
+code remains a subsequent task.
+
+The conceptual flow keeps measurement, objective and selection separate:
 
 ```text
-Target Quality = Medium
+RotationScore / GroupRotationScore → current recovery need
+        ↓
+Target Quality → reasonable quality objective
+        ↓
+Eligibility + Physical Feasibility + Candidate Experience Quality
++ Current Inventory State + Current Global Assignment State
+        ↓
+Final Assignment Selection → actual ExperienceQuality
 ```
 
-does not mean:
+Target Quality is a reference for the later assignment strategy. It is neither
+an entitlement, a guaranteed outcome, a maximum allowed quality, nor a direct
+Zone or Spot selection. Actual `ExperienceQuality` describes the experience of
+a valid assignment; the target expresses an objective before that selection.
 
-```text
-Good is forbidden
-```
+Only `Good` and `Medium` are intentional targets in v1. Low or negative scores
+mean lower recovery need, never an obligation to assign `Bad` after favorable
+history. The system must not manufacture unfavorable experiences for compensation.
+`Bad` remains a valid actual Experience Quality when real constraints make it
+unavoidable.
 
-and:
+A `Medium` target may result in `Good`, including when current inventory makes
+an eligible, feasible `Good` candidate a more reasonable choice than consuming
+`Medium`. A `Good` target may degrade to `Medium` or `Bad` when eligibility,
+physical feasibility or available inventory prevents the preferred outcome.
 
-```text
-Target Quality = Bad
-```
-
-does not mean:
-
-```text
-the engine should intentionally search for Bad
-```
-
-Target Quality represents a fairness reference point, not a mandatory final quality.
-
-Before implementing this policy, record its initial score mapping, boundaries
-and required inputs with exact expected targets. A deterministic mapping to a
-target is compatible with flexible final selection. Final calibration remains
-a Stage 5 question.
+Target derivation does not include inventory or global state. Final selection
+must consider eligible options, physical feasibility, candidate Experience
+Quality, Current Inventory State and Current Global Assignment State. Concrete
+better-than-target and degradation rules remain separate later selection tasks.
+Decisions use only information available at that moment; Target Quality does
+not reserve capacity for unknown future requests.
 
 ---
 
@@ -485,7 +484,7 @@ The strategy must not deliberately assign a worse option simply because the atte
 Example:
 
 ```text
-Target Quality = Bad
+Target Quality = Medium
 +
 Good inventory is abundant
 +

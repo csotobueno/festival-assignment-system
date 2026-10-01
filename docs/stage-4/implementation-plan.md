@@ -56,7 +56,7 @@ Do not silently choose business semantics inside code.
 | Decision | Needed by | Minimum evidence to record |
 | --- | --- | --- |
 | Location-to-quality mapping, eligibility versus availability, and member-specific quality in mixed groups | Steps 2 and 12 | A small venue example, explicit classifications and the quality stored for each member. |
-| Score-to-Target Quality policy | Step 9 | Low, neutral and high score cases with exact targets and boundary behavior. |
+| Score-to-Target Quality policy (agreed) | Step 9 implementation | [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality): score >= 1.00 → Good; score < 1.00 → Medium, for individuals and groups. Calibration belongs to Stage 5. |
 | Minimum implemented eligibility rules | Step 10 | A concrete allowed/excluded candidate case; undefined organization policies remain deferred. |
 | Inventory and global-state scope and selection influence | Steps 13–16 | An exact decision using known current state, including when a better-than-target option is reasonable. Define counting units and whether state is daily or festival-wide. |
 | Deterministic candidate ordering | Step 18 | A tied-candidate case with one reproducible result. |
@@ -314,52 +314,39 @@ historical quality records or decide mixed-eligibility quality classification.
 
 ---
 
-## Step 9 — Define Target Quality Policy v1
+## Step 9 — Implement the Agreed Target Quality Policy v1
 
-Introduce the minimum policy that converts recovery need into a reasonable quality objective.
-
-Conceptually:
+The [policy is defined](assignment-strategy-v1.md#3-determine-target-quality).
+Implementation in code remains a subsequent task, using the same rule for
+`RotationScore` and `GroupRotationScore`:
 
 ```text
-higher recovery need
-→ stronger preference for Good
-
-neutral recovery need
-→ Medium may be reasonable
-
-low recovery need
-→ lower need for scarce Good capacity
+score >= 1.00 → Good
+score < 1.00  → Medium
 ```
 
-Target Quality is a reference point.
+Exactly `1.00` targets `Good`. `Bad` is never an intentional v1 target.
+The threshold is a fixed Stage 4 hypothesis; runtime configuration and further
+target bands are outside this increment. Stage 5 owns validation and calibration.
 
-It is not:
-
-- an entitlement;
-- a maximum;
-- a mandatory final assignment.
+Target Quality is a reference, not an entitlement, a maximum or a guaranteed
+assignment. Better-than-target outcomes and degradation under real constraints
+belong to later selection tasks.
 
 ### Goal
 
-Separate:
-
-```text
-how much recovery is needed
-```
-
-from:
-
-```text
-what should be assigned now
-```
+Separate measuring recovery need, deriving a quality objective and deciding
+what to assign now. Consume only the individual or group score; eligibility,
+feasibility, inventory and global state remain selection concerns.
 
 ### Validation
 
-Tests should cover representative low, neutral, and high recovery states with
-exact expected targets. Record the initial mapping and boundary rules in the
-strategy before implementation; later calibration can change them with evidence.
-A deterministic target mapping is allowed. It does not guarantee the final
-assigned quality.
+Future implementation tests must cover negative and zero scores (`Medium`),
+scores below `1.00` (`Medium`), exactly `1.00` (`Good`) and above it (`Good`),
+with the same policy for individuals and groups. Preserve the
+[representative histories and boundary case](trade-offs-and-open-questions.md#target-quality-v1-threshold-decision)
+as reference cases. Verify that the policy never targets `Bad`; do not implement
+final assignment selection as part of this step.
 
 ---
 

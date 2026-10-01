@@ -445,8 +445,8 @@ suggest Medium; lower need reduces the claim on scarce Good capacity.
 
 The mapping belongs to the
 [Target Quality policy](assignment-strategy-v1.md#3-determine-target-quality),
-not the score formula. That policy must define an initial deterministic rule
-when implemented. Its parameters may later be calibrated with evidence.
+not the score formula. Its Stage 4 baseline is agreed; implementation remains
+a subsequent task and Stage 5 will evaluate calibration.
 
 ## Target Quality Is Not a Maximum
 
@@ -940,6 +940,6 @@ Stage 5 should evaluate:
 7. Is an equivalence tolerance actually necessary?
 8. How sensitive are five-day paths to weight changes?
 9. Does RotationScore improve outcomes compared with simpler baselines?
-10. How should RotationScore map to target quality under different inventory states?
+10. How does the agreed Target Quality baseline perform when the later selection strategy encounters different inventory states?
 
 Until those questions are measured, RotationScore v1 remains a **baseline recovery-need hypothesis**, not a final fairness formula.
