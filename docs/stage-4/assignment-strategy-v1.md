@@ -181,8 +181,13 @@ reassessing individual histories or internal dispersion.
 The agreed threshold is a Stage 4 baseline hypothesis selected from representative
 histories, not by dividing the theoretical score range. The
 [threshold decision and alternatives](trade-offs-and-open-questions.md#target-quality-v1-threshold-decision)
-record the rationale; Stage 5 must validate and calibrate it. Implementation in
-code remains a subsequent task.
+record the rationale; Stage 5 must validate and calibrate it.
+
+The domain implementation exposes `TargetQualityPolicy.Calculate(decimal rotationScore)`
+and returns the separate `TargetQuality` enum (`Good` or `Medium`). The policy owns
+the fixed `1.00m` threshold in its private `GoodThreshold` constant. Both
+`RotationScore.Calculate` and `GroupRotationScore.Calculate` return the decimal
+input accepted by this same API.
 
 The conceptual flow keeps measurement, objective and selection separate:
 
