@@ -301,8 +301,6 @@ tasks. No HTTP transport contract is changed.
 ### Later Eligibility Concerns
 
 Examples may include:
-
-- front-standing opt-out;
 - accessibility compatibility;
 - allowed location categories.
 
@@ -324,32 +322,96 @@ For a group, the complete candidate must satisfy the eligibility requirements of
 
 # 6. Eligibility-Aware Experience Quality
 
-Request-Level Zone Eligibility v1 supersedes the earlier proposal to interpret
-quality relative to eligible opportunities. `ExperienceQuality` is globally
-defined by business policy. Eligibility filters participation without promoting
-or demoting the quality of any remaining option. A business-classified `Medium`
-option remains `Medium` when Front Standing is excluded.
+### Agreed Zone Taxonomy and Global Mapping
 
-`RequestEligibility` contains no quality or score data. `RotationScore`,
-`GroupRotationScore`, `TargetQuality` and recorded historical quality remain
-unchanged. The concrete mapping from Zones to `Good`, `Medium` or `Bad` is still
-deferred; no classification follows from a Zone name in this increment.
+Zone Experience Quality v1 is an agreed global business classification. The
+intended `ZoneType` taxonomy identifies the stable physical/business area of a
+Zone; its classification is the same for every request.
 
-### Decisions Required Before Quality Classification
+| ZoneType | ExperienceQuality |
+| --- | --- |
+| `FrontStanding` | `Good` |
+| `MiddleLeft` | `Medium` |
+| `MiddleCenter` | `Good` |
+| `MiddleRight` | `Medium` |
+| `UpperLeft` | `Bad` |
+| `UpperCenter` | `Medium` |
+| `UpperRight` | `Bad` |
 
-The initial mapping is not yet specified. Define it using a small venue scenario
-when implementing Steps 2 and 12 of the plan:
+This is the Stage 4 v1 baseline. The taxonomy and mapping are decided;
+`ZoneType` and `ZoneExperienceQualityPolicy` implementation remain pending.
 
-- Define the global business mapping of Zones to ExperienceQuality.
-- Keep that classification stable when eligibility, inventory or feasible blocks
-  change; the last remaining option is not automatically Good.
-- Use one eligibility value for the complete request. Per-attendee restrictions
-  and intersections remain outside v1.
-- Define inventory metrics in their own increment without changing quality.
+### Quality Ownership
 
-These decisions need not block score calculations over classified histories.
-Do not invent accessibility, reservation or preference rules that the selected
-MVP scenario does not require.
+The intended model is:
+
+```text
+Zone.Type → ZoneType
+               ↓
+ZoneExperienceQualityPolicy
+               ↓
+ExperienceQuality → Good / Medium / Bad
+```
+
+`ZoneType` expresses what area the Zone represents. The business policy derives
+its quality through `ZoneType → ExperienceQuality`; quality is not mutable,
+independent state stored directly on Zone. This keeps venue meaning separate
+from business classification and avoids contradictory type/quality combinations.
+
+`ZoneCode` is not required yet: `ZoneType` provides enough stable domain semantics
+for current Stage 4 rules. Defer a code until external integration, import/export,
+organization-provided configuration, UI/API stable business identifiers or
+mapping external data to Zones creates a concrete requirement.
+
+### Eligibility and Target Quality Are Separate
+
+`RequestEligibility` determines which Zones may participate;
+`ZoneExperienceQualityPolicy` determines their global quality. The request-owned
+`AllowsFrontStanding` rule applies equally to individual and group requests:
+
+```text
+AllowsFrontStanding = true  → FrontStanding may participate
+AllowsFrontStanding = false → FrontStanding does not participate
+
+FrontStanding excluded → MiddleLeft remains Medium
+                        MiddleCenter remains Good
+```
+
+Exclusions never promote or demote the remaining Zones. Availability and physical
+feasibility also do not change their business classification.
+
+`TargetQuality` is the fairness-derived desired quality reference, whereas
+`ExperienceQuality` describes a real Zone, candidate or assignment. For example,
+`RotationScore >= 1.00` produces `TargetQuality = Good`. The later strategy will
+seek an eligible, feasible Zone with suitable actual quality. If no suitable
+`Good` option exists, later degradation may evaluate `Medium` and eventually
+`Bad`; this policy decision defines no selection or degradation algorithm.
+`RotationScore` and `GroupRotationScore` remain independent from Zone eligibility.
+
+### Historical Quality Stability
+
+The actual `ExperienceQuality` recorded for a completed assignment is the fact
+consumed by `FairnessHistory` and `RotationScore`. Past assignments must not be
+reclassified automatically when the business mapping changes. For example:
+
+```text
+assignment made when UpperCenter = Medium
+→ recorded historical ExperienceQuality remains Medium
+
+even if a later business policy classifies UpperCenter as Good
+```
+
+Deriving current Zone quality through a policy does not mean recalculating past
+quality from today's policy. Recording historical quality remains a separate
+pending implementation step.
+
+### Pending Zone Model Evolution
+
+Current code uses `Zone.IsFrontStanding` and the existing `ZoneEligibilityPolicy`.
+Once `ZoneType` is implemented, eligibility should identify Front Standing through
+`Zone.Type == ZoneType.FrontStanding`; the dedicated Boolean will no longer be
+necessary. Its removal and any persistence migration belong to the subsequent
+implementation task. This documentation decision changes no code or schema.
 
 ---
 
@@ -871,7 +933,7 @@ The Stage 4 decision flow is:
 
 9. Generate complete physically feasible candidates.
 
-10. Determine relative Experience Quality.
+10. Derive candidate Experience Quality from the global ZoneType policy.
 
 11. Read Current Inventory State.
 
@@ -990,7 +1052,7 @@ Select the valid `Medium` block if appropriate.
 
 ---
 
-## Example F — Eligibility Changes Quality Space
+## Example F — Eligibility Changes Participation Only
 
 ```text
 Attendee excludes Front Standing.
@@ -1000,7 +1062,8 @@ Expected behavior:
 
 Front Standing is removed before fairness selection.
 
-The best remaining eligible option may still be classified as `Good`.
+`MiddleCenter` remains `Good`; `MiddleLeft` remains `Medium`. Excluding
+`FrontStanding` does not promote or demote either Zone.
 
 ---
 
@@ -1024,7 +1087,8 @@ Do not deliberately withhold `Good` only because a higher-need attendee might re
 # 28. Strategy Baseline
 
 The baseline makes one deterministic online decision at a time using historical
-recovery need, relative quality, inventory and incremental global state.
+recovery need, globally classified Experience Quality, inventory and incremental
+global state.
 The [reference examples](#27-reference-decision-examples) guide provisional rules;
 Stage 5 evaluates their resulting fairness. This is not a globally optimal
 allocation algorithm.
