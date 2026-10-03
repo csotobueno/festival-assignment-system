@@ -250,6 +250,26 @@ Only policies concretely required by the MVP should be implemented during Stage 
 
 Eligibility determines which location options are valid for the request.
 
+### Implemented Request-Level Zone Eligibility v1
+
+`new RequestEligibility(bool allowsFrontStanding)` is an immutable domain value
+with a get-only `AllowsFrontStanding` property. `true` allows Front Standing to
+participate; `false` excludes it for the complete AssignmentRequest. Individual
+and group requests use one shared value, regardless of attendee count. Both
+boolean values are valid; no default decision is imposed.
+
+The current rule only covers Front Standing. It does not identify concrete Zones
+or Spots, classify quality, check availability, or establish physical feasibility.
+Per-attendee eligibility, intersections and arbitrary multi-zone exclusions are
+deferred until justified by concrete requirements.
+
+`AssignmentRequest` is unchanged: its creation, rehydration and persistence
+contracts do not yet carry eligibility. A follow-up integration must attach one
+`RequestEligibility` value to the complete request and carry it through those
+contracts. This increment adds no transport, persistence or selection behavior.
+
+### Later Eligibility Concerns
+
 Examples may include:
 
 - front-standing opt-out;
@@ -274,43 +294,28 @@ For a group, the complete candidate must satisfy the eligibility requirements of
 
 # 6. Eligibility-Aware Experience Quality
 
-Experience quality must be interpreted relative to the request's eligible opportunity space.
+Request-Level Zone Eligibility v1 supersedes the earlier proposal to interpret
+quality relative to eligible opportunities. `ExperienceQuality` is globally
+defined by business policy. Eligibility filters participation without promoting
+or demoting the quality of any remaining option. A business-classified `Medium`
+option remains `Medium` when Front Standing is excluded.
 
-For example:
-
-```text
-Front Standing
-```
-
-may be globally highly valued, but if an attendee legitimately excludes that category, it should not be considered a missed `Good` opportunity.
-
-Instead:
-
-```text
-eligible opportunity space
-        ↓
-relative quality interpretation
-        ↓
-Good / Medium / Bad
-```
-
-The best valid option inside the attendee's eligible space may represent `Good`.
-
-This prevents attendee preferences from creating an artificial fairness deficit.
+`RequestEligibility` contains no quality or score data. `RotationScore`,
+`GroupRotationScore`, `TargetQuality` and recorded historical quality remain
+unchanged. The concrete mapping from Zones to `Good`, `Medium` or `Bad` is still
+deferred; no classification follows from a Zone name in this increment.
 
 ### Decisions Required Before Quality Classification
 
 The initial mapping is not yet specified. Define it using a small venue scenario
 when implementing Steps 2 and 12 of the plan:
 
-- Distinguish eligible opportunities from currently available inventory and
-  feasible blocks. State which reference space determines quality; do not
-  silently relabel the last available option as Good because others are occupied.
-- For members with different eligible opportunities, define how the complete
-  candidate is evaluated and which quality is recorded for each individual.
-  GroupRotationScore is the mean of their scores; it does not resolve this mapping.
-- State whether quality-based inventory counts are request-relative or use a
-  common classification, so selection does not mix incompatible counts.
+- Define the global business mapping of Zones to ExperienceQuality.
+- Keep that classification stable when eligibility, inventory or feasible blocks
+  change; the last remaining option is not automatically Good.
+- Use one eligibility value for the complete request. Per-attendee restrictions
+  and intersections remain outside v1.
+- Define inventory metrics in their own increment without changing quality.
 
 These decisions need not block score calculations over classified histories.
 Do not invent accessibility, reservation or preference rules that the selected

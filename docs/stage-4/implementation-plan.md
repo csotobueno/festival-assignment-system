@@ -107,7 +107,19 @@ Unit tests should verify:
 
 ## Step 2 — Define Eligibility-Aware Quality Rules
 
-Define the minimum rule required to interpret quality within the attendee's valid opportunity space.
+The current [Request-Level Zone Eligibility v1 boundary](assignment-strategy-v1.md#implemented-request-level-zone-eligibility-v1)
+is represented by `RequestEligibility(bool allowsFrontStanding)`, shared by the
+complete request for both individual and group requests. The get-only
+`AllowsFrontStanding` value expresses inclusion/exclusion without changing
+globally business-defined `ExperienceQuality`.
+
+This supersedes the earlier relative-quality proposal below: a remaining option
+can be `Good` only if business policy classifies it as such, never because another
+option was excluded. Integration with `AssignmentRequest` and its persistence
+and transport contracts is deferred. Per-attendee eligibility, generic zone
+exclusions and concrete zone-quality classification remain outside this increment.
+
+Define the minimum business mapping required to classify experience quality.
 
 For example:
 
