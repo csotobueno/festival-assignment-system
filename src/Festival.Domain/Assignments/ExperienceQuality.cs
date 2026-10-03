@@ -1,7 +1,7 @@
 namespace Festival.Domain.Assignments;
 
 /// <summary>
-/// Assignment experience relative to the attendee's eligible opportunities.
+/// Business-defined assignment experience classification, unchanged by request eligibility.
 /// </summary>
 public enum ExperienceQuality
 {
