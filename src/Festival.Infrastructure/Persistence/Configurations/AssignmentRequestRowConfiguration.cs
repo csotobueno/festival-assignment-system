@@ -27,6 +27,9 @@ internal sealed class AssignmentRequestRowConfiguration
                 id => id.Value,
                 value => FestivalDayId.Create(value));
 
+        builder.Property(row => row.AllowsFrontStanding)
+            .IsRequired();
+
         builder.Property(row => row.RequestedAt)
             .IsRequired();
 

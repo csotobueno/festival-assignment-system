@@ -23,6 +23,22 @@ public sealed class AssignmentRequestMapperTests
     private static readonly DateTimeOffset ResolvedAt =
         new(2026, 7, 10, 9, 5, 0, TimeSpan.FromHours(-5));
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Mapper_ShouldRoundTripEligibility(bool allowsFrontStanding)
+    {
+        var request = AssignmentRequest.Create(
+            RequestId, FestivalDayId, [AttendeeCode.Create("ATT-001")],
+            RequestedAt, new RequestEligibility(allowsFrontStanding));
+
+        var row = AssignmentRequestMapper.ToRow(request);
+        var rehydrated = AssignmentRequestMapper.ToDomain(row);
+
+        row.AllowsFrontStanding.Should().Be(allowsFrontStanding);
+        rehydrated.Eligibility.Should().Be(request.Eligibility);
+    }
+
     [Fact]
     public void ToRow_ShouldMapReceivedRequest()
     {
@@ -349,7 +365,8 @@ public sealed class AssignmentRequestMapperTests
                 AttendeeCode.Create("ATT-002"),
                 AttendeeCode.Create("ATT-003")
             ],
-            RequestedAt);
+            RequestedAt,
+            new RequestEligibility(true));
     }
 
     private static AssignmentRequestRow CreateRow(
@@ -365,6 +382,7 @@ public sealed class AssignmentRequestMapperTests
             AssignmentRequestId = RequestId,
             FestivalDayId = FestivalDayId,
             RequestedAt = RequestedAt,
+            AllowsFrontStanding = true,
             Status = status,
             ResolvedAt = resolvedAt,
             RejectionCode = rejectionCode,

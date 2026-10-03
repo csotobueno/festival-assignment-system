@@ -178,7 +178,8 @@ public sealed class InMemoryAssignmentFlowTests
             attendeeNumbers.Select(number =>
                 AttendeeCode.Create($"ATT-{number:000}")),
             RequestedAt,
-            AssignedAt);
+            AssignedAt,
+            new RequestEligibility(true));
     }
 
     private static void AssertConsecutive(

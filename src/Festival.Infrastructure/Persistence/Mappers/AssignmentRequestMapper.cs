@@ -13,6 +13,7 @@ public class AssignmentRequestMapper
             AssignmentRequestId = request.Id,
             FestivalDayId = request.FestivalDayId,
             RequestedAt = request.RequestedAt,
+            AllowsFrontStanding = request.Eligibility.AllowsFrontStanding,
             Status = request.Status,
             ResolvedAt = request.ResolvedAt,
             RejectionCode = request.Rejection?.Code,
@@ -57,7 +58,8 @@ public class AssignmentRequestMapper
             row.Status,
             row.ResolvedAt,
             rejection,
-            failure);
+            failure,
+            new RequestEligibility(row.AllowsFrontStanding));
     }
 
     private static void ValidateAttendeeRows(

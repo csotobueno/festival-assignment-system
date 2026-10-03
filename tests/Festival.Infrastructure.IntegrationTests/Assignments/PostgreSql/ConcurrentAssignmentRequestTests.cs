@@ -426,7 +426,8 @@ public sealed class ConcurrentAssignmentRequestTests(
             IntegrationTestData.FestivalDayId,
             [AttendeeCode.Create(attendeeCode)],
             IntegrationTestData.RequestedAt,
-            IntegrationTestData.AssignedAt);
+            IntegrationTestData.AssignedAt,
+            new RequestEligibility(true));
     }
 
     private abstract record ConcurrentExecution(

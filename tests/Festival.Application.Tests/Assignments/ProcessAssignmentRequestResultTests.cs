@@ -200,7 +200,8 @@ public sealed class ProcessAssignmentRequestResultTests
             FestivalDayId.Create(
                 Guid.Parse("10000000-0000-0000-0000-000000000001")),
             [AttendeeCode.Create("ATT-001")],
-            RequestedAt);
+            RequestedAt,
+            new RequestEligibility(true));
     }
 
     private static Assignment CreateAssignment(

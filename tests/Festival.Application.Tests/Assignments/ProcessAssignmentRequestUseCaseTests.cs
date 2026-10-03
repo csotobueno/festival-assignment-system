@@ -16,6 +16,40 @@ public sealed class ProcessAssignmentRequestUseCaseTests
     private static readonly DateTimeOffset AssignedAt =
         new(2026, 7, 10, 9, 1, 0, TimeSpan.FromHours(-5));
 
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    public async Task ExecuteAsync_ShouldStoreCommandEligibilityForEitherOutcome(
+        bool allowsFrontStanding,
+        bool hasAvailableSpot)
+    {
+        var context = CreateContext(1,
+            hasAvailableSpot ? [CreateSpot(CreateZoneId(1), "A", 10)] : [],
+            allowsFrontStanding);
+
+        await context.UseCase.ExecuteAsync(context.Command);
+
+        var saved = Assert.Single(context.AssignmentRequestRepository.SavedRequests);
+        Assert.Same(context.Command.Eligibility, saved.Eligibility);
+        Assert.Equal(allowsFrontStanding, saved.Eligibility.AllowsFrontStanding);
+        Assert.Equal(hasAvailableSpot
+            ? AssignmentRequestStatus.Completed : AssignmentRequestStatus.Rejected,
+            saved.Status);
+    }
+
+    [Fact]
+    public void Command_ShouldRequireEligibility()
+    {
+        var act = () => new ProcessAssignmentRequestCommand(
+            FestivalDayId.New(), [AttendeeCode.Create("ATT-001")],
+            RequestedAt, AssignedAt, null!);
+
+        var exception = Assert.Throws<ArgumentNullException>(act);
+        Assert.Equal("eligibility", exception.ParamName);
+    }
+
     [Fact]
     public async Task ExecuteAsync_ShouldReturnAssignedResult_WhenContiguousSpotsAreAvailable()
     {
@@ -330,8 +364,10 @@ public sealed class ProcessAssignmentRequestUseCaseTests
 
     private static TestContext CreateContext(
         int attendeeCount,
-        IReadOnlyList<Spot> availableSpots)
+        IReadOnlyList<Spot> availableSpots,
+        bool allowsFrontStanding = true)
     {
+        // Compatibility baseline for tests unrelated to eligibility.
         var attendeeCodes = Enumerable
             .Range(1, attendeeCount)
             .Select(number => AttendeeCode.Create($"ATT-{number:000}"))
@@ -367,7 +403,8 @@ public sealed class ProcessAssignmentRequestUseCaseTests
                 Guid.Parse("10000000-0000-0000-0000-000000000001")),
             attendeeCodes,
             RequestedAt,
-            AssignedAt);
+            AssignedAt,
+            new RequestEligibility(allowsFrontStanding));
 
         return new TestContext(
             useCase,
