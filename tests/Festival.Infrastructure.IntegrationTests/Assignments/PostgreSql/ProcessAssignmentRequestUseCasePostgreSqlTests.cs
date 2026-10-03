@@ -179,7 +179,8 @@ public sealed class ProcessAssignmentRequestUseCasePostgreSqlTests(
                 AttendeeCode.Create("ATT-002")
             ],
             IntegrationTestData.RequestedAt,
-            IntegrationTestData.AssignedAt);
+            IntegrationTestData.AssignedAt,
+            new RequestEligibility(true));
     }
 
     private static async Task SeedReferenceDataAsync(

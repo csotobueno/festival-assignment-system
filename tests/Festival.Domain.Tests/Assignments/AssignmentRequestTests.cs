@@ -9,6 +9,73 @@ public sealed class AssignmentRequestTests
     private static readonly DateTimeOffset RequestedAt =
         new(2026, 7, 10, 9, 0, 0, TimeSpan.FromHours(-5));
 
+    [Theory]
+    [InlineData(true, 1)]
+    [InlineData(false, 1)]
+    [InlineData(true, 3)]
+    [InlineData(false, 3)]
+    public void Create_ShouldStoreOneEligibilityForTheCompleteRequest(
+        bool allowsFrontStanding,
+        int attendeeCount)
+    {
+        var eligibility = new RequestEligibility(allowsFrontStanding);
+        var codes = Enumerable.Range(1, attendeeCount)
+            .Select(number => AttendeeCode.Create($"ATT-{number:000}"))
+            .ToArray();
+
+        var request = AssignmentRequest.Create(
+            AssignmentRequestId.New(), FestivalDayId.New(), codes,
+            RequestedAt, eligibility);
+
+        Assert.Same(eligibility, request.Eligibility);
+        Assert.Equal(allowsFrontStanding, request.Eligibility.AllowsFrontStanding);
+        Assert.Equal(codes, request.RequestedAttendeeCodes);
+    }
+
+    [Fact]
+    public void Create_ShouldThrow_WhenEligibilityIsNull()
+    {
+        var act = () => AssignmentRequest.Create(
+            AssignmentRequestId.New(), FestivalDayId.New(),
+            [AttendeeCode.Create("ATT-001")], RequestedAt, null!);
+
+        var exception = Assert.Throws<ArgumentNullException>(act);
+        Assert.Equal("eligibility", exception.ParamName);
+    }
+
+    [Fact]
+    public void Rehydrate_ShouldThrow_WhenEligibilityIsNull()
+    {
+        var act = () => AssignmentRequest.Rehydrate(
+            AssignmentRequestId.New(), FestivalDayId.New(),
+            [AttendeeCode.Create("ATT-001")], RequestedAt,
+            AssignmentRequestStatus.Received, null, null, null, null!);
+
+        var exception = Assert.Throws<ArgumentNullException>(act);
+        Assert.Equal("eligibility", exception.ParamName);
+    }
+
+    [Theory]
+    [InlineData(true, AssignmentRequestStatus.Completed)]
+    [InlineData(false, AssignmentRequestStatus.Completed)]
+    [InlineData(true, AssignmentRequestStatus.Rejected)]
+    [InlineData(false, AssignmentRequestStatus.Rejected)]
+    [InlineData(true, AssignmentRequestStatus.Failed)]
+    [InlineData(false, AssignmentRequestStatus.Failed)]
+    public void Resolve_ShouldPreserveEligibility(
+        bool allowsFrontStanding,
+        AssignmentRequestStatus status)
+    {
+        var eligibility = new RequestEligibility(allowsFrontStanding);
+        var request = AssignmentRequest.Create(
+            AssignmentRequestId.New(), FestivalDayId.New(),
+            [AttendeeCode.Create("ATT-001")], RequestedAt, eligibility);
+
+        Resolve(request, status);
+
+        Assert.Same(eligibility, request.Eligibility);
+    }
+
     [Fact]
     public void Create_ShouldReturnReceivedRequest_WhenDataIsValid()
     {
@@ -22,7 +89,8 @@ public sealed class AssignmentRequestTests
                 AttendeeCode.Create("ATT-001"),
                 AttendeeCode.Create("ATT-002")
             ],
-            RequestedAt);
+            RequestedAt,
+            new RequestEligibility(true));
 
         Assert.Equal(id, request.Id);
         Assert.Equal(festivalDayId, request.FestivalDayId);
@@ -44,7 +112,8 @@ public sealed class AssignmentRequestTests
                 default,
                 FestivalDayId.New(),
                 [AttendeeCode.Create("ATT-001")],
-                RequestedAt));
+                RequestedAt,
+                new RequestEligibility(true)));
 
         Assert.Equal("id", exception.ParamName);
     }
@@ -57,7 +126,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 default,
                 [AttendeeCode.Create("ATT-001")],
-                RequestedAt));
+                RequestedAt,
+                new RequestEligibility(true)));
 
         Assert.Equal("festivalDayId", exception.ParamName);
     }
@@ -70,7 +140,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 FestivalDayId.New(),
                 null!,
-                RequestedAt));
+                RequestedAt,
+                new RequestEligibility(true)));
 
         Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
@@ -83,7 +154,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 FestivalDayId.New(),
                 [],
-                RequestedAt));
+                RequestedAt,
+                new RequestEligibility(true)));
 
         Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
@@ -102,7 +174,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestId.New(),
                 FestivalDayId.New(),
                 codes,
-                RequestedAt));
+                RequestedAt,
+                new RequestEligibility(true)));
 
         Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
@@ -118,7 +191,8 @@ public sealed class AssignmentRequestTests
                     AttendeeCode.Create("ATT-001"),
                     AttendeeCode.Create("att-001")
                 ],
-                RequestedAt));
+                RequestedAt,
+                new RequestEligibility(true)));
 
         Assert.Equal("requestedAttendeeCodes", exception.ParamName);
     }
@@ -216,7 +290,8 @@ public sealed class AssignmentRequestTests
             AssignmentRequestStatus.Received,
             null,
             null,
-            null);
+            null,
+            new RequestEligibility(true));
 
         Assert.Equal(AssignmentRequestStatus.Received, request.Status);
         Assert.Null(request.ResolvedAt);
@@ -236,7 +311,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestStatus.Received,
                 RequestedAt.AddSeconds(1),
                 null,
-                null));
+                null,
+                new RequestEligibility(true)));
     }
 
     [Fact]
@@ -253,7 +329,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestRejection.Create(
                     "ATTENDEE_ALREADY_ASSIGNED",
                     "An attendee already has an assignment."),
-                null));
+                null,
+                new RequestEligibility(true)));
     }
 
     [Fact]
@@ -268,7 +345,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestStatus.Rejected,
                 RequestedAt.AddSeconds(1),
                 null,
-                null));
+                null,
+                new RequestEligibility(true)));
     }
 
     [Fact]
@@ -283,7 +361,8 @@ public sealed class AssignmentRequestTests
                 AssignmentRequestStatus.Failed,
                 RequestedAt.AddSeconds(1),
                 null,
-                null));
+                null,
+                new RequestEligibility(true)));
     }
 
     [Theory]
@@ -310,7 +389,8 @@ public sealed class AssignmentRequestTests
                     ? AssignmentRequestFailure.Create(
                         "UNEXPECTED_ERROR",
                         "An unexpected error occurred.")
-                    : null));
+                    : null,
+                new RequestEligibility(true)));
     }
 
     [Theory]
@@ -374,7 +454,8 @@ public sealed class AssignmentRequestTests
             ],
             new DateTimeOffset(
                 2026, 7, 10, 9, 0, 0,
-                TimeSpan.FromHours(-5)));
+                TimeSpan.FromHours(-5)),
+            new RequestEligibility(true));
     }
 
     private static void Resolve(

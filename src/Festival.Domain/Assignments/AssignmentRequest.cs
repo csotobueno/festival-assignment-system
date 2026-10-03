@@ -14,6 +14,8 @@ public sealed class AssignmentRequest
 
     public IReadOnlyList<AttendeeCode> RequestedAttendeeCodes { get; }
 
+    public RequestEligibility Eligibility { get; }
+
     public DateTimeOffset RequestedAt { get; }
 
     public AssignmentRequestStatus Status { get; private set; }
@@ -32,7 +34,8 @@ public sealed class AssignmentRequest
         AssignmentRequestStatus status,
         DateTimeOffset? resolvedAt,
         AssignmentRequestRejection? rejection,
-        AssignmentRequestFailure? failure)
+        AssignmentRequestFailure? failure,
+        RequestEligibility eligibility)
     {
         if (id == default)
         {
@@ -49,6 +52,7 @@ public sealed class AssignmentRequest
         }
 
         ArgumentNullException.ThrowIfNull(requestedAttendeeCodes);
+        ArgumentNullException.ThrowIfNull(eligibility);
 
         var codes = requestedAttendeeCodes.ToArray();
 
@@ -85,6 +89,7 @@ public sealed class AssignmentRequest
         FestivalDayId = festivalDayId;
         RequestedAttendeeCodes = Array.AsReadOnly(codes);
         RequestedAt = requestedAt;
+        Eligibility = eligibility;
         Status = status;
         ResolvedAt = resolvedAt;
         Rejection = rejection;
@@ -95,7 +100,8 @@ public sealed class AssignmentRequest
         AssignmentRequestId id,
         FestivalDayId festivalDayId,
         IReadOnlyCollection<AttendeeCode> attendeeCodes,
-        DateTimeOffset requestedAt)
+        DateTimeOffset requestedAt,
+        RequestEligibility eligibility)
     {
         return new AssignmentRequest(
             id,
@@ -105,7 +111,8 @@ public sealed class AssignmentRequest
             AssignmentRequestStatus.Received,
             null,
             null,
-            null);
+            null,
+            eligibility);
     }
 
     internal static AssignmentRequest Rehydrate(
@@ -116,7 +123,8 @@ public sealed class AssignmentRequest
         AssignmentRequestStatus status,
         DateTimeOffset? resolvedAt,
         AssignmentRequestRejection? rejection,
-        AssignmentRequestFailure? failure)
+        AssignmentRequestFailure? failure,
+        RequestEligibility eligibility)
     {
         return new AssignmentRequest(
             id,
@@ -126,7 +134,8 @@ public sealed class AssignmentRequest
             status,
             resolvedAt,
             rejection,
-            failure);
+            failure,
+            eligibility);
     }
 
     public void Complete(DateTimeOffset completedAt)

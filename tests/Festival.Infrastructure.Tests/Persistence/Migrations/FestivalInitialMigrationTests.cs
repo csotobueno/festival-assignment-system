@@ -24,7 +24,7 @@ public sealed class FestivalInitialMigrationTests
     ];
 
     [Fact]
-    public void InfrastructureAssembly_ShouldContainOneInitialMigration()
+    public void InfrastructureAssembly_ShouldContainInitialAndEligibilityMigrations()
     {
         var migrations = typeof(FestivalDbContext).Assembly
             .GetTypes()
@@ -32,10 +32,11 @@ public sealed class FestivalInitialMigrationTests
             .Where(type => !type.IsAbstract)
             .ToArray();
 
-        migrations.Should().ContainSingle();
-        migrations[0].Name.Should().Be(nameof(InitialCreate));
+        migrations.Select(type => type.Name).Should()
+            .BeEquivalentTo(nameof(InitialCreate), nameof(AddRequestEligibility));
+        var initial = migrations.Single(type => type == typeof(InitialCreate));
 
-        var migrationAttribute = migrations[0]
+        var migrationAttribute = initial
             .GetCustomAttribute<MigrationAttribute>();
 
         migrationAttribute.Should().NotBeNull();

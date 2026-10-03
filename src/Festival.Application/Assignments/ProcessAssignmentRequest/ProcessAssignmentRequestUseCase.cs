@@ -47,7 +47,8 @@ public sealed class ProcessAssignmentRequestUseCase
             AssignmentRequestId.New(),
             command.FestivalDayId,
             command.AttendeeCodes,
-            command.RequestedAt);
+            command.RequestedAt,
+            command.Eligibility);
 
         var attendeeIds = await attendeeCodeResolver
             .ResolveAttendeeIdsAsync(

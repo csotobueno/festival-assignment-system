@@ -1,3 +1,4 @@
+using Festival.Domain.Assignments;
 using Festival.Domain.Attendees;
 using Festival.Domain.FestivalDays;
 
@@ -9,6 +10,8 @@ public sealed class ProcessAssignmentRequestCommand
 
     public IReadOnlyList<AttendeeCode> AttendeeCodes { get; }
 
+    public RequestEligibility Eligibility { get; }
+
     public DateTimeOffset RequestedAt { get; }
 
     public DateTimeOffset AssignedAt { get; }
@@ -17,13 +20,16 @@ public sealed class ProcessAssignmentRequestCommand
         FestivalDayId festivalDayId,
         IEnumerable<AttendeeCode> attendeeCodes,
         DateTimeOffset requestedAt,
-        DateTimeOffset assignedAt)
+        DateTimeOffset assignedAt,
+        RequestEligibility eligibility)
     {
         ArgumentNullException.ThrowIfNull(attendeeCodes);
+        ArgumentNullException.ThrowIfNull(eligibility);
 
         FestivalDayId = festivalDayId;
         AttendeeCodes = Array.AsReadOnly(attendeeCodes.ToArray());
         RequestedAt = requestedAt;
         AssignedAt = assignedAt;
+        Eligibility = eligibility;
     }
 }

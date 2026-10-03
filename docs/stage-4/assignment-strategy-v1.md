@@ -263,10 +263,21 @@ or Spots, classify quality, check availability, or establish physical feasibilit
 Per-attendee eligibility, intersections and arbitrary multi-zone exclusions are
 deferred until justified by concrete requirements.
 
-`AssignmentRequest` is unchanged: its creation, rehydration and persistence
-contracts do not yet carry eligibility. A follow-up integration must attach one
-`RequestEligibility` value to the complete request and carry it through those
-contracts. This increment adds no transport, persistence or selection behavior.
+`AssignmentRequest.Eligibility` now owns one mandatory, get-only
+`RequestEligibility`, shared by every request member and stable through outcome
+transitions. Creation and rehydration explicitly require it. Application receives
+it through `ProcessAssignmentRequestCommand.Eligibility` and propagates it into
+the request without deriving it from fairness or attendee count.
+
+Persistence stores `AllowsFrontStanding` as a required Boolean on
+`AssignmentRequests`; rehydration reconstructs the original value for both
+`true` and `false`. The migration backfills pre-eligibility rows with `true` to
+preserve their opportunity space, then removes the temporary database default.
+Unrelated historical fixtures also explicitly use `true` as a compatibility
+baseline, not a business default.
+
+Zone filtering remains a later task: the current engine does not consume
+eligibility to make assignment decisions. No HTTP transport contract is changed.
 
 ### Later Eligibility Concerns
 

@@ -115,9 +115,17 @@ globally business-defined `ExperienceQuality`.
 
 This supersedes the earlier relative-quality proposal below: a remaining option
 can be `Good` only if business policy classifies it as such, never because another
-option was excluded. Integration with `AssignmentRequest` and its persistence
-and transport contracts is deferred. Per-attendee eligibility, generic zone
-exclusions and concrete zone-quality classification remain outside this increment.
+option was excluded. `AssignmentRequest.Eligibility` now owns the immutable
+value as durable request state shared by all members. Domain creation,
+rehydration and `ProcessAssignmentRequestCommand` require explicit eligibility;
+PostgreSQL persists its required `AllowsFrontStanding` Boolean. Both values
+round-trip, and outcome transitions preserve eligibility. Historical fixtures
+and migration backfill use `true` solely as a compatibility baseline, with no
+domain or lasting database default.
+
+Front Standing zone filtering remains a later Step 10 task. HTTP transport,
+per-attendee eligibility, generic zone exclusions and concrete zone-quality
+classification remain outside this integration.
 
 Define the minimum business mapping required to classify experience quality.
 

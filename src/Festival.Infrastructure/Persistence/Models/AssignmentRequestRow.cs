@@ -9,6 +9,8 @@ internal sealed class AssignmentRequestRow
 
     public FestivalDayId FestivalDayId { get; set; }
 
+    public bool AllowsFrontStanding { get; set; }
+
     public DateTimeOffset RequestedAt { get; set; }
 
     public AssignmentRequestStatus Status { get; set; }

@@ -2,6 +2,7 @@ using Festival.Domain.Assignments;
 using Festival.Domain.Attendees;
 using Festival.Domain.FestivalDays;
 using Festival.Infrastructure.Assignments.InMemory;
+using FluentAssertions;
 
 namespace Festival.Infrastructure.Tests.Assignments.InMemory;
 
@@ -12,6 +13,23 @@ public sealed class InMemoryAssignmentRequestRepositoryTests
 
     private static readonly DateTimeOffset ResolvedAt =
         new(2026, 7, 10, 9, 1, 0, TimeSpan.FromHours(-5));
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task AddAsync_ShouldPreserveEligibility(bool allowsFrontStanding)
+    {
+        var request = AssignmentRequest.Create(
+            AssignmentRequestId.New(), FestivalDayId.New(),
+            [AttendeeCode.Create("ATT-001")], RequestedAt,
+            new RequestEligibility(allowsFrontStanding));
+        var repository = new InMemoryAssignmentRequestRepository();
+
+        await repository.AddAsync(request);
+
+        repository.AssignmentRequests.Should().ContainSingle()
+            .Which.Eligibility.Should().Be(request.Eligibility);
+    }
 
     [Fact]
     public async Task AddAsync_ShouldAddAssignmentRequestInMemory()
@@ -49,6 +67,7 @@ public sealed class InMemoryAssignmentRequestRepositoryTests
             FestivalDayId.Create(
                 Guid.Parse("50000000-0000-0000-0000-000000000001")),
             [AttendeeCode.Create("ATT-001")],
-            RequestedAt);
+            RequestedAt,
+            new RequestEligibility(true));
     }
 }

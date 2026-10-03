@@ -1,6 +1,8 @@
 using Festival.Infrastructure.IntegrationTests.Infrastructure;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql;
 
 namespace Festival.Infrastructure.IntegrationTests.Persistence;
@@ -33,6 +35,50 @@ public sealed class MigrationApplicationTests(
 
         pendingMigrations.Should().BeEmpty();
         physicalTables.Should().Equal(ExpectedApplicationTables);
+    }
+
+    [Fact]
+    public async Task EligibilityMigration_ShouldBackfillExistingRequestsWithoutKeepingADefault()
+    {
+        await using var context = Fixture.CreateDbContext();
+        var migrator = context.GetService<IMigrator>();
+        await migrator.MigrateAsync("20260722174748_InitialCreate");
+
+        try
+        {
+            context.FestivalDays.Add(IntegrationTestData.CreateFestivalDay());
+            await context.SaveChangesAsync();
+            await context.Database.ExecuteSqlInterpolatedAsync($"""
+                INSERT INTO "AssignmentRequests"
+                    ("AssignmentRequestId", "FestivalDayId", "RequestedAt", "Status")
+                VALUES ({IntegrationTestData.RequestId.Value},
+                        {IntegrationTestData.FestivalDayId.Value},
+                        {IntegrationTestData.RequestedAt}, 'Received');
+                """);
+
+            await migrator.MigrateAsync();
+
+            var row = await context.AssignmentRequests.SingleAsync();
+            row.AllowsFrontStanding.Should().BeTrue();
+
+            await using var connection = new NpgsqlConnection(Fixture.ConnectionString);
+            await connection.OpenAsync();
+            await using var command = new NpgsqlCommand("""
+                SELECT is_nullable = 'NO' AND column_default IS NULL
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = 'AssignmentRequests'
+                  AND column_name = 'AllowsFrontStanding';
+                """, connection);
+
+            (await command.ExecuteScalarAsync()).Should().Be(true);
+        }
+        finally
+        {
+            // Keep the shared isolated test database at the latest schema even
+            // when a migration assertion fails.
+            await migrator.MigrateAsync();
+        }
     }
 
     private async Task<string[]> LoadApplicationTableNamesAsync()

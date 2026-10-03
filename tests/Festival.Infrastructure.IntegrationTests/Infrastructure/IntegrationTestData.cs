@@ -91,8 +91,10 @@ internal static class IntegrationTestData
         AssignmentRequestStatus status = AssignmentRequestStatus.Received,
         AssignmentRequestId? id = null,
         FestivalDayId? festivalDayId = null,
-        IReadOnlyCollection<AttendeeCode>? attendeeCodes = null)
+        IReadOnlyCollection<AttendeeCode>? attendeeCodes = null,
+        bool allowsFrontStanding = true)
     {
+        // Compatibility baseline for historical tests, not a business default.
         var request = AssignmentRequest.Create(
             id ?? RequestId,
             festivalDayId ?? FestivalDayId,
@@ -102,7 +104,8 @@ internal static class IntegrationTestData
                 AttendeeCode.Create("ATT-002"),
                 AttendeeCode.Create("ATT-003")
             ],
-            RequestedAt);
+            RequestedAt,
+            new RequestEligibility(allowsFrontStanding));
 
         switch (status)
         {
