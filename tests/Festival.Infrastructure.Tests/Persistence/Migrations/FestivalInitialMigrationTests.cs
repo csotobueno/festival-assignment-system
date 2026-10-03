@@ -24,7 +24,7 @@ public sealed class FestivalInitialMigrationTests
     ];
 
     [Fact]
-    public void InfrastructureAssembly_ShouldContainInitialAndEligibilityMigrations()
+    public void InfrastructureAssembly_ShouldContainExpectedMigrations()
     {
         var migrations = typeof(FestivalDbContext).Assembly
             .GetTypes()
@@ -33,7 +33,8 @@ public sealed class FestivalInitialMigrationTests
             .ToArray();
 
         migrations.Select(type => type.Name).Should()
-            .BeEquivalentTo(nameof(InitialCreate), nameof(AddRequestEligibility));
+            .BeEquivalentTo(
+                nameof(InitialCreate), nameof(AddRequestEligibility), nameof(AddZoneFrontStanding));
         var initial = migrations.Single(type => type == typeof(InitialCreate));
 
         var migrationAttribute = initial

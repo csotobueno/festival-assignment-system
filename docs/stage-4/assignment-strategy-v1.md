@@ -276,8 +276,27 @@ preserve their opportunity space, then removes the temporary database default.
 Unrelated historical fixtures also explicitly use `true` as a compatibility
 baseline, not a business default.
 
-Zone filtering remains a later task: the current engine does not consume
-eligibility to make assignment decisions. No HTTP transport contract is changed.
+Zone-level filtering is now implemented by the pure deterministic API
+`ZoneEligibilityPolicy.Filter(AssignmentRequest request, IEnumerable<Zone> availableZones)`.
+It reads only `request.Eligibility.AllowsFrontStanding`: `true` retains all supplied
+Zones; `false` excludes Zones whose get-only `IsFrontStanding` marker is `true`.
+The result is a read-only list preserving input order and the original Zone
+objects. Other Zones remain unchanged, including when Front Standing is absent.
+Individual and group requests use the same rule.
+
+`Zone.Create(id, name, isFrontStanding)` explicitly supplies the marker. The
+previous Zone model had only an opaque identity and display name, so neither
+provided a stable Front Standing distinction. The required persisted Boolean
+avoids display-name matching and introduces no venue taxonomy or quality ranking.
+Existing generic catalog entries and fixtures use `false`; the migration removes
+its temporary backfill default. Venue layout data must explicitly mark actual
+Front Standing Zones rather than infer that designation from names such as
+“Front”.
+
+Filtering changes participation only; Experience Quality and fairness scores
+remain unchanged. The policy is not yet wired into the Spot-based engine or
+providers: Spot filtering, candidate feasibility and selection remain later
+tasks. No HTTP transport contract is changed.
 
 ### Later Eligibility Concerns
 
