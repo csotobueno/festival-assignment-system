@@ -6,17 +6,22 @@ public sealed class Zone
 
     public string Name { get; }
 
+    public bool IsFrontStanding { get; }
+
     private Zone(
         ZoneId id,
-        string name)
+        string name,
+        bool isFrontStanding)
     {
         Id = id;
         Name = name;
+        IsFrontStanding = isFrontStanding;
     }
 
     public static Zone Create(
         ZoneId id,
-        string? name)
+        string? name,
+        bool isFrontStanding)
     {
         if (id == default)
         {
@@ -34,6 +39,7 @@ public sealed class Zone
 
         return new Zone(
             id,
-            name.Trim());
+            name.Trim(),
+            isFrontStanding);
     }
 }

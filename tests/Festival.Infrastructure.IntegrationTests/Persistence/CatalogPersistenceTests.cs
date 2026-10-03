@@ -1,4 +1,5 @@
 using Festival.Infrastructure.IntegrationTests.Infrastructure;
+using Festival.Domain.Zones;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,26 @@ public sealed class CatalogPersistenceTests(
     PostgreSqlContainerFixture fixture)
     : PostgreSqlIntegrationTest(fixture)
 {
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Zone_ShouldPreserveFrontStandingMarkerThroughPostgreSql(bool isFrontStanding)
+    {
+        await using (var context = Fixture.CreateDbContext())
+        {
+            context.Zones.Add(Zone.Create(
+                IntegrationTestData.ZoneId, "Zone A", isFrontStanding));
+            await context.SaveChangesAsync();
+        }
+
+        await using var reloadContext = Fixture.CreateDbContext();
+        var persisted = await reloadContext.Zones.SingleAsync();
+
+        persisted.Id.Should().Be(IntegrationTestData.ZoneId);
+        persisted.Name.Should().Be("Zone A");
+        persisted.IsFrontStanding.Should().Be(isFrontStanding);
+    }
+
     [Fact]
     public async Task AttendeeZoneAndSpot_ShouldRoundTripThroughPostgreSql()
     {

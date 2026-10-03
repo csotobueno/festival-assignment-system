@@ -123,7 +123,7 @@ round-trip, and outcome transitions preserve eligibility. Historical fixtures
 and migration backfill use `true` solely as a compatibility baseline, with no
 domain or lasting database default.
 
-Front Standing zone filtering remains a later Step 10 task. HTTP transport,
+Front Standing zone filtering is implemented in Step 10 below. HTTP transport,
 per-attendee eligibility, generic zone exclusions and concrete zone-quality
 classification remain outside this integration.
 
@@ -372,11 +372,25 @@ final assignment selection as part of this step.
 
 ## Step 10 — Implement Minimum Eligibility Rules
 
-Implement only eligibility concepts concretely required by the MVP.
+Implemented v1: `ZoneEligibilityPolicy.Filter(request, availableZones)` reads
+`AssignmentRequest.Eligibility` and excludes only Zones marked `IsFrontStanding`
+when `AllowsFrontStanding` is `false`. It preserves Zone objects and input order
+for both individuals and groups, without changing Experience Quality.
 
-Possible initial cases:
+The previous Zone identity and display name had no stable Front Standing
+semantics. `Zone.Create(id, name, isFrontStanding)` now explicitly supplies a
+get-only Boolean, persisted as required Zone state. Generic historical fixtures
+and existing catalog rows use `false`; actual Front Standing layout entries must
+be explicitly marked. No taxonomy or quality mapping is introduced.
 
-- front-standing opt-out;
+This increment ends at eligible Zones. Connecting those Zones to available
+Spots, physical feasibility, candidate blocks and assignment selection remains
+deferred. Existing available-spot providers and the engine are unchanged.
+
+Implement only further eligibility concepts concretely required by the MVP.
+
+Possible later cases:
+
 - accessibility compatibility;
 - organization-reserved capacity.
 

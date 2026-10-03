@@ -27,11 +27,11 @@ public static class InMemoryAssignmentSeedData
         Zone.Create(
             ZoneId.Create(
                 Guid.Parse("20000000-0000-0000-0000-000000000001")),
-            "Zone A"),
+            "Zone A", isFrontStanding: false),
         Zone.Create(
             ZoneId.Create(
                 Guid.Parse("20000000-0000-0000-0000-000000000002")),
-            "Zone B")
+            "Zone B", isFrontStanding: false)
     ];
 
     public static IReadOnlyList<Spot> Spots { get; } =

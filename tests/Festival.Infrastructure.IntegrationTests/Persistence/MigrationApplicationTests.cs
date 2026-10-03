@@ -81,6 +81,44 @@ public sealed class MigrationApplicationTests(
         }
     }
 
+    [Fact]
+    public async Task ZoneMarkerMigration_ShouldPreserveGenericCatalogWithoutKeepingADefault()
+    {
+        await using var context = Fixture.CreateDbContext();
+        var migrator = context.GetService<IMigrator>();
+        await migrator.MigrateAsync("20261003222327_AddRequestEligibility");
+
+        try
+        {
+            await context.Database.ExecuteSqlInterpolatedAsync($"""
+                INSERT INTO "Zones" ("ZoneId", "Name")
+                VALUES ({IntegrationTestData.ZoneId.Value}, 'Front');
+                """);
+
+            await migrator.MigrateAsync();
+
+            var zone = await context.Zones.SingleAsync();
+            zone.Name.Should().Be("Front");
+            zone.IsFrontStanding.Should().BeFalse();
+
+            await using var connection = new NpgsqlConnection(Fixture.ConnectionString);
+            await connection.OpenAsync();
+            await using var command = new NpgsqlCommand("""
+                SELECT is_nullable = 'NO' AND column_default IS NULL
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name = 'Zones'
+                  AND column_name = 'IsFrontStanding';
+                """, connection);
+
+            (await command.ExecuteScalarAsync()).Should().Be(true);
+        }
+        finally
+        {
+            await migrator.MigrateAsync();
+        }
+    }
+
     private async Task<string[]> LoadApplicationTableNamesAsync()
     {
         await using var connection =

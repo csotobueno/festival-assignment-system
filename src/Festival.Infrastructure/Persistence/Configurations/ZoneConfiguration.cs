@@ -18,6 +18,9 @@ internal sealed class ZoneConfiguration : IEntityTypeConfiguration<Zone>
                 id => id.Value,
                 value => ZoneId.Create(value));
 
+        builder.Property(zone => zone.IsFrontStanding)
+            .IsRequired();
+
         builder.Property(zone => zone.Name)
             .HasMaxLength(PersistenceLengths.ZoneName)
             .IsRequired();

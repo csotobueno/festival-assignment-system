@@ -72,7 +72,7 @@ internal static class IntegrationTestData
 
     internal static Zone CreateZone()
     {
-        return Zone.Create(ZoneId, "Front");
+        return Zone.Create(ZoneId, "Front", isFrontStanding: false);
     }
 
     internal static Spot CreateSpot(
