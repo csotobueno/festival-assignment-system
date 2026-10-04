@@ -120,7 +120,9 @@ The mechanism used to determine whether a real assignment was `Good`, `Medium`, 
 
 # Eligibility-Aware Quality
 
-Experience quality must be interpreted relative to the attendee's eligible opportunity space at the time of the assignment.
+Experience Quality is globally business-defined by the agreed
+[ZoneType policy](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping).
+Request eligibility determines participation, without changing that classification.
 
 For example:
 
@@ -135,9 +137,12 @@ Attendee never received Front Standing
 → fairness deficit
 ```
 
-If the best eligible alternative for that attendee was assigned, that assignment may still represent `Good`.
+Excluding `FrontStanding` leaves `MiddleLeft` as `Medium` and `MiddleCenter` as
+`Good`. The remaining options are never promoted or demoted by an exclusion.
 
-Therefore RotationScore should consume the **experience quality recorded for that attendee's valid opportunity space**, not an absolute global venue ranking.
+RotationScore consumes actual recorded Experience Quality from FairnessHistory;
+it does not derive quality from current eligibility or recompute past quality
+using today's Zone policy.
 
 ---
 
@@ -149,7 +154,9 @@ The MVP should not continuously reinterpret old assignments based on later prefe
 
 This keeps historical evaluation stable and reproducible.
 
-If organization feedback later requires historical reclassification, that should be treated as a separate policy decision.
+For example, an assignment recorded when `UpperCenter` was `Medium` remains
+`Medium` in history even if a later business policy classifies it as `Good`.
+Historical quality must not be reinterpreted automatically.
 
 ---
 
@@ -815,8 +822,9 @@ GroupRotationScore = (2 + 4 + 1 + 3 + 0) / 5 = 2
 
 The resulting mean guides the group's Target Quality and subsequent Zone/block
 selection. Each member retains their individual history. The mean does not
-determine how a shared block is classified for members with different eligible
-opportunities; that decision belongs to the Experience Quality rules.
+classify the shared block: its ZoneType has the same global business-defined
+ExperienceQuality for all members. The complete request uses one eligibility
+value; exclusions do not change quality.
 
 ---
 

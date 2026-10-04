@@ -16,7 +16,8 @@ Stage 4 should produce a reliable online baseline that can later be evaluated qu
 This is an initial guide, not a completed specification. The numbered steps are
 work areas that can be grouped into small issues; they are not a mandatory
 one-issue-per-step sequence. The score can be implemented with classified test
-histories while venue-quality decisions are still open.
+histories while the agreed Zone taxonomy and quality-policy implementation remain
+pending.
 
 ---
 
@@ -55,7 +56,7 @@ Do not silently choose business semantics inside code.
 
 | Decision | Needed by | Minimum evidence to record |
 | --- | --- | --- |
-| Location-to-quality mapping, eligibility versus availability, and member-specific quality in mixed groups | Steps 2 and 12 | A small venue example, explicit classifications and the quality stored for each member. |
+| Zone taxonomy and global quality mapping (agreed) | Steps 2, 10 and 12 implementation | [Zone Experience Quality v1](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping): seven stable ZoneTypes classified globally through a policy; request eligibility changes participation only. |
 | Score-to-Target Quality policy (agreed) | Step 9 implementation | [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality): score >= 1.00 → Good; score < 1.00 → Medium, for individuals and groups. Calibration belongs to Stage 5. |
 | Minimum implemented eligibility rules | Step 10 | A concrete allowed/excluded candidate case; undefined organization policies remain deferred. |
 | Inventory and global-state scope and selection influence | Steps 13–16 | An exact decision using known current state, including when a better-than-target option is reasonable. Define counting units and whether state is daily or festival-wide. |
@@ -89,7 +90,9 @@ Medium =  0
 Bad    = +1
 ```
 
-Quality represents the attendee's experience, not an absolute Zone ranking.
+Experience Quality represents the globally business-classified quality of the
+Zone or actual assignment. ZoneType supplies stable venue meaning; a separate
+policy derives its `Good`, `Medium` or `Bad` classification.
 
 ### Goal
 
@@ -105,56 +108,50 @@ Unit tests should verify:
 
 ---
 
-## Step 2 — Define Eligibility-Aware Quality Rules
+## Step 2 — Implement the Agreed Zone Experience Quality v1 Policy
 
-The current [Request-Level Zone Eligibility v1 boundary](assignment-strategy-v1.md#implemented-request-level-zone-eligibility-v1)
-is represented by `RequestEligibility(bool allowsFrontStanding)`, shared by the
-complete request for both individual and group requests. The get-only
-`AllowsFrontStanding` value expresses inclusion/exclusion without changing
-globally business-defined `ExperienceQuality`.
+The [Zone taxonomy and global mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
+are decided. This documentation records the decision; implementation remains
+pending. The upcoming work is:
 
-This supersedes the earlier relative-quality proposal below: a remaining option
-can be `Good` only if business policy classifies it as such, never because another
-option was excluded. `AssignmentRequest.Eligibility` now owns the immutable
-value as durable request state shared by all members. Domain creation,
-rehydration and `ProcessAssignmentRequestCommand` require explicit eligibility;
-PostgreSQL persists its required `AllowsFrontStanding` Boolean. Both values
-round-trip, and outcome transitions preserve eligibility. Historical fixtures
-and migration backfill use `true` solely as a compatibility baseline, with no
-domain or lasting database default.
+1. Introduce `ZoneType` with exactly `FrontStanding`, `MiddleLeft`, `MiddleCenter`,
+   `MiddleRight`, `UpperLeft`, `UpperCenter` and `UpperRight`.
+2. Give Zone a stable `Type`, migrating from the current `IsFrontStanding`
+   Boolean to `Zone.Type == ZoneType.FrontStanding`. Remove the dedicated Boolean
+   when the taxonomy is implemented; update persistence and layout data then.
+3. Update `ZoneEligibilityPolicy` to use ZoneType while continuing to consume
+   `AssignmentRequest.Eligibility`, preserving the request-level rule and order.
+4. Implement `ZoneExperienceQualityPolicy: ZoneType → ExperienceQuality` with
+   the agreed mapping. Derive quality through this policy rather than storing
+   mutable independent ExperienceQuality on Zone.
+5. Keep the actual historical ExperienceQuality recorded at assignment time
+   stable when later business classification changes; persistence integration
+   belongs to Steps 20–22.
 
-Front Standing zone filtering is implemented in Step 10 below. HTTP transport,
-per-attendee eligibility, generic zone exclusions and concrete zone-quality
-classification remain outside this integration.
-
-Define the minimum business mapping required to classify experience quality.
-
-For example:
-
-```text
-Front Standing excluded
-```
-
-must not automatically mean:
-
-```text
-attendee cannot receive Good
-```
-
-The best remaining valid option may still represent `Good`.
+`RequestEligibility` and its durable request state are already implemented.
+`AllowsFrontStanding = false` excludes Front Standing for all request members;
+it never changes the quality of remaining Zones. In particular, `MiddleLeft`
+remains `Medium` and `MiddleCenter` remains `Good`.
 
 ### Goal
 
-Avoid creating fairness deficits from options the attendee was never eligible to receive.
+Separate stable venue meaning, global business quality, request participation and
+the fairness-derived Target Quality reference. Do not define selection or
+degradation as part of the taxonomy and mapping implementation.
+
+### Validation
+
+Future tests should cover all seven mappings, the Front Standing eligibility
+rule through ZoneType, unchanged quality across allowed/excluded requests and
+stable recorded historical quality after a later policy change.
 
 ### Lean Constraint
 
-Do not implement complex preference ranking.
-
-Only implement the minimum quality rules required by the MVP venue model.
-Resolve the [quality questions in the strategy](assignment-strategy-v1.md#6-eligibility-aware-experience-quality)
-before implementing classification. This does not block Steps 3–8 using
-already-classified histories.
+`ZoneCode` is not required yet; defer it until a concrete external integration,
+import/export, organization configuration, UI/API business identifier or
+external-data mapping requirement appears. Per-attendee eligibility, arbitrary
+exclusions and additional venue categories remain outside this v1 policy.
+Steps 3–8 can continue to use already-classified histories.
 
 ---
 
@@ -330,7 +327,7 @@ Test:
 Internal group dispersion remains intentionally unoptimized.
 Include the confirmed arithmetic example: `(2 + 4 + 1 + 3 + 0) / 5 = 2`.
 The mean guides the group's target and selection; it does not replace individual
-historical quality records or decide mixed-eligibility quality classification.
+historical quality records or alter the global Zone Experience Quality policy.
 
 ---
 
@@ -381,7 +378,13 @@ The previous Zone identity and display name had no stable Front Standing
 semantics. `Zone.Create(id, name, isFrontStanding)` now explicitly supplies a
 get-only Boolean, persisted as required Zone state. Generic historical fixtures
 and existing catalog rows use `false`; actual Front Standing layout entries must
-be explicitly marked. No taxonomy or quality mapping is introduced.
+be explicitly marked. This describes current implementation only.
+
+The agreed next implementation (Step 2) introduces ZoneType and replaces the
+Boolean with `Zone.Type == ZoneType.FrontStanding`. Update `ZoneEligibilityPolicy`
+to use that distinction while preserving its request-owned eligibility input.
+ZoneType and the global ZoneExperienceQualityPolicy remain pending; this
+migration must not reinterpret historical ExperienceQuality.
 
 This increment ends at eligible Zones. Connecting those Zones to available
 Spots, physical feasibility, candidate blocks and assignment selection remains
@@ -450,7 +453,8 @@ Cover:
 
 ## Step 12 — Determine Candidate Experience Quality
 
-Each valid candidate should receive its relative experience-quality classification:
+Once Step 2 implements ZoneExperienceQualityPolicy, each valid candidate should
+receive the globally business-defined classification of its ZoneType:
 
 ```text
 Good
@@ -458,7 +462,9 @@ Medium
 Bad
 ```
 
-Quality must respect the request's eligible opportunity space.
+RequestEligibility determines whether the Zone participates; it does not alter
+the policy result. Quality is derived from ZoneType, not the request's exclusions
+or TargetQuality. Candidate integration remains pending.
 
 ### Goal
 
@@ -492,9 +498,10 @@ Allow the strategy to recognize:
 ### Important Boundary
 
 Inventory State must not modify RotationScore.
-Define whether counts describe Spots or feasible blocks and how relative quality
-is interpreted for the current request. Candidate blocks can overlap; counting
-them does not necessarily count independently usable capacity.
+Define whether counts describe Spots or feasible blocks. Classify counted
+capacity through the global ZoneType quality policy, restricting participation
+by request eligibility without changing quality. Candidate blocks can overlap;
+counting them does not necessarily count independently usable capacity.
 
 ---
 
@@ -675,11 +682,19 @@ different decision context
 
 Ensure the historical fairness model remains reproducible.
 
-Once an assignment is completed, the quality interpreted for that assignment should be available for future history evaluation.
+Record the actual ExperienceQuality derived under the business policy at
+assignment time for later FairnessHistory and RotationScore evaluation. Current
+Zone quality is derived from ZoneType; recorded historical quality is a stable
+fact, not recomputed from the current policy.
+
+For example, an assignment recorded when `UpperCenter` was `Medium` remains
+`Medium` in history even if a later policy maps UpperCenter to `Good`.
+Implementation of historical recording remains pending.
 
 ### Goal
 
-Avoid reclassifying old experiences every time current venue rules or preferences change.
+Prevent automatic reinterpretation of past assignments after business-policy
+or eligibility changes.
 
 The exact persistence representation should be chosen during implementation with the smallest justified change.
 
@@ -950,7 +965,8 @@ Stage 4 can be considered complete when:
 
 - Fairness Definition v1 is documented;
 - Experience Quality v1 is implemented;
-- eligibility-aware quality is defined;
+- ZoneType and the global ZoneExperienceQualityPolicy are implemented;
+- eligibility changes Zone participation without redefining ExperienceQuality;
 - RotationScore v1 is implemented;
 - reference RotationScore scenarios pass;
 - GroupRotationScore works;

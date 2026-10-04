@@ -406,9 +406,10 @@ No Front Standing
 → fairness deficit
 ```
 
-Fairness should be evaluated relative to the attendee's **eligible opportunity space**.
-
-The best remaining valid options may still represent a `Good` experience for that request.
+Eligibility limits participating options without redefining their globally
+business-defined Experience Quality. Excluding `FrontStanding` leaves
+`MiddleLeft` as `Medium` and `MiddleCenter` as `Good`; remaining options are never
+promoted or demoted because of the exclusion.
 
 A voluntarily excluded option is not considered a missed favorable opportunity.
 
@@ -497,11 +498,16 @@ Medium
 Bad
 ```
 
-Quality should be interpreted relative to the valid opportunity space of the current request.
+Zone Experience Quality is globally derived from stable `ZoneType` semantics
+through `ZoneExperienceQualityPolicy`, independently from request eligibility.
+The agreed [Zone taxonomy and mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
+belong to Assignment Strategy; their implementation remains pending.
 
-The detailed mapping from venue locations to these levels belongs to the Experience Quality model and Assignment Strategy, not to Fairness Definition itself.
-
-The quality model should remain minimal until organization feedback justifies greater detail.
+Fairness uses the actual recorded Experience Quality of previous assignments.
+Historical quality remains stable across later business-policy changes: an
+assignment recorded when `UpperCenter` was `Medium` remains `Medium` in
+`FairnessHistory` and RotationScore, even if a future policy classifies that
+ZoneType as `Good`. History must not be reinterpreted automatically.
 
 ---
 
@@ -588,7 +594,8 @@ Estimates the attendee's **current recovery need**.
 
 ## Experience Quality
 
-Describes the relative quality of valid assignment outcomes for the current request.
+Describes the globally business-defined quality of a Zone or actual assignment
+outcome. Eligibility filters participation without changing that quality.
 
 ## Assignment Strategy
 

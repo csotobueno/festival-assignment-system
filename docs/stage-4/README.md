@@ -74,9 +74,13 @@ original request does not remain pending.
   state affect selection, not the score itself.
 - **Group average:** scores `2, 4, 1, 3, 0` produce GroupRotationScore `2`. This
   guides quality and Zone selection while preserving the complete group.
-- **Experience Quality:** `Good`, `Medium` and `Bad` are relative to eligible
-  opportunities. Historical classification remains stable. The initial location
-  mapping and handling of mixed group eligibility still require explicit rules.
+- **Experience Quality:** the agreed [seven ZoneTypes and global mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
+  derive `Good`, `Medium` or `Bad` through `ZoneExperienceQualityPolicy`.
+  Request eligibility changes participation only; historical recorded quality
+  remains stable. ZoneType and quality-policy implementation remain pending.
+- **Zone model evolution:** replace the current `IsFrontStanding` marker with
+  `Zone.Type == ZoneType.FrontStanding` when ZoneType is implemented.
+  `ZoneCode` remains deferred until a concrete integration or identifier need.
 - **Invariants:** same Zone, same Row, consecutive SpotNumbers, complete groups,
   daily uniqueness and final Assignments remain protected. Fairness cannot
   override eligibility or physical feasibility.
@@ -95,8 +99,8 @@ specified to begin pure calculations using already-classified histories.
 Location classification need not block that work.
 
 The [implementation decision table](implementation-plan.md#decisions-at-the-point-of-use)
-identifies when to settle quality mapping, Target Quality, inventory/global-state
-rules and deterministic tie-breaking. An unresolved business rule pauses its
+records the agreed Zone-quality mapping and Target Quality, plus the remaining
+inventory/global-state and deterministic tie-breaking decisions. An unresolved business rule pauses its
 dependent increment; independent work can continue. No operational rule should
 be invented merely to complete the design.
 

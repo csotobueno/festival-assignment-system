@@ -197,15 +197,35 @@ Differences inside each quality category are ignored.
 ### Why Accepted
 The goal is to validate fairness behavior before building a detailed location-ranking system.
 ---
-## 10. Quality Is Relative to Eligible Opportunity Space
-A location's experience quality may depend on what was valid for the attendee.
+## 10. ZoneType Is Stable Taxonomy; Policy Derives Global Quality
+The agreed model is `Zone.Type → ZoneType → ZoneExperienceQualityPolicy → ExperienceQuality`.
+The seven ZoneTypes and their `Good` / `Medium` / `Bad` mapping are defined in
+[Assignment Strategy](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping).
+This decision is settled; taxonomy and policy implementation remain pending.
 ### Accepted Consequence
-Two attendees may interpret different physical options as `Good`.
+Every request sees the same quality for a given ZoneType. `RequestEligibility`
+changes participation only: excluding `FrontStanding` leaves `MiddleLeft` as
+`Medium` and `MiddleCenter` as `Good`. It never promotes or demotes remaining Zones.
 ### Why Accepted
-An attendee should not be penalized for excluding a location category they were never eligible or willing to receive.
+Stable venue meaning and business classification are separate concerns. Deriving
+quality through a policy avoids mutable independent quality state on Zone and
+contradictory type/quality combinations. Eligibility cannot redefine that policy.
+
+The pending evolution replaces `Zone.IsFrontStanding` with
+`Zone.Type == ZoneType.FrontStanding` and updates `ZoneEligibilityPolicy`;
+the dedicated Boolean becomes unnecessary once the taxonomy is implemented.
+
+`ZoneCode` is not required yet because ZoneType supplies sufficient stable
+semantics for current rules. Defer it until a concrete external integration,
+import/export, organization-provided configuration, UI/API stable business
+identifier or external-data mapping requirement appears.
 ---
 ## 11. Historical Quality Remains Stable
-Once an assignment contributes to history, its experience classification should remain stable.
+The actual Experience Quality recorded at assignment time remains the fact used
+by FairnessHistory and RotationScore. An assignment recorded when `UpperCenter`
+was `Medium` stays `Medium` in history even if a later business policy classifies
+that ZoneType as `Good`. Current Zone quality is derived; historical quality is
+recorded and must not be reinterpreted automatically.
 ### Accepted Consequence
 Later policy or preference changes do not automatically reinterpret old history.
 ### Why Accepted
