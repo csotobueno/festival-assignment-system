@@ -21,7 +21,7 @@ public static class ZoneEligibilityPolicy
         }
 
         return Array.AsReadOnly(zones
-            .Where(zone => request.Eligibility.AllowsFrontStanding || !zone.IsFrontStanding)
+            .Where(zone => request.Eligibility.AllowsFrontStanding || zone.Type != ZoneType.FrontStanding)
             .ToArray());
     }
 }

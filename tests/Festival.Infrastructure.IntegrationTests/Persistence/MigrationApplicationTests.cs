@@ -82,35 +82,29 @@ public sealed class MigrationApplicationTests(
     }
 
     [Fact]
-    public async Task ZoneMarkerMigration_ShouldPreserveGenericCatalogWithoutKeepingADefault()
+    public async Task ZoneTypeMigration_ShouldReplaceMarkerWithRequiredTextWithoutADefault()
     {
         await using var context = Fixture.CreateDbContext();
         var migrator = context.GetService<IMigrator>();
-        await migrator.MigrateAsync("20261003222327_AddRequestEligibility");
+        await migrator.MigrateAsync("20261003225947_AddZoneFrontStanding");
 
         try
         {
-            await context.Database.ExecuteSqlInterpolatedAsync($"""
-                INSERT INTO "Zones" ("ZoneId", "Name")
-                VALUES ({IntegrationTestData.ZoneId.Value}, 'Front');
-                """);
-
+            // Zone schema evolves on an empty catalog before persistent deployment.
             await migrator.MigrateAsync();
-
-            var zone = await context.Zones.SingleAsync();
-            zone.Name.Should().Be("Front");
-            zone.IsFrontStanding.Should().BeFalse();
 
             await using var connection = new NpgsqlConnection(Fixture.ConnectionString);
             await connection.OpenAsync();
             await using var command = new NpgsqlCommand("""
-                SELECT is_nullable = 'NO' AND column_default IS NULL
-                FROM information_schema.columns
-                WHERE table_schema = 'public'
-                  AND table_name = 'Zones'
-                  AND column_name = 'IsFrontStanding';
+                SELECT
+                    EXISTS (SELECT 1 FROM information_schema.columns
+                        WHERE table_schema = 'public' AND table_name = 'Zones'
+                        AND column_name = 'ZoneType' AND data_type = 'text'
+                        AND is_nullable = 'NO' AND column_default IS NULL)
+                    AND NOT EXISTS (SELECT 1 FROM information_schema.columns
+                        WHERE table_schema = 'public' AND table_name = 'Zones'
+                        AND column_name = 'IsFrontStanding');
                 """, connection);
-
             (await command.ExecuteScalarAsync()).Should().Be(true);
         }
         finally

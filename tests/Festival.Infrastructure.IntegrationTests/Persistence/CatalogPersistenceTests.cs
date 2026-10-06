@@ -10,14 +10,19 @@ public sealed class CatalogPersistenceTests(
     : PostgreSqlIntegrationTest(fixture)
 {
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task Zone_ShouldPreserveFrontStandingMarkerThroughPostgreSql(bool isFrontStanding)
+    [InlineData(ZoneType.FrontStanding)]
+    [InlineData(ZoneType.MiddleLeft)]
+    [InlineData(ZoneType.MiddleCenter)]
+    [InlineData(ZoneType.MiddleRight)]
+    [InlineData(ZoneType.UpperLeft)]
+    [InlineData(ZoneType.UpperCenter)]
+    [InlineData(ZoneType.UpperRight)]
+    public async Task Zone_ShouldPreserveTypeThroughPostgreSql(ZoneType type)
     {
         await using (var context = Fixture.CreateDbContext())
         {
             context.Zones.Add(Zone.Create(
-                IntegrationTestData.ZoneId, "Zone A", isFrontStanding));
+                IntegrationTestData.ZoneId, "Zone A", type));
             await context.SaveChangesAsync();
         }
 
@@ -26,7 +31,7 @@ public sealed class CatalogPersistenceTests(
 
         persisted.Id.Should().Be(IntegrationTestData.ZoneId);
         persisted.Name.Should().Be("Zone A");
-        persisted.IsFrontStanding.Should().Be(isFrontStanding);
+        persisted.Type.Should().Be(type);
     }
 
     [Fact]
@@ -51,6 +56,7 @@ public sealed class CatalogPersistenceTests(
 
         persistedZone.Id.Should().Be(IntegrationTestData.ZoneId);
         persistedZone.Name.Should().Be("Front");
+        persistedZone.Type.Should().Be(ZoneType.MiddleLeft);
 
         persistedSpot.Code.Value.Should().Be("FR-A-001");
         persistedSpot.ZoneId.Should().Be(IntegrationTestData.ZoneId);

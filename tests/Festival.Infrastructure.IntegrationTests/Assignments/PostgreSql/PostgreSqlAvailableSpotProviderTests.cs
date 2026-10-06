@@ -96,7 +96,7 @@ public sealed class PostgreSqlAvailableSpotProviderTests(
         var zones = new[]
         {
             IntegrationTestData.CreateZone(),
-            Zone.Create(SecondZoneId, "Back", isFrontStanding: false)
+            Zone.Create(SecondZoneId, "Back", ZoneType.UpperLeft)
         };
         var spots = new[]
         {

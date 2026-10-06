@@ -201,7 +201,7 @@ The goal is to validate fairness behavior before building a detailed location-ra
 The agreed model is `Zone.Type → ZoneType → ZoneExperienceQualityPolicy → ExperienceQuality`.
 The seven ZoneTypes and their `Good` / `Medium` / `Bad` mapping are defined in
 [Assignment Strategy](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping).
-This decision is settled; taxonomy and policy implementation remain pending.
+This decision is settled; ZoneType is implemented and the quality policy remains pending.
 ### Accepted Consequence
 Every request sees the same quality for a given ZoneType. `RequestEligibility`
 changes participation only: excluding `FrontStanding` leaves `MiddleLeft` as
@@ -211,9 +211,9 @@ Stable venue meaning and business classification are separate concerns. Deriving
 quality through a policy avoids mutable independent quality state on Zone and
 contradictory type/quality combinations. Eligibility cannot redefine that policy.
 
-The pending evolution replaces `Zone.IsFrontStanding` with
-`Zone.Type == ZoneType.FrontStanding` and updates `ZoneEligibilityPolicy`;
-the dedicated Boolean becomes unnecessary once the taxonomy is implemented.
+The implemented evolution replaces `Zone.IsFrontStanding` with mandatory
+`Zone.Type`; `ZoneEligibilityPolicy` uses `Zone.Type == ZoneType.FrontStanding`.
+The dedicated Boolean has been removed.
 
 `ZoneCode` is not required yet because ZoneType supplies sufficient stable
 semantics for current rules. Defer it until a concrete external integration,

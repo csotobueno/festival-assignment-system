@@ -22,16 +22,17 @@ public static class InMemoryAssignmentSeedData
                 new TimeOnly(9, 0),
                 new TimeOnly(18, 0)));
 
+    // Compatibility types for these deterministic identities, not venue business rules.
     public static IReadOnlyList<Zone> Zones { get; } =
     [
         Zone.Create(
             ZoneId.Create(
                 Guid.Parse("20000000-0000-0000-0000-000000000001")),
-            "Zone A", isFrontStanding: false),
+            "Zone A", ZoneType.MiddleLeft),
         Zone.Create(
             ZoneId.Create(
                 Guid.Parse("20000000-0000-0000-0000-000000000002")),
-            "Zone B", isFrontStanding: false)
+            "Zone B", ZoneType.UpperLeft)
     ];
 
     public static IReadOnlyList<Spot> Spots { get; } =

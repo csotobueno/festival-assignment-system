@@ -77,9 +77,9 @@ original request does not remain pending.
 - **Experience Quality:** the agreed [seven ZoneTypes and global mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
   derive `Good`, `Medium` or `Bad` through `ZoneExperienceQualityPolicy`.
   Request eligibility changes participation only; historical recorded quality
-  remains stable. ZoneType and quality-policy implementation remain pending.
-- **Zone model evolution:** replace the current `IsFrontStanding` marker with
-  `Zone.Type == ZoneType.FrontStanding` when ZoneType is implemented.
+  remains stable. ZoneType is implemented; the quality policy remains pending.
+- **Zone model evolution:** mandatory `Zone.Type` replaces `IsFrontStanding`;
+  eligibility uses `Zone.Type == ZoneType.FrontStanding`.
   `ZoneCode` remains deferred until a concrete integration or identifier need.
 - **Invariants:** same Zone, same Row, consecutive SpotNumbers, complete groups,
   daily uniqueness and final Assignments remain protected. Fairness cannot

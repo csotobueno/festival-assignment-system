@@ -17,9 +17,9 @@ public sealed class ZoneEligibilityPolicyTests
         int attendeeCount)
     {
         var request = CreateRequest(allowsFrontStanding, attendeeCount);
-        var first = Zone.Create(ZoneId.New(), "Zone B", isFrontStanding: false);
-        var front = Zone.Create(ZoneId.New(), "Front Standing", isFrontStanding: true);
-        var last = Zone.Create(ZoneId.New(), "Zone A", isFrontStanding: false);
+        var first = Zone.Create(ZoneId.New(), "Zone B", ZoneType.MiddleLeft);
+        var front = Zone.Create(ZoneId.New(), "Front Standing", ZoneType.FrontStanding);
+        var last = Zone.Create(ZoneId.New(), "Zone A", ZoneType.MiddleLeft);
         Zone[] available = [first, front, last];
 
         var eligible = ZoneEligibilityPolicy.Filter(request, available);
@@ -43,8 +43,8 @@ public sealed class ZoneEligibilityPolicyTests
     {
         Zone[] available =
         [
-            Zone.Create(ZoneId.New(), "Zone B", isFrontStanding: false),
-            Zone.Create(ZoneId.New(), "Zone A", isFrontStanding: false)
+            Zone.Create(ZoneId.New(), "Zone B", ZoneType.MiddleLeft),
+            Zone.Create(ZoneId.New(), "Zone A", ZoneType.MiddleLeft)
         ];
 
         var eligible = ZoneEligibilityPolicy.Filter(
@@ -53,11 +53,27 @@ public sealed class ZoneEligibilityPolicyTests
         Assert.Equal(available, eligible);
     }
 
-    [Fact]
-    public void Filter_ShouldIdentifyFrontStandingByMarkerRatherThanDisplayName()
+    [Theory]
+    [InlineData(ZoneType.MiddleLeft)]
+    [InlineData(ZoneType.MiddleCenter)]
+    [InlineData(ZoneType.MiddleRight)]
+    [InlineData(ZoneType.UpperLeft)]
+    [InlineData(ZoneType.UpperCenter)]
+    [InlineData(ZoneType.UpperRight)]
+    public void Filter_ShouldPreserveNonFrontTypes_WhenFrontStandingIsDisallowed(ZoneType type)
     {
-        var front = Zone.Create(ZoneId.New(), "Zone A", isFrontStanding: true);
-        var other = Zone.Create(ZoneId.New(), "Front Standing", isFrontStanding: false);
+        var zone = Zone.Create(ZoneId.New(), "Front", type);
+
+        var eligible = ZoneEligibilityPolicy.Filter(CreateRequest(false), [zone]);
+
+        Assert.Same(zone, Assert.Single(eligible));
+    }
+
+    [Fact]
+    public void Filter_ShouldIdentifyFrontStandingByTypeRatherThanDisplayName()
+    {
+        var front = Zone.Create(ZoneId.New(), "Zone A", ZoneType.FrontStanding);
+        var other = Zone.Create(ZoneId.New(), "Front Standing", ZoneType.MiddleLeft);
 
         var eligible = ZoneEligibilityPolicy.Filter(CreateRequest(false), [front, other]);
 
@@ -65,12 +81,12 @@ public sealed class ZoneEligibilityPolicyTests
     }
 
     [Fact]
-    public void Filter_ShouldExcludeEveryMarkedZone_WhenFrontStandingIsDisallowed()
+    public void Filter_ShouldExcludeEveryFrontStandingZone_WhenFrontStandingIsDisallowed()
     {
         Zone[] available =
         [
-            Zone.Create(ZoneId.New(), "Zone A", isFrontStanding: true),
-            Zone.Create(ZoneId.New(), "Zone B", isFrontStanding: true)
+            Zone.Create(ZoneId.New(), "Zone A", ZoneType.FrontStanding),
+            Zone.Create(ZoneId.New(), "Zone B", ZoneType.FrontStanding)
         ];
 
         var eligible = ZoneEligibilityPolicy.Filter(CreateRequest(false), available);
