@@ -72,7 +72,8 @@ internal static class IntegrationTestData
 
     internal static Zone CreateZone()
     {
-        return Zone.Create(ZoneId, "Front", isFrontStanding: false);
+        // Compatibility type follows the deterministic identity, not the display name.
+        return Zone.Create(ZoneId, "Front", ZoneType.MiddleLeft);
     }
 
     internal static Spot CreateSpot(

@@ -279,19 +279,28 @@ baseline, not a business default.
 Zone-level filtering is now implemented by the pure deterministic API
 `ZoneEligibilityPolicy.Filter(AssignmentRequest request, IEnumerable<Zone> availableZones)`.
 It reads only `request.Eligibility.AllowsFrontStanding`: `true` retains all supplied
-Zones; `false` excludes Zones whose get-only `IsFrontStanding` marker is `true`.
+Zones; `false` excludes Zones whose get-only `Type` is `ZoneType.FrontStanding`.
 The result is a read-only list preserving input order and the original Zone
-objects. Other Zones remain unchanged, including when Front Standing is absent.
-Individual and group requests use the same rule.
+objects. Other ZoneTypes remain unchanged, including when Front Standing is
+absent. Individual and group requests use the same rule.
 
-`Zone.Create(id, name, isFrontStanding)` explicitly supplies the marker. The
-previous Zone model had only an opaque identity and display name, so neither
-provided a stable Front Standing distinction. The required persisted Boolean
-avoids display-name matching and introduces no venue taxonomy or quality ranking.
-Existing generic catalog entries and fixtures use `false`; the migration removes
-its temporary backfill default. Venue layout data must explicitly mark actual
-Front Standing Zones rather than infer that designation from names such as
-“Front”.
+`Zone.Create(id, name, type)` explicitly requires one of the seven agreed
+ZoneTypes and rejects undefined enum values. `Zone.Type` replaces the temporary
+`Zone.IsFrontStanding` Boolean. Display names never determine type or eligibility.
+Persistence stores the required type using EF Core's string enum conversion in
+`Zones.ZoneType`; constructor binding rehydrates the exact enum value.
+
+The `IntroduceZoneType` migration changes schema only: it removes the Boolean
+and introduces required text without a database default. No real Zone data needs
+migration before the first persistent deployment; development databases containing
+experimental old Zone rows may need recreation. After that deployment, future
+schema changes must use real data-migration strategies.
+
+The existing deterministic seed/fixture identities explicitly use `MiddleLeft`
+for `20000000-0000-0000-0000-000000000001` and `UpperLeft` for
+`20000000-0000-0000-0000-000000000002`. These types describe test/catalog state
+only; they are neither migration rules nor venue business rules. Existing catalog
+IDs, names, Zone count and Spots are preserved in seed setup.
 
 Filtering changes participation only; Experience Quality and fairness scores
 remain unchanged. The policy is not yet wired into the Spot-based engine or
@@ -339,7 +348,7 @@ Zone; its classification is the same for every request.
 | `UpperRight` | `Bad` |
 
 This is the Stage 4 v1 baseline. The taxonomy and mapping are decided;
-`ZoneType` and `ZoneExperienceQualityPolicy` implementation remain pending.
+`ZoneType` is implemented; `ZoneExperienceQualityPolicy` remains pending.
 
 ### Quality Ownership
 
@@ -405,13 +414,13 @@ Deriving current Zone quality through a policy does not mean recalculating past
 quality from today's policy. Recording historical quality remains a separate
 pending implementation step.
 
-### Pending Zone Model Evolution
+### Implemented Zone Model Evolution
 
-Current code uses `Zone.IsFrontStanding` and the existing `ZoneEligibilityPolicy`.
-Once `ZoneType` is implemented, eligibility should identify Front Standing through
-`Zone.Type == ZoneType.FrontStanding`; the dedicated Boolean will no longer be
-necessary. Its removal and any persistence migration belong to the subsequent
-implementation task. This documentation decision changes no code or schema.
+`Zone.Type` now owns the mandatory `ZoneType`; `Zone.IsFrontStanding` has been
+removed from the domain model. `ZoneEligibilityPolicy` identifies Front Standing
+through `Zone.Type == ZoneType.FrontStanding`. The global
+`ZoneExperienceQualityPolicy`, production quality mapping and historical quality
+recording remain separate pending tasks. `ZoneCode` remains deferred.
 
 ---
 

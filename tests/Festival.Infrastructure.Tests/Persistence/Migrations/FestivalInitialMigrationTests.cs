@@ -34,7 +34,7 @@ public sealed class FestivalInitialMigrationTests
 
         migrations.Select(type => type.Name).Should()
             .BeEquivalentTo(
-                nameof(InitialCreate), nameof(AddRequestEligibility), nameof(AddZoneFrontStanding));
+                nameof(InitialCreate), nameof(AddRequestEligibility), nameof(AddZoneFrontStanding), nameof(IntroduceZoneType));
         var initial = migrations.Single(type => type == typeof(InitialCreate));
 
         var migrationAttribute = initial
@@ -66,6 +66,14 @@ public sealed class FestivalInitialMigrationTests
 
         contextAttribute.Should().NotBeNull();
         contextAttribute!.ContextType.Should().Be(typeof(FestivalDbContext));
+    }
+
+    [Fact]
+    public void ModelSnapshot_ShouldMatchCurrentModel()
+    {
+        using var context = CreateContext();
+
+        context.Database.HasPendingModelChanges().Should().BeFalse();
     }
 
     [Fact]

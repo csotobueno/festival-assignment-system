@@ -6,22 +6,22 @@ public sealed class Zone
 
     public string Name { get; }
 
-    public bool IsFrontStanding { get; }
+    public ZoneType Type { get; }
 
     private Zone(
         ZoneId id,
         string name,
-        bool isFrontStanding)
+        ZoneType type)
     {
         Id = id;
         Name = name;
-        IsFrontStanding = isFrontStanding;
+        Type = type;
     }
 
     public static Zone Create(
         ZoneId id,
         string? name,
-        bool isFrontStanding)
+        ZoneType type)
     {
         if (id == default)
         {
@@ -37,9 +37,15 @@ public sealed class Zone
                 nameof(name));
         }
 
+        if (!Enum.IsDefined(type))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(type), type, "Zone type must be a defined ZoneType.");
+        }
+
         return new Zone(
             id,
             name.Trim(),
-            isFrontStanding);
+            type);
     }
 }

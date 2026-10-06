@@ -18,7 +18,9 @@ internal sealed class ZoneConfiguration : IEntityTypeConfiguration<Zone>
                 id => id.Value,
                 value => ZoneId.Create(value));
 
-        builder.Property(zone => zone.IsFrontStanding)
+        builder.Property(zone => zone.Type)
+            .HasColumnName("ZoneType")
+            .HasConversion<string>()
             .IsRequired();
 
         builder.Property(zone => zone.Name)

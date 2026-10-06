@@ -269,6 +269,29 @@ public sealed class FestivalDbContextModelTests
     }
 
     [Fact]
+    public void Zone_ShouldPersistRequiredTypeAsTextWithoutADefaultOrBooleanMarker()
+    {
+        using var context = CreateContext();
+        var entity = GetEntityType(context.Model, typeof(Zone));
+        var property = GetProperty(context.Model, typeof(Zone), nameof(Zone.Type));
+
+        property.IsNullable.Should().BeFalse();
+        property.GetColumnName().Should().Be("ZoneType");
+        property.GetColumnType().Should().Be("text");
+        property.GetDefaultValueSql().Should().BeNull();
+        property.FindAnnotation(RelationalAnnotationNames.DefaultValue).Should().BeNull();
+        entity.FindProperty("IsFrontStanding").Should().BeNull();
+        typeof(Zone).GetProperty("IsFrontStanding").Should().BeNull();
+
+        var converter = property.GetTypeMapping().Converter!;
+        foreach (var type in Enum.GetValues<ZoneType>())
+        {
+            converter.ConvertToProvider(type).Should().Be(type.ToString());
+            converter.ConvertFromProvider(type.ToString()).Should().Be(type);
+        }
+    }
+
+    [Fact]
     public void Model_ShouldConfigureFinalStringLengths()
     {
         using var context = CreateContext();

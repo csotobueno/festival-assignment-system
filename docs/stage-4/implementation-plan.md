@@ -111,8 +111,9 @@ Unit tests should verify:
 ## Step 2 — Implement the Agreed Zone Experience Quality v1 Policy
 
 The [Zone taxonomy and global mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
-are decided. This documentation records the decision; implementation remains
-pending. The upcoming work is:
+are decided. The taxonomy, mandatory `Zone.Type` and eligibility migration
+(items 1–3 below) are implemented. `ZoneExperienceQualityPolicy` (item 4) and
+historical quality recording (item 5) remain pending. The sequence is:
 
 1. Introduce `ZoneType` with exactly `FrontStanding`, `MiddleLeft`, `MiddleCenter`,
    `MiddleRight`, `UpperLeft`, `UpperCenter` and `UpperRight`.
@@ -370,21 +371,16 @@ final assignment selection as part of this step.
 ## Step 10 — Implement Minimum Eligibility Rules
 
 Implemented v1: `ZoneEligibilityPolicy.Filter(request, availableZones)` reads
-`AssignmentRequest.Eligibility` and excludes only Zones marked `IsFrontStanding`
-when `AllowsFrontStanding` is `false`. It preserves Zone objects and input order
-for both individuals and groups, without changing Experience Quality.
+`AssignmentRequest.Eligibility` and excludes only Zones whose
+`Type == ZoneType.FrontStanding` when `AllowsFrontStanding` is `false`. It
+preserves Zone objects and input order for both individuals and groups, without
+changing Experience Quality. All six non-Front ZoneTypes remain eligible.
 
-The previous Zone identity and display name had no stable Front Standing
-semantics. `Zone.Create(id, name, isFrontStanding)` now explicitly supplies a
-get-only Boolean, persisted as required Zone state. Generic historical fixtures
-and existing catalog rows use `false`; actual Front Standing layout entries must
-be explicitly marked. This describes current implementation only.
-
-The agreed next implementation (Step 2) introduces ZoneType and replaces the
-Boolean with `Zone.Type == ZoneType.FrontStanding`. Update `ZoneEligibilityPolicy`
-to use that distinction while preserving its request-owned eligibility input.
-ZoneType and the global ZoneExperienceQualityPolicy remain pending; this
-migration must not reinterpret historical ExperienceQuality.
+`Zone.Create(id, name, type)` explicitly requires a valid ZoneType. The get-only
+`Zone.Type` replaces `Zone.IsFrontStanding`; persistence stores its enum name in
+the required `Zones.ZoneType` text column. Display text is never consulted.
+The global `ZoneExperienceQualityPolicy` remains pending; this refactor does
+not reinterpret historical ExperienceQuality or introduce `ZoneCode`.
 
 This increment ends at eligible Zones. Connecting those Zones to available
 Spots, physical feasibility, candidate blocks and assignment selection remains
