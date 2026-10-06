@@ -111,9 +111,10 @@ Unit tests should verify:
 ## Step 2 — Implement the Agreed Zone Experience Quality v1 Policy
 
 The [Zone taxonomy and global mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
-are decided. The taxonomy, mandatory `Zone.Type` and eligibility migration
-(items 1–3 below) are implemented. `ZoneExperienceQualityPolicy` (item 4) and
-historical quality recording (item 5) remain pending. The sequence is:
+are decided. The taxonomy, mandatory `Zone.Type`, eligibility migration and
+`ZoneExperienceQualityPolicy.GetQuality(ZoneType zoneType)` (items 1–4 below)
+are implemented. Quality is derived, never stored on Zone. Historical quality
+recording (item 5) remains pending. The sequence is:
 
 1. Introduce `ZoneType` with exactly `FrontStanding`, `MiddleLeft`, `MiddleCenter`,
    `MiddleRight`, `UpperLeft`, `UpperCenter` and `UpperRight`.
@@ -142,9 +143,10 @@ degradation as part of the taxonomy and mapping implementation.
 
 ### Validation
 
-Future tests should cover all seven mappings, the Front Standing eligibility
-rule through ZoneType, unchanged quality across allowed/excluded requests and
-stable recorded historical quality after a later policy change.
+Unit tests cover all seven mappings and explicit rejection of undefined
+ZoneTypes. The API consumes only ZoneType; eligibility and TargetQuality are
+not classification inputs. Stable recorded historical quality after a later
+policy change remains part of historical recording integration.
 
 ### Lean Constraint
 
@@ -379,8 +381,9 @@ changing Experience Quality. All six non-Front ZoneTypes remain eligible.
 `Zone.Create(id, name, type)` explicitly requires a valid ZoneType. The get-only
 `Zone.Type` replaces `Zone.IsFrontStanding`; persistence stores its enum name in
 the required `Zones.ZoneType` text column. Display text is never consulted.
-The global `ZoneExperienceQualityPolicy` remains pending; this refactor does
-not reinterpret historical ExperienceQuality or introduce `ZoneCode`.
+The global `ZoneExperienceQualityPolicy.GetQuality` now derives quality from
+ZoneType alone, without reinterpreting historical ExperienceQuality or
+introducing `ZoneCode`.
 
 This increment ends at eligible Zones. Connecting those Zones to available
 Spots, physical feasibility, candidate blocks and assignment selection remains
@@ -449,7 +452,7 @@ Cover:
 
 ## Step 12 — Determine Candidate Experience Quality
 
-Once Step 2 implements ZoneExperienceQualityPolicy, each valid candidate should
+Using the implemented ZoneExperienceQualityPolicy, each valid candidate should
 receive the globally business-defined classification of its ZoneType:
 
 ```text
