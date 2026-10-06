@@ -201,7 +201,7 @@ The goal is to validate fairness behavior before building a detailed location-ra
 The agreed model is `Zone.Type → ZoneType → ZoneExperienceQualityPolicy → ExperienceQuality`.
 The seven ZoneTypes and their `Good` / `Medium` / `Bad` mapping are defined in
 [Assignment Strategy](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping).
-This decision is settled; ZoneType is implemented and the quality policy remains pending.
+This decision is settled; ZoneType and the pure quality policy are implemented.
 ### Accepted Consequence
 Every request sees the same quality for a given ZoneType. `RequestEligibility`
 changes participation only: excluding `FrontStanding` leaves `MiddleLeft` as

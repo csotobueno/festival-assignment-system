@@ -348,7 +348,10 @@ Zone; its classification is the same for every request.
 | `UpperRight` | `Bad` |
 
 This is the Stage 4 v1 baseline. The taxonomy and mapping are decided;
-`ZoneType` is implemented; `ZoneExperienceQualityPolicy` remains pending.
+`ZoneType` and `ZoneExperienceQualityPolicy.GetQuality(ZoneType zoneType)` are
+implemented. The pure static policy returns the agreed `ExperienceQuality` and
+rejects undefined ZoneTypes with `ArgumentOutOfRangeException`; quality remains
+derived rather than stored on Zone.
 
 ### Quality Ownership
 
@@ -419,8 +422,9 @@ pending implementation step.
 `Zone.Type` now owns the mandatory `ZoneType`; `Zone.IsFrontStanding` has been
 removed from the domain model. `ZoneEligibilityPolicy` identifies Front Standing
 through `Zone.Type == ZoneType.FrontStanding`. The global
-`ZoneExperienceQualityPolicy`, production quality mapping and historical quality
-recording remain separate pending tasks. `ZoneCode` remains deferred.
+`ZoneExperienceQualityPolicy.GetQuality` implements the agreed quality mapping.
+Candidate integration and historical quality recording remain separate pending
+tasks. `ZoneCode` remains deferred.
 
 ---
 

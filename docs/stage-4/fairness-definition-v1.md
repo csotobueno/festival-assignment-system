@@ -501,7 +501,7 @@ Bad
 Zone Experience Quality is globally derived from stable `ZoneType` semantics
 through `ZoneExperienceQualityPolicy`, independently from request eligibility.
 The agreed [Zone taxonomy and mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
-belong to Assignment Strategy; their implementation remains pending.
+belong to Assignment Strategy; the taxonomy and pure quality policy are implemented.
 
 Fairness uses the actual recorded Experience Quality of previous assignments.
 Historical quality remains stable across later business-policy changes: an
