@@ -338,15 +338,18 @@ A candidate considered available during evaluation can fail at commit time.
 Database constraints already protect the global invariants established in Stage 3.
 ---
 ## 23. Inventory Model Remains Minimal
-The initial inventory state may only track simple quality counts.
-Example:
+Implemented inventory v1 tracks only raw currently available Spot counts by
+quality in the caller-supplied snapshot:
 ```text
-Good remaining
-Medium remaining
-Bad remaining
+GoodRemaining
+MediumRemaining
+BadRemaining
 ```
 ### Accepted Consequence
-The model may not capture every inventory pattern.
+Raw remaining Spot count ≠ contiguous group-feasible capacity. Counts aggregate
+across Zones and Rows without measuring fragmentation or proving a group fits.
+Physical feasibility remains with FeasibleSpotBlockFinder. Eligibility filtering
+belongs to the caller; fairness and selection influence remain later tasks.
 ### Why Accepted
 The first goal is to determine whether inventory awareness materially improves online decisions.
 ---

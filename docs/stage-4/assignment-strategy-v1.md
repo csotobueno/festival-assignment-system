@@ -520,19 +520,35 @@ The complete `Medium` block is.
 
 The online assignment strategy should consider the inventory known at the moment of the request.
 
-Relevant information may include:
+Inventory v1 is implemented as the immutable `RemainingInventoryState`, with
+non-negative raw currently available Spot counts:
 
 ```text
-Good capacity remaining
-Medium capacity remaining
-Bad capacity remaining
-Total unassigned capacity
-Current assigned capacity
+GoodRemaining   = Spots in Good Zones
+MediumRemaining = Spots in Medium Zones
+BadRemaining    = Spots in Bad Zones
 ```
 
-The exact inventory model should remain minimal for Stage 4.
+`RemainingInventoryCalculator.Calculate(IEnumerable<Zone> zones,
+IEnumerable<Spot> availableSpots)` counts each supplied available Spot exactly
+once. It resolves `Spot.ZoneId` in the supplied catalog and classifies `Zone.Type`
+through `ZoneExperienceQualityPolicy.GetQuality`. Multiple Zones with the same
+quality contribute to one count. Empty availability returns three zero counts;
+input order does not affect the result.
 
-Its purpose is to answer questions such as:
+Null collections/elements, duplicate Zone IDs, unknown Zone references, duplicate
+SpotCodes and duplicate physical positions `(ZoneId, RowCode, SpotNumber)` are
+rejected explicitly. Availability is supplied by the caller; the calculator does
+not load catalog Spots or apply request eligibility. A later caller can supply
+an eligible snapshot when needed.
+
+Raw remaining Spot count ≠ contiguous group-feasible capacity. Five remaining
+Good Spots may be fragmented across Rows or Zones; this snapshot does not prove
+that a group of five fits. `FeasibleSpotBlockFinder` remains responsible for
+physical feasibility and is not called by the inventory calculator. GroupSize,
+fragmentation metrics, fairness and selection rules are outside inventory v1.
+
+Later selection may use these counts to answer questions such as:
 
 > Is favorable capacity currently scarce?
 

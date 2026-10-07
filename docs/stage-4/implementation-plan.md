@@ -59,7 +59,8 @@ Do not silently choose business semantics inside code.
 | Zone taxonomy and global quality mapping (agreed) | Steps 2, 10 and 12 implementation | [Zone Experience Quality v1](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping): seven stable ZoneTypes classified globally through a policy; request eligibility changes participation only. |
 | Score-to-Target Quality policy (agreed) | Step 9 implementation | [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality): score >= 1.00 → Good; score < 1.00 → Medium, for individuals and groups. Calibration belongs to Stage 5. |
 | Minimum implemented eligibility rules | Step 10 | A concrete allowed/excluded candidate case; undefined organization policies remain deferred. |
-| Inventory and global-state scope and selection influence | Steps 13–16 | An exact decision using known current state, including when a better-than-target option is reasonable. Define counting units and whether state is daily or festival-wide. |
+| Inventory v1 counting scope (implemented) | Step 13 | Raw available Spot counts by quality in the caller-supplied snapshot; no GroupSize or eligibility filtering inside the calculator. See [Current Inventory State](assignment-strategy-v1.md#9-current-inventory-state). |
+| Global-state scope and inventory/selection influence | Steps 14–16 | An exact decision using known current state, including when a better-than-target option is reasonable. Define whether global state is daily or festival-wide. |
 | Deterministic candidate ordering | Step 18 | A tied-candidate case with one reproducible result. |
 | Persisted experience representation | Steps 20–22 | Quality and the complete successful outcome saved within the existing atomic boundary. No legacy-data backfill is needed. |
 
@@ -481,18 +482,20 @@ Allow candidate selection to reason about both fairness need and available exper
 
 ## Step 13 — Introduce Current Inventory State
 
-Provide the minimum information required to describe currently available capacity.
-
-Possible initial metrics:
+Implemented pure domain API:
 
 ```text
-Good capacity remaining
-Medium capacity remaining
-Bad capacity remaining
-Total remaining capacity
+RemainingInventoryCalculator.Calculate(zones, availableSpots)
+→ RemainingInventoryState { GoodRemaining, MediumRemaining, BadRemaining }
 ```
 
-The implementation should remain minimal.
+The immutable state exposes non-negative raw Spot counts; its validated factory
+is `RemainingInventoryState.Create(goodRemaining, mediumRemaining, badRemaining)`.
+The calculator uses `Spot.ZoneId → Zone.Type → ZoneExperienceQualityPolicy` and
+aggregates across Zones. Empty availability returns zeros. Tests cover every
+ZoneType, mixed and same-quality Zones, supplied availability, ordering,
+fragmented capacity and malformed/duplicate inputs. Selection influence remains
+a later increment.
 
 ### Goal
 
@@ -504,11 +507,11 @@ Allow the strategy to recognize:
 
 ### Important Boundary
 
-Inventory State must not modify RotationScore.
-Define whether counts describe Spots or feasible blocks. Classify counted
-capacity through the global ZoneType quality policy, restricting participation
-by request eligibility without changing quality. Candidate blocks can overlap;
-counting them does not necessarily count independently usable capacity.
+Raw remaining Spot count ≠ contiguous group-feasible capacity. The calculator
+does not accept GroupSize, call FeasibleSpotBlockFinder, calculate fragmentation,
+filter request eligibility, modify RotationScore or select candidates. A caller
+can supply an eligible Zone/Spot snapshot later; the inventory component only
+describes its supplied snapshot and does not determine daily/festival scope.
 
 ---
 
