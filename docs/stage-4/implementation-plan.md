@@ -410,6 +410,14 @@ If a rule has not yet been defined sufficiently by the business model, document 
 
 ## Step 11 — Generate Feasible Candidate Blocks
 
+The physical finder is implemented as `FeasibleSpotBlockFinder.Find(zone,
+availableSpots, groupSize)`, returning all complete `FeasibleSpotBlock` windows
+inside the supplied Zone. It preserves overlapping alternatives and keeps Rows
+independent, ordered by RowCode then SpotNumber. It reuses the existing physical
+invariants; tests verify compatibility with AssignmentGroup validation.
+The caller supplies availability and selects eligible Zones. Ranking, fragmentation
+evaluation, attendee binding and assignment selection remain deferred.
+
 Build on existing Stage 2 and Stage 3 invariants.
 
 For an individual:

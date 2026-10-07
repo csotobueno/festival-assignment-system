@@ -460,6 +460,22 @@ Relevant constraints include:
 
 Fairness must never bypass physical feasibility.
 
+The pure domain API `FeasibleSpotBlockFinder.Find(Zone zone,
+IEnumerable<Spot> availableSpots, GroupSize groupSize)` now finds every complete
+contiguous window inside the supplied Zone, preserving overlapping alternatives.
+It groups by existing RowCode and orders rows ordinally by their normalized value,
+then Spots numerically by SpotNumber. It uses the existing same-Zone, same-Row,
+consecutive-number rule. Each immutable `FeasibleSpotBlock` exposes a read-only
+ordered `Spots` collection and derives `ZoneId` and `RowCode` from it; its validated
+`Create(spots)` factory also requires a size in the existing GroupSize range.
+
+Empty availability returns no blocks. Null inputs/elements, uninitialized
+GroupSize, foreign Zone membership, duplicate SpotCodes and duplicate physical
+positions are rejected. Availability and eligibility are supplied by the caller.
+The finder does not rank Zones or blocks, reserve Spots, or bind Attendees.
+Fragmentation evaluation and selection remain separate deferred responsibilities;
+the existing AssignmentEngine is unchanged.
+
 ---
 
 # 8. Candidate Generation
