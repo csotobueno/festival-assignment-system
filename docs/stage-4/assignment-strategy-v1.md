@@ -13,10 +13,11 @@ Its purpose is to describe **how the system transforms a daily assignment reques
 - attendee eligibility;
 - physical feasibility;
 - current inventory;
-- current global assignment state;
+- Zone-level availability;
 - deterministic selection.
 
-This is the initial Stage 4 strategy guide. Selection examples express intent;
+This guide records the agreed, not yet implemented Zone Evaluation Strategy v1.
+Block selection remains deferred. Other selection examples express intent;
 where they say “may” or “reasonable”, the corresponding implementation increment
 must establish a concrete provisional rule and expected result. The
 [decision table](implementation-plan.md#decisions-at-the-point-of-use) identifies
@@ -64,7 +65,7 @@ Assignment Strategy v1 is responsible for:
 - deriving a reasonable target quality;
 - considering only eligible and feasible candidates;
 - evaluating current inventory;
-- considering the global assignment state accumulated so far;
+- ordering eligible Zones using Target Quality and Zone-level availability;
 - selecting a valid assignment deterministically;
 - preserving existing assignment invariants;
 - producing a result that becomes part of the state used by later requests.
@@ -196,10 +197,15 @@ RotationScore / GroupRotationScore → current recovery need
         ↓
 Target Quality → reasonable quality objective
         ↓
-Eligibility + Physical Feasibility + Candidate Experience Quality
-+ Current Inventory State + Current Global Assignment State
+RequestEligibility → ZoneEligibilityPolicy → eligible Zones
+        +
+TargetQuality + Zone-level availability
         ↓
-Final Assignment Selection → actual ExperienceQuality
+Zone Evaluation Strategy → ordered Zones
+        ↓
+FeasibleSpotBlockFinder → selected Zone with 1..N feasible blocks
+        ↓
+Block selection (deferred) → actual ExperienceQuality
 ```
 
 Target Quality is a reference for the later assignment strategy. It is neither
@@ -218,10 +224,10 @@ an eligible, feasible `Good` candidate a more reasonable choice than consuming
 `Medium`. A `Good` target may degrade to `Medium` or `Bad` when eligibility,
 physical feasibility or available inventory prevents the preferred outcome.
 
-Target derivation does not include inventory or global state. Final selection
-must consider eligible options, physical feasibility, candidate Experience
-Quality, Current Inventory State and Current Global Assignment State. Concrete
-better-than-target and degradation rules remain separate later selection tasks.
+Target derivation does not include inventory or global state. The agreed
+[Zone Evaluation Strategy](#11-zone-evaluation-strategy-v1) defines inventory-aware
+better-than-target and degradation behavior. CurrentGlobalAssignmentState is
+deferred and is not an input to v1.
 Decisions use only information available at that moment; Target Quality does
 not reserve capacity for unknown future requests.
 
@@ -480,39 +486,24 @@ the existing AssignmentEngine is unchanged.
 
 # 8. Candidate Generation
 
-Only complete, eligible, and feasible assignment candidates should continue to selection.
-
-Conceptually:
-
-```text
-Available Spots
-      ↓
-Organization Policy
-      ↓
-Eligibility
-      ↓
-Physical Feasibility
-      ↓
-Candidate Assignments
-```
-
-For groups, the strategy compares complete blocks rather than isolated Spots.
-
-Example:
+Order eligible Zones before generating physical blocks. The later Assignment
+flow calls `FeasibleSpotBlockFinder` separately for each ordered Zone:
 
 ```text
-Group size = 5
-
-Good capacity:
-3 contiguous Spots
-
-Medium capacity:
-5 contiguous Spots
+ordered Zone → FeasibleSpotBlockFinder → 0..N feasible blocks
 ```
 
-The `Good` block is not a valid candidate.
+If there is no complete block for the current `GroupSize`, continue to the next
+Zone. The first Zone with one or more feasible blocks becomes the selected Zone
+for the next decision step. Do not generate all candidates across all Zones
+before ordering. The finder verifies physical feasibility; it does not choose a
+Zone or select among its blocks.
 
-The complete `Medium` block is.
+A group of five cannot use three contiguous Good Spots; evaluation continues
+until a complete block is found, including Medium and then Bad as applicable.
+Multiple feasible blocks in the selected Zone remain a separate, deferred
+block-selection concern. No first-block selection, fragmentation scoring, edge
+or center preference, random selection or future-capacity optimization is defined.
 
 ---
 
@@ -548,154 +539,164 @@ that a group of five fits. `FeasibleSpotBlockFinder` remains responsible for
 physical feasibility and is not called by the inventory calculator. GroupSize,
 fragmentation metrics, fairness and selection rules are outside inventory v1.
 
-Later selection may use these counts to answer questions such as:
+### Next Prerequisite: Zone-Level Availability
 
-> Is favorable capacity currently scarce?
+The implemented aggregate alone is insufficient for same-quality Zone ordering.
+The next implementation prerequisite is to evolve toward Zone-level entries as
+the primary availability source:
 
-> Is there enough favorable capacity remaining that assigning a better-than-target experience would not unnecessarily damage the current global balance?
+```text
+ZoneAvailabilityState
+- ZoneId
+- ExperienceQuality
+- AvailableSpotCount
+```
 
-Inventory State is not part of RotationScore.
+`AvailableSpotCount` means raw currently available Spots in that Zone. It does
+not mean contiguous capacity, number of feasible groups, largest possible group,
+fragmentation quality or number of feasible Spot blocks:
 
-It is decision context.
+```text
+AvailableSpotCount ≠ group-feasible capacity
+```
+
+Conceptually derive `GoodRemaining`, `MediumRemaining` and `BadRemaining` by
+summing Zone-level entries by quality, rather than maintaining an independent
+source of truth. Zone Evaluation orders only already eligible Zones using the
+supplied availability snapshot. Current availability uses current Zone classification through the
+quality policy; historical assignments use quality recorded at assignment time.
+
+This model evolution is agreed design, not implemented here. Existing
+`RemainingInventoryState` and `RemainingInventoryCalculator` remain unchanged.
+Inventory is decision context and never part of RotationScore.
 
 ---
 
 # 10. Current Global Assignment State
 
-The strategy should also consider the assignment distribution accumulated so far.
-
-This may include aggregate information such as:
+`CurrentGlobalAssignmentState` is not used in Zone Evaluation Strategy v1 and
+remains deferred. Stage 5 may show that remaining inventory alone is insufficient
+and justify incorporating recorded assigned-outcome state in a future iteration.
+A likely future model, not an implemented contract, is:
 
 ```text
-Good assignments already made
-Medium assignments already made
-Bad assignments already made
+ZoneAssignmentState
+- ZoneId
+- recorded ExperienceQuality
+- AssignedCount
 ```
 
-or other minimal metrics justified during implementation.
-
-The objective is not to calculate a future global optimum.
-
-The objective is to avoid making a current decision that **unnecessarily deteriorates** the fairness state observed so far.
-
-Global fairness in Stage 4 is therefore incremental.
-
-Before implementing global-state influence, document one concrete scenario where
-it changes the selected candidate, the expected outcome and why that outcome
-preserves fairness. Define the population/time scope and minimum metric needed.
-Simple quality totals may be useful inputs, but cannot alone show whether the
-same attendees repeatedly receive favorable experiences. The
-[implementation plan](implementation-plan.md#step-14--introduce-current-global-assignment-state)
-requires scenario evidence before introducing additional state.
+Global Good/Medium/Bad assigned totals may then be derived from recorded outcomes.
+Later ZoneType or quality-policy changes must not reinterpret historical
+assignments. Global fairness is an outcome to measure, not an additional v1
+Zone-ordering input. Any future influence needs a concrete scenario and an
+explicit population/time scope before implementation.
 
 ---
 
-# 11. Online Fairness-Aware Selection
+# 11. Zone Evaluation Strategy v1
 
-The final decision should combine:
-
-```text
-RotationScore
-        +
-Target Quality
-        +
-Eligible Candidates
-        +
-Physical Feasibility
-        +
-Current Inventory
-        +
-Current Global Assignment State
-```
-
-to select the best reasonable candidate available now.
-
-Conceptually:
+The future policy orders already eligible Zones only. Its conceptual contract is:
 
 ```text
-fairness need
-      +
-current system state
-      ↓
-best reasonable assignment now
+TargetQuality + ZoneAvailabilityState[] + eligible Zones
+        ↓
+ZoneEvaluationPolicy.Order(...) → IReadOnlyList<Zone>
+        ↓
+ordered eligible Zones
+        ↓
+FeasibleSpotBlockFinder
 ```
 
-The strategy should protect the attendee or group's historical path while avoiding unnecessary damage to the current global distribution.
+The exact production API is not fixed or implemented in this documentation task.
+Eligibility precedes ordering:
+
+```text
+RequestEligibility → ZoneEligibilityPolicy → eligible Zones
+        ↓
+Zone Evaluation Strategy
+```
+
+Eligibility never reclassifies quality: a Medium Zone stays Medium even if all
+Good Zones were excluded.
+
+### Quality Order
+
+| TargetQuality | Remaining raw capacity condition | Quality evaluation order |
+| --- | --- | --- |
+| Good | Any | Good → Medium → Bad |
+| Medium | GoodRemaining > MediumRemaining | Good → Medium → Bad |
+| Medium | GoodRemaining <= MediumRemaining (including equality) | Medium → Good → Bad |
+
+For a Good target, evaluate every eligible Good Zone before degrading to Medium,
+and every eligible Medium Zone before Bad. For a Medium target, target quality
+remains the default preference, while clearly more abundant Good raw capacity
+may be consumed first. Equality means Medium first. There is no percentage,
+ratio or arbitrary additional threshold; Stage 5 will measure this simple rule.
+
+A quality with zero remaining raw Spot capacity may be omitted. For example,
+`GoodRemaining = 0`, `MediumRemaining = 40`, `BadRemaining = 20` permits a Good
+target to begin with Medium → Bad. Positive raw capacity does not prove a
+physically feasible block exists.
+
+### Same-Quality Zone Order
+
+Within each quality, order eligible Zones by `AvailableSpotCount` descending.
+For example, MiddleCenter (Good, 80 available) precedes FrontStanding (Good,
+30 available). This uses the existing snapshot and tends to balance consumption
+between equivalent-quality Zones as availability changes, avoiding a fixed Zone
+being systematically consumed first.
+
+For exact same-quality/count ties, use a stable technical tie-break such as
+`ZoneId` ascending. ZoneId ordering is a technical deterministic tie-break only,
+not a business preference or the primary Zone priority. No permanent ZoneType
+ranking such as FrontStanding before MiddleCenter is defined.
+
+The same state snapshot produces the same order, reproducible for tests and
+Stage 5 simulation. No randomness, weighted randomness, persistent round-robin
+cursor or future-demand prediction is used.
+
+### Physical-Feasibility Boundary
+
+Visit Zones in this order and call `FeasibleSpotBlockFinder` for each. Skip Zones
+with zero blocks for `GroupSize`. The first Zone with 1..N blocks wins for the
+next decision step, even if a later Zone might preserve capacity better. This
+strategy does not select among blocks; that decision remains deferred.
 
 ---
 
 # 12. No Artificial Degradation
 
-The strategy must not deliberately assign a worse option simply because the attendee currently has low recovery need.
-
-Example:
-
-```text
-Target Quality = Medium
-+
-Good inventory is abundant
-+
-Good candidates are eligible and feasible
-```
-
-The system may assign:
-
-```text
-Good
-```
-
-if doing so does not meaningfully damage current global fairness.
-
-The strategy should not waste favorable capacity merely to enforce a theoretical quality level.
+Low recovery need does not require a Bad assignment. A Medium target may receive
+Good under the exact capacity comparison above, or when no earlier Medium Zone
+has a feasible block. Target Quality is not a ceiling. Unknown future need does
+not justify speculative reservation.
 
 ---
 
 # 13. Degradation When Target Quality Is Unavailable
 
-If no valid candidate exists at the target quality, the strategy may evaluate lower-quality alternatives.
+Bad is never a Target Quality in v1, but is an acceptable actual result when no
+eligible Good or Medium Zone has a feasible complete block. The MVP deliberately
+prefers a complete lower-quality assignment over rejecting an otherwise
+physically assignable group.
 
-Conceptually:
+A Good-target request is rejected for lack of a block only after no physically
+feasible block exists in any eligible Good, Medium or Bad Zone. The same complete
+search applies to a Medium target using its quality order. Groups are never
+split or restructured automatically; after rejection the user may retry with
+another group configuration through a new request.
 
-```text
-Target = Good
-
-No valid Good candidate
-        ↓
-try Medium
-        ↓
-if unavailable
-try Bad
-```
-
-However, before finalizing a lower-quality assignment, the strategy should evaluate the full current candidate and inventory state.
-
-A better-quality candidate may still be chosen if:
-
-- it is eligible;
-- it is feasible;
-- it is available;
-- using it does not unnecessarily worsen the current global fairness state.
+Stage 5 may evaluate whether degradation should stop before Bad in some scenarios.
 
 ---
 
 # 14. Better-Than-Target Assignments
 
-The strategy may assign a better quality than the target when current system conditions justify it.
-
-Example:
-
-```text
-Target = Medium
-
-Available:
-many Good
-few Medium
-enough total capacity
-```
-
-A `Good` assignment may be more reasonable than deliberately consuming scarce `Medium` capacity.
-
-This is one reason Target Quality must remain separate from final Candidate Selection.
+For a Medium target, `GoodRemaining > MediumRemaining` means Good → Medium → Bad;
+otherwise Medium → Good → Bad, including equality. Better-than-target behavior
+uses raw current inventory, with no global assigned-outcome state in v1.
+Physical feasibility remains a separate check in each ordered Zone.
 
 ---
 
@@ -754,9 +755,9 @@ For a group request:
 2. calculate GroupRotationScore;
 3. determine the group's target quality;
 4. apply organization policy and eligibility;
-5. generate complete feasible blocks;
-6. evaluate current inventory and global state;
-7. select a complete block;
+5. order eligible Zones using Target Quality and Zone-level availability;
+6. find feasible blocks per ordered Zone, stopping at the first with blocks;
+7. select a complete block through a separate policy (deferred);
 8. never split the group automatically merely to improve fairness.
 
 The MVP preserves group integrity.
@@ -823,7 +824,7 @@ Given the same relevant:
 - eligibility;
 - feasible candidates;
 - inventory;
-- global assignment state;
+- Zone-level availability;
 
 the strategy should produce the same decision.
 
@@ -838,25 +839,10 @@ This supports:
 
 # 21. Tie-Breaking
 
-RotationScore v1 does not use a numerical equivalence tolerance.
-
-If an actual selection reaches an exact tie after the relevant decision rules are applied, the strategy should use a simple deterministic tie-breaker.
-
-Examples may include:
-
-```text
-stable candidate ordering
-```
-
-or:
-
-```text
-request ordering
-```
-
-where applicable.
-
-The exact tie-break should be explicit in implementation and should not introduce hidden fairness semantics.
+RotationScore v1 does not use a numerical equivalence tolerance. Same-quality
+Zones use available raw Spot count descending, then a stable technical tie-break
+such as ZoneId ascending for an exact count tie. This creates no ZoneType business
+ranking. Block-selection tie-breaking remains deferred.
 
 ---
 
@@ -976,21 +962,19 @@ The Stage 4 decision flow is:
 
 8. Apply attendee/group eligibility.
 
-9. Generate complete physically feasible candidates.
+9. Derive current Zone quality and Zone-level raw availability.
 
-10. Derive candidate Experience Quality from the global ZoneType policy.
+10. Order eligible Zones using TargetQuality and ZoneAvailabilityState entries.
 
-11. Read Current Inventory State.
+11. Call FeasibleSpotBlockFinder for each ordered Zone until one has 1..N blocks.
 
-12. Read Current Global Assignment State.
+12. Reject without Assignments if no eligible Zone has a feasible block.
 
-13. Select the best reasonable candidate now.
+13. Select a block inside the selected Zone (separate deferred decision).
 
-14. Apply deterministic tie-breaking if required.
+14. Persist the complete decision atomically.
 
-15. Persist the complete decision atomically.
-
-16. Return the assignment result.
+15. Return the assignment result.
 ```
 
 This flow defines business behavior.
@@ -1046,13 +1030,13 @@ Do not violate feasibility to obtain `Good`.
 Target = Medium
 
 Inventory:
-Good capacity abundant
-Medium capacity scarce
+GoodRemaining = 80
+MediumRemaining = 30
 ```
 
 Expected behavior:
 
-A `Good` assignment may be selected.
+Evaluate Good first; select the first Good Zone with a feasible block.
 
 The engine should not degrade the request merely to match the target exactly.
 
@@ -1073,7 +1057,8 @@ Good capacity abundant
 
 Expected behavior:
 
-`Good` remains a valid outcome when no current fairness reason requires preserving that capacity.
+For a Medium target, Good is evaluated first when GoodRemaining > MediumRemaining;
+otherwise it follows Medium. A feasible Good outcome remains allowed.
 
 ---
 
@@ -1093,7 +1078,8 @@ Expected behavior:
 
 `Good` is not a complete candidate.
 
-Select the valid `Medium` block if appropriate.
+Continue to Medium Zones; the first with feasible blocks is selected.
+Choosing among its blocks remains deferred.
 
 ---
 
@@ -1132,8 +1118,8 @@ Do not deliberately withhold `Good` only because a higher-need attendee might re
 # 28. Strategy Baseline
 
 The baseline makes one deterministic online decision at a time using historical
-recovery need, globally classified Experience Quality, inventory and incremental
-global state.
+recovery need, globally classified Experience Quality and Zone-level availability.
+Global assigned-outcome state is deferred.
 The [reference examples](#27-reference-decision-examples) guide provisional rules;
 Stage 5 evaluates their resulting fairness. This is not a globally optimal
 allocation algorithm.
@@ -1202,7 +1188,10 @@ Assignment Strategy v1 is considered implemented when:
 - same Zone and same Row group invariants are respected;
 - only complete group candidates are considered;
 - current inventory influences the final decision;
-- current global assignment state can influence the final decision;
+- eligible Zones follow the agreed quality/count/tie ordering;
+- Zone-level entries are the primary availability source;
+- feasibility is checked per ordered Zone;
+- block selection is resolved separately before full engine completion;
 - better-than-target assignments are possible when reasonable;
 - artificial degradation is avoided;
 - unknown future demand is not used for speculative reservation;
@@ -1222,12 +1211,17 @@ Stage 5 should measure:
 3. How often does the engine fail to recover unfavorable histories?
 4. How often do attendees never receive a `Good` experience?
 5. Does inventory-aware selection improve capacity usage?
-6. Does incremental global fairness avoid extreme negative paths?
+6. Is global assigned-outcome state needed to improve fairness?
 7. Does the strategy assign too many favorable experiences early?
 8. Does it leave favorable capacity unused or underused?
 9. How strongly do group requests affect fairness?
 10. How strongly does group size affect feasible quality?
 11. How much fairness is physically impossible due to venue configuration?
 12. Would a daily batch or hybrid model materially improve outcomes?
+
+The detailed [Zone Evaluation questions](trade-offs-and-open-questions.md#zone-evaluation-strategy-v1)
+cover degradation rates, Medium-to-Good outcomes, the raw-capacity comparison,
+same-quality usage balance, fragmentation, stopping before Bad, group
+restructuring, global outcome state and unacceptable arrival-order effects.
 
 Until these questions are measured, Assignment Strategy v1 remains a **Lean online fairness baseline**, not a final operational allocation policy.

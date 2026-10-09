@@ -57,7 +57,8 @@ inventory pressure, global-state metric or prediction of future demand.
 
 The score estimates recovery need. The
 [Assignment Strategy](assignment-strategy-v1.md) combines it with Target Quality,
-eligibility, feasibility, current inventory and global assignment state.
+eligibility and Zone-level availability to order Zones, then checks feasibility
+per Zone. Global assigned-outcome influence and block selection remain deferred.
 A low score does not require a Bad assignment; available Good capacity may still
 be used under the selection policy.
 
@@ -457,8 +458,10 @@ a subsequent task and Stage 5 will evaluate calibration.
 
 ## Target Quality Is Not a Maximum
 
-A Medium target can result in Good when current inventory and global fairness
-justify it. Low recovery need does not require an unfavorable assignment.
+A Medium target evaluates Good first when GoodRemaining > MediumRemaining,
+otherwise Medium first (including equality), then Good, with Bad last.
+Global assigned-outcome state does not participate in Zone Evaluation v1.
+Low recovery need does not require an unfavorable assignment.
 
 ## Target Quality Is Not a Guarantee
 
@@ -857,7 +860,8 @@ the same historical path. The Assignment Strategy combines these separate inputs
 # RotationScore and Global Fairness
 
 RotationScore is an individual or group recovery signal. Global-state influence
-belongs to the [strategy](assignment-strategy-v1.md#10-current-global-assignment-state),
+is deferred from Zone Evaluation v1 in the
+[strategy](assignment-strategy-v1.md#10-current-global-assignment-state),
 and global outcome measurement belongs to Stage 5. Neither is included in the
 score calculation.
 

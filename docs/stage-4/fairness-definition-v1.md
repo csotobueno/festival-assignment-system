@@ -105,8 +105,11 @@ It should never manufacture negative experiences.
 
 For example, an attendee with a historically favorable path may still receive a `Good` assignment if:
 
-- favorable capacity is sufficiently available;
-- using it does not meaningfully deteriorate the current global fairness state.
+- favorable capacity is available and physically feasible;
+- the agreed inventory-aware Zone Evaluation order reaches that Good Zone.
+
+V1 uses remaining inventory for this decision; global assigned-outcome influence
+is deferred and its need will be measured in Stage 5.
 
 Fairness distributes scarcity.
 
@@ -135,8 +138,9 @@ Recovery remains subject to:
 
 - eligibility;
 - physical feasibility;
-- current inventory;
-- current global assignment state.
+- current inventory under the agreed Zone Evaluation strategy.
+
+Global assigned-outcome influence is deferred from v1.
 
 ---
 
@@ -222,7 +226,9 @@ The current request should receive an assignment consistent with its accumulated
 
 The current decision should avoid unnecessarily deteriorating the distribution of experiences already accumulated across the festival population.
 
-For Stage 4, global fairness is **incremental**.
+For Stage 4, global fairness is **incremental** and remains an outcome to measure.
+Zone Evaluation Strategy v1 does not consume CurrentGlobalAssignmentState;
+future influence is deferred pending Stage 5 evidence.
 
 The system does not globally optimize all future assignments.
 
@@ -231,9 +237,9 @@ Instead:
 ```text
 current individual/group state
         +
-current global assignment state
+Target Quality
         +
-current inventory
+Zone-level availability
         ↓
 best reasonable decision now
 ```
@@ -301,7 +307,9 @@ It allows groups to participate in the same fairness model without introducing a
 
 ## 15. Physical feasibility precedes fairness
 
-Fairness only operates among physically valid assignment options.
+Fairness only operates among physically valid assignment options. Zone ordering
+may precede block discovery, but an assignment cannot be selected until the finder
+confirms physical feasibility; raw availability is not proof that a group fits.
 
 For a group, an option is not a candidate if it cannot satisfy the complete request.
 
@@ -351,13 +359,17 @@ Request
    ↓
 Organization Policies
    ↓
-Eligibility
+Eligibility → eligible Zones (quality unchanged)
    ↓
-Physical Feasibility
+TargetQuality + Zone-level availability
    ↓
-Experience Quality
+Zone Evaluation Strategy → ordered Zones
    ↓
-Fairness-Aware Selection
+Physical Feasibility via FeasibleSpotBlockFinder per Zone
+   ↓
+Selected Zone with feasible blocks
+   ↓
+Block selection (deferred)
 ```
 
 Fairness must never transform an invalid option into a valid candidate.
@@ -482,9 +494,9 @@ made concrete for the implemented scenarios.
 ## Global Fairness Is Incremental
 
 Each committed outcome contributes to the state used by later requests.
-The [global-state rule](assignment-strategy-v1.md#10-current-global-assignment-state)
-will be defined through a concrete Stage 4 scenario; Stage 5 measures the
-resulting distribution across five days.
+The [global-state role](assignment-strategy-v1.md#10-current-global-assignment-state)
+is deferred from Zone Evaluation v1. Stage 5 measures the resulting distribution
+across five days and whether inventory alone is sufficient.
 
 ---
 
@@ -605,10 +617,12 @@ Combines:
 - target quality;
 - eligibility;
 - feasibility;
-- current inventory;
-- current global assignment state;
+- Zone-level availability and its derived quality totals;
 
-to select a reasonable available assignment.
+to order eligible Zones, check physical feasibility per Zone, and then select a
+complete assignment through a separate block policy. Zone Evaluation v1 is
+[agreed design](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); block
+selection remains deferred, and global assigned-outcome state is not a v1 input.
 
 ## Path Classification
 

@@ -65,7 +65,9 @@ Stage 5 should measure the impact of this limitation.
 ---
 ## 5. Global Fairness Is Incremental
 Stage 4 does not calculate a global optimum.
-Instead, every successful assignment updates the system state used by subsequent decisions.
+Instead, every successful assignment updates inventory and attendee history used
+by subsequent decisions. Explicit global assigned-outcome influence is deferred
+from Zone Evaluation v1; Stage 5 measures the resulting global distribution.
 ### Accepted Consequence
 Locally reasonable decisions may still produce a suboptimal final distribution.
 ### Why Accepted
@@ -94,7 +96,7 @@ Final selection uses Target Quality as a reference while respecting:
 - eligibility;
 - feasibility;
 - inventory state;
-- global fairness state.
+- Zone-level raw availability (global assigned-outcome influence is deferred).
 ### Target Quality v1 Threshold Decision
 Stage 4 selects `score >= 1.00 → Good`, otherwise `Medium`, for both individual
 and group scores. The boundary is inclusive.
@@ -338,28 +340,51 @@ A candidate considered available during evaluation can fail at commit time.
 Database constraints already protect the global invariants established in Stage 3.
 ---
 ## 23. Inventory Model Remains Minimal
-Implemented inventory v1 tracks only raw currently available Spot counts by
-quality in the caller-supplied snapshot:
-```text
-GoodRemaining
-MediumRemaining
-BadRemaining
-```
+
+The implemented RemainingInventoryState exposes GoodRemaining, MediumRemaining
+and BadRemaining. Those totals alone cannot order multiple same-quality Zones.
+The next prerequisite is ZoneAvailabilityState (ZoneId, ExperienceQuality,
+AvailableSpotCount) as the primary source, deriving aggregate quality totals
+from its entries. This evolution is agreed, not implemented here.
+
 ### Accepted Consequence
-Raw remaining Spot count ≠ contiguous group-feasible capacity. Counts aggregate
-across Zones and Rows without measuring fragmentation or proving a group fits.
-Physical feasibility remains with FeasibleSpotBlockFinder. Eligibility filtering
-belongs to the caller; fairness and selection influence remain later tasks.
+
+AvailableSpotCount ≠ group-feasible capacity. Raw counts do not model contiguous
+capacity, feasible group counts, largest groups, fragmentation or feasible block
+counts. Same-quality Zone ordering uses raw availability instead of group-feasible
+capacity. Positive inventory can therefore mislead ordering when fragmented.
+FeasibleSpotBlockFinder remains the separate physical check.
+
 ### Why Accepted
-The first goal is to determine whether inventory awareness materially improves online decisions.
+
+The snapshot already contains raw availability. Ordering equivalent-quality
+Zones by descending count tends to balance usage as availability changes without
+randomness or a persistent round-robin cursor. Stage 5 must measure whether
+inventory awareness improves outcomes before adding fragmentation metrics.
+
 ---
-## 24. Global Assignment State Remains Minimal
-The initial global state may use simple aggregate counts.
+
+## 24. Global Assignment State Is Deferred
+
+CurrentGlobalAssignmentState is not used in Zone Evaluation Strategy v1. A future
+iteration may need it if Stage 5 finds remaining inventory insufficient. A likely
+future ZoneAssignmentState would contain ZoneId, recorded ExperienceQuality and
+AssignedCount; global Good/Medium/Bad totals could derive from recorded outcomes.
+This is not implemented. Current availability uses current Zone classification;
+historical outcomes retain the quality recorded when assigned.
+
 ### Accepted Consequence
-It will not represent every distribution detail.
+
+No current global assignment distribution influences Zone ordering yet. Online
+local decisions may yield an undesirable global distribution.
+
 ### Why Accepted
-Stage 4 needs enough global context to avoid obvious fairness degradation, not a full optimization model.
+
+Begin with the smallest explainable deterministic inventory-aware baseline;
+measure its limitations before adding global outcome state.
+
 ---
+
 ## 25. Accessibility, Reservations, and Preferences Remain Policy Concepts Until Concrete
 The architecture recognizes these concerns.
 ### Accepted Consequence
@@ -385,6 +410,34 @@ Unless implementation evidence clearly requires them, Stage 4 excludes:
 - advanced operational dashboards;
 - complete user-interaction workflows for infeasible groups.
 ---
+# Zone Evaluation Strategy v1 Trade-offs
+
+The [agreed strategy](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1)
+orders Good targets Good → Medium → Bad. Medium targets evaluate Good first only
+when GoodRemaining > MediumRemaining; otherwise Medium first, including equality.
+Target Quality remains the default preference, while better-than-target outcomes
+are allowed when Good raw inventory is clearly more abundant. No percentage,
+ratio or extra threshold is introduced.
+
+Same-quality Zones use AvailableSpotCount descending, then a stable technical
+tie-break such as ZoneId ascending. ZoneId is not a business preference. There
+is no permanent ranking of FrontStanding before MiddleCenter or other ZoneTypes.
+
+Bad is a last-resort actual outcome, never a target: a complete lower-quality
+assignment is preferred over rejecting a physically assignable group. This is a
+deliberate MVP simplification. A Good target is rejected for lack of a block only
+when all eligible Good, Medium and Bad Zones lack a feasible complete block.
+There is no automatic group restructuring; users may later retry another configuration.
+
+The first ordered Zone with feasible blocks wins, even if a later Zone might
+preserve capacity better. Block choice within the selected Zone remains deferred;
+no first-block rule, fragmentation scoring, edge/center preference, random choice
+or future-capacity optimization is defined. Request arrival order still affects
+outcomes, and no festival-wide optimization is attempted. These are intentional
+baseline trade-offs to measure in Stage 5.
+
+---
+
 # Open Questions for Stage 5
 These questions evaluate the implemented baseline and may motivate later changes.
 They do not defer the initial target, quality or selection rules beyond Stage 4;
@@ -423,7 +476,7 @@ those rules are resolved at the
 24. Does remaining capacity need normalization against expected demand?
 ---
 ## Incremental Global Fairness
-25. Are simple aggregate counts sufficient?
+25. Is global assigned-outcome state needed to improve fairness beyond remaining inventory?
 26. Does the system produce globally reasonable distributions despite online processing?
 27. Do locally fair decisions create undesirable global patterns?
 28. What additional global metric, if any, is justified?
@@ -453,6 +506,23 @@ those rules are resolved at the
 44. Is rejection/retry behavior operationally acceptable?
 45. Is stronger serialization justified by measured usage?
 ---
+## Zone Evaluation Strategy v1
+
+46. How often do Good-target requests degrade to Medium?
+47. How often do Good-target requests degrade to Bad?
+48. How often do Medium-target requests receive Good?
+49. Does GoodRemaining > MediumRemaining produce reasonable better-than-target behavior?
+50. Does ordering same-quality Zones by available Spot count distribute usage reasonably?
+51. Does raw availability mislead decisions because of fragmentation?
+52. Should degradation ever stop before Bad?
+53. Should group restructuring be offered instead of accepting Bad?
+54. Is global assigned-outcome state needed to improve fairness?
+55. Does arrival order create unacceptable outcomes?
+
+These questions remain unanswered until Stage 5 provides evidence.
+
+---
+
 # Questions for Festival Organization
 Some questions should not be answered by the MVP alone.
 Examples include:
