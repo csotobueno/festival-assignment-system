@@ -60,8 +60,10 @@ Do not silently choose business semantics inside code.
 | Score-to-Target Quality policy (agreed) | Step 9 implementation | [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality): score >= 1.00 → Good; score < 1.00 → Medium, for individuals and groups. Calibration belongs to Stage 5. |
 | Minimum implemented eligibility rules | Step 10 | A concrete allowed/excluded candidate case; undefined organization policies remain deferred. |
 | Inventory v1 counting scope (implemented) | Step 13 | Raw available Spot counts by quality in the caller-supplied snapshot; no GroupSize or eligibility filtering inside the calculator. See [Current Inventory State](assignment-strategy-v1.md#9-current-inventory-state). |
-| Global-state scope and inventory/selection influence | Steps 14–16 | An exact decision using known current state, including when a better-than-target option is reasonable. Define whether global state is daily or festival-wide. |
-| Deterministic candidate ordering | Step 18 | A tied-candidate case with one reproducible result. |
+| Zone-level availability prerequisite (agreed, pending) | Step 13, before Zone ordering | ZoneAvailabilityState entries are the primary source; derive quality totals from Zone-level entries. Raw counts do not prove feasibility. |
+| Zone Evaluation Strategy v1 (agreed, pending) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
+| Global-state influence (deferred) | Future iteration after Stage 5 evidence | A concrete fairness failure showing remaining inventory is insufficient; then define minimum recorded outcome state and population/time scope. |
+| Block selection (deferred) | Full engine integration | A separate explicit decision for multiple feasible blocks within the selected Zone; Zone ordering defines no block choice. |
 | Persisted experience representation | Steps 20–22 | Quality and the complete successful outcome saved within the existing atomic boundary. No legacy-data backfill is needed. |
 
 Parameter sensitivity and final calibration belong to Stage 5. An initial
@@ -358,7 +360,8 @@ belong to later selection tasks.
 
 Separate measuring recovery need, deriving a quality objective and deciding
 what to assign now. Consume only the individual or group score; eligibility,
-feasibility, inventory and global state remain selection concerns.
+feasibility and inventory remain selection concerns; global assigned-outcome
+influence is deferred from Zone Evaluation v1.
 
 ### Validation
 
@@ -416,7 +419,9 @@ availableSpots, groupSize)`, returning all complete `FeasibleSpotBlock` windows
 inside the supplied Zone. It preserves overlapping alternatives and keeps Rows
 independent, ordered by RowCode then SpotNumber. It reuses the existing physical
 invariants; tests verify compatibility with AssignmentGroup validation.
-The caller supplies availability and selects eligible Zones. Ranking, fragmentation
+Later orchestration first orders eligible Zones, then invokes the finder per Zone
+until one returns blocks; it does not generate candidates across all Zones first.
+The caller supplies availability. Block ranking, fragmentation
 evaluation, attendee binding and assignment selection remain deferred.
 
 Build on existing Stage 2 and Stage 3 invariants.
@@ -497,6 +502,16 @@ ZoneType, mixed and same-quality Zones, supplied availability, ordering,
 fragmented capacity and malformed/duplicate inputs. Selection influence remains
 a later increment.
 
+### Next Implementation Prerequisite
+
+Evolve availability toward `ZoneAvailabilityState` entries with `ZoneId`,
+`ExperienceQuality` and `AvailableSpotCount` as the primary source. Derive
+GoodRemaining/MediumRemaining/BadRemaining from those entries rather than
+maintaining separate totals as a source of truth. Zone Evaluation orders only
+already eligible Zones. Current availability uses current classification;
+historical assignments retain recorded quality. This is agreed design only;
+the existing aggregate and calculator are unchanged by this documentation task.
+
 ### Goal
 
 Allow the strategy to recognize:
@@ -517,132 +532,84 @@ describes its supplied snapshot and does not determine daily/festival scope.
 
 ## Step 14 — Introduce Current Global Assignment State
 
-Provide the minimum aggregate information required to describe assignments already made.
-
-Possible initial metrics:
-
-```text
-Good assignments made
-Medium assignments made
-Bad assignments made
-```
-
-Additional metrics should only be added if a concrete decision requires them.
-
-### Goal
-
-Support incremental global fairness.
-
-The system should be able to ask:
-
-> Would this current decision unnecessarily deteriorate the fairness distribution observed so far?
-
-### Lean Constraint
-
-Do not build a complete global optimization model.
-First document a scenario with explicit current histories, candidates and
-inventory where global state justifies a different selection. Specify the
-expected decision and minimum information needed to explain it. Aggregate
-Good/Medium/Bad counts alone do not demonstrate fair distribution among people.
-Resolve what “unnecessarily deteriorate” means for that scenario before adding
-state or implementing its decision rule. This is a Stage 4 design task, not a
-reason to predict future demand.
+Deferred; not a prerequisite or input to Zone Evaluation Strategy v1. A future
+iteration may add recorded outcome state if Stage 5 shows remaining inventory
+alone is insufficient. A likely model is `ZoneAssignmentState` with ZoneId,
+recorded ExperienceQuality and AssignedCount, deriving global quality totals
+from recorded outcomes. This is not implemented or a fixed production API.
+Before implementation, document the concrete failure, expected improvement,
+minimum information and population/time scope. Preserve historical quality.
 
 ---
 
-## Step 15 — Implement Online Fairness-Aware Selection
+## Step 15 — Implement Zone Evaluation Strategy v1
 
-Combine:
+After Step 13's Zone-level availability prerequisite, conceptually consume:
 
 ```text
-RotationScore
-+
-Target Quality
-+
-Eligible Candidates
-+
-Physical Feasibility
-+
-Current Inventory
-+
-Current Global Assignment State
+TargetQuality + ZoneAvailabilityState[] + eligible Zones
+        ↓
+ZoneEvaluationPolicy.Order(...) → IReadOnlyList<Zone>
 ```
 
-to select the best reasonable candidate now.
+The exact production API remains for the later implementation task. Follow the
+[agreed strategy](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1), without
+CurrentGlobalAssignmentState. RequestEligibility → ZoneEligibilityPolicy precedes
+ordering; eligibility never changes quality. For each ordered Zone, invoke
+FeasibleSpotBlockFinder with GroupSize; skip zero-block results. The first Zone
+with 1..N feasible blocks is selected for the next decision step.
 
-### Required Behavior
+Block selection is separate and deferred. Do not choose the first block, score
+fragmentation, prefer edges or centers, select randomly or optimize future
+capacity without a separate decision.
 
-The strategy should:
+### Later Validation
 
-- prefer recovery when justified;
-- respect eligibility and feasibility;
-- avoid artificial degradation;
-- allow better-than-target assignments;
-- use only known current state;
-- avoid speculative reservation for future requests.
-
-### Goal
-
-Create the first complete Stage 4 online allocation baseline.
+Verify Good and Medium quality orders, equality, zero inventory, same-quality
+count ordering, exact ties, excluded Zones without reclassification, positive raw
+inventory with no feasible block, and advancing to the first feasible Zone.
+The same snapshot must reproduce the same Zone order.
 
 ---
 
 ## Step 16 — Implement Better-Than-Target Behavior
 
-Explicitly support cases such as:
+For TargetQuality.Medium:
 
 ```text
-Target = Medium
-
-Good capacity abundant
-Medium capacity scarce
+GoodRemaining > MediumRemaining → Good → Medium → Bad
+otherwise (including equality) → Medium → Good → Bad
 ```
 
-where `Good` may be the more reasonable final assignment.
-
-### Goal
-
-Prevent Target Quality from becoming an artificial ceiling.
+Use raw totals derived from the supplied Zone-level availability entries. Target quality is the default
+preference; more abundant Good inventory can be evaluated first. Introduce no
+percentage, ratio or additional threshold. Stage 5 measures this baseline.
 
 ---
 
 ## Step 17 — Implement Degradation When Target Is Unavailable
 
-If target quality is unavailable:
+For TargetQuality.Good, evaluate Good → Medium → Bad. Exhaust eligible Zones at
+each quality before degrading. Zero raw inventory qualities may be omitted;
+positive counts never guarantee feasibility.
 
-```text
-Good
-→ Medium
-→ Bad
-```
-
-may be evaluated in decreasing quality order, subject to eligibility and feasibility.
-
-Before final degradation, the strategy should consider whether a better-quality candidate is reasonably available under the current inventory/global state.
-
-### Goal
-
-Preserve graceful behavior under scarcity.
+Bad is never a target, but is an acceptable actual last-resort result when no
+Good or Medium Zone has a feasible block. Prefer a complete lower-quality
+assignment over rejection. Reject for lack of a block only after every eligible
+quality is exhausted. Never automatically split or restructure the group; a
+changed configuration requires a new request. Stage 5 may evaluate stopping
+before Bad or offering group restructuring.
 
 ---
 
-## Step 18 — Add Deterministic Candidate Tie-Breaking
+## Step 18 — Add Deterministic Zone Tie-Breaking
 
-RotationScore v1 does not use score tolerance.
-
-When the decision rules result in an exact tie, use a stable deterministic rule.
-
-Examples:
-
-```text
-stable location ordering
-```
-
-or another explicit deterministic candidate order.
-
-### Goal
-
-Guarantee reproducibility.
+Within each quality, order by AvailableSpotCount descending, then a stable
+technical tie-break such as ZoneId ascending for exact count ties. ZoneId is
+only technical determinism, not a business preference or primary priority.
+There is no permanent ZoneType ranking, randomness, weighted randomness,
+persistent round-robin cursor or future-demand prediction. RotationScore retains
+its existing no-tolerance rule. Block selection remains deferred.
 
 ---
 
@@ -795,10 +762,10 @@ history
 → RotationScore
 → Target Quality
 → eligibility
-→ feasibility
-→ inventory
-→ global state
-→ selection
+→ Zone-level availability
+→ ordered eligible Zones
+→ per-Zone feasibility
+→ block selection (separate decision required)
 → persistence
 ```
 
@@ -855,7 +822,7 @@ At the end of Stage 4, update documentation with:
 - actual formula parameters;
 - actual target-quality rules;
 - actual inventory metrics;
-- actual global-state metrics;
+- deferred global assigned-outcome influence;
 - implemented tie-breaking;
 - accepted limitations;
 - deviations from the original hypothesis.
@@ -880,7 +847,7 @@ Primary targets:
 - eligibility rules;
 - candidate generation;
 - inventory evaluation;
-- global-state evaluation;
+- Zone-level availability and Zone ordering;
 - deterministic candidate selection.
 
 ---
@@ -986,7 +953,10 @@ Stage 4 can be considered complete when:
 - same Zone and same Row group constraints are respected;
 - complete candidate blocks are generated;
 - Current Inventory State influences the decision;
-- Current Global Assignment State influences the decision;
+- Zone-level availability drives the agreed quality/count/tie Zone order;
+- CurrentGlobalAssignmentState remains deferred from v1;
+- the first ordered Zone with feasible blocks is selected;
+- block selection is resolved separately before full engine completion;
 - better-than-target assignments are supported;
 - unnecessary artificial degradation is avoided;
 - unknown future demand is not used for speculative reservation;

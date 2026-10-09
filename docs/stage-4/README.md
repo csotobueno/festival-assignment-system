@@ -27,7 +27,7 @@ prerequisite for beginning implementation.
 | --- | --- | --- |
 | 1 | [Fairness Definition v1](fairness-definition-v1.md) | Business principles, individual/group/global fairness and evaluation dimensions. |
 | 2 | [RotationScore v1](rotation-score-v1.md) | Initial formula, signals, group average and calculated reference scenarios. |
-| 3 | [Assignment Strategy v1](assignment-strategy-v1.md) | Decision flow, candidate quality, inventory, global state and selection examples. |
+| 3 | [Assignment Strategy v1](assignment-strategy-v1.md) | Decision flow, agreed Zone Evaluation Strategy, availability and feasibility boundaries. |
 | 4 | [Implementation Plan](implementation-plan.md) | Increments, decisions needed by each increment, validation and exit criteria. |
 | 5 | [Trade-offs and Open Questions](trade-offs-and-open-questions.md) | Accepted limitations, their reasons, and later evaluation or organization questions. |
 
@@ -45,19 +45,28 @@ persistence foundation on which this proposal builds.
 3. Calculate individual RotationScores. For a group, use their arithmetic mean
    as GroupRotationScore; individual histories remain separate.
 4. Derive a [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality) reference: `Good` or `Medium`; `Bad` is only a possible actual outcome.
-5. Evaluate options that are eligible, physically feasible and currently available.
-6. Select a complete candidate considering individual or group fairness and the
-   global fairness state accumulated so far.
-7. If the target quality is unavailable, evaluate other feasible options.
-8. Before degrading the assignment, inspect current inventory and global state:
-   a better-than-target option may be assigned when its use does not reasonably
-   harm current global fairness.
+5. Apply organization policies and `ZoneEligibilityPolicy` to obtain eligible Zones;
+   exclusions never change ExperienceQuality.
+6. Use TargetQuality and Zone-level raw availability to order eligible Zones via
+   the agreed [Zone Evaluation Strategy v1](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1).
+7. Call `FeasibleSpotBlockFinder` per ordered Zone; continue past zero-block Zones.
+   The first Zone with one or more feasible blocks becomes the selected Zone.
+8. Select a complete block inside that Zone through a separate policy, still deferred.
 9. Persist the request outcome and all Assignments atomically. Successful outcomes
    become history for subsequent requests.
 
-Target Quality is a reference, not an entitlement or ceiling. The precise rules
-for deriving it and combining inventory with global state will be made explicit
-in the relevant implementation increments.
+```text
+TargetQuality + Zone-level availability + eligible Zones
+        ↓
+Zone Evaluation Strategy → ordered Zones → FeasibleSpotBlockFinder
+```
+
+Good targets use Good → Medium → Bad. Medium targets use Good → Medium → Bad
+when GoodRemaining > MediumRemaining, otherwise Medium → Good → Bad (equality
+means Medium first). Within a quality, use AvailableSpotCount descending, then
+a stable technical tie-break such as ZoneId ascending for an exact count tie.
+Target Quality is neither an entitlement nor a ceiling. Bad is an actual
+last-resort result, never a target. CurrentGlobalAssignmentState is deferred.
 
 If no complete eligible and feasible block exists, reject the request without
 Assignments. Lack of contiguous capacity retains
@@ -71,7 +80,7 @@ original request does not remain pending.
   Arrival order can affect results.
 - **Recovery need:** RotationScore uses historical experience. A new Attendee has
   score zero; absences introduce no synthetic assignments. Inventory and global
-  state affect selection, not the score itself.
+  state remain outside the score; global assigned-outcome influence is deferred.
 - **Group average:** scores `2, 4, 1, 3, 0` produce GroupRotationScore `2`. This
   guides quality and Zone selection while preserving the complete group.
 - **Experience Quality:** the agreed [seven ZoneTypes and global mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
@@ -82,6 +91,9 @@ original request does not remain pending.
 - **Zone model evolution:** mandatory `Zone.Type` replaces `IsFrontStanding`;
   eligibility uses `Zone.Type == ZoneType.FrontStanding`.
   `ZoneCode` remains deferred until a concrete integration or identifier need.
+- **Availability evolution:** ZoneAvailabilityState (ZoneId, ExperienceQuality,
+  AvailableSpotCount) is the next implementation prerequisite. Quality totals
+  derive from these entries. Raw counts do not prove group feasibility.
 - **Invariants:** same Zone, same Row, consecutive SpotNumbers, complete groups,
   daily uniqueness and final Assignments remain protected. Fairness cannot
   override eligibility or physical feasibility.
@@ -100,22 +112,25 @@ specified to begin pure calculations using already-classified histories.
 Location classification need not block that work.
 
 The [implementation decision table](implementation-plan.md#decisions-at-the-point-of-use)
-records the agreed Zone-quality mapping and Target Quality, plus the remaining
-inventory/global-state and deterministic tie-breaking decisions. An unresolved business rule pauses its
-dependent increment; independent work can continue. No operational rule should
+records the agreed Zone-quality mapping, Target Quality and Zone Evaluation
+ordering, plus the pending Zone-level availability prerequisite. Block selection
+and global assigned-outcome influence remain deferred. An unresolved business
+rule pauses its dependent increment; independent work can continue. No operational rule should
 be invented merely to complete the design.
 
 ## Scope
 
 Stage 4 includes Experience Quality, history, RotationScore and GroupRotationScore,
 Target Quality, minimum eligibility rules, complete candidate generation,
-inventory and incremental global-state evaluation, deterministic selection,
+Zone-level availability and agreed Zone ordering, deterministic selection,
 atomic persistence integration, and deterministic unit/integration scenarios.
 
 It excludes festival-wide optimization, daily batch or hybrid allocation,
 future-demand prediction and reservation, weighted randomness, complex preference
 ranking, internal group-dispersion optimization, automatic group restructuring,
 retrospective reassignment, and complete operational/UI/administrative workflows.
+Global assigned-outcome influence and block-selection behavior remain separate
+deferred concerns; full engine completion requires a later block-selection decision.
 Final parameter calibration and quantitative fairness evaluation belong to
 Stage 5. Detailed reasons are in the
 [trade-offs document](trade-offs-and-open-questions.md).
