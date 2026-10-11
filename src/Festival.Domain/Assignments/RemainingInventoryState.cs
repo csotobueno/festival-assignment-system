@@ -1,27 +1,44 @@
+using Festival.Domain.Zones;
+
 namespace Festival.Domain.Assignments;
 
 /// <summary>
-/// Raw remaining Spot counts by experience quality, not contiguous group-feasible capacity.
+/// Immutable Zone availability snapshot with derived quality totals.
+/// Raw counts do not represent contiguous group-feasible capacity.
 /// </summary>
-public readonly record struct RemainingInventoryState
+public sealed class RemainingInventoryState
 {
-    public int GoodRemaining { get; }
-    public int MediumRemaining { get; }
-    public int BadRemaining { get; }
+    /// <summary>Zone entries without any business priority or sequence-order contract.</summary>
+    public IReadOnlyList<ZoneAvailabilityState> ZoneAvailabilities { get; }
 
-    private RemainingInventoryState(int goodRemaining, int mediumRemaining, int badRemaining)
+    public int GoodRemaining => CountAvailableSpots(ExperienceQuality.Good);
+    public int MediumRemaining => CountAvailableSpots(ExperienceQuality.Medium);
+    public int BadRemaining => CountAvailableSpots(ExperienceQuality.Bad);
+
+    private RemainingInventoryState(ZoneAvailabilityState[] zoneAvailabilities)
     {
-        GoodRemaining = goodRemaining;
-        MediumRemaining = mediumRemaining;
-        BadRemaining = badRemaining;
+        ZoneAvailabilities = Array.AsReadOnly(zoneAvailabilities);
     }
 
-    public static RemainingInventoryState Create(int goodRemaining, int mediumRemaining, int badRemaining)
+    public static RemainingInventoryState Create(IEnumerable<ZoneAvailabilityState> zoneAvailabilities)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(goodRemaining);
-        ArgumentOutOfRangeException.ThrowIfNegative(mediumRemaining);
-        ArgumentOutOfRangeException.ThrowIfNegative(badRemaining);
+        ArgumentNullException.ThrowIfNull(zoneAvailabilities);
+        var entries = zoneAvailabilities.ToArray();
 
-        return new RemainingInventoryState(goodRemaining, mediumRemaining, badRemaining);
+        if (entries.Any(entry => entry is null))
+        {
+            throw new ArgumentException("Zone availabilities cannot contain null values.", nameof(zoneAvailabilities));
+        }
+
+        if (entries.Select(entry => entry.ZoneId).Distinct().Count() != entries.Length)
+        {
+            throw new ArgumentException("Zone availabilities cannot contain duplicate zone ids.", nameof(zoneAvailabilities));
+        }
+
+        return new RemainingInventoryState(entries);
     }
+
+    private int CountAvailableSpots(ExperienceQuality quality) => ZoneAvailabilities
+        .Where(entry => entry.ExperienceQuality == quality)
+        .Sum(entry => entry.AvailableSpotCount);
 }

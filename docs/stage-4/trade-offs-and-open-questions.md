@@ -341,11 +341,11 @@ Database constraints already protect the global invariants established in Stage 
 ---
 ## 23. Inventory Model Remains Minimal
 
-The implemented RemainingInventoryState exposes GoodRemaining, MediumRemaining
-and BadRemaining. Those totals alone cannot order multiple same-quality Zones.
-The next prerequisite is ZoneAvailabilityState (ZoneId, ExperienceQuality,
-AvailableSpotCount) as the primary source, deriving aggregate quality totals
-from its entries. This evolution is agreed, not implemented here.
+The implemented RemainingInventoryState holds immutable ZoneAvailabilityState
+entries (ZoneId, ExperienceQuality, AvailableSpotCount) as the primary source.
+GoodRemaining, MediumRemaining and BadRemaining are derived from those entries.
+The calculator omits Zones with zero availability. Same-quality Zones retain
+independent counts for future evaluation; Zone ordering remains unimplemented.
 
 ### Accepted Consequence
 

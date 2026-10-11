@@ -13,10 +13,24 @@ public sealed class RemainingInventoryCalculatorTests
     [Fact]
     public void Calculate_ShouldReturnZeroCounts_ForEmptyAvailability()
     {
-        Assert.Equal(RemainingInventoryState.Create(0, 0, 0),
-            RemainingInventoryCalculator.Calculate([Good, Medium, Bad], []));
-        Assert.Equal(RemainingInventoryState.Create(0, 0, 0),
-            RemainingInventoryCalculator.Calculate([], []));
+        foreach (var state in new[] { RemainingInventoryCalculator.Calculate([Good, Medium, Bad], []),
+                     RemainingInventoryCalculator.Calculate([], []) })
+        {
+            Assert.Empty(state.ZoneAvailabilities);
+            Assert.Equal(0, state.GoodRemaining);
+            Assert.Equal(0, state.MediumRemaining);
+            Assert.Equal(0, state.BadRemaining);
+        }
+    }
+
+    [Fact]
+    public void Calculate_ShouldReturnSingleZoneWithItsRawAvailableCount()
+    {
+        var state = RemainingInventoryCalculator.Calculate([Good],
+            [CreateSpot(Good, 1), CreateSpot(Good, 2), CreateSpot(Good, 3)]);
+
+        Assert.Equal(ZoneAvailabilityState.Create(Good.Id, ExperienceQuality.Good, 3),
+            Assert.Single(state.ZoneAvailabilities));
     }
 
     [Theory]
@@ -35,6 +49,7 @@ public sealed class RemainingInventoryCalculatorTests
         var state = RemainingInventoryCalculator.Calculate([zone],
             [CreateSpot(zone, 1), CreateSpot(zone, 2)]);
 
+        Assert.Equal(ZoneAvailabilityState.Create(zone.Id, quality, 2), Assert.Single(state.ZoneAvailabilities));
         Assert.Equal(quality == ExperienceQuality.Good ? 2 : 0, state.GoodRemaining);
         Assert.Equal(quality == ExperienceQuality.Medium ? 2 : 0, state.MediumRemaining);
         Assert.Equal(quality == ExperienceQuality.Bad ? 2 : 0, state.BadRemaining);
@@ -47,18 +62,37 @@ public sealed class RemainingInventoryCalculatorTests
             [CreateSpot(Good, 1), CreateSpot(Good, 2), CreateSpot(Good, 3),
                 CreateSpot(Medium, 1), CreateSpot(Medium, 2), CreateSpot(Bad, 1)]);
 
-        Assert.Equal(RemainingInventoryState.Create(3, 2, 1), state);
+        AssertZoneEntries(state, ZoneAvailabilityState.Create(Good.Id, ExperienceQuality.Good, 3),
+            ZoneAvailabilityState.Create(Medium.Id, ExperienceQuality.Medium, 2),
+            ZoneAvailabilityState.Create(Bad.Id, ExperienceQuality.Bad, 1));
+        Assert.Equal(3, state.GoodRemaining);
+        Assert.Equal(2, state.MediumRemaining);
+        Assert.Equal(1, state.BadRemaining);
     }
 
     [Fact]
-    public void Calculate_ShouldAggregateMultipleZonesWithTheSameQuality()
+    public void Calculate_ShouldKeepMultipleZonesWithTheSameQualityIndependent()
     {
         var front = CreateZone(4, ZoneType.FrontStanding);
-        var spots = Enumerable.Range(1, 3).Select(number => CreateSpot(front, number))
-            .Concat(Enumerable.Range(1, 4).Select(number => CreateSpot(Good, number)));
+        var spots = Enumerable.Range(1, 2).Select(number => CreateSpot(front, number))
+            .Concat(Enumerable.Range(1, 5).Select(number => CreateSpot(Good, number)));
 
-        Assert.Equal(RemainingInventoryState.Create(7, 0, 0),
-            RemainingInventoryCalculator.Calculate([front, Good], spots));
+        var state = RemainingInventoryCalculator.Calculate([front, Good], spots);
+
+        AssertZoneEntries(state, ZoneAvailabilityState.Create(front.Id, ExperienceQuality.Good, 2),
+            ZoneAvailabilityState.Create(Good.Id, ExperienceQuality.Good, 5));
+        Assert.Equal(7, state.GoodRemaining);
+        Assert.Equal(0, state.MediumRemaining);
+        Assert.Equal(0, state.BadRemaining);
+    }
+
+    [Fact]
+    public void Calculate_ShouldOmitCatalogZonesWithoutAvailableSpots()
+    {
+        var state = RemainingInventoryCalculator.Calculate([Good, Medium, Bad], [CreateSpot(Medium, 1)]);
+
+        Assert.Equal(ZoneAvailabilityState.Create(Medium.Id, ExperienceQuality.Medium, 1),
+            Assert.Single(state.ZoneAvailabilities));
     }
 
     [Fact]
@@ -68,8 +102,10 @@ public sealed class RemainingInventoryCalculatorTests
             CreateSpot(Medium, 1), CreateSpot(Bad, 1)];
         var availableSpots = new[] { catalogSpots[1], catalogSpots[3] };
 
-        Assert.Equal(RemainingInventoryState.Create(1, 0, 1),
-            RemainingInventoryCalculator.Calculate([Good, Medium, Bad], availableSpots));
+        var state = RemainingInventoryCalculator.Calculate([Good, Medium, Bad], availableSpots);
+
+        AssertZoneEntries(state, ZoneAvailabilityState.Create(Good.Id, ExperienceQuality.Good, 1),
+            ZoneAvailabilityState.Create(Bad.Id, ExperienceQuality.Bad, 1));
     }
 
     [Fact]
@@ -79,8 +115,11 @@ public sealed class RemainingInventoryCalculatorTests
         Spot[] fragmented = [CreateSpot(Good, 1), CreateSpot(Good, 5),
             CreateSpot(Good, 1, "B"), CreateSpot(front, 10), CreateSpot(front, 20)];
 
-        Assert.Equal(RemainingInventoryState.Create(5, 0, 0),
-            RemainingInventoryCalculator.Calculate([Good, front], fragmented));
+        var state = RemainingInventoryCalculator.Calculate([Good, front], fragmented);
+
+        AssertZoneEntries(state, ZoneAvailabilityState.Create(Good.Id, ExperienceQuality.Good, 3),
+            ZoneAvailabilityState.Create(front.Id, ExperienceQuality.Good, 2));
+        Assert.Equal(5, state.GoodRemaining);
     }
 
     [Fact]
@@ -94,8 +133,14 @@ public sealed class RemainingInventoryCalculatorTests
 
         var state = RemainingInventoryCalculator.Calculate(zones, spots);
 
-        Assert.Equal(RemainingInventoryState.Create(1, 2, 1), state);
-        Assert.Equal(state, RemainingInventoryCalculator.Calculate(zones.Reverse(), spots.Reverse()));
+        AssertZoneEntries(state, ZoneAvailabilityState.Create(Good.Id, ExperienceQuality.Good, 1),
+            ZoneAvailabilityState.Create(Medium.Id, ExperienceQuality.Medium, 2),
+            ZoneAvailabilityState.Create(Bad.Id, ExperienceQuality.Bad, 1));
+        var reorderedState = RemainingInventoryCalculator.Calculate(zones.Reverse(), spots.Reverse());
+        AssertZoneEntries(reorderedState, state.ZoneAvailabilities.ToArray());
+        Assert.Equal(state.GoodRemaining, reorderedState.GoodRemaining);
+        Assert.Equal(state.MediumRemaining, reorderedState.MediumRemaining);
+        Assert.Equal(state.BadRemaining, reorderedState.BadRemaining);
         Assert.Equal(originalZones, zones);
         Assert.Equal(originalSpots, spots);
     }
@@ -173,6 +218,10 @@ public sealed class RemainingInventoryCalculatorTests
 
         Assert.Equal("availableSpots", exception.ParamName);
     }
+
+    private static void AssertZoneEntries(RemainingInventoryState state, params ZoneAvailabilityState[] expected) =>
+        Assert.Equal(expected.OrderBy(entry => entry.ZoneId.Value),
+            state.ZoneAvailabilities.OrderBy(entry => entry.ZoneId.Value));
 
     private static Zone CreateZone(int id, ZoneType type) => Zone.Create(
         ZoneId.Create(Guid.Parse($"20000000-0000-0000-0000-{id:D12}")), "Test", type);

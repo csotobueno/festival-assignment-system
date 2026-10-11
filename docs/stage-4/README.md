@@ -91,9 +91,11 @@ original request does not remain pending.
 - **Zone model evolution:** mandatory `Zone.Type` replaces `IsFrontStanding`;
   eligibility uses `Zone.Type == ZoneType.FrontStanding`.
   `ZoneCode` remains deferred until a concrete integration or identifier need.
-- **Availability evolution:** ZoneAvailabilityState (ZoneId, ExperienceQuality,
-  AvailableSpotCount) is the next implementation prerequisite. Quality totals
-  derive from these entries. Raw counts do not prove group feasibility.
+- **Availability:** ZoneAvailabilityState (ZoneId, ExperienceQuality,
+  AvailableSpotCount) is implemented as the primary inventory source in the
+  immutable RemainingInventoryState snapshot. Quality totals derive from these
+  entries; the calculator omits zero-availability Zones. Raw counts do not prove
+  group feasibility. Zone ordering and selection remain pending.
 - **Invariants:** same Zone, same Row, consecutive SpotNumbers, complete groups,
   daily uniqueness and final Assignments remain protected. Fairness cannot
   override eligibility or physical feasibility.
