@@ -491,26 +491,25 @@ Implemented pure domain API:
 
 ```text
 RemainingInventoryCalculator.Calculate(zones, availableSpots)
-→ RemainingInventoryState { GoodRemaining, MediumRemaining, BadRemaining }
+→ RemainingInventoryState { ZoneAvailabilities: ZoneAvailabilityState[] }
+→ derived GoodRemaining / MediumRemaining / BadRemaining
 ```
 
-The immutable state exposes non-negative raw Spot counts; its validated factory
-is `RemainingInventoryState.Create(goodRemaining, mediumRemaining, badRemaining)`.
+`ZoneAvailabilityState.Create(zoneId, experienceQuality, availableSpotCount)`
+validates the required ZoneId, defined quality and non-negative raw count.
+`RemainingInventoryState.Create(zoneAvailabilities)` copies distinct Zone entries
+into an immutable snapshot; `ZoneAvailabilities` is exposed as an IReadOnlyList.
+GoodRemaining/MediumRemaining/BadRemaining are derived by summing entries of
+each quality, with no independently stored totals.
 The calculator uses `Spot.ZoneId → Zone.Type → ZoneExperienceQualityPolicy` and
-aggregates across Zones. Empty availability returns zeros. Tests cover every
-ZoneType, mixed and same-quality Zones, supplied availability, ordering,
-fragmented capacity and malformed/duplicate inputs. Selection influence remains
-a later increment.
-
-### Next Implementation Prerequisite
-
-Evolve availability toward `ZoneAvailabilityState` entries with `ZoneId`,
-`ExperienceQuality` and `AvailableSpotCount` as the primary source. Derive
-GoodRemaining/MediumRemaining/BadRemaining from those entries rather than
-maintaining separate totals as a source of truth. Zone Evaluation orders only
-already eligible Zones. Current availability uses current classification;
-historical assignments retain recorded quality. This is agreed design only;
-the existing aggregate and calculator are unchanged by this documentation task.
+counts supplied Spots separately for each Zone. Zero-availability Zones are
+omitted; empty availability returns no entries and derived zero totals. Tests
+cover every ZoneType, mixed and independent same-quality Zones, supplied
+availability, logical input-order independence, snapshot immutability,
+fragmented raw capacity and malformed/duplicate inputs. No entry sequence order
+or business priority is defined. Zone-level availability is implemented;
+selection influence remains a later increment. Current availability uses current
+classification; historical assignments retain recorded quality.
 
 ### Goal
 

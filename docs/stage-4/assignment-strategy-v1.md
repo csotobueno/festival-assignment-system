@@ -511,21 +511,37 @@ or center preference, random selection or future-capacity optimization is define
 
 The online assignment strategy should consider the inventory known at the moment of the request.
 
-Inventory v1 is implemented as the immutable `RemainingInventoryState`, with
-non-negative raw currently available Spot counts:
+Inventory v1 is implemented with immutable `ZoneAvailabilityState` entries as
+the primary source of raw currently available Spot counts:
 
 ```text
-GoodRemaining   = Spots in Good Zones
-MediumRemaining = Spots in Medium Zones
-BadRemaining    = Spots in Bad Zones
+ZoneAvailabilityState
+- ZoneId
+- ExperienceQuality
+- AvailableSpotCount
+```
+
+`ZoneAvailabilityState.Create(zoneId, experienceQuality, availableSpotCount)`
+requires a ZoneId, a defined ExperienceQuality and a non-negative count.
+`RemainingInventoryState.Create(zoneAvailabilities)` copies the entries into a
+read-only snapshot, rejecting null entries and duplicate Zone IDs. Its quality
+totals are derived on access, with no independently stored aggregate counts:
+
+```text
+GoodRemaining   = sum AvailableSpotCount for Good entries
+MediumRemaining = sum AvailableSpotCount for Medium entries
+BadRemaining    = sum AvailableSpotCount for Bad entries
 ```
 
 `RemainingInventoryCalculator.Calculate(IEnumerable<Zone> zones,
-IEnumerable<Spot> availableSpots)` counts each supplied available Spot exactly
-once. It resolves `Spot.ZoneId` in the supplied catalog and classifies `Zone.Type`
-through `ZoneExperienceQualityPolicy.GetQuality`. Multiple Zones with the same
-quality contribute to one count. Empty availability returns three zero counts;
-input order does not affect the result.
+IEnumerable<Spot> availableSpots)` returns a `RemainingInventoryState` whose
+`ZoneAvailabilities` is an `IReadOnlyList<ZoneAvailabilityState>`. It counts each
+supplied available Spot exactly once in its own Zone, resolves `Spot.ZoneId` in
+the supplied catalog and classifies `Zone.Type` through
+`ZoneExperienceQualityPolicy.GetQuality`. Same-quality Zones retain independent
+entries. Zones with zero supplied available Spots are omitted. Empty availability
+returns no entries and three derived zero totals. Input order does not affect
+the logical result; entry sequence order carries no contract or business priority.
 
 Null collections/elements, duplicate Zone IDs, unknown Zone references, duplicate
 SpotCodes and duplicate physical positions `(ZoneId, RowCode, SpotNumber)` are
@@ -539,18 +555,7 @@ that a group of five fits. `FeasibleSpotBlockFinder` remains responsible for
 physical feasibility and is not called by the inventory calculator. GroupSize,
 fragmentation metrics, fairness and selection rules are outside inventory v1.
 
-### Next Prerequisite: Zone-Level Availability
-
-The implemented aggregate alone is insufficient for same-quality Zone ordering.
-The next implementation prerequisite is to evolve toward Zone-level entries as
-the primary availability source:
-
-```text
-ZoneAvailabilityState
-- ZoneId
-- ExperienceQuality
-- AvailableSpotCount
-```
+### Zone-Level Availability Boundary
 
 `AvailableSpotCount` means raw currently available Spots in that Zone. It does
 not mean contiguous capacity, number of feasible groups, largest possible group,
@@ -560,15 +565,11 @@ fragmentation quality or number of feasible Spot blocks:
 AvailableSpotCount ≠ group-feasible capacity
 ```
 
-Conceptually derive `GoodRemaining`, `MediumRemaining` and `BadRemaining` by
-summing Zone-level entries by quality, rather than maintaining an independent
-source of truth. Zone Evaluation orders only already eligible Zones using the
-supplied availability snapshot. Current availability uses current Zone classification through the
-quality policy; historical assignments use quality recorded at assignment time.
-
-This model evolution is agreed design, not implemented here. Existing
-`RemainingInventoryState` and `RemainingInventoryCalculator` remain unchanged.
-Inventory is decision context and never part of RotationScore.
+The Zone-level prerequisite is implemented; Zone Evaluation remains a future
+increment that will order already eligible Zones using this snapshot. Current
+availability uses current Zone classification through the quality policy;
+historical assignments use quality recorded at assignment time. Inventory is
+decision context and never part of RotationScore.
 
 ---
 

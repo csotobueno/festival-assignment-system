@@ -7,6 +7,7 @@ public static class RemainingInventoryCalculator
 {
     /// <summary>
     /// Counts only the supplied available Spots, using the global Zone quality policy.
+    /// Zones without available Spots are omitted; entries have no business priority.
     /// The caller supplies availability; eligibility and physical feasibility are separate concerns.
     /// </summary>
     public static RemainingInventoryState Calculate(
@@ -45,28 +46,12 @@ public static class RemainingInventoryCalculator
             throw new ArgumentException("Available spots cannot contain duplicate codes or physical positions.", nameof(availableSpots));
         }
 
-        var goodRemaining = 0;
-        var mediumRemaining = 0;
-        var badRemaining = 0;
-        foreach (var spot in spots)
-        {
-            var quality = ZoneExperienceQualityPolicy.GetQuality(zonesById[spot.ZoneId].Type);
-            switch (quality)
-            {
-                case ExperienceQuality.Good:
-                    goodRemaining++;
-                    break;
-                case ExperienceQuality.Medium:
-                    mediumRemaining++;
-                    break;
-                case ExperienceQuality.Bad:
-                    badRemaining++;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(quality), quality, "Experience quality must be defined.");
-            }
-        }
+        var zoneAvailabilities = spots.GroupBy(spot => spot.ZoneId)
+            .Select(group => ZoneAvailabilityState.Create(
+                group.Key,
+                ZoneExperienceQualityPolicy.GetQuality(zonesById[group.Key].Type),
+                group.Count()));
 
-        return RemainingInventoryState.Create(goodRemaining, mediumRemaining, badRemaining);
+        return RemainingInventoryState.Create(zoneAvailabilities);
     }
 }
