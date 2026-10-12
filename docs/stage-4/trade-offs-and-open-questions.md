@@ -345,7 +345,9 @@ The implemented RemainingInventoryState holds immutable ZoneAvailabilityState
 entries (ZoneId, ExperienceQuality, AvailableSpotCount) as the primary source.
 GoodRemaining, MediumRemaining and BadRemaining are derived from those entries.
 The calculator omits Zones with zero availability. Same-quality Zones retain
-independent counts for future evaluation; Zone ordering remains unimplemented.
+independent counts for evaluation. `ZoneEvaluationPolicy` now implements the
+agreed quality/count/ZoneId ordering; feasibility orchestration and selection
+remain pending.
 
 ### Accepted Consequence
 

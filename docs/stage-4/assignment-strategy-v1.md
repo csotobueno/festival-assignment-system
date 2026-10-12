@@ -16,7 +16,8 @@ Its purpose is to describe **how the system transforms a daily assignment reques
 - Zone-level availability;
 - deterministic selection.
 
-This guide records the agreed, not yet implemented Zone Evaluation Strategy v1.
+This guide records the agreed Zone Evaluation Strategy v1. Its ordering policy
+is implemented; feasibility orchestration and Zone selection remain pending.
 Block selection remains deferred. Other selection examples express intent;
 where they say “may” or “reasonable”, the corresponding implementation increment
 must establish a concrete provisional rule and expected result. The
@@ -565,8 +566,8 @@ fragmentation quality or number of feasible Spot blocks:
 AvailableSpotCount ≠ group-feasible capacity
 ```
 
-The Zone-level prerequisite is implemented; Zone Evaluation remains a future
-increment that will order already eligible Zones using this snapshot. Current
+The Zone-level prerequisite and `ZoneEvaluationPolicy` are implemented; the
+policy orders already eligible Zones using this snapshot. Current
 availability uses current Zone classification through the quality policy;
 historical assignments use quality recorded at assignment time. Inventory is
 decision context and never part of RotationScore.
@@ -597,19 +598,30 @@ explicit population/time scope before implementation.
 
 # 11. Zone Evaluation Strategy v1
 
-The future policy orders already eligible Zones only. Its conceptual contract is:
+The implemented pure, stateless policy orders already eligible Zones only. Its
+contract is:
 
 ```text
-TargetQuality + ZoneAvailabilityState[] + eligible Zones
+TargetQuality + RemainingInventoryState + eligible Zones
         ↓
-ZoneEvaluationPolicy.Order(...) → IReadOnlyList<Zone>
+ZoneEvaluationPolicy.Order(targetQuality, inventory, eligibleZones) → IReadOnlyList<Zone>
         ↓
 ordered eligible Zones
         ↓
 FeasibleSpotBlockFinder
 ```
 
-The exact production API is not fixed or implemented in this documentation task.
+The result is read-only and preserves the supplied Zone objects. Only eligible
+Zones with a matching inventory ZoneId participate; missing entries are omitted,
+and ineligible inventory entries never become output Zones. Medium-target
+priority uses the supplied inventory totals. Each participating Zone is classified
+through `ZoneExperienceQualityPolicy.GetQuality(zone.Type)`; a mismatch with its
+inventory quality throws `ArgumentException` for `inventory`. This checks only
+the current snapshot and does not reinterpret historical quality.
+
+Null inventory, null eligible Zones, null elements, duplicate eligible Zone IDs
+and undefined TargetQuality values are rejected. No participating Zones returns
+an empty result. Neither input sequence order affects the output.
 Eligibility precedes ordering:
 
 ```text
@@ -648,8 +660,8 @@ For example, MiddleCenter (Good, 80 available) precedes FrontStanding (Good,
 between equivalent-quality Zones as availability changes, avoiding a fixed Zone
 being systematically consumed first.
 
-For exact same-quality/count ties, use a stable technical tie-break such as
-`ZoneId` ascending. ZoneId ordering is a technical deterministic tie-break only,
+For exact same-quality/count ties, the policy uses `ZoneId.Value` (Guid) ascending.
+ZoneId ordering is a technical deterministic tie-break only,
 not a business preference or the primary Zone priority. No permanent ZoneType
 ranking such as FrontStanding before MiddleCenter is defined.
 
@@ -659,8 +671,10 @@ cursor or future-demand prediction is used.
 
 ### Physical-Feasibility Boundary
 
-Visit Zones in this order and call `FeasibleSpotBlockFinder` for each. Skip Zones
-with zero blocks for `GroupSize`. The first Zone with 1..N blocks wins for the
+Later orchestration will visit Zones in this order and call
+`FeasibleSpotBlockFinder` for each, skipping Zones with zero blocks for `GroupSize`.
+`ZoneEvaluationPolicy` only orders Zones; it does not invoke the finder, inspect
+Spots, select a block or create Assignments. The first Zone with 1..N blocks wins for the
 next decision step, even if a later Zone might preserve capacity better. This
 strategy does not select among blocks; that decision remains deferred.
 
