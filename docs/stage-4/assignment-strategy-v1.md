@@ -19,7 +19,8 @@ Its purpose is to describe **how the system transforms a daily assignment reques
 This guide records the agreed Zone Evaluation Strategy v1. Its ordering policy
 and first-feasible-Zone composition are implemented; block selection and engine
 integration remain pending.
-Block selection remains deferred. Other selection examples express intent;
+Block Selection Policy v1 is defined below but not yet implemented. Other
+selection examples express intent;
 where they say “may” or “reasonable”, the corresponding implementation increment
 must establish a concrete provisional rule and expected result. The
 [decision table](implementation-plan.md#decisions-at-the-point-of-use) identifies
@@ -205,9 +206,11 @@ TargetQuality + Zone-level availability
         ↓
 Zone Evaluation Strategy → ordered Zones
         ↓
-FeasibleSpotBlockFinder → selected Zone with 1..N feasible blocks
+FeasibleZoneCandidateFinder → selected Zone with 1..N feasible blocks
         ↓
-Block selection (deferred) → actual ExperienceQuality
+Block Selection Policy v1 (defined, not implemented) → selected FeasibleSpotBlock
+        ↓
+assignment → actual ExperienceQuality
 ```
 
 Target Quality is a reference for the later assignment strategy. It is neither
@@ -481,7 +484,7 @@ Empty availability returns no blocks. Null inputs/elements, uninitialized
 GroupSize, foreign Zone membership, duplicate SpotCodes and duplicate physical
 positions are rejected. Availability and eligibility are supplied by the caller.
 The finder does not rank Zones or blocks, reserve Spots, or bind Attendees.
-Fragmentation evaluation and selection remain separate deferred responsibilities;
+Block Selection Policy v1 is defined separately and remains pending implementation;
 the existing AssignmentEngine is unchanged.
 
 ---
@@ -519,9 +522,142 @@ rejects null blocks or blocks from another Zone. Block order is preserved.
 
 A group of five cannot use three contiguous Good Spots; evaluation continues
 until a complete block is found, including Medium and then Bad as applicable.
-Multiple feasible blocks in the selected Zone remain a separate, deferred
-block-selection concern. No first-block selection, fragmentation scoring, edge
-or center preference, random selection or future-capacity optimization is defined.
+Multiple feasible blocks in the selected Zone are inputs to the separate
+[Block Selection Policy v1](#block-selection-policy-v1), defined but not yet
+implemented. Finder output order is deterministic enumeration, not a business
+preference or automatic first-block selection.
+
+---
+
+## Block Selection Policy v1
+
+**Status: defined, not yet implemented.** No production `BlockSelectionPolicy`
+exists yet; implementation remains a future Stage 4 task. This is an operational
+capacity-preservation heuristic, not a new fairness rule. The official fairness
+rule set remains unchanged at 19 rules.
+
+### Responsibility and Inputs
+
+The future policy chooses one already feasible `FeasibleSpotBlock` from the
+`FeasibleZoneCandidate` returned by `FeasibleZoneCandidateFinder`: the selected
+Zone and one or more feasible blocks. It also needs the current available Spot
+snapshot for evaluating what remains in each candidate's Row. This documents
+behavior, not a fixed production API.
+
+It does not choose a Zone, evaluate fairness, calculate TargetQuality, apply
+eligibility, discover feasible blocks, create Assignments or persist state.
+`FeasibleSpotBlockFinder` remains responsible for same-Zone, same-Row,
+consecutiveness, GroupSize validation and feasible sliding-window generation.
+The selection policy consumes those feasible alternatives without duplicating or
+reinterpreting their physical validity.
+
+The responsibility sequence is:
+
+```text
+TargetQuality + RemainingInventoryState + eligible Zones
+        ↓
+ZoneEvaluationPolicy → ordered Zones
+        ↓
+FeasibleZoneCandidateFinder (uses FeasibleSpotBlockFinder per Zone)
+        ↓
+first physically feasible Zone + all feasible blocks in that Zone
+        ↓
+Block Selection Policy v1 (defined, not implemented)
+        ↓
+selected FeasibleSpotBlock
+```
+
+Zone selection remains upstream and unchanged. A later Zone must not replace the
+selected Zone merely because it offers a better fragmentation outcome.
+
+### Primary Metric and Exact Ordering
+
+For every candidate, identify its Row in the selected Zone, take all currently
+available Spots in that Row and simulate removing the candidate's Spots. Find
+the largest contiguous run among everything remaining in that Row. This length
+is `LargestRemainingContiguousRun`; higher is better.
+
+Rank candidates in exactly this order:
+
+1. `LargestRemainingContiguousRun` descending.
+2. `RowCode` ascending.
+3. Starting `SpotNumber` ascending: the lowest/first Spot number in the block.
+
+The last two are deterministic technical tie-breaks only. They express no
+business preference for earlier Rows, lower numbers, physical position or a
+better attendee experience. Finder enumeration order does not choose the block.
+No additional tie-break is defined; if implementation discovers a need to make
+this ordering technically total, report it rather than inventing a decision.
+The same logical snapshot must produce the same selection, without randomness,
+weighted randomness, persistent round-robin state or request history.
+
+### Contiguous-Row Example
+
+With current Row availability `1 2 3 4 5 6 7 8` and GroupSize 3:
+
+| Candidate | Remaining available runs | LargestRemainingContiguousRun |
+| --- | --- | ---: |
+| `[1,2,3]` | `[4,5,6,7,8]` | 5 |
+| `[3,4,5]` | `[1,2] [6,7,8]` | 3 |
+
+The policy prefers `[1,2,3]` over `[3,4,5]` because `5 > 3`. This comparison does
+not introduce an edge preference or a secondary fragmentation metric.
+
+### Candidates From Different Rows
+
+Each candidate is evaluated only against its own affected Row. The raw metric
+is intentionally comparable across Rows, without Row-capacity normalization,
+ratios, percentages or weighting. For GroupSize 3:
+
+| Current available Row | Candidate | LargestRemainingContiguousRun |
+| --- | --- | ---: |
+| Row A: `1 2 3 4 5 6` | Row A `[1,2,3]` | 3 |
+| Row B: `1 2 3 4 5 6 7` | Row B `[1,2,3]` | 4 |
+
+Candidate B is preferred because `4 > 3`.
+
+### Meaning of Remaining and Existing Gaps
+
+```text
+current available Spots in candidate Row − candidate block Spots
+        ↓
+remaining available Spots in candidate Row
+        ↓
+largest contiguous run among all remaining Spots in that Row
+```
+
+Existing fragmentation must be respected. For current availability
+`1 2 3 | 6 7 8 9`, removing `[1,2,3]` leaves a largest run of 4; removing
+`[6,7,8]` leaves `[1,2,3] [9]`, whose largest run is 3. Do not assume the Row
+starts fully contiguous or examine only the run containing the candidate.
+
+If removing a candidate leaves no available Spots in that Row,
+`LargestRemainingContiguousRun = 0`. This is valid and does not reject the
+candidate solely for consuming the final Spots.
+
+Use only the current available Spot snapshot. Original venue capacity,
+unavailable Spots, historical assignments, future requests and inferred future
+availability do not participate.
+
+### Local Boundary and Accepted Limitation
+
+Evaluation is local to the candidate's affected Row inside the already selected
+Zone. It does not simulate the entire Zone, changes to other Rows, or
+festival-wide optimization.
+
+Only `LargestRemainingContiguousRun` ranks capacity preservation. There is no
+general fragmentation score: no remaining fragment count, average fragment
+length, smallest fragment, sum of squared fragment sizes, number of future
+feasible blocks, weighted future GroupSizes or total Zone fragmentation.
+No expected future GroupSize, group-size probability distribution, large-group
+reservation, demand prediction or block reservation is introduced.
+
+This simple MVP heuristic is deterministic, local, inexpensive to calculate and
+easy to explain. It attempts to preserve useful contiguous capacity, but
+maximizing the largest remaining run does not guarantee globally optimal future
+capacity. That limitation is accepted for v1. The
+[Stage 5 questions](trade-offs-and-open-questions.md#block-selection-policy-v1)
+will provide evidence for whether a richer fragmentation strategy is needed.
 
 ---
 
@@ -694,7 +830,10 @@ and calls `FeasibleSpotBlockFinder` for each, skipping zero-block results for
 `ZoneEvaluationPolicy` only orders Zones; it does not invoke the finder, inspect
 Spots, select a block or create Assignments. The first Zone with 1..N blocks wins for the
 next decision step, even if a later Zone might preserve capacity better. This
-strategy does not select among blocks; that decision remains deferred.
+Zone-ordering strategy does not select among blocks; the separate
+[Block Selection Policy v1](#block-selection-policy-v1) is defined and pending
+implementation. A later Zone cannot replace the selected Zone because its blocks
+would produce a better remaining-run score.
 
 ---
 
@@ -790,7 +929,7 @@ For a group request:
 4. apply organization policy and eligibility;
 5. order eligible Zones using Target Quality and Zone-level availability;
 6. find feasible blocks per ordered Zone, stopping at the first with blocks;
-7. select a complete block through a separate policy (deferred);
+7. select a complete block through Block Selection Policy v1 (defined, not implemented);
 8. never split the group automatically merely to improve fairness.
 
 The MVP preserves group integrity.
@@ -875,7 +1014,9 @@ This supports:
 RotationScore v1 does not use a numerical equivalence tolerance. Same-quality
 Zones use available raw Spot count descending, then a stable technical tie-break
 such as ZoneId ascending for an exact count tie. This creates no ZoneType business
-ranking. Block-selection tie-breaking remains deferred.
+ranking. The separate [Block Selection Policy v1](#block-selection-policy-v1)
+defines remaining-run ranking followed by RowCode and starting SpotNumber ties;
+its implementation remains pending.
 
 ---
 
@@ -1003,7 +1144,8 @@ The Stage 4 decision flow is:
 
 12. Reject without Assignments if no eligible Zone has a feasible block.
 
-13. Select a block inside the selected Zone (separate deferred decision).
+13. Select a block inside the selected Zone using Block Selection Policy v1
+    (defined, not yet implemented).
 
 14. Persist the complete decision atomically.
 
@@ -1112,7 +1254,8 @@ Expected behavior:
 `Good` is not a complete candidate.
 
 Continue to Medium Zones; the first with feasible blocks is selected.
-Choosing among its blocks remains deferred.
+Choosing among its blocks follows the defined Block Selection Policy v1;
+implementation remains pending.
 
 ---
 
@@ -1224,7 +1367,7 @@ Assignment Strategy v1 is considered implemented when:
 - eligible Zones follow the agreed quality/count/tie ordering;
 - Zone-level entries are the primary availability source;
 - feasibility is checked per ordered Zone;
-- block selection is resolved separately before full engine completion;
+- the defined Block Selection Policy v1 is implemented before full engine completion;
 - better-than-target assignments are possible when reasonable;
 - artificial degradation is avoided;
 - unknown future demand is not used for speculative reservation;

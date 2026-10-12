@@ -348,7 +348,8 @@ The calculator omits Zones with zero availability. Same-quality Zones retain
 independent counts for evaluation. `ZoneEvaluationPolicy` now implements the
 agreed quality/count/ZoneId ordering. `FeasibleZoneCandidateFinder` now composes
 ordered traversal with the existing physical finder and returns all blocks from
-the first feasible Zone; block selection and engine integration remain pending.
+the first feasible Zone. Block Selection Policy v1 is defined but not implemented;
+engine integration remains pending.
 
 ### Accepted Consequence
 
@@ -433,11 +434,35 @@ when all eligible Good, Medium and Bad Zones lack a feasible complete block.
 There is no automatic group restructuring; users may later retry another configuration.
 
 The first ordered Zone with feasible blocks wins, even if a later Zone might
-preserve capacity better. Block choice within the selected Zone remains deferred;
-no first-block rule, fragmentation scoring, edge/center preference, random choice
-or future-capacity optimization is defined. Request arrival order still affects
-outcomes, and no festival-wide optimization is attempted. These are intentional
+preserve capacity better. Block choice within that Zone follows the defined
+[Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1),
+which remains pending implementation. Finder enumeration is not a business
+preference or an automatic first-block choice. No edge/center preference, random
+choice or global future-capacity optimization is defined. Request arrival order
+still affects outcomes, and no festival-wide optimization is attempted. These are intentional
 baseline trade-offs to measure in Stage 5.
+
+---
+
+# Block Selection Policy v1 Trade-off
+
+**Defined, not yet implemented.** The
+[agreed policy](assignment-strategy-v1.md#block-selection-policy-v1) prefers the
+largest remaining contiguous run in the candidate's affected Row after simulated
+removal from current availability. It compares raw scores across Rows, then uses
+RowCode and starting SpotNumber ascending solely for deterministic exact ties.
+Existing gaps remain significant; consuming the last available Spots scores zero
+without invalidating a candidate. Zone selection stays upstream and unchanged.
+
+This is a simple MVP heuristic: deterministic, easy to explain, local and
+inexpensive to calculate, with the aim of preserving useful contiguous capacity.
+Maximizing the largest remaining contiguous run does not guarantee globally
+optimal future capacity. This is accepted for v1; Stage 5 will measure whether a
+richer fragmentation strategy is needed.
+
+There is no general fragmentation score, simulation of other Rows or the entire
+Zone, prediction of future GroupSizes or demand, or capacity reservation. This
+operational heuristic adds no fairness rule; the official count remains 19.
 
 ---
 
@@ -521,6 +546,20 @@ those rules are resolved at the
 53. Should group restructuring be offered instead of accepting Bad?
 54. Is global assigned-outcome state needed to improve fairness?
 55. Does arrival order create unacceptable outcomes?
+
+## Block Selection Policy v1
+
+- Does preserving the largest remaining contiguous run reduce fragmentation?
+- Does it improve future group placement success?
+- Does the deterministic RowCode tie-break create systematic Row bias?
+- Does the starting SpotNumber tie-break create systematic positional bias?
+- Is the largest remaining run sufficient as a proxy for future capacity?
+- Would considering the number or distribution of remaining fragments materially improve results?
+- Does local Row-level optimization create undesirable Zone-level outcomes?
+- How does the heuristic behave across different GroupSize distributions?
+
+These questions evaluate the future implementation without changing v1's agreed
+metric or introducing demand assumptions now.
 
 These questions remain unanswered until Stage 5 provides evidence.
 

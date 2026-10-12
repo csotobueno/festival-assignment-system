@@ -58,7 +58,9 @@ inventory pressure, global-state metric or prediction of future demand.
 The score estimates recovery need. The
 [Assignment Strategy](assignment-strategy-v1.md) combines it with Target Quality,
 eligibility and Zone-level availability to order Zones, then checks feasibility
-per Zone. Global assigned-outcome influence and block selection remain deferred.
+per Zone. Global assigned-outcome influence remains deferred.
+[Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1)
+is defined but not implemented; it does not affect RotationScore.
 A low score does not require a Bad assignment; available Good capacity may still
 be used under the selection policy.
 
