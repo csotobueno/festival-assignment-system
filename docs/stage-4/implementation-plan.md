@@ -60,8 +60,8 @@ Do not silently choose business semantics inside code.
 | Score-to-Target Quality policy (agreed) | Step 9 implementation | [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality): score >= 1.00 → Good; score < 1.00 → Medium, for individuals and groups. Calibration belongs to Stage 5. |
 | Minimum implemented eligibility rules | Step 10 | A concrete allowed/excluded candidate case; undefined organization policies remain deferred. |
 | Inventory v1 counting scope (implemented) | Step 13 | Raw available Spot counts by quality in the caller-supplied snapshot; no GroupSize or eligibility filtering inside the calculator. See [Current Inventory State](assignment-strategy-v1.md#9-current-inventory-state). |
-| Zone-level availability prerequisite (agreed, pending) | Step 13, before Zone ordering | ZoneAvailabilityState entries are the primary source; derive quality totals from Zone-level entries. Raw counts do not prove feasibility. |
-| Zone Evaluation Strategy v1 (agreed, pending) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
+| Zone-level availability prerequisite (implemented) | Step 13, before Zone ordering | ZoneAvailabilityState entries are the primary source; derive quality totals from Zone-level entries. Raw counts do not prove feasibility. |
+| Zone Evaluation Strategy v1 (ordering implemented; orchestration pending) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
 | Global-state influence (deferred) | Future iteration after Stage 5 evidence | A concrete fairness failure showing remaining inventory is insufficient; then define minimum recorded outcome state and population/time scope. |
 | Block selection (deferred) | Full engine integration | A separate explicit decision for multiple feasible blocks within the selected Zone; Zone ordering defines no block choice. |
 | Persisted experience representation | Steps 20–22 | Quality and the complete successful outcome saved within the existing atomic boundary. No legacy-data backfill is needed. |
@@ -508,8 +508,8 @@ cover every ZoneType, mixed and independent same-quality Zones, supplied
 availability, logical input-order independence, snapshot immutability,
 fragmented raw capacity and malformed/duplicate inputs. No entry sequence order
 or business priority is defined. Zone-level availability is implemented;
-selection influence remains a later increment. Current availability uses current
-classification; historical assignments retain recorded quality.
+ordering influence is implemented in ZoneEvaluationPolicy; selection remains
+pending. Current availability uses current classification; historical assignments retain recorded quality.
 
 ### Goal
 
@@ -543,18 +543,23 @@ minimum information and population/time scope. Preserve historical quality.
 
 ## Step 15 — Implement Zone Evaluation Strategy v1
 
-After Step 13's Zone-level availability prerequisite, conceptually consume:
+Implemented pure, stateless domain API using Step 13's inventory snapshot:
 
 ```text
-TargetQuality + ZoneAvailabilityState[] + eligible Zones
+TargetQuality + RemainingInventoryState + eligible Zones
         ↓
-ZoneEvaluationPolicy.Order(...) → IReadOnlyList<Zone>
+ZoneEvaluationPolicy.Order(targetQuality, inventory, eligibleZones) → IReadOnlyList<Zone>
 ```
 
-The exact production API remains for the later implementation task. Follow the
+The policy implements the
 [agreed strategy](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1), without
-CurrentGlobalAssignmentState. RequestEligibility → ZoneEligibilityPolicy precedes
-ordering; eligibility never changes quality. For each ordered Zone, invoke
+CurrentGlobalAssignmentState. It matches eligible Zones to inventory by ZoneId,
+omits absent entries and rejects current quality mismatches using the existing
+quality policy. Results are read-only; empty participation returns empty.
+Tests cover quality orders and equality, capacity priority, exact ZoneId ties,
+participation, input permutations, malformed inputs and snapshot immutability.
+RequestEligibility → ZoneEligibilityPolicy precedes ordering; eligibility never
+changes quality. Later orchestration remains pending: for each ordered Zone, invoke
 FeasibleSpotBlockFinder with GroupSize; skip zero-block results. The first Zone
 with 1..N feasible blocks is selected for the next decision step.
 
@@ -564,10 +569,9 @@ capacity without a separate decision.
 
 ### Later Validation
 
-Verify Good and Medium quality orders, equality, zero inventory, same-quality
-count ordering, exact ties, excluded Zones without reclassification, positive raw
-inventory with no feasible block, and advancing to the first feasible Zone.
-The same snapshot must reproduce the same Zone order.
+Ordering is covered by domain unit tests. Future orchestration must verify
+positive raw inventory with no feasible block and advancing to the first feasible
+Zone. No feasibility invocation or block selection is part of the ordering policy.
 
 ---
 

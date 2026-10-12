@@ -95,7 +95,9 @@ original request does not remain pending.
   AvailableSpotCount) is implemented as the primary inventory source in the
   immutable RemainingInventoryState snapshot. Quality totals derive from these
   entries; the calculator omits zero-availability Zones. Raw counts do not prove
-  group feasibility. Zone ordering and selection remain pending.
+  group feasibility. `ZoneEvaluationPolicy.Order(targetQuality, inventory, eligibleZones)`
+  now orders participating Zones deterministically; feasibility orchestration and
+  Zone/block selection remain pending.
 - **Invariants:** same Zone, same Row, consecutive SpotNumbers, complete groups,
   daily uniqueness and final Assignments remain protected. Fairness cannot
   override eligibility or physical feasibility.
@@ -115,8 +117,8 @@ Location classification need not block that work.
 
 The [implementation decision table](implementation-plan.md#decisions-at-the-point-of-use)
 records the agreed Zone-quality mapping, Target Quality and Zone Evaluation
-ordering, plus the pending Zone-level availability prerequisite. Block selection
-and global assigned-outcome influence remain deferred. An unresolved business
+ordering, plus the implemented Zone-level availability prerequisite and ordering
+policy. Block selection and global assigned-outcome influence remain deferred. An unresolved business
 rule pauses its dependent increment; independent work can continue. No operational rule should
 be invented merely to complete the design.
 
