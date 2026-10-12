@@ -51,8 +51,8 @@ persistence foundation on which this proposal builds.
    the agreed [Zone Evaluation Strategy v1](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1).
 7. Use `FeasibleZoneCandidateFinder` to call `FeasibleSpotBlockFinder` per ordered
    Zone; return the first feasible Zone together with all its blocks.
-8. Select one block through the defined [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1),
-   whose implementation remains pending.
+8. Select one block through the implemented [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1).
+   Engine integration remains pending.
 9. Persist the request outcome and all Assignments atomically. Successful outcomes
    become history for subsequent requests.
 
@@ -63,7 +63,7 @@ ZoneEvaluationPolicy → ordered Zones → FeasibleZoneCandidateFinder
         ↓
 FeasibleSpotBlockFinder per Zone → first feasible Zone + all its blocks
         ↓
-Block Selection Policy v1 (defined, not implemented) → selected block
+Block Selection Policy v1 (implemented) → selected block
 ```
 
 Good targets use Good → Medium → Bad. Medium targets use Good → Medium → Bad
@@ -103,9 +103,10 @@ original request does not remain pending.
   group feasibility. `ZoneEvaluationPolicy.Order(targetQuality, inventory, eligibleZones)`
   now orders participating Zones deterministically. `FeasibleZoneCandidateFinder`
   composes ordered traversal with physical feasibility and returns the first
-  feasible Zone with all its blocks. Block-selection implementation and engine
-  integration remain pending.
-- **Block selection:** v1 is defined but not implemented. Rank already feasible
+  feasible Zone with all its blocks. Block selection is implemented; engine
+  integration remains pending.
+- **Block selection:** v1 is implemented as
+  `BlockSelectionPolicy.Select(candidate, availableSpots)`. Rank already feasible
   blocks by LargestRemainingContiguousRun descending in the affected Row after
   simulated removal, then RowCode ascending and starting SpotNumber ascending.
   Use current availability, including existing gaps; an empty remaining Row scores
@@ -131,7 +132,7 @@ Location classification need not block that work.
 The [implementation decision table](implementation-plan.md#decisions-at-the-point-of-use)
 records the agreed Zone-quality mapping, Target Quality and Zone Evaluation
 ordering, plus the implemented Zone-level availability prerequisite and ordering
-policy. Block Selection Policy v1 is defined and awaits implementation; global
+policy. Block Selection Policy v1 is implemented; global
 assigned-outcome influence remains deferred. An unresolved business rule pauses
 its dependent increment; independent work can continue. No operational rule should
 be invented merely to complete the design.
@@ -148,7 +149,7 @@ future-demand prediction and reservation, weighted randomness, complex preferenc
 ranking, internal group-dispersion optimization, automatic group restructuring,
 retrospective reassignment, and complete operational/UI/administrative workflows.
 Global assigned-outcome influence remains deferred. Block Selection Policy v1
-is defined separately; full engine completion requires its implementation.
+is implemented separately; full engine integration remains pending.
 Final parameter calibration and quantitative fairness evaluation belong to
 Stage 5. Detailed reasons are in the
 [trade-offs document](trade-offs-and-open-questions.md).

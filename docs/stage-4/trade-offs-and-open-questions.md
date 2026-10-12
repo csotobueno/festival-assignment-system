@@ -348,7 +348,7 @@ The calculator omits Zones with zero availability. Same-quality Zones retain
 independent counts for evaluation. `ZoneEvaluationPolicy` now implements the
 agreed quality/count/ZoneId ordering. `FeasibleZoneCandidateFinder` now composes
 ordered traversal with the existing physical finder and returns all blocks from
-the first feasible Zone. Block Selection Policy v1 is defined but not implemented;
+the first feasible Zone. Block Selection Policy v1 is implemented;
 engine integration remains pending.
 
 ### Accepted Consequence
@@ -434,10 +434,10 @@ when all eligible Good, Medium and Bad Zones lack a feasible complete block.
 There is no automatic group restructuring; users may later retry another configuration.
 
 The first ordered Zone with feasible blocks wins, even if a later Zone might
-preserve capacity better. Block choice within that Zone follows the defined
+preserve capacity better. Block choice within that Zone follows the implemented
 [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1),
-which remains pending implementation. Finder enumeration is not a business
-preference or an automatic first-block choice. No edge/center preference, random
+which is implemented separately from engine integration. Finder enumeration is
+not a business preference or an automatic first-block choice. No edge/center preference, random
 choice or global future-capacity optimization is defined. Request arrival order
 still affects outcomes, and no festival-wide optimization is attempted. These are intentional
 baseline trade-offs to measure in Stage 5.
@@ -446,7 +446,7 @@ baseline trade-offs to measure in Stage 5.
 
 # Block Selection Policy v1 Trade-off
 
-**Defined, not yet implemented.** The
+**Implemented.** The
 [agreed policy](assignment-strategy-v1.md#block-selection-policy-v1) prefers the
 largest remaining contiguous run in the candidate's affected Row after simulated
 removal from current availability. It compares raw scores across Rows, then uses

@@ -38,6 +38,11 @@ public sealed class FeasibleZoneCandidate
             throw new ArgumentException("Feasible blocks must belong to the candidate zone.", nameof(feasibleBlocks));
         }
 
+        if (blocks.Any(block => block.Spots.Count != blocks[0].Spots.Count))
+        {
+            throw new ArgumentException("Feasible blocks must have the same group size.", nameof(feasibleBlocks));
+        }
+
         return new FeasibleZoneCandidate(zone, blocks);
     }
 }

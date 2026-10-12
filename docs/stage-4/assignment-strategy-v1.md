@@ -17,9 +17,8 @@ Its purpose is to describe **how the system transforms a daily assignment reques
 - deterministic selection.
 
 This guide records the agreed Zone Evaluation Strategy v1. Its ordering policy
-and first-feasible-Zone composition are implemented; block selection and engine
-integration remain pending.
-Block Selection Policy v1 is defined below but not yet implemented. Other
+and first-feasible-Zone composition are implemented. Block Selection Policy v1
+is also implemented; engine integration remains pending. Other
 selection examples express intent;
 where they say “may” or “reasonable”, the corresponding implementation increment
 must establish a concrete provisional rule and expected result. The
@@ -208,7 +207,7 @@ Zone Evaluation Strategy → ordered Zones
         ↓
 FeasibleZoneCandidateFinder → selected Zone with 1..N feasible blocks
         ↓
-Block Selection Policy v1 (defined, not implemented) → selected FeasibleSpotBlock
+Block Selection Policy v1 (implemented) → selected FeasibleSpotBlock
         ↓
 assignment → actual ExperienceQuality
 ```
@@ -484,7 +483,7 @@ Empty availability returns no blocks. Null inputs/elements, uninitialized
 GroupSize, foreign Zone membership, duplicate SpotCodes and duplicate physical
 positions are rejected. Availability and eligibility are supplied by the caller.
 The finder does not rank Zones or blocks, reserve Spots, or bind Attendees.
-Block Selection Policy v1 is defined separately and remains pending implementation;
+Block Selection Policy v1 is implemented separately;
 the existing AssignmentEngine is unchanged.
 
 ---
@@ -518,31 +517,37 @@ outside the ordered Zones are ignored. Contiguity and window generation remain
 owned by the existing block finder. Empty inputs or no feasible Zone return
 `null`; the search creates no Assignment or rejection outcome. The candidate
 copies its non-empty blocks into a read-only collection, requires its Zone and
-rejects null blocks or blocks from another Zone. Block order is preserved.
+rejects null blocks, blocks from another Zone or blocks with different sizes.
+All alternatives share one already-established GroupSize. Block order is preserved.
 
 A group of five cannot use three contiguous Good Spots; evaluation continues
 until a complete block is found, including Medium and then Bad as applicable.
 Multiple feasible blocks in the selected Zone are inputs to the separate
-[Block Selection Policy v1](#block-selection-policy-v1), defined but not yet
-implemented. Finder output order is deterministic enumeration, not a business
-preference or automatic first-block selection.
+[Block Selection Policy v1](#block-selection-policy-v1), now implemented. Finder
+output order is deterministic enumeration, not a business preference or automatic first-block selection.
 
 ---
 
 ## Block Selection Policy v1
 
-**Status: defined, not yet implemented.** No production `BlockSelectionPolicy`
-exists yet; implementation remains a future Stage 4 task. This is an operational
-capacity-preservation heuristic, not a new fairness rule. The official fairness
+**Status: implemented.** The pure, stateless domain API is
+`BlockSelectionPolicy.Select(FeasibleZoneCandidate candidate, IEnumerable<Spot> availableSpots)`
+and returns one existing `FeasibleSpotBlock` from the candidate. This is an
+operational capacity-preservation heuristic, not a new fairness rule. The official fairness
 rule set remains unchanged at 19 rules.
 
 ### Responsibility and Inputs
 
-The future policy chooses one already feasible `FeasibleSpotBlock` from the
+The implemented policy chooses one already feasible `FeasibleSpotBlock` from the
 `FeasibleZoneCandidate` returned by `FeasibleZoneCandidateFinder`: the selected
 Zone and one or more feasible blocks. It also needs the current available Spot
-snapshot for evaluating what remains in each candidate's Row. This documents
-behavior, not a fixed production API.
+snapshot for evaluating what remains in each candidate's Row. Null inputs or
+Spot elements, duplicate SpotCodes and duplicate physical positions
+`(ZoneId, RowCode, SpotNumber)` are rejected before ranking. Every Spot in every
+block must match a current snapshot entry by code and physical position; missing
+or changed candidate Spots throw `ArgumentException` for `availableSpots`.
+Equivalent Spot values in different instances are accepted. FeasibleZoneCandidate
+validates shared block size at creation; selection assumes that invariant.
 
 It does not choose a Zone, evaluate fairness, calculate TargetQuality, apply
 eligibility, discover feasible blocks, create Assignments or persist state.
@@ -562,7 +567,7 @@ FeasibleZoneCandidateFinder (uses FeasibleSpotBlockFinder per Zone)
         ↓
 first physically feasible Zone + all feasible blocks in that Zone
         ↓
-Block Selection Policy v1 (defined, not implemented)
+Block Selection Policy v1 (implemented)
         ↓
 selected FeasibleSpotBlock
 ```
@@ -831,9 +836,8 @@ and calls `FeasibleSpotBlockFinder` for each, skipping zero-block results for
 Spots, select a block or create Assignments. The first Zone with 1..N blocks wins for the
 next decision step, even if a later Zone might preserve capacity better. This
 Zone-ordering strategy does not select among blocks; the separate
-[Block Selection Policy v1](#block-selection-policy-v1) is defined and pending
-implementation. A later Zone cannot replace the selected Zone because its blocks
-would produce a better remaining-run score.
+[Block Selection Policy v1](#block-selection-policy-v1) is implemented. A later
+Zone cannot replace the selected Zone because its blocks would produce a better remaining-run score.
 
 ---
 
@@ -929,7 +933,7 @@ For a group request:
 4. apply organization policy and eligibility;
 5. order eligible Zones using Target Quality and Zone-level availability;
 6. find feasible blocks per ordered Zone, stopping at the first with blocks;
-7. select a complete block through Block Selection Policy v1 (defined, not implemented);
+7. select a complete block through Block Selection Policy v1 (implemented);
 8. never split the group automatically merely to improve fairness.
 
 The MVP preserves group integrity.
@@ -1016,7 +1020,7 @@ Zones use available raw Spot count descending, then a stable technical tie-break
 such as ZoneId ascending for an exact count tie. This creates no ZoneType business
 ranking. The separate [Block Selection Policy v1](#block-selection-policy-v1)
 defines remaining-run ranking followed by RowCode and starting SpotNumber ties;
-its implementation remains pending.
+its implementation is complete; engine integration remains pending.
 
 ---
 
@@ -1145,7 +1149,7 @@ The Stage 4 decision flow is:
 12. Reject without Assignments if no eligible Zone has a feasible block.
 
 13. Select a block inside the selected Zone using Block Selection Policy v1
-    (defined, not yet implemented).
+    (implemented separately; engine integration pending).
 
 14. Persist the complete decision atomically.
 
@@ -1254,8 +1258,8 @@ Expected behavior:
 `Good` is not a complete candidate.
 
 Continue to Medium Zones; the first with feasible blocks is selected.
-Choosing among its blocks follows the defined Block Selection Policy v1;
-implementation remains pending.
+Choosing among its blocks follows the implemented Block Selection Policy v1;
+engine integration remains pending.
 
 ---
 

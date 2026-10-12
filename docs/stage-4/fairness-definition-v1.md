@@ -369,7 +369,7 @@ Physical Feasibility via FeasibleSpotBlockFinder per Zone
    ↓
 Selected Zone with feasible blocks
    ↓
-Block Selection Policy v1 (defined, not implemented)
+Block Selection Policy v1 (implemented)
 ```
 
 Fairness must never transform an invalid option into a valid candidate.
@@ -623,7 +623,7 @@ to order eligible Zones, check physical feasibility per Zone, and then select a
 complete assignment through a separate block policy. Zone Evaluation v1 is
 [implemented ordering and first-feasible-Zone search](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1).
 The separate [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1)
-is defined but not implemented. It is an operational capacity-preservation
+is implemented. It is an operational capacity-preservation
 heuristic, not an additional fairness rule; the official count remains 19. Global
 assigned-outcome state is not a v1 input.
 
