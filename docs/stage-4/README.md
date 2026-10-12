@@ -49,8 +49,8 @@ persistence foundation on which this proposal builds.
    exclusions never change ExperienceQuality.
 6. Use TargetQuality and Zone-level raw availability to order eligible Zones via
    the agreed [Zone Evaluation Strategy v1](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1).
-7. Call `FeasibleSpotBlockFinder` per ordered Zone; continue past zero-block Zones.
-   The first Zone with one or more feasible blocks becomes the selected Zone.
+7. Use `FeasibleZoneCandidateFinder` to call `FeasibleSpotBlockFinder` per ordered
+   Zone; return the first feasible Zone together with all its blocks.
 8. Select a complete block inside that Zone through a separate policy, still deferred.
 9. Persist the request outcome and all Assignments atomically. Successful outcomes
    become history for subsequent requests.
@@ -58,7 +58,9 @@ persistence foundation on which this proposal builds.
 ```text
 TargetQuality + Zone-level availability + eligible Zones
         ↓
-Zone Evaluation Strategy → ordered Zones → FeasibleSpotBlockFinder
+ZoneEvaluationPolicy → ordered Zones → FeasibleZoneCandidateFinder
+        ↓
+FeasibleSpotBlockFinder per Zone → first feasible Zone + all its blocks
 ```
 
 Good targets use Good → Medium → Bad. Medium targets use Good → Medium → Bad
@@ -96,8 +98,10 @@ original request does not remain pending.
   immutable RemainingInventoryState snapshot. Quality totals derive from these
   entries; the calculator omits zero-availability Zones. Raw counts do not prove
   group feasibility. `ZoneEvaluationPolicy.Order(targetQuality, inventory, eligibleZones)`
-  now orders participating Zones deterministically; feasibility orchestration and
-  Zone/block selection remain pending.
+  now orders participating Zones deterministically. `FeasibleZoneCandidateFinder`
+  composes ordered traversal with physical feasibility and returns the first
+  feasible Zone with all its blocks. Block selection and engine integration
+  remain pending.
 - **Invariants:** same Zone, same Row, consecutive SpotNumbers, complete groups,
   daily uniqueness and final Assignments remain protected. Fairness cannot
   override eligibility or physical feasibility.

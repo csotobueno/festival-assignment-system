@@ -346,8 +346,9 @@ entries (ZoneId, ExperienceQuality, AvailableSpotCount) as the primary source.
 GoodRemaining, MediumRemaining and BadRemaining are derived from those entries.
 The calculator omits Zones with zero availability. Same-quality Zones retain
 independent counts for evaluation. `ZoneEvaluationPolicy` now implements the
-agreed quality/count/ZoneId ordering; feasibility orchestration and selection
-remain pending.
+agreed quality/count/ZoneId ordering. `FeasibleZoneCandidateFinder` now composes
+ordered traversal with the existing physical finder and returns all blocks from
+the first feasible Zone; block selection and engine integration remain pending.
 
 ### Accepted Consequence
 
