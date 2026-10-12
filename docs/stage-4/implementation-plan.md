@@ -63,7 +63,7 @@ Do not silently choose business semantics inside code.
 | Zone-level availability prerequisite (implemented) | Step 13, before Zone ordering | ZoneAvailabilityState entries are the primary source; derive quality totals from Zone-level entries. Raw counts do not prove feasibility. |
 | Zone Evaluation Strategy v1 (ordering and first-feasible-Zone search implemented) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
 | Global-state influence (deferred) | Future iteration after Stage 5 evidence | A concrete fairness failure showing remaining inventory is insufficient; then define minimum recorded outcome state and population/time scope. |
-| Block selection (deferred) | Full engine integration | A separate explicit decision for multiple feasible blocks within the selected Zone; Zone ordering defines no block choice. |
+| Block Selection Policy v1 (defined, not implemented) | Before full engine integration | [Affected-Row remaining-run ranking](assignment-strategy-v1.md#block-selection-policy-v1): LargestRemainingContiguousRun descending, RowCode ascending, starting SpotNumber ascending. Zone selection remains upstream. |
 | Persisted experience representation | Steps 20–22 | Quality and the complete successful outcome saved within the existing atomic boundary. No legacy-data backfill is needed. |
 
 Parameter sensitivity and final calibration belong to Stage 5. An initial
@@ -422,8 +422,8 @@ invariants; tests verify compatibility with AssignmentGroup validation.
 `FeasibleZoneCandidateFinder` now consumes ordered Zones and invokes the finder
 per Zone until one returns blocks; it does not generate candidates across all
 Zones first. Engine integration remains pending.
-The caller supplies availability. Block ranking, fragmentation
-evaluation, attendee binding and assignment selection remain deferred.
+The caller supplies availability. Block Selection Policy v1 is defined separately
+but not implemented; attendee binding and assignment selection remain pending.
 
 Build on existing Stage 2 and Stage 3 invariants.
 
@@ -568,9 +568,21 @@ as an immutable FeasibleZoneCandidate containing that Zone and every block in
 existing finder order. No feasible Zone returns null. Engine integration remains
 pending.
 
-Block selection is separate and deferred. Do not choose the first block, score
-fragmentation, prefer edges or centers, select randomly or optimize future
-capacity without a separate decision.
+### Next Increment — Implement the Defined Block Selection Policy v1
+
+The separate [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1)
+is defined, not yet implemented. Consume the selected FeasibleZoneCandidate and
+current available Spots. For each feasible block, simulate its removal from its
+affected Row and rank by LargestRemainingContiguousRun descending, then RowCode
+ascending and starting SpotNumber ascending. Preserve current gaps; an empty
+remaining Row scores zero. Compare these raw scores across Rows without
+normalization. Do not reconsider Zone priority or reinterpret physical feasibility.
+
+Future unit tests must cover the documented eight-Spot and different-Row examples,
+existing gaps, empty remaining Rows, both exact technical tie-breaks, and logical
+snapshot determinism. No implementation or new tests are delivered by this
+documentation increment. Add no general fragmentation score, future-demand
+prediction, reservation, first-block default or random selection.
 
 ### Validation
 
@@ -619,7 +631,8 @@ technical tie-break such as ZoneId ascending for exact count ties. ZoneId is
 only technical determinism, not a business preference or primary priority.
 There is no permanent ZoneType ranking, randomness, weighted randomness,
 persistent round-robin cursor or future-demand prediction. RotationScore retains
-its existing no-tolerance rule. Block selection remains deferred.
+its existing no-tolerance rule. Block Selection Policy v1 has separate, defined
+tie-breaks and remains pending implementation.
 
 ---
 
@@ -775,7 +788,7 @@ history
 → Zone-level availability
 → ordered eligible Zones
 → per-Zone feasibility
-→ block selection (separate decision required)
+→ Block Selection Policy v1 (defined, pending implementation)
 → persistence
 ```
 
@@ -966,7 +979,7 @@ Stage 4 can be considered complete when:
 - Zone-level availability drives the agreed quality/count/tie Zone order;
 - CurrentGlobalAssignmentState remains deferred from v1;
 - the first ordered Zone with feasible blocks is selected;
-- block selection is resolved separately before full engine completion;
+- the defined Block Selection Policy v1 is implemented before full engine completion;
 - better-than-target assignments are supported;
 - unnecessary artificial degradation is avoided;
 - unknown future demand is not used for speculative reservation;

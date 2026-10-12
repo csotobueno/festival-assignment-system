@@ -51,7 +51,8 @@ persistence foundation on which this proposal builds.
    the agreed [Zone Evaluation Strategy v1](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1).
 7. Use `FeasibleZoneCandidateFinder` to call `FeasibleSpotBlockFinder` per ordered
    Zone; return the first feasible Zone together with all its blocks.
-8. Select a complete block inside that Zone through a separate policy, still deferred.
+8. Select one block through the defined [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1),
+   whose implementation remains pending.
 9. Persist the request outcome and all Assignments atomically. Successful outcomes
    become history for subsequent requests.
 
@@ -61,6 +62,8 @@ TargetQuality + Zone-level availability + eligible Zones
 ZoneEvaluationPolicy → ordered Zones → FeasibleZoneCandidateFinder
         ↓
 FeasibleSpotBlockFinder per Zone → first feasible Zone + all its blocks
+        ↓
+Block Selection Policy v1 (defined, not implemented) → selected block
 ```
 
 Good targets use Good → Medium → Bad. Medium targets use Good → Medium → Bad
@@ -100,8 +103,14 @@ original request does not remain pending.
   group feasibility. `ZoneEvaluationPolicy.Order(targetQuality, inventory, eligibleZones)`
   now orders participating Zones deterministically. `FeasibleZoneCandidateFinder`
   composes ordered traversal with physical feasibility and returns the first
-  feasible Zone with all its blocks. Block selection and engine integration
-  remain pending.
+  feasible Zone with all its blocks. Block-selection implementation and engine
+  integration remain pending.
+- **Block selection:** v1 is defined but not implemented. Rank already feasible
+  blocks by LargestRemainingContiguousRun descending in the affected Row after
+  simulated removal, then RowCode ascending and starting SpotNumber ascending.
+  Use current availability, including existing gaps; an empty remaining Row scores
+  zero. This local capacity heuristic does not change Zone priority or add a
+  fairness rule; the official fairness-rule count remains 19.
 - **Invariants:** same Zone, same Row, consecutive SpotNumbers, complete groups,
   daily uniqueness and final Assignments remain protected. Fairness cannot
   override eligibility or physical feasibility.
@@ -122,8 +131,9 @@ Location classification need not block that work.
 The [implementation decision table](implementation-plan.md#decisions-at-the-point-of-use)
 records the agreed Zone-quality mapping, Target Quality and Zone Evaluation
 ordering, plus the implemented Zone-level availability prerequisite and ordering
-policy. Block selection and global assigned-outcome influence remain deferred. An unresolved business
-rule pauses its dependent increment; independent work can continue. No operational rule should
+policy. Block Selection Policy v1 is defined and awaits implementation; global
+assigned-outcome influence remains deferred. An unresolved business rule pauses
+its dependent increment; independent work can continue. No operational rule should
 be invented merely to complete the design.
 
 ## Scope
@@ -137,8 +147,8 @@ It excludes festival-wide optimization, daily batch or hybrid allocation,
 future-demand prediction and reservation, weighted randomness, complex preference
 ranking, internal group-dispersion optimization, automatic group restructuring,
 retrospective reassignment, and complete operational/UI/administrative workflows.
-Global assigned-outcome influence and block-selection behavior remain separate
-deferred concerns; full engine completion requires a later block-selection decision.
+Global assigned-outcome influence remains deferred. Block Selection Policy v1
+is defined separately; full engine completion requires its implementation.
 Final parameter calibration and quantitative fairness evaluation belong to
 Stage 5. Detailed reasons are in the
 [trade-offs document](trade-offs-and-open-questions.md).
