@@ -61,7 +61,7 @@ Do not silently choose business semantics inside code.
 | Minimum implemented eligibility rules | Step 10 | A concrete allowed/excluded candidate case; undefined organization policies remain deferred. |
 | Inventory v1 counting scope (implemented) | Step 13 | Raw available Spot counts by quality in the caller-supplied snapshot; no GroupSize or eligibility filtering inside the calculator. See [Current Inventory State](assignment-strategy-v1.md#9-current-inventory-state). |
 | Zone-level availability prerequisite (implemented) | Step 13, before Zone ordering | ZoneAvailabilityState entries are the primary source; derive quality totals from Zone-level entries. Raw counts do not prove feasibility. |
-| Zone Evaluation Strategy v1 (ordering implemented; orchestration pending) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
+| Zone Evaluation Strategy v1 (ordering and first-feasible-Zone search implemented) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
 | Global-state influence (deferred) | Future iteration after Stage 5 evidence | A concrete fairness failure showing remaining inventory is insufficient; then define minimum recorded outcome state and population/time scope. |
 | Block selection (deferred) | Full engine integration | A separate explicit decision for multiple feasible blocks within the selected Zone; Zone ordering defines no block choice. |
 | Persisted experience representation | Steps 20–22 | Quality and the complete successful outcome saved within the existing atomic boundary. No legacy-data backfill is needed. |
@@ -419,8 +419,9 @@ availableSpots, groupSize)`, returning all complete `FeasibleSpotBlock` windows
 inside the supplied Zone. It preserves overlapping alternatives and keeps Rows
 independent, ordered by RowCode then SpotNumber. It reuses the existing physical
 invariants; tests verify compatibility with AssignmentGroup validation.
-Later orchestration first orders eligible Zones, then invokes the finder per Zone
-until one returns blocks; it does not generate candidates across all Zones first.
+`FeasibleZoneCandidateFinder` now consumes ordered Zones and invokes the finder
+per Zone until one returns blocks; it does not generate candidates across all
+Zones first. Engine integration remains pending.
 The caller supplies availability. Block ranking, fragmentation
 evaluation, attendee binding and assignment selection remain deferred.
 
@@ -559,19 +560,25 @@ quality policy. Results are read-only; empty participation returns empty.
 Tests cover quality orders and equality, capacity priority, exact ZoneId ties,
 participation, input permutations, malformed inputs and snapshot immutability.
 RequestEligibility → ZoneEligibilityPolicy precedes ordering; eligibility never
-changes quality. Later orchestration remains pending: for each ordered Zone, invoke
-FeasibleSpotBlockFinder with GroupSize; skip zero-block results. The first Zone
-with 1..N feasible blocks is selected for the next decision step.
+changes quality. The separate pure composition is now implemented as
+`FeasibleZoneCandidateFinder.Find(orderedZones, availableSpots, groupSize)`.
+It validates collection structure before traversal, scopes Spots by ZoneId and
+reuses FeasibleSpotBlockFinder. The first Zone with blocks returns immediately
+as an immutable FeasibleZoneCandidate containing that Zone and every block in
+existing finder order. No feasible Zone returns null. Engine integration remains
+pending.
 
 Block selection is separate and deferred. Do not choose the first block, score
 fragmentation, prefer edges or centers, select randomly or optimize future
 capacity without a separate decision.
 
-### Later Validation
+### Validation
 
-Ordering is covered by domain unit tests. Future orchestration must verify
-positive raw inventory with no feasible block and advancing to the first feasible
-Zone. No feasibility invocation or block selection is part of the ordering policy.
+Domain unit tests cover ordering and first-feasible-Zone composition, including
+fragmented or insufficient availability, advancing to later Zones, authoritative
+Zone order, all returned blocks, exact group sizes, Zone isolation, empty results,
+malformed snapshots and read-only results. The ordering policy remains unchanged;
+block selection and engine integration are separate pending increments.
 
 ---
 

@@ -17,7 +17,8 @@ Its purpose is to describe **how the system transforms a daily assignment reques
 - deterministic selection.
 
 This guide records the agreed Zone Evaluation Strategy v1. Its ordering policy
-is implemented; feasibility orchestration and Zone selection remain pending.
+and first-feasible-Zone composition are implemented; block selection and engine
+integration remain pending.
 Block selection remains deferred. Other selection examples express intent;
 where they say “may” or “reasonable”, the corresponding implementation increment
 must establish a concrete provisional rule and expected result. The
@@ -487,11 +488,17 @@ the existing AssignmentEngine is unchanged.
 
 # 8. Candidate Generation
 
-Order eligible Zones before generating physical blocks. The later Assignment
-flow calls `FeasibleSpotBlockFinder` separately for each ordered Zone:
+Order eligible Zones before generating physical blocks. The implemented pure
+`FeasibleZoneCandidateFinder.Find(IEnumerable<Zone> orderedZones,
+IEnumerable<Spot> availableSpots, GroupSize groupSize)` returns a nullable
+`FeasibleZoneCandidate` with get-only `Zone` and read-only `FeasibleBlocks`. It
+uses the supplied Zone order unchanged, scopes available Spots by ZoneId and
+calls `FeasibleSpotBlockFinder` separately for each visited Zone:
 
 ```text
-ordered Zone → FeasibleSpotBlockFinder → 0..N feasible blocks
+ordered Zones → FeasibleZoneCandidateFinder
+        ↓
+FeasibleSpotBlockFinder per Zone → first feasible Zone + all its blocks
 ```
 
 If there is no complete block for the current `GroupSize`, continue to the next
@@ -499,6 +506,16 @@ Zone. The first Zone with one or more feasible blocks becomes the selected Zone
 for the next decision step. Do not generate all candidates across all Zones
 before ordering. The finder verifies physical feasibility; it does not choose a
 Zone or select among its blocks.
+
+The search validates null collections/elements, duplicate Zone IDs, initialized
+GroupSize and duplicate SpotCodes or physical positions `(ZoneId, RowCode,
+SpotNumber)` across the entire snapshot before traversal. This prevents malformed
+Spots in later or unlisted Zones from being hidden by an early result. Valid Spots
+outside the ordered Zones are ignored. Contiguity and window generation remain
+owned by the existing block finder. Empty inputs or no feasible Zone return
+`null`; the search creates no Assignment or rejection outcome. The candidate
+copies its non-empty blocks into a read-only collection, requires its Zone and
+rejects null blocks or blocks from another Zone. Block order is preserved.
 
 A group of five cannot use three contiguous Good Spots; evaluation continues
 until a complete block is found, including Medium and then Bad as applicable.
@@ -671,8 +688,9 @@ cursor or future-demand prediction is used.
 
 ### Physical-Feasibility Boundary
 
-Later orchestration will visit Zones in this order and call
-`FeasibleSpotBlockFinder` for each, skipping Zones with zero blocks for `GroupSize`.
+The implemented `FeasibleZoneCandidateFinder` visits Zones in supplied order
+and calls `FeasibleSpotBlockFinder` for each, skipping zero-block results for
+`GroupSize` and returning immediately at the first feasible Zone.
 `ZoneEvaluationPolicy` only orders Zones; it does not invoke the finder, inspect
 Spots, select a block or create Assignments. The first Zone with 1..N blocks wins for the
 next decision step, even if a later Zone might preserve capacity better. This
