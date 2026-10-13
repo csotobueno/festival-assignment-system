@@ -2,7 +2,12 @@
 
 ## Status and Purpose
 
-**Initial implementation guide — Stage 4 is next, not completed.**
+**Pure Stage 4 Domain selection is implemented; Application integration is pending.**
+
+The agreed [Stage 4 Application Cutover Boundary](../architecture/stage-4-application-cutover-boundary.md)
+uses a **two-step cutover**: prepare stable dependencies while legacy engine
+placement remains temporarily active, then transition the use case, engine and
+mandatory Assignment.ExperienceQuality together. There is no permanent dual path.
 
 The technical MVP tests whether a reliable system can assign locations to
 Attendees across several festival days while preserving fairness and flexible
@@ -30,6 +35,7 @@ prerequisite for beginning implementation.
 | 3 | [Assignment Strategy v1](assignment-strategy-v1.md) | Decision flow, agreed Zone Evaluation Strategy, availability and feasibility boundaries. |
 | 4 | [Implementation Plan](implementation-plan.md) | Increments, decisions needed by each increment, validation and exit criteria. |
 | 5 | [Trade-offs and Open Questions](trade-offs-and-open-questions.md) | Accepted limitations, their reasons, and later evaluation or organization questions. |
+| 6 | [Stage 4 Application Cutover Boundary](../architecture/stage-4-application-cutover-boundary.md) | Agreed two-phase integration, ownership, delivery sequence and separate risks. |
 
 Keep detailed definitions in their responsible document and link to them from
 other files. The [glossary](../glossary.md) defines shared terms; the
@@ -39,6 +45,13 @@ documents preserve their historical decisions. The
 persistence foundation on which this proposal builds.
 
 ## Assignment Flow
+
+This is the target Stage 4 flow, not the currently active Application flow.
+Today ProcessAssignmentRequestUseCase resolves attendees, creates the group,
+loads available Spots and calls the legacy AssignmentEngine. Application input
+preparation, selection-policy invocation, engine cutover and persisted Assignment
+ExperienceQuality are not yet integrated. External callers continue supplying
+business-request data; Application will prepare AssignmentSelection internally.
 
 1. Receive an AssignmentRequest with one to ten Attendees and resolve its members.
 2. Load each Attendee's available history of real previous assignments.
@@ -88,6 +101,28 @@ If no complete eligible and feasible block exists, reject the request without
 Assignments. Lack of contiguous capacity retains
 `CONTIGUOUS_SPOTS_NOT_AVAILABLE`. A changed group requires a new request; the
 original request does not remain pending.
+
+## Application Cutover
+
+**Phase 1 — Prepare Stable Dependencies:** expose current Zone read access,
+prepare the Assignment quality transition and persistence strategy, establish
+recorded-history reading and prepare fairness, eligibility and inventory inputs.
+GroupRotationScore already computes individual scores from member histories.
+Keep legacy placement active until inputs can be produced safely; mandatory
+quality must be activated with the creation path, without defaults or fabricated history.
+
+**Phase 2 — Coordinated Final Cutover:** the use case invokes
+AssignmentSelectionPolicy; null rejects the request, while a selection is
+materialized by AssignmentEngine from its Block and ExperienceQuality. Transition
+caller, engine API and mandatory Assignment quality together, remove legacy
+helpers and retain one active placement path. Preserve the Stage 3 UnitOfWork
+boundary and request-status semantics.
+
+The [architecture decision](../architecture/stage-4-application-cutover-boundary.md#implementation-sequence)
+defines the exact seven-step delivery sequence. InMemory remains lightweight
+test/demo support without required production parity. Attendee one-to-one
+resolution and pre-save snapshot consistency are recorded as separate concerns;
+this cutover does not implement their fixes or global assigned-outcome state.
 
 ## Baseline and Boundaries
 
