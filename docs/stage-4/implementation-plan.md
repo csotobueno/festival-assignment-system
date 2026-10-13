@@ -422,8 +422,9 @@ invariants; tests verify compatibility with AssignmentGroup validation.
 `FeasibleZoneCandidateFinder` now consumes ordered Zones and invokes the finder
 per Zone until one returns blocks; it does not generate candidates across all
 Zones first. Engine integration remains pending.
-The caller supplies availability. Block Selection Policy v1 is implemented
-separately; attendee binding and assignment selection remain pending.
+The caller supplies availability. AssignmentSelectionPolicy now composes Zone
+ordering, feasibility and Block Selection Policy v1; attendee binding and engine
+integration remain pending.
 
 Build on existing Stage 2 and Stage 3 invariants.
 
@@ -478,7 +479,8 @@ Bad
 
 RequestEligibility determines whether the Zone participates; it does not alter
 the policy result. Quality is derived from ZoneType, not the request's exclusions
-or TargetQuality. Candidate integration remains pending.
+or TargetQuality. AssignmentSelectionPolicy now resolves this actual quality in
+AssignmentSelection; historical recording remains pending.
 
 ### Goal
 
@@ -509,8 +511,9 @@ cover every ZoneType, mixed and independent same-quality Zones, supplied
 availability, logical input-order independence, snapshot immutability,
 fragmented raw capacity and malformed/duplicate inputs. No entry sequence order
 or business priority is defined. Zone-level availability is implemented;
-ordering influence is implemented in ZoneEvaluationPolicy; selection remains
-pending. Current availability uses current classification; historical assignments retain recorded quality.
+ordering influence is implemented in ZoneEvaluationPolicy and pure selection is
+composed by AssignmentSelectionPolicy. Current availability uses current classification;
+historical assignments retain recorded quality.
 
 ### Goal
 
@@ -585,6 +588,20 @@ snapshot determinism. Candidate creation rejects mixed block sizes. Selection
 validates the entire snapshot structure and every candidate Spot's current
 identity/position before ranking. Add no general fragmentation score, future-demand
 prediction, reservation, first-block default or random selection.
+
+### Implemented Pure Assignment Selection
+
+`AssignmentSelectionPolicy.Select(targetQuality, inventory, eligibleZones,
+availableSpots, groupSize)` composes `ZoneEvaluationPolicy.Order` →
+`FeasibleZoneCandidateFinder.Find` → `BlockSelectionPolicy.Select`, then resolves
+actual quality with `ZoneExperienceQualityPolicy`. It consumes prepared inputs,
+materializes availability once and returns an immutable AssignmentSelection with
+Zone, Block and actual ExperienceQuality, or `null` when no placement exists.
+The result factory enforces matching ZoneId and current Zone quality. Domain
+tests cover target/actual differences, ordering, feasibility, block selection,
+empty results, determinism and result invariants. No new fairness rule is added;
+the official count remains 19. See the [pure composition boundary](assignment-strategy-v1.md#pure-assignment-selection-composition).
+Engine, application and persistence integration remain pending.
 
 ### Validation
 

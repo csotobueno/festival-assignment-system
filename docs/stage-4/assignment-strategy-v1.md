@@ -18,7 +18,8 @@ Its purpose is to describe **how the system transforms a daily assignment reques
 
 This guide records the agreed Zone Evaluation Strategy v1. Its ordering policy
 and first-feasible-Zone composition are implemented. Block Selection Policy v1
-is also implemented; engine integration remains pending. Other
+and the complete pure AssignmentSelectionPolicy are also implemented; engine
+integration remains pending. Other
 selection examples express intent;
 where they say “may” or “reasonable”, the corresponding implementation increment
 must establish a concrete provisional rule and expected result. The
@@ -433,8 +434,8 @@ pending implementation step.
 removed from the domain model. `ZoneEligibilityPolicy` identifies Front Standing
 through `Zone.Type == ZoneType.FrontStanding`. The global
 `ZoneExperienceQualityPolicy.GetQuality` implements the agreed quality mapping.
-Candidate integration and historical quality recording remain separate pending
-tasks. `ZoneCode` remains deferred.
+Current selected quality is now carried by AssignmentSelection; historical
+quality recording remains pending. `ZoneCode` remains deferred.
 
 ---
 
@@ -525,6 +526,51 @@ until a complete block is found, including Medium and then Bad as applicable.
 Multiple feasible blocks in the selected Zone are inputs to the separate
 [Block Selection Policy v1](#block-selection-policy-v1), now implemented. Finder
 output order is deterministic enumeration, not a business preference or automatic first-block selection.
+
+## Pure Assignment Selection Composition
+
+**Status: implemented.** `AssignmentSelectionPolicy.Select(TargetQuality targetQuality,
+RemainingInventoryState inventory, IEnumerable<Zone> eligibleZones,
+IEnumerable<Spot> availableSpots, GroupSize groupSize)` returns `AssignmentSelection?`.
+All inputs are prepared by the caller and conceptually belong to the same current
+decision snapshot. The policy does not calculate scores, target, eligibility or
+inventory, load data, create Assignments or translate absence into request rejection.
+
+```text
+prepared decision inputs
+        ↓
+AssignmentSelectionPolicy
+        ↓
+AssignmentSelection
+        ├── Zone
+        ├── FeasibleSpotBlock (Block)
+        └── ExperienceQuality
+
+internal composition:
+ZoneEvaluationPolicy.Order → ordered eligible Zones
+        ↓
+FeasibleZoneCandidateFinder.Find → first feasible Zone + its blocks
+        ↓
+BlockSelectionPolicy.Select → one FeasibleSpotBlock
+        ↓
+ZoneExperienceQualityPolicy.GetQuality(selected Zone.Type) → actual ExperienceQuality
+```
+
+The existing policies remain authoritative for ordering, feasibility, block
+selection and snapshot validation. Availability is materialized once for both
+downstream policies, without changing its ordering. No participating Zone, no
+feasible block, empty eligible Zones or empty available Spots return `null`.
+Malformed inputs retain the existing validation exceptions.
+
+The immutable `AssignmentSelection` exposes only get-only `Zone`, `Block` and
+`ExperienceQuality`. Its `Create(zone, block, experienceQuality)` factory requires
+Zone and block, verifies `block.ZoneId == zone.Id`, rejects undefined quality and
+requires quality to equal `ZoneExperienceQualityPolicy.GetQuality(zone.Type)`.
+TargetQuality remains a desired reference, never the source of actual quality:
+Good may yield Medium or Bad; Medium may yield Good. Domain tests cover these
+outcomes, policy composition, empty results, logical input permutations, a
+single-use availability source, immutable snapshots and result validation.
+Engine, application and historical persistence integration remain pending.
 
 ---
 
