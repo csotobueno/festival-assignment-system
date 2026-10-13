@@ -61,6 +61,36 @@ public sealed class FeasibleZoneCandidateTests
         Assert.Equal("feasibleBlocks", exception.ParamName);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Create_ShouldRejectMixedBlockSizes_RegardlessOfBlockOrder(bool reverse)
+    {
+        var single = Block(Zone, 1);
+        var pair = FeasibleSpotBlock.Create([single.Spots[0], Block(Zone, 2).Spots[0]]);
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            FeasibleZoneCandidate.Create(Zone, reverse ? [pair, single] : [single, pair]));
+
+        Assert.Equal("feasibleBlocks", exception.ParamName);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(3)]
+    [InlineData(10)]
+    public void Create_ShouldAcceptSharedBlockSize_AcrossRows(int size)
+    {
+        var first = FeasibleSpotBlock.Create(Enumerable.Range(1, size).Select(number =>
+            Spot.Create(SpotCode.Create($"A-{number}"), Zone.Id, RowCode.Create("A"), SpotNumber.Create(number))));
+        var second = FeasibleSpotBlock.Create(Enumerable.Range(1, size).Select(number =>
+            Spot.Create(SpotCode.Create($"B-{number}"), Zone.Id, RowCode.Create("B"), SpotNumber.Create(number))));
+
+        var candidate = FeasibleZoneCandidate.Create(Zone, [first, second]);
+
+        Assert.Equal(new[] { first, second }, candidate.FeasibleBlocks);
+    }
+
     private static FeasibleSpotBlock Block(Zone zone, int number) => FeasibleSpotBlock.Create(
         [Spot.Create(SpotCode.Create($"{zone.Id}-{number}"), zone.Id, RowCode.Create("A"), SpotNumber.Create(number))]);
 }
