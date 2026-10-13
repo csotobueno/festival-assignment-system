@@ -15,9 +15,33 @@ The plan follows a Lean principle:
 Stage 4 should produce a reliable online baseline that can later be evaluated quantitatively in Stage 5.
 This is an initial guide, not a completed specification. The numbered steps are
 work areas that can be grouped into small issues; they are not a mandatory
-one-issue-per-step sequence. The score can be implemented with classified test
-histories while the agreed Zone taxonomy and quality-policy implementation remain
-pending.
+one-issue-per-step sequence. Pure score calculations and the Domain selection
+pipeline are implemented; Application preparation, engine cutover and persisted
+Assignment ExperienceQuality remain pending.
+
+## Agreed Application Cutover Delivery Sequence
+
+The [Stage 4 Application Cutover Boundary](../architecture/stage-4-application-cutover-boundary.md)
+defines a **two-step cutover**. Phase 1 prepares stable dependencies while the
+currently active legacy engine remains intact. Phase 2 transitions the caller,
+engine and mandatory recorded quality together. The numbered work areas below
+do not override this agreed Application delivery order:
+
+1. Expose Current Zone Read Access.
+2. Prepare Assignment ExperienceQuality transition and persistence strategy
+   consistent with the cutover.
+3. Read Attendee Fairness History.
+4. Prepare Stage 4 Fairness Inputs in Application.
+5. Prepare eligibility + inventory + AssignmentSelection inside
+   ProcessAssignmentRequestUseCase.
+6. Perform coordinated final cutover: ProcessAssignmentRequestUseCase +
+   AssignmentEngine + mandatory Assignment.ExperienceQuality.
+7. Remove legacy placement logic.
+
+Steps 5–7 may form one coherent implementation issue if separate delivery would
+require a temporary incompatible API. Do not reorder this sequence without a
+concrete repository constraint. No external-caller selection contract, quality
+default or permanent parallel placement path is introduced.
 
 ---
 
@@ -657,7 +681,12 @@ tie-breaks and is implemented; engine integration remains pending.
 
 ## Step 19 — Integrate with ProcessAssignmentRequestUseCase
 
-Integrate the Stage 4 strategy with the existing application flow.
+Integrate the Stage 4 strategy with the existing application flow through the
+agreed two-step cutover above. Keep legacy placement active during dependency
+preparation; Application owns the eventual preparation of AssignmentSelection.
+Changing AssignmentEngine first would break its current available-Spots caller.
+The final transition must change that caller and engine together, activate
+mandatory Assignment quality and remove obsolete placement helpers.
 
 Reuse existing ports whenever responsibilities still match.
 
@@ -674,6 +703,13 @@ Evolve the existing assignment process without weakening current application sem
 Use previous real assignments as input to RotationScore.
 
 Infrastructure should provide the required history through an application/domain-facing abstraction.
+
+The Application history-read boundary is currently missing. It must supply
+recorded Assignment.ExperienceQuality from oldest to most recent, never
+reclassify history from current Zones. Application prepares FairnessHistory per
+attendee and invokes GroupRotationScore, which already calculates individual
+scores internally, then TargetQualityPolicy. Scores remain derived, not stored.
+Read capability depends on the quality transition; it is not active today.
 
 ### Goal
 
@@ -718,9 +754,12 @@ or eligibility changes.
 The exact persistence representation should be chosen during implementation with the smallest justified change.
 
 The database is empty at Stage 4 preparation; there are no historical assignments
-to migrate or reclassify. Record quality for new Assignments as part of the
-atomic successful outcome. Implement this together with persisted-history
-integration when needed, rather than assuming existing records contain quality.
+to migrate or reclassify. Prepare the transition and persistence strategy in
+Phase 1, then coordinate activation of mandatory immutable quality with the
+active Assignment creation path at final cutover. Record selection.ExperienceQuality
+as part of the atomic successful outcome. Do not introduce nullable quality as
+the target model, default Medium, fabricated history, current Zone reclassification
+or post-selection lookup. Existing records must not be assumed to contain quality.
 
 ---
 

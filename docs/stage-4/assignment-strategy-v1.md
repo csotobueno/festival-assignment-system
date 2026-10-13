@@ -26,6 +26,12 @@ must establish a concrete provisional rule and expected result. The
 [decision table](implementation-plan.md#decisions-at-the-point-of-use) identifies
 those points without requiring a complete policy before implementation starts.
 
+Application integration follows the agreed [two-step cutover](../architecture/stage-4-application-cutover-boundary.md).
+Legacy AssignmentEngine placement is temporarily active during dependency
+preparation. The final caller/engine transition activates mandatory recorded
+Assignment.ExperienceQuality and removes the legacy placement path. The flow in
+this document is the target strategy, not evidence that Application already uses it.
+
 The strategy intentionally operates with the information known at the moment of the request.
 
 It does not attempt to globally optimize all festival assignments in advance.
@@ -532,8 +538,10 @@ output order is deterministic enumeration, not a business preference or automati
 **Status: implemented.** `AssignmentSelectionPolicy.Select(TargetQuality targetQuality,
 RemainingInventoryState inventory, IEnumerable<Zone> eligibleZones,
 IEnumerable<Spot> availableSpots, GroupSize groupSize)` returns `AssignmentSelection?`.
-All inputs are prepared by the caller and conceptually belong to the same current
-decision snapshot. The policy does not calculate scores, target, eligibility or
+All inputs are prepared by its Domain caller and conceptually belong to the same
+current decision snapshot. In the final Application flow, that caller is
+ProcessAssignmentRequestUseCase: external callers supply business-request data,
+not AssignmentSelection. The policy does not calculate scores, target, eligibility or
 inventory, load data, create Assignments or translate absence into request rejection.
 
 ```text
@@ -571,6 +579,14 @@ Good may yield Medium or Bad; Medium may yield Good. Domain tests cover these
 outcomes, policy composition, empty results, logical input permutations, a
 single-use availability source, immutable snapshots and result validation.
 Engine, application and historical persistence integration remain pending.
+
+At the [coordinated final cutover](../architecture/stage-4-application-cutover-boundary.md#phase-2--coordinated-final-cutover),
+the use case will interpret null as request rejection and pass a selection to
+AssignmentEngine for materialization. The engine will use selection.Block and
+selection.ExperienceQuality without TargetQuality, Zone lookup or quality
+recalculation. Remove obsolete placement helpers and retain no permanent
+compatibility overload or second placement fallback. The existing pure policies
+remain authoritative and unchanged.
 
 ---
 
