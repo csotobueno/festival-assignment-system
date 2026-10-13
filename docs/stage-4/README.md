@@ -52,19 +52,30 @@ persistence foundation on which this proposal builds.
 7. Use `FeasibleZoneCandidateFinder` to call `FeasibleSpotBlockFinder` per ordered
    Zone; return the first feasible Zone together with all its blocks.
 8. Select one block through the implemented [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1).
-   Engine integration remains pending.
+   Steps 6–8 are composed by `AssignmentSelectionPolicy`, which returns the
+   selected Zone, block and actual ExperienceQuality. Engine integration remains pending.
 9. Persist the request outcome and all Assignments atomically. Successful outcomes
    become history for subsequent requests.
 
 ```text
-TargetQuality + Zone-level availability + eligible Zones
+prepared decision inputs:
+TargetQuality + RemainingInventoryState + eligible Zones + available Spots + GroupSize
         ↓
-ZoneEvaluationPolicy → ordered Zones → FeasibleZoneCandidateFinder
+AssignmentSelectionPolicy
         ↓
-FeasibleSpotBlockFinder per Zone → first feasible Zone + all its blocks
-        ↓
-Block Selection Policy v1 (implemented) → selected block
+AssignmentSelection
+        ├── Zone
+        ├── FeasibleSpotBlock (Block)
+        └── ExperienceQuality
 ```
+
+Internally: `ZoneEvaluationPolicy` → `FeasibleZoneCandidateFinder` (using
+`FeasibleSpotBlockFinder` per Zone) → `BlockSelectionPolicy`. Actual quality
+comes from `ZoneExperienceQualityPolicy.GetQuality(selectedZone.Type)`, independently
+of TargetQuality. The immutable result requires the block's ZoneId and current
+Zone quality to match. The pure selection returns `null` when no placement exists;
+it creates no Assignment or request rejection. Its caller prepares all inputs
+from the same decision snapshot; engine and application integration remain pending.
 
 Good targets use Good → Medium → Bad. Medium targets use Good → Medium → Bad
 when GoodRemaining > MediumRemaining, otherwise Medium → Good → Bad (equality
@@ -91,8 +102,8 @@ original request does not remain pending.
 - **Experience Quality:** the agreed [seven ZoneTypes and global mapping](assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
   derive `Good`, `Medium` or `Bad` through `ZoneExperienceQualityPolicy`.
   Request eligibility changes participation only; historical recorded quality
-  remains stable. ZoneType and the quality policy are implemented; candidate
-  integration and historical quality recording remain pending.
+  remains stable. ZoneType, the quality policy and actual quality in
+  AssignmentSelection are implemented; historical quality recording remains pending.
 - **Zone model evolution:** mandatory `Zone.Type` replaces `IsFrontStanding`;
   eligibility uses `Zone.Type == ZoneType.FrontStanding`.
   `ZoneCode` remains deferred until a concrete integration or identifier need.
@@ -103,8 +114,8 @@ original request does not remain pending.
   group feasibility. `ZoneEvaluationPolicy.Order(targetQuality, inventory, eligibleZones)`
   now orders participating Zones deterministically. `FeasibleZoneCandidateFinder`
   composes ordered traversal with physical feasibility and returns the first
-  feasible Zone with all its blocks. Block selection is implemented; engine
-  integration remains pending.
+  feasible Zone with all its blocks. AssignmentSelectionPolicy composes ordering,
+  feasibility and block selection; engine integration remains pending.
 - **Block selection:** v1 is implemented as
   `BlockSelectionPolicy.Select(candidate, availableSpots)`. Rank already feasible
   blocks by LargestRemainingContiguousRun descending in the affected Row after
