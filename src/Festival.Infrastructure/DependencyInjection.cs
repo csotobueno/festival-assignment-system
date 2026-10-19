@@ -4,6 +4,7 @@ using Festival.Infrastructure.Assignments.InMemory;
 using Festival.Infrastructure.Assignments.InMemory.Seed;
 using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.Persistence;
+using Festival.Infrastructure.Zones.InMemory;
 using Festival.Infrastructure.Zones.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,12 +27,15 @@ public static class DependencyInjection
         services.AddSingleton<IAvailableSpotProvider>(
             _ => new InMemoryAvailableSpotProvider(
                 InMemoryAssignmentSeedData.AvailableSpots));
+        services.AddSingleton<IZoneCatalogProvider>(
+            _ => new InMemoryZoneCatalogProvider(InMemoryAssignmentSeedData.Zones));
+        services.AddSingleton<IFairnessHistoryProvider, InMemoryFairnessHistoryProvider>();
         services.AddSingleton<
             IAssignmentRequestRepository,
             InMemoryAssignmentRequestRepository>();
-        services.AddSingleton<
-            IAssignmentRepository,
-            InMemoryAssignmentRepository>();
+        services.AddSingleton<InMemoryAssignmentRepository>();
+        services.AddSingleton<IAssignmentRepository>(
+            provider => provider.GetRequiredService<InMemoryAssignmentRepository>());
         services.AddSingleton<IUnitOfWork, InMemoryUnitOfWork>();
 
         return services;
@@ -68,6 +72,7 @@ public static class DependencyInjection
         services.AddScoped<
             IZoneCatalogProvider,
             PostgreSqlZoneCatalogProvider>();
+        services.AddScoped<IFairnessHistoryProvider, PostgreSqlFairnessHistoryProvider>();
         services.AddScoped<
             IAssignmentRequestRepository,
             PostgreSqlAssignmentRequestRepository>();

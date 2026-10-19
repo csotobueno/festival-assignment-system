@@ -16,41 +16,29 @@ Stage 4 should produce a reliable online baseline that can later be evaluated qu
 This is an initial guide, not a completed specification. The numbered steps are
 work areas that can be grouped into small issues; they are not a mandatory
 one-issue-per-step sequence. Pure score calculations and the Domain selection
-pipeline are implemented; Application preparation, engine cutover and persisted
-Assignment ExperienceQuality remain pending.
+pipeline, Application preparation, engine cutover and persisted immutable
+Assignment ExperienceQuality are implemented. Full Stage 4 exit validation and
+Stage 5 simulation remain separate work.
 
 ## Agreed Application Cutover Delivery Sequence
 
 The [Stage 4 Application Cutover Boundary](../architecture/stage-4-application-cutover-boundary.md)
-defines a **two-step cutover**. Phase 1 prepares stable dependencies while the
-currently active legacy engine remains intact. Phase 2 transitions the caller,
-engine and mandatory recorded quality together. The numbered work areas below
-do not override this agreed Application delivery order:
+was delivered in two phases: stable dependencies first, then coordinated
+activation. The delivered increments are:
 
-1. Expose Current Zone Read Access — implemented as
-   `IZoneCatalogProvider.GetZonesAsync(CancellationToken)` with the scoped
-   `PostgreSqlZoneCatalogProvider`. Returns all current Domain Zones, including
-   FrontStanding, as a read-only collection (empty is valid), without tracking.
-   ZoneId ascending is technical ordering only. No FestivalDay relationship,
-   quality classification, eligibility or inventory logic is added. InMemory
-   composition does not require the unused port yet; no adapter is added there.
-   Application orchestration remains pending and legacy placement stays active.
-2. Define Assignment ExperienceQuality transition and neutral bootstrap — agreed
-   in the [authoritative decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap);
-   implementation remains pending.
-3. Prepare independent Application input composition using supplied histories
-   and dependencies that do not require persisted quality; legacy placement stays
-   active.
-4. Activate Stage 4 coherently: use-case AssignmentSelection integration + engine
-   migration + mandatory Assignment.ExperienceQuality + persistence/schema
-   migration + explicit rehydration + recorded-history reads + legacy removal.
+1. Current Zone catalog access through IZoneCatalogProvider, now consumed by
+   Application; PostgreSQL and the configured InMemory demo catalog are registered.
+2. Assignment quality transition and neutral bootstrap decision.
+3. Application composition using existing fairness, eligibility and inventory
+   policies without duplicating their formulas.
+4. Coordinated selection integration, engine materialization, mandatory Assignment
+   quality, required text persistence/migration, explicit rehydration, batched
+   recorded-history reads and removal of legacy placement.
 
-Steps 1–3 prepare dependencies; step 4 activates the coupled changes together.
-Fairness-history reads are no longer a prerequisite before recorded quality
-exists. Empty history supplies the neutral bootstrap until real outcomes are
-recorded. Do not split activation into incompatible APIs, nullable/default quality
-or a permanent parallel placement path. No external-caller selection contract
-is introduced.
+Empty history remains the neutral bootstrap. There is one production placement
+path and no nullable/default quality, fake backfill or current-Zone historical
+reconstruction. The numbered work areas below do not require independently
+activating coupled contracts.
 
 ---
 
@@ -97,7 +85,7 @@ Do not silently choose business semantics inside code.
 | Zone Evaluation Strategy v1 (ordering and first-feasible-Zone search implemented) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
 | Global-state influence (deferred) | Future iteration after Stage 5 evidence | A concrete fairness failure showing remaining inventory is insufficient; then define minimum recorded outcome state and population/time scope. |
 | Block Selection Policy v1 (implemented) | Before full engine integration | [Affected-Row remaining-run ranking](assignment-strategy-v1.md#block-selection-policy-v1): LargestRemainingContiguousRun descending, RowCode ascending, starting SpotNumber ascending. Zone selection remains upstream. |
-| Assignment quality transition and neutral bootstrap (agreed) | Coordinated activation across Steps 19–22 | [Authoritative decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap): required immutable quality, explicit rehydration and recorded-history reads activate together; empty history is neutral and no fake backfill is allowed. Concrete schema representation remains implementation work. |
+| Assignment quality transition and neutral bootstrap (implemented) | Coordinated activation across Steps 19–22 | [Authoritative decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap): required immutable quality, explicit rehydration and batched recorded-history reads are active; empty history is neutral and no fake backfill is allowed. Quality is stored as required enum-name text without a default. |
 
 Parameter sensitivity and final calibration belong to Stage 5. An initial
 executable policy is still required in Stage 4. Final path-classification
@@ -150,7 +138,7 @@ The [Zone taxonomy and global mapping](assignment-strategy-v1.md#agreed-zone-tax
 are decided. The taxonomy, mandatory `Zone.Type`, eligibility migration and
 `ZoneExperienceQualityPolicy.GetQuality(ZoneType zoneType)` (items 1–4 below)
 are implemented. Quality is derived, never stored on Zone. Historical quality
-recording (item 5) remains pending. The sequence is:
+recording (item 5) is now integrated at the coordinated cutover. The sequence is:
 
 1. Introduce `ZoneType` with exactly `FrontStanding`, `MiddleLeft`, `MiddleCenter`,
    `MiddleRight`, `UpperLeft`, `UpperCenter` and `UpperRight`.
@@ -376,7 +364,7 @@ historical quality records or alter the global Zone Experience Quality policy.
 ## Step 9 — Implement the Agreed Target Quality Policy v1
 
 The [policy is defined](assignment-strategy-v1.md#3-determine-target-quality).
-Implementation in code remains a subsequent task, using the same rule for
+It is implemented and used by Application, with the same rule for
 `RotationScore` and `GroupRotationScore`:
 
 ```text
@@ -401,7 +389,7 @@ influence is deferred from Zone Evaluation v1.
 
 ### Validation
 
-Future implementation tests must cover negative and zero scores (`Medium`),
+Domain tests cover negative and zero scores (`Medium`),
 scores below `1.00` (`Medium`), exactly `1.00` (`Good`) and above it (`Good`),
 with the same policy for individuals and groups. Preserve the
 [representative histories and boundary case](trade-offs-and-open-questions.md#target-quality-v1-threshold-decision)
@@ -425,9 +413,9 @@ The global `ZoneExperienceQualityPolicy.GetQuality` now derives quality from
 ZoneType alone, without reinterpreting historical ExperienceQuality or
 introducing `ZoneCode`.
 
-This increment ends at eligible Zones. Connecting those Zones to available
-Spots, physical feasibility, candidate blocks and assignment selection remains
-deferred. Existing available-spot providers and the engine are unchanged.
+Application now connects eligible Zones to prepared availability, inventory and
+AssignmentSelectionPolicy. Available-spot provider behavior is unchanged; the
+engine consumes the resulting selection without evaluating eligibility.
 
 Implement only further eligibility concepts concretely required by the MVP.
 
@@ -457,10 +445,10 @@ independent, ordered by RowCode then SpotNumber. It reuses the existing physical
 invariants; tests verify compatibility with AssignmentGroup validation.
 `FeasibleZoneCandidateFinder` now consumes ordered Zones and invokes the finder
 per Zone until one returns blocks; it does not generate candidates across all
-Zones first. Engine integration remains pending.
+Zones first. Engine materialization is integrated.
 The caller supplies availability. AssignmentSelectionPolicy now composes Zone
 ordering, feasibility and Block Selection Policy v1; attendee binding and engine
-integration remain pending.
+integration are implemented.
 
 Build on existing Stage 2 and Stage 3 invariants.
 
@@ -516,7 +504,7 @@ Bad
 RequestEligibility determines whether the Zone participates; it does not alter
 the policy result. Quality is derived from ZoneType, not the request's exclusions
 or TargetQuality. AssignmentSelectionPolicy now resolves this actual quality in
-AssignmentSelection; historical recording remains pending.
+AssignmentSelection; historical recording is implemented.
 
 ### Goal
 
@@ -604,8 +592,7 @@ changes quality. The separate pure composition is now implemented as
 It validates collection structure before traversal, scopes Spots by ZoneId and
 reuses FeasibleSpotBlockFinder. The first Zone with blocks returns immediately
 as an immutable FeasibleZoneCandidate containing that Zone and every block in
-existing finder order. No feasible Zone returns null. Engine integration remains
-pending.
+existing finder order. No feasible Zone returns null. Engine materialization is integrated.
 
 ### Implemented Block Selection Policy v1
 
@@ -637,7 +624,7 @@ The result factory enforces matching ZoneId and current Zone quality. Domain
 tests cover target/actual differences, ordering, feasibility, block selection,
 empty results, determinism and result invariants. No new fairness rule is added;
 the official count remains 19. See the [pure composition boundary](assignment-strategy-v1.md#pure-assignment-selection-composition).
-Engine, application and persistence integration remain pending.
+Engine, Application and recorded-quality persistence integration are implemented.
 
 ### Validation
 
@@ -645,7 +632,7 @@ Domain unit tests cover ordering and first-feasible-Zone composition, including
 fragmented or insufficient availability, advancing to later Zones, authoritative
 Zone order, all returned blocks, exact group sizes, Zone isolation, empty results,
 malformed snapshots and read-only results. The ordering policy remains unchanged;
-block selection is implemented separately; engine integration remains pending.
+block selection is implemented separately; engine materialization is integrated.
 
 ---
 
@@ -687,23 +674,20 @@ only technical determinism, not a business preference or primary priority.
 There is no permanent ZoneType ranking, randomness, weighted randomness,
 persistent round-robin cursor or future-demand prediction. RotationScore retains
 its existing no-tolerance rule. Block Selection Policy v1 has separate, defined
-tie-breaks and is implemented; engine integration remains pending.
+tie-breaks and is implemented; engine materialization is integrated.
 
 ---
 
 ## Step 19 — Integrate with ProcessAssignmentRequestUseCase
 
-Integrate the Stage 4 strategy with the existing application flow through the
-agreed two-step cutover above. Keep legacy placement active during dependency
-preparation; Application owns the eventual preparation of AssignmentSelection.
-Changing AssignmentEngine first would break its current available-Spots caller.
-The final transition must change that caller and engine together with mandatory
-Assignment quality, persistence/schema migration, explicit quality rehydration
-and recorded-history reads (Steps 20–22), and remove obsolete placement helpers.
-
-Reuse existing ports whenever responsibilities still match.
-
-Introduce a new abstraction only when Stage 4 creates a genuinely new responsibility.
+Implemented: after the complete-resolution guard, ProcessAssignmentRequestUseCase
+loads Zones, available Spots and batched fairness histories through Application
+ports. GroupRotationScore (including individual score calculation),
+TargetQualityPolicy, ZoneEligibilityPolicy and RemainingInventoryCalculator
+prepare the existing AssignmentSelectionPolicy inputs. Null selection rejects
+with `NO_CONTIGUOUS_SPOTS_AVAILABLE`; otherwise AssignmentEngine materializes the
+exact selection, the request completes and one UnitOfWork save commits it.
+Legacy placement is removed, with no fallback or temporary caller contract.
 
 ### Goal
 
@@ -717,17 +701,15 @@ Use reliable recorded outcomes from previous assignments as input to RotationSco
 
 Infrastructure should provide the required history through an application/domain-facing abstraction.
 
-The Application history-read boundary is currently missing. It must supply
-recorded Assignment.ExperienceQuality from oldest to most recent, never
-reclassify history from current Zones. Application prepares FairnessHistory per
-attendee and invokes GroupRotationScore, which already calculates individual
-scores internally, then TargetQualityPolicy. Scores remain derived, not stored.
-This read capability is not active today. Implement and activate it with required
-quality, persistence and rehydration in the coordinated cutover across Steps
-19–22; this numbered work area is not an independent prerequisite before Step
-21. Initially return empty history when no reliable outcomes exist, yielding
-RotationScore zero through existing Domain logic. After the first successful
-Stage 4 commit, real recorded outcomes begin contributing to future requests.
+Implemented as `IFairnessHistoryProvider.GetHistoriesAsync(attendeeIds,
+cancellationToken)`, returning one FairnessHistory per requested attendee.
+PostgreSqlFairnessHistoryProvider uses one no-tracking batch query over recorded
+Assignment.ExperienceQuality, ordered by AssignedAt then AssignmentId for exact
+timestamp ties, without Zone lookup. Missing outcomes return empty histories;
+existing Domain logic produces RotationScore zero. Scores remain derived.
+InMemory composition reads existing in-memory recorded outcomes for test/demo
+support only. Provider tests protect chronological order, empty members,
+cancellation, recorded quality and a single read for the batch.
 
 ### Goal
 
@@ -762,21 +744,21 @@ fact, not recomputed from the current policy.
 
 For example, an assignment recorded when `UpperCenter` was `Medium` remains
 `Medium` in history even if a later policy maps UpperCenter to `Good`.
-Implementation of historical recording remains pending.
+Historical recording and explicit EF constructor rehydration are implemented.
 
 ### Goal
 
 Prevent automatic reinterpretation of past assignments after business-policy
 or eligibility changes.
 
-The exact persistence representation should be chosen during implementation with the smallest justified change.
+ExperienceQuality is required enum-name text on Assignments, with no schema default.
 
 The [transition/bootstrap and pre-cutover data policy](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap)
 is agreed: no production history needs backfill, and disposable local/test
-databases may be recreated. Activate required immutable quality, its persistence,
-explicit rehydration and recorded-history reads with selection and the engine at
-cutover across Steps 19–22. Record selection.ExperienceQuality as part of the
-atomic successful outcome. No nullable/default quality, fabricated legacy values,
+databases may be recreated. Required immutable quality, its persistence,
+explicit rehydration and recorded-history reads are active with selection and
+the engine across Steps 19–22. selection.ExperienceQuality is recorded as part of
+the atomic successful outcome. No nullable/default quality, fabricated legacy values,
 current-Zone historical reconstruction or temporary engine Zone lookup is allowed.
 Existing records must not be assumed to contain quality.
 
@@ -845,8 +827,9 @@ The engine should not automatically split or restructure the group.
 
 Keep user choice outside the assignment algorithm.
 
-Lack of a contiguous block retains `CONTIGUOUS_SPOTS_NOT_AVAILABLE`, as defined
-in the [existing domain decision](../domain-blueprint-v1.md#11-contiguous-availability-decision).
+Application retains `NO_CONTIGUOUS_SPOTS_AVAILABLE` when no complete feasible
+block exists in eligible Zones, preserving the behavior described by the
+[historical domain decision](../domain-blueprint-v1.md#11-contiguous-availability-decision).
 The original request is terminal; a changed group requires a new AssignmentRequest.
 The future UI for doing so is outside this increment. If an implemented eligibility
 policy needs a distinct rejection reason, define it in that policy's increment.

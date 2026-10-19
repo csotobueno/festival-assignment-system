@@ -219,6 +219,7 @@ public sealed class ProcessAssignmentRequestResultTests
                 Guid.Parse("20000000-0000-0000-0000-000000000001")),
             RowCode.Create("A"),
             SpotNumber.Create(1),
+            ExperienceQuality.Medium,
             ResolvedAt);
     }
 }

@@ -113,6 +113,21 @@ public sealed class MigrationApplicationTests(
         }
     }
 
+    [Fact]
+    public async Task QualityMigration_ShouldRequireTextWithoutADefault()
+    {
+        await using var connection = new NpgsqlConnection(Fixture.ConnectionString);
+        await connection.OpenAsync();
+        await using var command = new NpgsqlCommand("""
+            SELECT data_type = 'text' AND is_nullable = 'NO' AND column_default IS NULL
+            FROM information_schema.columns
+            WHERE table_schema = 'public' AND table_name = 'Assignments'
+                AND column_name = 'ExperienceQuality';
+            """, connection);
+
+        (await command.ExecuteScalarAsync()).Should().Be(true);
+    }
+
     private async Task<string[]> LoadApplicationTableNamesAsync()
     {
         await using var connection =

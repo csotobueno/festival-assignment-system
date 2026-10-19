@@ -287,7 +287,7 @@ The group request represents the intention to remain together.
 If no valid complete block exists, the engine does not automatically modify the group.
 ### Accepted Consequence
 The AssignmentRequest is `Rejected` with no Assignments. When contiguous
-capacity is missing, the existing reason is `CONTIGUOUS_SPOTS_NOT_AVAILABLE`.
+capacity is missing, the existing reason is `NO_CONTIGUOUS_SPOTS_AVAILABLE`.
 The user's need may remain unmet, but the original request is terminal; a changed
 group is submitted as a new request.
 ### Why Accepted
@@ -349,7 +349,7 @@ independent counts for evaluation. `ZoneEvaluationPolicy` now implements the
 agreed quality/count/ZoneId ordering. `FeasibleZoneCandidateFinder` now composes
 ordered traversal with the existing physical finder and returns all blocks from
 the first feasible Zone. Block Selection Policy v1 is implemented;
-engine integration remains pending.
+Application selection and engine materialization are integrated.
 
 ### Accepted Consequence
 

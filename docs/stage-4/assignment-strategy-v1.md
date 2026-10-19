@@ -18,8 +18,8 @@ Its purpose is to describe **how the system transforms a daily assignment reques
 
 This guide records the agreed Zone Evaluation Strategy v1. Its ordering policy
 and first-feasible-Zone composition are implemented. Block Selection Policy v1
-and the complete pure AssignmentSelectionPolicy are also implemented; engine
-integration remains pending. Other
+and the complete pure AssignmentSelectionPolicy are implemented and integrated
+through Application and engine materialization. Other
 selection examples express intent;
 where they say “may” or “reasonable”, the corresponding implementation increment
 must establish a concrete provisional rule and expected result. The
@@ -27,10 +27,9 @@ must establish a concrete provisional rule and expected result. The
 those points without requiring a complete policy before implementation starts.
 
 Application integration follows the agreed [two-step cutover](../architecture/stage-4-application-cutover-boundary.md).
-Legacy AssignmentEngine placement is temporarily active during dependency
-preparation. The final caller/engine transition activates mandatory recorded
-Assignment.ExperienceQuality and removes the legacy placement path. The flow in
-this document is the target strategy, not evidence that Application already uses it.
+The coordinated caller/engine transition is implemented, with mandatory recorded
+Assignment.ExperienceQuality, persistence/rehydration and batched history reads.
+Application now uses this flow; legacy placement is removed.
 
 The strategy intentionally operates with the information known at the moment of the request.
 
@@ -327,9 +326,9 @@ only; they are neither migration rules nor venue business rules. Existing catalo
 IDs, names, Zone count and Spots are preserved in seed setup.
 
 Filtering changes participation only; Experience Quality and fairness scores
-remain unchanged. The policy is not yet wired into the Spot-based engine or
-providers: Spot filtering, candidate feasibility and selection remain later
-tasks. No HTTP transport contract is changed.
+remain unchanged. Application supplies eligible Zones to AssignmentSelectionPolicy;
+the engine only materializes the selection. Providers do not duplicate eligibility
+filtering, and no HTTP transport contract is changed.
 
 ### Later Eligibility Concerns
 
@@ -439,8 +438,7 @@ even if a later business policy classifies UpperCenter as Good
 
 Deriving current Zone quality through a policy does not mean recalculating past
 quality from today's policy. Required immutable Assignment quality, persistence,
-explicit rehydration and recorded-history reads remain pending and activate
-together at the [coordinated cutover](../architecture/stage-4-application-cutover-boundary.md#phase-2--coordinated-final-cutover).
+explicit rehydration and recorded-history reads are active together after the [coordinated cutover](../architecture/stage-4-application-cutover-boundary.md#phase-2--coordinated-final-cutover).
 
 ### Implemented Zone Model Evolution
 
@@ -449,7 +447,7 @@ removed from the domain model. `ZoneEligibilityPolicy` identifies Front Standing
 through `Zone.Type == ZoneType.FrontStanding`. The global
 `ZoneExperienceQualityPolicy.GetQuality` implements the agreed quality mapping.
 Current selected quality is now carried by AssignmentSelection; historical
-quality recording remains pending. `ZoneCode` remains deferred.
+quality recording is implemented. `ZoneCode` remains deferred.
 
 ---
 
@@ -499,7 +497,7 @@ GroupSize, foreign Zone membership, duplicate SpotCodes and duplicate physical
 positions are rejected. Availability and eligibility are supplied by the caller.
 The finder does not rank Zones or blocks, reserve Spots, or bind Attendees.
 Block Selection Policy v1 is implemented separately;
-the existing AssignmentEngine is unchanged.
+AssignmentEngine materializes the resulting selection.
 
 ---
 
@@ -546,8 +544,8 @@ output order is deterministic enumeration, not a business preference or automati
 **Status: implemented.** `AssignmentSelectionPolicy.Select(TargetQuality targetQuality,
 RemainingInventoryState inventory, IEnumerable<Zone> eligibleZones,
 IEnumerable<Spot> availableSpots, GroupSize groupSize)` returns `AssignmentSelection?`.
-All inputs are prepared by its Domain caller and conceptually belong to the same
-current decision snapshot. In the final Application flow, that caller is
+All inputs are prepared by its caller and conceptually belong to the same
+current decision snapshot. In the active Application flow, that caller is
 ProcessAssignmentRequestUseCase: external callers supply business-request data,
 not AssignmentSelection. The policy does not calculate scores, target, eligibility or
 inventory, load data, create Assignments or translate absence into request rejection.
@@ -586,13 +584,13 @@ TargetQuality remains a desired reference, never the source of actual quality:
 Good may yield Medium or Bad; Medium may yield Good. Domain tests cover these
 outcomes, policy composition, empty results, logical input permutations, a
 single-use availability source, immutable snapshots and result validation.
-Engine, application and historical persistence integration remain pending.
+Engine, Application and historical persistence integration are implemented.
 
 At the [coordinated final cutover](../architecture/stage-4-application-cutover-boundary.md#phase-2--coordinated-final-cutover),
-the use case will interpret null as request rejection and pass a selection to
-AssignmentEngine for materialization. The engine will use selection.Block and
+the use case interprets null as request rejection and passes a selection to
+AssignmentEngine for materialization. The engine uses selection.Block and
 selection.ExperienceQuality without TargetQuality, Zone lookup or quality
-recalculation. Remove obsolete placement helpers and retain no permanent
+recalculation. Obsolete placement helpers are removed; there is no permanent
 compatibility overload or second placement fallback. The existing pure policies
 remain authoritative and unchanged.
 
@@ -1026,9 +1024,9 @@ no feasible complete block
 Rejected, no Assignments
 ```
 
-The existing lack-of-contiguity outcome is
-`CONTIGUOUS_SPOTS_NOT_AVAILABLE`. The AssignmentRequest is rejected and does not
-remain pending. The user can submit a new request with a changed group; the
+Application retains `NO_CONTIGUOUS_SPOTS_AVAILABLE` when no complete feasible
+block exists in any eligible Zone. The AssignmentRequest is terminally rejected.
+The user can submit a new request with a changed group; the
 original request is not resumed or modified. See the
 [domain decision](../domain-blueprint-v1.md#11-contiguous-availability-decision).
 Any distinct reason required by a new eligibility policy must be defined with
@@ -1090,7 +1088,7 @@ Zones use available raw Spot count descending, then a stable technical tie-break
 such as ZoneId ascending for an exact count tie. This creates no ZoneType business
 ranking. The separate [Block Selection Policy v1](#block-selection-policy-v1)
 defines remaining-run ranking followed by RowCode and starting SpotNumber ties;
-its implementation is complete; engine integration remains pending.
+its implementation is complete; engine materialization is integrated.
 
 ---
 
@@ -1222,7 +1220,7 @@ The Stage 4 decision flow is:
 12. Reject without Assignments if no eligible Zone has a feasible block.
 
 13. Select a block inside the selected Zone using Block Selection Policy v1
-    (implemented separately; engine integration pending).
+    (implemented separately; engine materialization integrated).
 
 14. Persist the complete decision atomically.
 
@@ -1332,7 +1330,7 @@ Expected behavior:
 
 Continue to Medium Zones; the first with feasible blocks is selected.
 Choosing among its blocks follows the implemented Block Selection Policy v1;
-engine integration remains pending.
+engine materialization is integrated.
 
 ---
 

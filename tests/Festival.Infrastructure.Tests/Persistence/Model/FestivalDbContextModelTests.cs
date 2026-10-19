@@ -608,6 +608,19 @@ public sealed class FestivalDbContextModelTests
             propertyName => assignment.FindProperty(propertyName) != null);
     }
 
+    [Fact]
+    public void Assignment_ShouldRequireQualityAsTextWithoutADefault()
+    {
+        using var context = CreateContext();
+        var property = GetProperty(context.Model, typeof(Assignment), "ExperienceQuality");
+
+        property.IsNullable.Should().BeFalse();
+        property.GetColumnType().Should().Be("text");
+        property.GetTypeMapping().Converter!.ProviderClrType.Should().Be(typeof(string));
+        property.FindAnnotation(RelationalAnnotationNames.DefaultValue).Should().BeNull();
+        property.FindAnnotation(RelationalAnnotationNames.DefaultValueSql).Should().BeNull();
+    }
+
     private static FestivalDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<FestivalDbContext>()

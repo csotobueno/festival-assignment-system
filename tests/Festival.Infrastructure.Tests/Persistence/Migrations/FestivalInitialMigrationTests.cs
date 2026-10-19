@@ -34,7 +34,8 @@ public sealed class FestivalInitialMigrationTests
 
         migrations.Select(type => type.Name).Should()
             .BeEquivalentTo(
-                nameof(InitialCreate), nameof(AddRequestEligibility), nameof(AddZoneFrontStanding), nameof(IntroduceZoneType));
+                nameof(InitialCreate), nameof(AddRequestEligibility), nameof(AddZoneFrontStanding),
+                nameof(IntroduceZoneType), nameof(RecordAssignmentExperienceQuality));
         var initial = migrations.Single(type => type == typeof(InitialCreate));
 
         var migrationAttribute = initial

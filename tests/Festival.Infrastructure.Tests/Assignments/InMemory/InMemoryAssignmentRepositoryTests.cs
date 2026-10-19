@@ -64,6 +64,7 @@ public sealed class InMemoryAssignmentRepositoryTests
                 Guid.Parse("a0000000-0000-0000-0000-000000000001")),
             RowCode.Create("A"),
             SpotNumber.Create(number),
+            ExperienceQuality.Medium,
             AssignedAt);
     }
 }
