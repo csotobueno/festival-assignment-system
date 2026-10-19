@@ -1,8 +1,10 @@
 using Festival.Application.Assignments.Ports;
+using Festival.Application.Zones.Ports;
 using Festival.Infrastructure.Assignments.InMemory;
 using Festival.Infrastructure.Assignments.InMemory.Seed;
 using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.Persistence;
+using Festival.Infrastructure.Zones.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,6 +65,9 @@ public static class DependencyInjection
         services.AddScoped<
             IAvailableSpotProvider,
             PostgreSqlAvailableSpotProvider>();
+        services.AddScoped<
+            IZoneCatalogProvider,
+            PostgreSqlZoneCatalogProvider>();
         services.AddScoped<
             IAssignmentRequestRepository,
             PostgreSqlAssignmentRequestRepository>();
