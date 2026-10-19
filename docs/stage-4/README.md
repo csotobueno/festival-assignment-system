@@ -2,14 +2,15 @@
 
 ## Status and Purpose
 
-**Pure Stage 4 Domain selection is implemented; Application integration is pending.**
+**Stage 4 Application selection, engine materialization and recorded-quality persistence are integrated.**
 
 The agreed [Stage 4 Application Cutover Boundary](../architecture/stage-4-application-cutover-boundary.md)
-uses a **two-step cutover**: prepare stable dependencies while legacy engine
-placement remains temporarily active, then transition the use case, engine and
-mandatory Assignment.ExperienceQuality together. There is no permanent dual path.
+was delivered through a **two-step cutover**: stable dependencies first, then
+the use case, engine, mandatory Assignment.ExperienceQuality, persistence and
+recorded-history reads together. Legacy placement is removed; one placement path
+remains through AssignmentSelectionPolicy.
 The [transition and bootstrap decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap)
-is agreed; its implementation remains pending.
+is implemented with empty-history neutrality and no historical reconstruction.
 
 The technical MVP tests whether a reliable system can assign locations to
 Attendees across several festival days while preserving fairness and flexible
@@ -48,12 +49,10 @@ persistence foundation on which this proposal builds.
 
 ## Assignment Flow
 
-This is the target Stage 4 flow, not the currently active Application flow.
-Today ProcessAssignmentRequestUseCase resolves attendees, creates the group,
-loads available Spots and calls the legacy AssignmentEngine. Application input
-preparation, selection-policy invocation, engine cutover and persisted Assignment
-ExperienceQuality are not yet integrated. External callers continue supplying
-business-request data; Application will prepare AssignmentSelection internally.
+This is the active Application flow. ProcessAssignmentRequestUseCase validates
+complete attendee resolution before loading Zones, Spots or batched recorded
+histories. It prepares AssignmentSelection internally using existing Domain
+policies. External callers continue supplying business-request data.
 
 1. Receive an AssignmentRequest with one to ten Attendees and resolve its members.
 2. Load each Attendee's reliable recorded Assignment.ExperienceQuality history;
@@ -69,7 +68,7 @@ business-request data; Application will prepare AssignmentSelection internally.
    Zone; return the first feasible Zone together with all its blocks.
 8. Select one block through the implemented [Block Selection Policy v1](assignment-strategy-v1.md#block-selection-policy-v1).
    Steps 6–8 are composed by `AssignmentSelectionPolicy`, which returns the
-   selected Zone, block and actual ExperienceQuality. Engine integration remains pending.
+   selected Zone, block and actual ExperienceQuality. AssignmentEngine materializes the result with its actual quality.
 9. Persist the request outcome and all Assignments atomically. Successful outcomes
    become history for subsequent requests.
 
@@ -91,7 +90,8 @@ comes from `ZoneExperienceQualityPolicy.GetQuality(selectedZone.Type)`, independ
 of TargetQuality. The immutable result requires the block's ZoneId and current
 Zone quality to match. The pure selection returns `null` when no placement exists;
 it creates no Assignment or request rejection. Its caller prepares all inputs
-from the same decision snapshot; engine and application integration remain pending.
+from the same logical decision snapshot; pre-save reads are not one explicit
+transactionally consistent snapshot.
 
 Good targets use Good → Medium → Bad. Medium targets use Good → Medium → Bad
 when GoodRemaining > MediumRemaining, otherwise Medium → Good → Bad (equality
@@ -102,25 +102,20 @@ last-resort result, never a target. CurrentGlobalAssignmentState is deferred.
 
 If no complete eligible and feasible block exists, reject the request without
 Assignments. Lack of contiguous capacity retains
-`CONTIGUOUS_SPOTS_NOT_AVAILABLE`. A changed group requires a new request; the
+`NO_CONTIGUOUS_SPOTS_AVAILABLE`. A changed group requires a new request; the
 original request does not remain pending.
 
 ## Application Cutover
 
-**Phase 1 — Prepare Stable Dependencies:** current Zone read access is implemented
-and the quality transition/bootstrap decision is agreed. Prepare independent
-Application input composition using supplied histories and other dependencies
-that do not require persisted quality. GroupRotationScore already computes
-individual scores from member histories. Keep legacy placement active; do not
-require fairness-history queries against the old schema.
+**Phase 1 — Delivered:** current Zone read access, the transition/bootstrap
+decision and independent dependency preparation.
 
-**Phase 2 — Coordinated Final Cutover:** the use case invokes
-AssignmentSelectionPolicy; null rejects the request, while a selection is
-materialized by AssignmentEngine from its Block and ExperienceQuality. Transition
-caller, engine API, mandatory Assignment quality, persistence/schema migration,
-explicit rehydration and recorded-history reads together; remove legacy helpers
-and retain one active placement path. Preserve the Stage 3 UnitOfWork boundary
-and request-status semantics.
+**Phase 2 — Integrated:** the use case invokes AssignmentSelectionPolicy; null
+rejects the request, while a selection is materialized by AssignmentEngine from
+its Block and ExperienceQuality. Assignment quality is required, persisted as
+text and restored explicitly through EF constructor binding. Batched history
+reads use only recorded outcomes. Legacy helpers are removed. The Stage 3
+UnitOfWork boundary and request-status semantics remain in force.
 
 Fairness history begins with reliable quality recording. No reliable outcomes
 means `FairnessHistory = []` and `RotationScore = 0`, the intentional neutral
@@ -149,7 +144,8 @@ implement its fix or global assigned-outcome state.
   derive `Good`, `Medium` or `Bad` through `ZoneExperienceQualityPolicy`.
   Request eligibility changes participation only; historical recorded quality
   remains stable. ZoneType, the quality policy and actual quality in
-  AssignmentSelection are implemented; historical quality recording remains pending.
+  AssignmentSelection are implemented; successful Assignments now persist actual
+  immutable quality for historical reads.
 - **Zone model evolution:** mandatory `Zone.Type` replaces `IsFrontStanding`;
   eligibility uses `Zone.Type == ZoneType.FrontStanding`.
   `ZoneCode` remains deferred until a concrete integration or identifier need.
@@ -161,7 +157,7 @@ implement its fix or global assigned-outcome state.
   now orders participating Zones deterministically. `FeasibleZoneCandidateFinder`
   composes ordered traversal with physical feasibility and returns the first
   feasible Zone with all its blocks. AssignmentSelectionPolicy composes ordering,
-  feasibility and block selection; engine integration remains pending.
+  feasibility and block selection; Application invokes it before engine materialization.
 - **Block selection:** v1 is implemented as
   `BlockSelectionPolicy.Select(candidate, availableSpots)`. Rank already feasible
   blocks by LargestRemainingContiguousRun descending in the affected Row after
@@ -207,7 +203,8 @@ future-demand prediction and reservation, weighted randomness, complex preferenc
 ranking, internal group-dispersion optimization, automatic group restructuring,
 retrospective reassignment, and complete operational/UI/administrative workflows.
 Global assigned-outcome influence remains deferred. Block Selection Policy v1
-is implemented separately; full engine integration remains pending.
+and its Application/engine integration are implemented. Stage 4 reference-scenario
+and presimulation exit work is not claimed complete by this cutover.
 Final parameter calibration and quantitative fairness evaluation belong to
 Stage 5. Detailed reasons are in the
 [trade-offs document](trade-offs-and-open-questions.md).

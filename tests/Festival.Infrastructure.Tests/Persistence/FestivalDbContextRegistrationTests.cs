@@ -92,6 +92,7 @@ public sealed class FestivalDbContextRegistrationTests
             typeof(IAttendeeCodeResolver),
             typeof(IAvailableSpotProvider),
             typeof(IZoneCatalogProvider),
+            typeof(IFairnessHistoryProvider),
             typeof(IAssignmentRequestRepository),
             typeof(IAssignmentRepository),
             typeof(IUnitOfWork)
@@ -134,6 +135,10 @@ public sealed class FestivalDbContextRegistrationTests
             descriptor.ServiceType == typeof(IZoneCatalogProvider)
             && descriptor.ImplementationType ==
                 typeof(PostgreSqlZoneCatalogProvider)
+            && descriptor.Lifetime == ServiceLifetime.Scoped);
+        services.Should().ContainSingle(descriptor =>
+            descriptor.ServiceType == typeof(IFairnessHistoryProvider)
+            && descriptor.ImplementationType == typeof(PostgreSqlFairnessHistoryProvider)
             && descriptor.Lifetime == ServiceLifetime.Scoped);
         services.Should().ContainSingle(descriptor =>
             descriptor.ServiceType == typeof(IAssignmentRequestRepository)

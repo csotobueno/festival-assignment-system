@@ -64,6 +64,10 @@ internal sealed class AssignmentConfiguration
         builder.Property(assignment => assignment.AssignedAt)
             .IsRequired();
 
+        builder.Property(assignment => assignment.ExperienceQuality)
+            .HasConversion<string>()
+            .IsRequired();
+
         builder.HasOne<AssignmentRequestRow>()
             .WithMany()
             .HasForeignKey(assignment => assignment.AssignmentRequestId)

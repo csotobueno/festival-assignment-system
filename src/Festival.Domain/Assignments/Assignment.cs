@@ -23,6 +23,8 @@ public sealed class Assignment
 
     public SpotNumber SpotNumber { get; }
 
+    public ExperienceQuality ExperienceQuality { get; }
+
     public DateTimeOffset AssignedAt { get; }
 
     private Assignment(
@@ -34,8 +36,15 @@ public sealed class Assignment
         ZoneId zoneId,
         RowCode rowCode,
         SpotNumber spotNumber,
+        ExperienceQuality experienceQuality,
         DateTimeOffset assignedAt)
     {
+        if (!Enum.IsDefined(experienceQuality))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(experienceQuality), experienceQuality, "Experience quality must be defined.");
+        }
+
         Id = id;
         AssignmentRequestId = assignmentRequestId;
         FestivalDayId = festivalDayId;
@@ -44,6 +53,7 @@ public sealed class Assignment
         ZoneId = zoneId;
         RowCode = rowCode;
         SpotNumber = spotNumber;
+        ExperienceQuality = experienceQuality;
         AssignedAt = assignedAt;
     }
 
@@ -56,6 +66,7 @@ public sealed class Assignment
         ZoneId zoneId,
         RowCode rowCode,
         SpotNumber spotNumber,
+        ExperienceQuality experienceQuality,
         DateTimeOffset assignedAt)
     {
         if (id == default)
@@ -113,6 +124,7 @@ public sealed class Assignment
             zoneId,
             rowCode,
             spotNumber,
+            experienceQuality,
             assignedAt);
     }
 }

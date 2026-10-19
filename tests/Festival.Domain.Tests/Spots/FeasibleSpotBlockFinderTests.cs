@@ -170,6 +170,7 @@ public sealed class FeasibleSpotBlockFinderTests
             var assignments = group.AttendeeIds.Zip(block.Spots).Select(pair => Assignment.Create(
                 AssignmentId.New(), group.AssignmentRequestId, group.FestivalDayId, pair.First,
                 pair.Second.Code, pair.Second.ZoneId, pair.Second.RowCode, pair.Second.Number,
+                ExperienceQuality.Medium,
                 new DateTimeOffset(2026, 7, 10, 9, 0, 0, TimeSpan.Zero)));
 
             Assert.Null(Record.Exception(() => group.EnsureValidResult(assignments)));

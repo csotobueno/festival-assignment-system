@@ -2,63 +2,38 @@
 
 ## Decision and Current Status
 
-**Agreed strategy: Two-step cutover.** Prepare stable dependencies while the
-current placement path remains active, then transition the Application caller
-and Assignment Engine together. This document records the agreed integration
-boundary; it does not claim that the cutover is implemented.
+**Implemented: coordinated Stage 4 cutover.** Stable dependencies were prepared
+first, then the Application caller, engine, required Assignment quality,
+persistence/rehydration and recorded-history reads were activated together.
 
 | Status | Boundary |
 | --- | --- |
-| IMPLEMENTED | Pure Stage 4 Domain selection: Zone ordering, physical feasibility, block selection and AssignmentSelection with actual ExperienceQuality. |
-| IMPLEMENTED | Current Zone catalog read access through IZoneCatalogProvider and its PostgreSQL adapter; not yet consumed by Application orchestration. |
-| DECIDED, NOT YET ACTIVATED | Assignment ExperienceQuality transition and neutral fairness bootstrap, documented below. |
-| NOT YET INTEGRATED | Application preparation of Stage 4 inputs, AssignmentSelectionPolicy invocation from the use case, AssignmentEngine cutover and persisted Assignment.ExperienceQuality. |
-| TEMPORARILY ACTIVE | Legacy AssignmentEngine placement from available Spots. |
-| FINAL TARGET | AssignmentSelectionPolicy selects placement; AssignmentEngine only materializes the selection. |
+| IMPLEMENTED | Application prepares fairness, eligibility and inventory inputs and invokes AssignmentSelectionPolicy. |
+| IMPLEMENTED | Current Zone catalog and batched recorded fairness histories are read through Application ports. |
+| IMPLEMENTED | AssignmentEngine materializes the selected block and actual quality; Assignment.ExperienceQuality is required, immutable and persisted. |
+| IMPLEMENTED | Empty FairnessHistory supplies the neutral bootstrap. |
+| REMOVED | Legacy first-contiguous-block placement, FindFirstContiguousBlock and IsConsecutive. |
 
-The currently active flow is:
-
-```text
-ProcessAssignmentRequestCommand
-        ↓
-ProcessAssignmentRequestUseCase
-        ↓
-AssignmentRequest → resolve AttendeeIds → AssignmentGroup
-        ↓
-load available Spots
-        ↓
-AssignmentEngine.Assign(assignmentGroup, availableSpots, assignedAt)
-        ↓
-legacy contiguous-block placement
-        ↓
-Assignment[] → repositories → UnitOfWork
-```
-
-The separate implemented Domain pipeline consumes prepared TargetQuality,
-RemainingInventoryState, eligible Zones, available Spots and GroupSize through
-AssignmentSelectionPolicy. Its AssignmentSelection contains Zone, Block and
-actual ExperienceQuality. It creates no Assignment.
+There is one production placement path:
+`AssignmentSelectionPolicy → AssignmentSelection → AssignmentEngine`.
+External callers still supply business-request data; Application prepares the
+selection internally. The [runtime flow](#application-ownership-and-target-end-state)
+below includes the existing complete-attendee-resolution guard and one atomic
+write boundary.
 
 ## Why the Caller and Engine Must Transition Together
 
-The current engine requires available Spots; its final contract will require an
-AssignmentSelection. ProcessAssignmentRequestUseCase cannot yet produce that
-selection: current Zone read access is available, but it lacks attendee
-fairness-history read access, TargetQuality preparation and
-RemainingInventoryState preparation. Assignment also does not yet record
-historical ExperienceQuality.
-
-Changing the engine first would break its current caller. The agreed solution is
-to prepare dependencies first and perform the coordinated caller/engine cutover
-later. It is not a temporary external caller contract or a permanent pair of
-placement strategies.
+The previous engine selected from available Spots, while the new contract
+consumes an AssignmentSelection. Changing the engine alone would have broken
+its caller; activating required quality alone would have left the old creation
+path unable to supply an actual selected outcome. Both contracts, persistence,
+rehydration and history reads now use the coordinated Stage 4 boundary.
+No compatibility placement overload or external selection contract remains.
 
 ## Phase 1 — Prepare Stable Dependencies
 
-During this phase, ProcessAssignmentRequestUseCase continues to use legacy
-AssignmentEngine placement until the required Stage 4 inputs can be produced
-safely. Preparing a capability does not mean activating Stage 4 in the current
-Application flow.
+**Delivered.** Current Zone access and the transition/bootstrap decision were
+prepared before activating the coordinated runtime flow.
 
 ### Current Zone Read Access
 
@@ -70,11 +45,10 @@ ZoneId ascending is technical ordering only; business priority remains with
 Stage 4 policies. The catalog includes FrontStanding, has no FestivalDay
 relationship and adds no eligibility, quality classification or inventory logic.
 
-Application already has IAvailableSpotProvider, but Spots carry only ZoneId,
-not Zone metadata. The new port is available for future ZoneEligibilityPolicy
-and RemainingInventoryCalculator input preparation; the use case does not yet
-consume it. InMemory composition does not require the unused port today, so no
-InMemory adapter is added; its existing test/demo flow remains unchanged.
+ProcessAssignmentRequestUseCase now consumes this port for ZoneEligibilityPolicy
+and RemainingInventoryCalculator input preparation. PostgreSQL registers the
+adapter as scoped. InMemory composition now requires the port too and supplies
+the deterministic configured Zones through InMemoryZoneCatalogProvider.
 
 Application must obtain Zones through Application ports, with Infrastructure
 implementing data access. It must not read FestivalDbContext directly. This is
@@ -83,21 +57,25 @@ quality. The previously discarded lookup approach is not reintroduced.
 
 ### Transition and Fairness Input Preparation
 
-The [Assignment quality transition and bootstrap decision](#assignment-experiencequality-transition-and-bootstrap)
-is defined below. Phase 1 may prepare Application input composition using
-supplied histories and the existing pure Domain policies, plus the persistence
-and rehydration design. It keeps legacy placement active and does not activate
-mandatory quality or a fairness-history query against the current schema.
+The [transition and bootstrap decision](#assignment-experiencequality-transition-and-bootstrap)
+is implemented. `IFairnessHistoryProvider.GetHistoriesAsync(IReadOnlyCollection<AttendeeId>,
+CancellationToken)` returns an `IReadOnlyDictionary<AttendeeId, FairnessHistory>`
+with an entry for every requested attendee, including empty histories.
 
-GroupRotationScore already calculates individual RotationScores internally.
-Application will prepare FairnessHistory per attendee, invoke GroupRotationScore
-and then TargetQualityPolicy without duplicating their formulas. Scores remain
-derived, not stored. The persisted-history read boundary is still missing; it
-must be implemented and activated with recorded quality in Phase 2.
+PostgreSqlFairnessHistoryProvider uses one no-tracking query over persisted
+Assignments for the requested IDs. It reads only recorded quality, ordered by
+AssignedAt ascending then AssignmentId ascending for exact timestamp ties.
+The latter is a technical tie-break, not a fairness preference. Empty requests
+return an empty dictionary without a query; cancellation is propagated.
+No current Zone lookup, absence entry or synthetic outcome is involved.
+
+Application passes member histories to GroupRotationScore, which already
+calculates individual RotationScores internally, then TargetQualityPolicy.
+No formula is duplicated and no score or target is persisted.
 
 ### Eligibility and Inventory Preparation
 
-The eventual Application preparation is:
+The implemented Application preparation is:
 
 ```text
 AssignmentRequest + current Zones
@@ -124,14 +102,14 @@ cutover decision does not change inventory counting or selection rules.
 
 ## Assignment ExperienceQuality Transition and Bootstrap
 
-**Agreed architecture decision; implementation remains pending.** Stage 4
+**Implemented architecture decision.** Stage 4
 fairness history begins when reliable `Assignment.ExperienceQuality` recording
 begins. Earlier assignments are neither reconstructed nor assigned synthetic
 quality. Empty history is the intentional neutral bootstrap state.
 
 ### Target Assignment Invariant and Historical Stability
 
-At the coordinated Stage 4 cutover, the final invariant becomes:
+The coordinated Stage 4 cutover enforces:
 
 ```text
 every valid Assignment → one explicit immutable ExperienceQuality
@@ -140,9 +118,10 @@ every valid Assignment → one explicit immutable ExperienceQuality
 ExperienceQuality is the actual outcome at assignment time. It is required at
 creation, persisted with the Assignment, restored explicitly during rehydration
 and used as historical fairness input. It is never nullable, defaulted or inferred
-from ZoneId. The active Application caller and legacy engine use available Spots
-rather than AssignmentSelection today, so mandatory quality must not activate
-independently before Application can produce that selection.
+from ZoneId. The one creation API requires explicit quality. EF constructor
+binding restores the required persisted value and validates the enum; it does
+not reclassify the current Zone. Required quality was activated with Application
+selection rather than added independently to the previous legacy caller.
 
 ```text
 quality at assignment time → stored on Assignment → remains historically stable
@@ -213,8 +192,11 @@ or backfill. Disposable local/test Assignments without recorded quality do not
 justify a mixed legacy/new historical model. Local experimental databases may
 be recreated, and the first persistent Stage 4 environment may start with no
 Assignments. Do not fabricate quality to preserve those disposable records or
-introduce fixture-ID-specific migration logic. The concrete schema migration
-and explicit rehydration changes belong to the coordinated implementation.
+introduce fixture-ID-specific migration logic. `RecordAssignmentExperienceQuality`
+adds required text `Assignments.ExperienceQuality` without a default or backfill,
+following existing enum-name persistence conventions. Applying it to a disposable
+experimental database with old Assignments requires recreating that database.
+Integration tests use isolated empty PostgreSQL databases, not local data resets.
 
 ### Rejected Transition Approaches
 
@@ -232,7 +214,7 @@ and explicit rehydration changes belong to the coordinated implementation.
 
 ## Phase 2 — Coordinated Final Cutover
 
-Implement and activate one coherent boundary: Application selection integration,
+**Implemented as one coherent boundary:** Application selection integration,
 the engine API, mandatory Assignment quality, persistence/schema migration,
 explicit quality rehydration, recorded fairness-history read support and removal
 of legacy placement. History reads are not a prerequisite against the old schema;
@@ -251,7 +233,7 @@ Null means no current placement is possible and the request is rejected without
 Assignments. A selection continues to materialization. There is no second
 placement fallback. Current request-status semantics remain unchanged.
 
-At the same cutover, change the engine responsibility to:
+The engine responsibility is now:
 
 ```text
 AssignmentGroup + AssignmentSelection + AssignedAt
@@ -267,11 +249,13 @@ quality or infers it from ZoneId. AssignmentSelection already contains the final
 actual outcome, transferred directly to Assignment.ExperienceQuality. TargetQuality
 remains the decision reference; ExperienceQuality is the actual immutable outcome.
 
-Migrate the engine API, activate mandatory quality in Assignment creation,
-persistence and rehydration, and wire recorded-history reads into Application.
-Stop the old placement path and remove FindFirstContiguousBlock and IsConsecutive
-when no longer referenced. Retain no permanent compatibility overload or parallel
-placement architecture.
+The previous placement helpers and their algorithm-specific engine tests have
+been removed/replaced with exact-selection materialization tests. The engine
+checks block size against GroupSize before zipping, preserves member order and
+retains AssignmentGroup.EnsureValidResult. Null selection is handled by Application
+using the existing `NO_CONTIGUOUS_SPOTS_AVAILABLE` rejection code: no complete
+feasible block exists in any eligible Zone. Rejected requests are staged and saved
+once without invoking the engine or adding Assignments.
 
 ### Application Ownership and Target End-State
 
@@ -280,7 +264,7 @@ External callers continue to supply business-request data. The rejected shape
 is an external caller constructing AssignmentSelection and passing it to
 ProcessAssignmentRequestUseCase as a temporary integration contract.
 
-The final target flow is:
+The active runtime flow is:
 
 ```text
 ProcessAssignmentRequestCommand
@@ -288,6 +272,8 @@ ProcessAssignmentRequestCommand
 AssignmentRequest
         ↓
 resolve AttendeeIds
+        ↓
+validate complete resolution (otherwise ATTENDEE_NOT_FOUND)
         ↓
 AssignmentGroup
         ↓
@@ -323,23 +309,17 @@ AssignmentSelectionPolicy → AssignmentSelection → AssignmentEngine materiali
 
 ## Implementation Sequence
 
-The revised delivery sequence separates independent preparation from activation:
+All four cutover increments are delivered:
 
-1. Expose Current Zone Read Access — implemented; orchestration remains pending.
-2. Define Assignment ExperienceQuality transition and neutral bootstrap — decided
-   in this document; recording and history-read implementation remain pending.
-3. Prepare independent Application input composition and other dependencies that
-   can use supplied histories without persisted quality. Keep the legacy caller
-   active; do not make old-schema fairness-history reads a delivery prerequisite.
-4. Perform the coordinated Stage 4 activation: ProcessAssignmentRequestUseCase
-   produces AssignmentSelection; AssignmentEngine consumes it; Assignment requires
-   quality; persistence/schema migration stores it; rehydration restores it;
-   fairness-history support reads recorded outcomes; legacy placement is removed.
+1. Current Zone catalog read access.
+2. Assignment quality transition and neutral bootstrap decision.
+3. Application composition using existing Domain policies.
+4. Coordinated activation of selection, engine materialization, required quality,
+   persistence/rehydration and recorded-history reads; legacy placement removed.
 
-Steps 1–3 are Phase 1; step 4 is Phase 2. Its coupled changes belong to one coherent
-implementation boundary. Do not force separate deliveries that require temporary
-incompatible APIs, nullable quality or fabricated history. This corrects the
-earlier sequence that placed history reads before required recorded quality.
+Stage 4 integration is implemented; Stage 5 simulation and final fairness
+measurement remain separate work. No new fairness rule or selection policy was
+introduced by this cutover.
 
 ## Support Policy and Separate Concerns
 
@@ -350,8 +330,12 @@ implementation or required full production parity. Extend them only for a
 concrete test or demo scenario. Do not require new InMemory capabilities solely
 to mirror PostgreSQL dynamic availability, fairness-history queries, locking,
 transactions or production concurrency semantics.
-No InMemory historical backfill or production-equivalent migration path is
-required by this transition.
+InMemoryZoneCatalogProvider exposes configured seed Zones, and
+InMemoryFairnessHistoryProvider reads recorded outcomes from the existing
+InMemoryAssignmentRepository in deterministic chronological order. Both are
+required by the current test/demo composition. Empty histories remain empty;
+there is no historical backfill, new transaction behavior, assignment-aware
+Spot availability, locking or production-equivalent migration path.
 
 ### Attendee Resolution Completeness — Resolved
 

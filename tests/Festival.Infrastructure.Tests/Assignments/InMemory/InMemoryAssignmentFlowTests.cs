@@ -1,5 +1,6 @@
 using Festival.Application;
 using Festival.Application.Assignments.Ports;
+using Festival.Application.Zones.Ports;
 using Festival.Application.Assignments.ProcessAssignmentRequest;
 using Festival.Domain.Assignments;
 using Festival.Domain.Attendees;
@@ -55,6 +56,19 @@ public sealed class InMemoryAssignmentFlowTests
             assignment => Assert.Equal(
                 result.AssignmentRequestId,
                 assignment.AssignmentRequestId));
+        Assert.All(context.AssignmentRepository.Assignments,
+            assignment => Assert.Equal(ExperienceQuality.Medium, assignment.ExperienceQuality));
+        var memberIds = context.AssignmentRepository.Assignments.Select(a => a.AttendeeId)
+            .Append(InMemoryAssignmentSeedData.Attendees[9].Id).ToArray();
+        var histories = await scope.ServiceProvider.GetRequiredService<IFairnessHistoryProvider>()
+            .GetHistoriesAsync(memberIds);
+        foreach (var id in memberIds.Take(3))
+        {
+            Assert.Equal([ExperienceQuality.Medium], histories[id].Experiences);
+        }
+        Assert.Empty(histories[memberIds[3]].Experiences);
+        var zones = await scope.ServiceProvider.GetRequiredService<IZoneCatalogProvider>().GetZonesAsync();
+        Assert.Equal(InMemoryAssignmentSeedData.Zones, zones);
     }
 
     [Fact]

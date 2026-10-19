@@ -1,5 +1,7 @@
 using Festival.Application.Assignments.Ports;
+using Festival.Application.Zones.Ports;
 using Festival.Domain.Assignments;
+using Festival.Domain.Zones;
 
 namespace Festival.Application.Assignments.ProcessAssignmentRequest;
 
@@ -12,6 +14,8 @@ public sealed class ProcessAssignmentRequestUseCase
 
     private readonly IAttendeeCodeResolver attendeeCodeResolver;
     private readonly IAvailableSpotProvider availableSpotProvider;
+    private readonly IZoneCatalogProvider zoneCatalogProvider;
+    private readonly IFairnessHistoryProvider fairnessHistoryProvider;
     private readonly IAssignmentRequestRepository assignmentRequestRepository;
     private readonly IAssignmentRepository assignmentRepository;
     private readonly IUnitOfWork unitOfWork;
@@ -20,6 +24,8 @@ public sealed class ProcessAssignmentRequestUseCase
     public ProcessAssignmentRequestUseCase(
         IAttendeeCodeResolver attendeeCodeResolver,
         IAvailableSpotProvider availableSpotProvider,
+        IZoneCatalogProvider zoneCatalogProvider,
+        IFairnessHistoryProvider fairnessHistoryProvider,
         IAssignmentRequestRepository assignmentRequestRepository,
         IAssignmentRepository assignmentRepository,
         IUnitOfWork unitOfWork,
@@ -29,6 +35,10 @@ public sealed class ProcessAssignmentRequestUseCase
             ?? throw new ArgumentNullException(nameof(attendeeCodeResolver));
         this.availableSpotProvider = availableSpotProvider
             ?? throw new ArgumentNullException(nameof(availableSpotProvider));
+        this.zoneCatalogProvider = zoneCatalogProvider
+            ?? throw new ArgumentNullException(nameof(zoneCatalogProvider));
+        this.fairnessHistoryProvider = fairnessHistoryProvider
+            ?? throw new ArgumentNullException(nameof(fairnessHistoryProvider));
         this.assignmentRequestRepository = assignmentRequestRepository
             ?? throw new ArgumentNullException(nameof(assignmentRequestRepository));
         this.assignmentRepository = assignmentRepository
@@ -82,6 +92,9 @@ public sealed class ProcessAssignmentRequestUseCase
             assignmentRequest.FestivalDayId,
             attendeeIds);
 
+        var zones = await zoneCatalogProvider.GetZonesAsync(cancellationToken);
+        ArgumentNullException.ThrowIfNull(zones);
+
         var availableSpots = await availableSpotProvider
             .GetAvailableSpotsAsync(
                 assignmentRequest.FestivalDayId,
@@ -89,13 +102,22 @@ public sealed class ProcessAssignmentRequestUseCase
 
         ArgumentNullException.ThrowIfNull(availableSpots);
 
-        var assignmentEngineResult = assignmentEngine.Assign(
-            assignmentGroup,
-            availableSpots,
-            command.AssignedAt);
+        var histories = await fairnessHistoryProvider.GetHistoriesAsync(
+            assignmentGroup.AttendeeIds, cancellationToken);
+        ArgumentNullException.ThrowIfNull(histories);
 
-        if (assignmentEngineResult.IsAssigned)
+        var eligibleZones = ZoneEligibilityPolicy.Filter(assignmentRequest, zones);
+        var groupScore = GroupRotationScore.Calculate(
+            assignmentGroup.AttendeeIds.Select(id => histories[id]));
+        var targetQuality = TargetQualityPolicy.Calculate(groupScore);
+        var inventory = RemainingInventoryCalculator.Calculate(zones, availableSpots);
+        var selection = AssignmentSelectionPolicy.Select(
+            targetQuality, inventory, eligibleZones, availableSpots, assignmentGroup.GroupSize);
+
+        if (selection is not null)
         {
+            var assignmentEngineResult = assignmentEngine.Assign(
+                assignmentGroup, selection, command.AssignedAt);
             assignmentRequest.Complete(command.AssignedAt);
 
             await assignmentRequestRepository.AddAsync(

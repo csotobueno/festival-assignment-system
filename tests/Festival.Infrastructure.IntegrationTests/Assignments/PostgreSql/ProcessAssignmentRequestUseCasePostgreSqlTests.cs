@@ -1,9 +1,12 @@
 using Festival.Application.Assignments.ProcessAssignmentRequest;
 using Festival.Domain.Assignments;
 using Festival.Domain.Attendees;
+using Festival.Domain.Spots;
+using Festival.Domain.Zones;
 using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.IntegrationTests.Infrastructure;
 using Festival.Infrastructure.Persistence;
+using Festival.Infrastructure.Zones.PostgreSql;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
@@ -199,12 +202,67 @@ public sealed class ProcessAssignmentRequestUseCasePostgreSqlTests(
         (await verificationContext.Assignments.CountAsync()).Should().Be(0);
     }
 
+    [Theory]
+    [InlineData(false, ExperienceQuality.Medium)]
+    [InlineData(true, ExperienceQuality.Good)]
+    public async Task ExecuteAsync_ShouldSelectAndPersistQualityFromRecordedHistoryOrNeutralBootstrap(
+        bool hasUnfavorableHistory, ExperienceQuality expectedQuality)
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: true);
+        var goodZone = Zone.Create(ZoneId.Create(
+            Guid.Parse("20000000-0000-0000-0000-000000000002")), "Good", ZoneType.MiddleCenter);
+        context.Zones.Add(goodZone);
+        context.Spots.AddRange(Enumerable.Range(1, 2).Select(i => Spot.Create(
+            SpotCode.Create($"GOOD-A-{i:000}"), goodZone.Id, RowCode.Create("A"), SpotNumber.Create(i))));
+        if (hasUnfavorableHistory)
+        {
+            var priorDay = IntegrationTestData.CreateFestivalDay(
+                IntegrationTestData.SecondFestivalDayId, new DateOnly(2026, 8, 14));
+            var requestId = IntegrationTestData.SecondRequestId;
+            var priorRequest = IntegrationTestData.CreateRequestRow(AssignmentRequestStatus.Completed,
+                requestId, priorDay.Id, [AttendeeCode.Create("ATT-001"), AttendeeCode.Create("ATT-002")]);
+            context.AddRange(priorDay, priorRequest);
+            var attendeeIds = new[] { IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId };
+            for (var i = 0; i < 2; i++)
+            {
+                var spot = IntegrationTestData.CreateSpot($"FR-A-{i + 1:000}", "A", i + 1);
+                context.Assignments.Add(Assignment.Create(
+                    AssignmentId.Create(Guid.Parse($"50000000-0000-0000-0000-{i + 1:000000000000}")),
+                    requestId, priorDay.Id, attendeeIds[i], spot.Code, spot.ZoneId, spot.RowCode,
+                    spot.Number, ExperienceQuality.Bad, IntegrationTestData.AssignedAt.AddDays(-1)));
+            }
+        }
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+
+        var result = await CreateUseCase(context).ExecuteAsync(CreateCommand());
+
+        result.IsAssigned.Should().BeTrue();
+        result.Assignments.Should().HaveCount(2);
+        result.Assignments.Should().OnlyContain(assignment =>
+            assignment.ZoneId == (hasUnfavorableHistory ? goodZone.Id : IntegrationTestData.ZoneId));
+        await using var verificationContext = Fixture.CreateDbContext();
+        var assignments = await verificationContext.Assignments.AsNoTracking()
+            .Where(assignment => assignment.AssignmentRequestId == result.AssignmentRequestId).ToArrayAsync();
+        assignments.Should().HaveCount(2);
+        assignments.Should().OnlyContain(assignment => assignment.ExperienceQuality == expectedQuality);
+        var histories = await new PostgreSqlFairnessHistoryProvider(verificationContext).GetHistoriesAsync(
+            [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId]);
+        var expectedHistory = hasUnfavorableHistory
+            ? new[] { ExperienceQuality.Bad, ExperienceQuality.Good }
+            : new[] { ExperienceQuality.Medium };
+        histories.Values.Should().OnlyContain(history => history.Experiences.SequenceEqual(expectedHistory));
+    }
+
     private static ProcessAssignmentRequestUseCase CreateUseCase(
         FestivalDbContext context)
     {
         return new ProcessAssignmentRequestUseCase(
             new PostgreSqlAttendeeCodeResolver(context),
             new PostgreSqlAvailableSpotProvider(context),
+            new PostgreSqlZoneCatalogProvider(context),
+            new PostgreSqlFairnessHistoryProvider(context),
             new PostgreSqlAssignmentRequestRepository(context),
             new PostgreSqlAssignmentRepository(context),
             new EfCoreUnitOfWork(context),

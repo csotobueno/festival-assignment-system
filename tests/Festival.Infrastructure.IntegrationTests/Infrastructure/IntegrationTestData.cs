@@ -160,6 +160,7 @@ internal static class IntegrationTestData
             ZoneId,
             RowCode.Create(rowCode),
             SpotNumber.Create(spotNumber),
+            ExperienceQuality.Medium,
             AssignedAt);
     }
 }

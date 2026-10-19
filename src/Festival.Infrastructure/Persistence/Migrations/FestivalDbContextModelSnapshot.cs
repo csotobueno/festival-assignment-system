@@ -37,6 +37,10 @@ namespace Festival.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("AttendeeId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ExperienceQuality")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("FestivalDayId")
                         .HasColumnType("uuid");
 

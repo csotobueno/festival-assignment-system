@@ -246,6 +246,7 @@ public sealed class AssignmentGroupTests
                 zoneId,
                 rowCode,
                 SpotNumber.Create(11),
+                ExperienceQuality.Medium,
                 AssignedAt)
         };
 
@@ -275,6 +276,7 @@ public sealed class AssignmentGroupTests
                 zoneId,
                 rowCode,
                 SpotNumber.Create(11),
+                ExperienceQuality.Medium,
                 AssignedAt)
         };
 
@@ -432,6 +434,7 @@ public sealed class AssignmentGroupTests
             zoneId,
             rowCode,
             SpotNumber.Create(spotNumber),
+            ExperienceQuality.Medium,
             AssignedAt);
     }
 

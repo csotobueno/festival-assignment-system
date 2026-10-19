@@ -32,6 +32,7 @@ public sealed class AssignmentTests
             zoneId,
             rowCode,
             spotNumber,
+            ExperienceQuality.Medium,
             AssignedAt);
 
         Assert.Equal(id, assignment.Id);
@@ -58,6 +59,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("id", exception.ParamName);
@@ -76,6 +78,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("assignmentRequestId", exception.ParamName);
@@ -94,6 +97,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("festivalDayId", exception.ParamName);
@@ -112,6 +116,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("attendeeId", exception.ParamName);
@@ -130,6 +135,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("spotCode", exception.ParamName);
@@ -148,6 +154,7 @@ public sealed class AssignmentTests
                 default,
                 RowCode.Create("A"),
                 SpotNumber.Create(10),
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("zoneId", exception.ParamName);
@@ -166,6 +173,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 null!,
                 SpotNumber.Create(10),
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("rowCode", exception.ParamName);
@@ -184,6 +192,7 @@ public sealed class AssignmentTests
                 ZoneId.New(),
                 RowCode.Create("A"),
                 default,
+                ExperienceQuality.Medium,
                 AssignedAt));
 
         Assert.Equal("spotNumber", exception.ParamName);
@@ -204,8 +213,36 @@ public sealed class AssignmentTests
             ZoneId.New(),
             RowCode.Create("A"),
             SpotNumber.Create(10),
+            ExperienceQuality.Medium,
             assignedAt);
 
         Assert.Equal(assignedAt, assignment.AssignedAt);
+    }
+
+    [Theory]
+    [InlineData(ExperienceQuality.Good)]
+    [InlineData(ExperienceQuality.Medium)]
+    [InlineData(ExperienceQuality.Bad)]
+    public void Create_ShouldPreserveExplicitHistoricalQuality(ExperienceQuality quality)
+    {
+        var assignment = Assignment.Create(
+            AssignmentId.New(), AssignmentRequestId.New(), FestivalDayId.New(),
+            AttendeeId.New(), SpotCode.Create("HISTORY-A-001"), ZoneId.New(),
+            RowCode.Create("A"), SpotNumber.Create(1), quality, AssignedAt);
+
+        Assert.Equal(quality, assignment.ExperienceQuality);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(3)]
+    public void Create_ShouldRejectUndefinedHistoricalQuality(int quality)
+    {
+        var create = () => Assignment.Create(
+            AssignmentId.New(), AssignmentRequestId.New(), FestivalDayId.New(),
+            AttendeeId.New(), SpotCode.Create("HISTORY-A-001"), ZoneId.New(),
+            RowCode.Create("A"), SpotNumber.Create(1), (ExperienceQuality)quality, AssignedAt);
+
+        Assert.Equal("experienceQuality", Assert.Throws<ArgumentOutOfRangeException>(create).ParamName);
     }
 }

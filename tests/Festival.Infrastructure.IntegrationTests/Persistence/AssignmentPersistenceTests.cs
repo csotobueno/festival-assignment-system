@@ -1,4 +1,5 @@
 using Festival.Domain.Attendees;
+using Festival.Domain.Assignments;
 using Festival.Infrastructure.IntegrationTests.Infrastructure;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -48,5 +49,32 @@ public sealed class AssignmentPersistenceTests(
         persisted.RowCode.Value.Should().Be("A");
         persisted.SpotNumber.Value.Should().Be(1);
         persisted.AssignedAt.Should().Be(IntegrationTestData.AssignedAt);
+        persisted.ExperienceQuality.Should().Be(ExperienceQuality.Medium);
+    }
+
+    [Theory]
+    [InlineData(ExperienceQuality.Good)]
+    [InlineData(ExperienceQuality.Medium)]
+    [InlineData(ExperienceQuality.Bad)]
+    public async Task Assignment_ShouldRehydrateRecordedQualityIndependentlyOfCurrentZone(
+        ExperienceQuality recordedQuality)
+    {
+        await using var context = Fixture.CreateDbContext();
+        var spot = IntegrationTestData.CreateSpot();
+        var assignment = Assignment.Create(
+            AssignmentId.Create(Guid.Parse("50000000-0000-0000-0000-000000000001")),
+            IntegrationTestData.RequestId, IntegrationTestData.FestivalDayId,
+            IntegrationTestData.FirstAttendeeId, spot.Code, spot.ZoneId, spot.RowCode,
+            spot.Number, recordedQuality, IntegrationTestData.AssignedAt);
+        context.AddRange(IntegrationTestData.CreateFestivalDay(), IntegrationTestData.CreateAttendee(),
+            IntegrationTestData.CreateZone(), spot, IntegrationTestData.CreateRequestRow(), assignment);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+        await context.Database.ExecuteSqlRawAsync(
+            "UPDATE \"Zones\" SET \"ZoneType\" = 'UpperRight'");
+
+        var rehydrated = await context.Assignments.SingleAsync();
+
+        rehydrated.ExperienceQuality.Should().Be(recordedQuality);
     }
 }
