@@ -11,6 +11,7 @@ boundary; it does not claim that the cutover is implemented.
 | --- | --- |
 | IMPLEMENTED | Pure Stage 4 Domain selection: Zone ordering, physical feasibility, block selection and AssignmentSelection with actual ExperienceQuality. |
 | IMPLEMENTED | Current Zone catalog read access through IZoneCatalogProvider and its PostgreSQL adapter; not yet consumed by Application orchestration. |
+| DECIDED, NOT YET ACTIVATED | Assignment ExperienceQuality transition and neutral fairness bootstrap, documented below. |
 | NOT YET INTEGRATED | Application preparation of Stage 4 inputs, AssignmentSelectionPolicy invocation from the use case, AssignmentEngine cutover and persisted Assignment.ExperienceQuality. |
 | TEMPORARILY ACTIVE | Legacy AssignmentEngine placement from available Spots. |
 | FINAL TARGET | AssignmentSelectionPolicy selects placement; AssignmentEngine only materializes the selection. |
@@ -80,55 +81,19 @@ implementing data access. It must not read FestivalDbContext directly. This is
 input preparation before selection, not a post-selection Zone lookup to recover
 quality. The previously discarded lookup approach is not reintroduced.
 
-### Assignment ExperienceQuality Transition
+### Transition and Fairness Input Preparation
 
-The target invariant is:
-
-```text
-every valid historical Assignment → recorded immutable ExperienceQuality
-```
-
-ExperienceQuality is the actual outcome at assignment time. Historical reads
-must not reconstruct it through Assignment.ZoneId → current Zone → current
-ZoneExperienceQualityPolicy, because classification may evolve.
-
-Phase 1 prepares the transition and persistence strategy. Activating mandatory
-quality must be coordinated with the active Assignment creation path at final
-cutover; it must not independently break the legacy caller. Nullable quality is
-not the target model. Default Medium, fabricated historical quality, current
-Zone reclassification and post-selection Zone lookup are rejected transition
-solutions. The implementation must coordinate mandatory quality with creation
-and persistence rather than silently filling missing outcomes.
-
-### Fairness History Read Access and Input Preparation
-
-Application currently lacks the read boundary for:
-
-```text
-AttendeeId
-        ↓
-previous recorded Assignment outcomes
-        ↓
-ordered Assignment.ExperienceQuality values
-        ↓
-FairnessHistory per attendee
-        ↓
-GroupRotationScore.Calculate(memberHistories)
-        ↓
-TargetQualityPolicy.Calculate(groupScore)
-        ↓
-TargetQuality
-```
-
-The future query must read recorded Assignment.ExperienceQuality, not current
-Zone classification, and supply experiences from oldest to most recent as
-required by FairnessHistory. This capability depends on the quality transition;
-the current schema is not an already-classified history source.
+The [Assignment quality transition and bootstrap decision](#assignment-experiencequality-transition-and-bootstrap)
+is defined below. Phase 1 may prepare Application input composition using
+supplied histories and the existing pure Domain policies, plus the persistence
+and rehydration design. It keeps legacy placement active and does not activate
+mandatory quality or a fairness-history query against the current schema.
 
 GroupRotationScore already calculates individual RotationScores internally.
-Application orchestrates existing pure Domain policies without duplicating
-their formulas. Scores remain derived values; Application does not need to
-persist RotationScore or introduce scoring storage. No fairness rule changes.
+Application will prepare FairnessHistory per attendee, invoke GroupRotationScore
+and then TargetQualityPolicy without duplicating their formulas. Scores remain
+derived, not stored. The persisted-history read boundary is still missing; it
+must be implemented and activated with recorded quality in Phase 2.
 
 ### Eligibility and Inventory Preparation
 
@@ -157,10 +122,123 @@ contiguous-block discovery remains outside inventory calculation. The existing
 calculator requires Zone metadata for every supplied Spot's ZoneId. This
 cutover decision does not change inventory counting or selection rules.
 
+## Assignment ExperienceQuality Transition and Bootstrap
+
+**Agreed architecture decision; implementation remains pending.** Stage 4
+fairness history begins when reliable `Assignment.ExperienceQuality` recording
+begins. Earlier assignments are neither reconstructed nor assigned synthetic
+quality. Empty history is the intentional neutral bootstrap state.
+
+### Target Assignment Invariant and Historical Stability
+
+At the coordinated Stage 4 cutover, the final invariant becomes:
+
+```text
+every valid Assignment → one explicit immutable ExperienceQuality
+```
+
+ExperienceQuality is the actual outcome at assignment time. It is required at
+creation, persisted with the Assignment, restored explicitly during rehydration
+and used as historical fairness input. It is never nullable, defaulted or inferred
+from ZoneId. The active Application caller and legacy engine use available Spots
+rather than AssignmentSelection today, so mandatory quality must not activate
+independently before Application can produce that selection.
+
+```text
+quality at assignment time → stored on Assignment → remains historically stable
+```
+
+For example, an Assignment recorded as Medium when UpperCenter was Medium stays
+Medium even if a later policy classifies UpperCenter as Good. The rejected
+reconstruction is:
+
+```text
+historical Assignment.ZoneId → current Zone → current ZoneExperienceQualityPolicy
+                            → historical quality
+```
+
+The current Zone policy classifies current selections; it cannot reconstruct
+historical outcomes.
+
+### Neutral Bootstrap and First Reliable Assignment
+
+When an attendee has no reliable recorded fairness experiences, use the existing
+[neutral score semantics](../stage-4/rotation-score-v1.md#neutral-state):
+
+```text
+FairnessHistory = []
+HistoricalDeficit = 0
+RecentRecoveryNeed = 0
+GoodExperienceDeficit = 0
+RotationScore = 0
+```
+
+A new attendee and an attendee with no reliable Stage 4 history both start
+neutral. No special bonus or penalty is added. For a group, each such member
+contributes zero to the existing arithmetic mean; other members retain their
+own reliable histories.
+
+The first successful Stage 4 assignment follows the normal selection path:
+
+```text
+empty FairnessHistory → RotationScore = 0
+        ↓
+GroupRotationScore → TargetQualityPolicy → TargetQuality
+        ↓
+AssignmentSelectionPolicy (with prepared eligibility, inventory and availability)
+        ↓
+AssignmentSelection.ExperienceQuality
+        ↓
+Assignment.ExperienceQuality → atomic successful commit
+        ↓
+first trustworthy fairness-history entry for future requests
+```
+
+When every member starts neutral, GroupRotationScore is zero and the existing
+TargetQualityPolicy produces Medium. This is a target, not a fabricated Medium
+experience: the stored quality comes from the actual selection.
+
+Fairness-history reads activate with recording at cutover and initially return
+empty histories when no outcomes exist. After successful commits, they supply
+only reliable recorded `Assignment.ExperienceQuality` values from previous
+assignments, ordered oldest to most recent, to FairnessHistory. Absence generates
+no synthetic experience; pre-Stage-4 quality is never inferred. Existing
+FairnessHistory, RotationScore, GroupRotationScore and TargetQualityPolicy logic
+remains unchanged.
+
+### Pre-Cutover Data Policy
+
+The project is pre-production; no real production history requires preservation
+or backfill. Disposable local/test Assignments without recorded quality do not
+justify a mixed legacy/new historical model. Local experimental databases may
+be recreated, and the first persistent Stage 4 environment may start with no
+Assignments. Do not fabricate quality to preserve those disposable records or
+introduce fixture-ID-specific migration logic. The concrete schema migration
+and explicit rehydration changes belong to the coordinated implementation.
+
+### Rejected Transition Approaches
+
+- **Nullable ExperienceQuality:** weakens the final invariant and creates two
+  classes of valid historical Assignment; it is not a transition strategy.
+- **Default Medium or artificial Good/Bad history:** fabricates an outcome,
+  including when used as a migration default or fake backfill.
+- **Historical reconstruction from current Zone:** cannot preserve quality at
+  assignment time after classification changes.
+- **Temporary Zone lookup in AssignmentEngine:** do not add a Zone provider to
+  the legacy engine solely to calculate quality.
+- **Temporary dual Assignment creation APIs:** do not retain one production
+  creation path requiring quality and another omitting it. Activate the required
+  quality contract with the single Stage 4 placement path.
+
 ## Phase 2 — Coordinated Final Cutover
 
-Once Application can prepare all required inputs, ProcessAssignmentRequestUseCase
-invokes:
+Implement and activate one coherent boundary: Application selection integration,
+the engine API, mandatory Assignment quality, persistence/schema migration,
+explicit quality rehydration, recorded fairness-history read support and removal
+of legacy placement. History reads are not a prerequisite against the old schema;
+they start with the neutral bootstrap above and use recorded outcomes thereafter.
+
+At this cutover, ProcessAssignmentRequestUseCase invokes:
 
 ```text
 AssignmentSelectionPolicy.Select(
@@ -189,10 +267,11 @@ quality or infers it from ZoneId. AssignmentSelection already contains the final
 actual outcome, transferred directly to Assignment.ExperienceQuality. TargetQuality
 remains the decision reference; ExperienceQuality is the actual immutable outcome.
 
-Migrate the engine API, activate mandatory quality in Assignment creation and
-persistence, stop the old placement path and remove FindFirstContiguousBlock and
-IsConsecutive when no longer referenced. Retain no permanent compatibility
-overload or parallel placement architecture.
+Migrate the engine API, activate mandatory quality in Assignment creation,
+persistence and rehydration, and wire recorded-history reads into Application.
+Stop the old placement path and remove FindFirstContiguousBlock and IsConsecutive
+when no longer referenced. Retain no permanent compatibility overload or parallel
+placement architecture.
 
 ### Application Ownership and Target End-State
 
@@ -244,23 +323,23 @@ AssignmentSelectionPolicy → AssignmentSelection → AssignmentEngine materiali
 
 ## Implementation Sequence
 
-The agreed delivery sequence is:
+The revised delivery sequence separates independent preparation from activation:
 
 1. Expose Current Zone Read Access — implemented; orchestration remains pending.
-2. Prepare Assignment ExperienceQuality transition and persistence strategy
-   consistent with the cutover.
-3. Read Attendee Fairness History.
-4. Prepare Stage 4 Fairness Inputs in Application.
-5. Prepare eligibility + inventory + AssignmentSelection inside
-   ProcessAssignmentRequestUseCase.
-6. Perform coordinated final cutover: ProcessAssignmentRequestUseCase +
-   AssignmentEngine + mandatory Assignment.ExperienceQuality.
-7. Remove legacy placement logic.
+2. Define Assignment ExperienceQuality transition and neutral bootstrap — decided
+   in this document; recording and history-read implementation remain pending.
+3. Prepare independent Application input composition and other dependencies that
+   can use supplied histories without persisted quality. Keep the legacy caller
+   active; do not make old-schema fairness-history reads a delivery prerequisite.
+4. Perform the coordinated Stage 4 activation: ProcessAssignmentRequestUseCase
+   produces AssignmentSelection; AssignmentEngine consumes it; Assignment requires
+   quality; persistence/schema migration stores it; rehydration restores it;
+   fairness-history support reads recorded outcomes; legacy placement is removed.
 
-Steps 5–7 may be delivered in one coherent implementation issue if separating
-them would require a temporary incompatible API. Step 2 prepares the transition;
-it does not claim mandatory historical quality is already active. Do not reorder
-this sequence without reporting a concrete repository constraint.
+Steps 1–3 are Phase 1; step 4 is Phase 2. Its coupled changes belong to one coherent
+implementation boundary. Do not force separate deliveries that require temporary
+incompatible APIs, nullable quality or fabricated history. This corrects the
+earlier sequence that placed history reads before required recorded quality.
 
 ## Support Policy and Separate Concerns
 
@@ -271,6 +350,8 @@ implementation or required full production parity. Extend them only for a
 concrete test or demo scenario. Do not require new InMemory capabilities solely
 to mirror PostgreSQL dynamic availability, fairness-history queries, locking,
 transactions or production concurrency semantics.
+No InMemory historical backfill or production-equivalent migration path is
+required by this transition.
 
 ### Attendee Resolution Technical Debt
 

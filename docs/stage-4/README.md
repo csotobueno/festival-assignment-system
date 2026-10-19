@@ -8,6 +8,8 @@ The agreed [Stage 4 Application Cutover Boundary](../architecture/stage-4-applic
 uses a **two-step cutover**: prepare stable dependencies while legacy engine
 placement remains temporarily active, then transition the use case, engine and
 mandatory Assignment.ExperienceQuality together. There is no permanent dual path.
+The [transition and bootstrap decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap)
+is agreed; its implementation remains pending.
 
 The technical MVP tests whether a reliable system can assign locations to
 Attendees across several festival days while preserving fairness and flexible
@@ -54,7 +56,8 @@ ExperienceQuality are not yet integrated. External callers continue supplying
 business-request data; Application will prepare AssignmentSelection internally.
 
 1. Receive an AssignmentRequest with one to ten Attendees and resolve its members.
-2. Load each Attendee's available history of real previous assignments.
+2. Load each Attendee's reliable recorded Assignment.ExperienceQuality history;
+   use an empty history when no such outcomes exist.
 3. Calculate individual RotationScores. For a group, use their arithmetic mean
    as GroupRotationScore; individual histories remain separate.
 4. Derive a [Target Quality v1](assignment-strategy-v1.md#3-determine-target-quality) reference: `Good` or `Medium`; `Bad` is only a possible actual outcome.
@@ -104,22 +107,29 @@ original request does not remain pending.
 
 ## Application Cutover
 
-**Phase 1 — Prepare Stable Dependencies:** expose current Zone read access,
-prepare the Assignment quality transition and persistence strategy, establish
-recorded-history reading and prepare fairness, eligibility and inventory inputs.
-GroupRotationScore already computes individual scores from member histories.
-Keep legacy placement active until inputs can be produced safely; mandatory
-quality must be activated with the creation path, without defaults or fabricated history.
+**Phase 1 — Prepare Stable Dependencies:** current Zone read access is implemented
+and the quality transition/bootstrap decision is agreed. Prepare independent
+Application input composition using supplied histories and other dependencies
+that do not require persisted quality. GroupRotationScore already computes
+individual scores from member histories. Keep legacy placement active; do not
+require fairness-history queries against the old schema.
 
 **Phase 2 — Coordinated Final Cutover:** the use case invokes
 AssignmentSelectionPolicy; null rejects the request, while a selection is
 materialized by AssignmentEngine from its Block and ExperienceQuality. Transition
-caller, engine API and mandatory Assignment quality together, remove legacy
-helpers and retain one active placement path. Preserve the Stage 3 UnitOfWork
-boundary and request-status semantics.
+caller, engine API, mandatory Assignment quality, persistence/schema migration,
+explicit rehydration and recorded-history reads together; remove legacy helpers
+and retain one active placement path. Preserve the Stage 3 UnitOfWork boundary
+and request-status semantics.
+
+Fairness history begins with reliable quality recording. No reliable outcomes
+means `FairnessHistory = []` and `RotationScore = 0`, the intentional neutral
+bootstrap. The first successful Stage 4 Assignment records actual selection
+quality and becomes trustworthy history for future requests. Earlier quality is
+never reconstructed or fabricated.
 
 The [architecture decision](../architecture/stage-4-application-cutover-boundary.md#implementation-sequence)
-defines the exact seven-step delivery sequence. InMemory remains lightweight
+defines the revised preparation/activation sequence. InMemory remains lightweight
 test/demo support without required production parity. Attendee one-to-one
 resolution and pre-save snapshot consistency are recorded as separate concerns;
 this cutover does not implement their fixes or global assigned-outcome state.
@@ -164,10 +174,11 @@ this cutover does not implement their fixes or global assigned-outcome state.
 - **Determinism:** identical relevant input state produces the same decision.
   This does not determine which concurrent transaction wins; Stage 3 persistence
   and conflict guarantees remain in force.
-- **Starting data:** the database is empty at Stage 4 preparation. There are no
-  legacy Assignments to classify or migrate. New assignment experiences will be
-  recorded when persisted-history integration is implemented. Deterministic test
-  fixtures may provide synthetic scenarios, without inventing absence records.
+- **Starting data:** no production history needs backfill. Disposable local/test
+  databases may be recreated, and the first persistent Stage 4 environment may
+  start with no Assignments, following the [pre-cutover data policy](../architecture/stage-4-application-cutover-boundary.md#pre-cutover-data-policy).
+  Deterministic test fixtures may provide explicit scenarios; they do not justify
+  fabricated historical quality, fixture-ID-specific migrations or absence records.
 
 ## Implementation Readiness
 
