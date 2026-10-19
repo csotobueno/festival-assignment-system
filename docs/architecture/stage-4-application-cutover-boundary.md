@@ -353,13 +353,14 @@ transactions or production concurrency semantics.
 No InMemory historical backfill or production-equivalent migration path is
 required by this transition.
 
-### Attendee Resolution Technical Debt
+### Attendee Resolution Completeness — Resolved
 
-Current attendee resolvers can return fewer AttendeeIds than requested
-AttendeeCodes. Application creates AssignmentGroup from those IDs without
-verifying one-to-one resolution. A request for three attendees may resolve two
-IDs and create GroupSize 2. This requires a separate validation issue; its
-implementation is not part of the Stage 4 cutover.
+ProcessAssignmentRequestUseCase now checks resolved AttendeeId count against the
+request's distinct normalized AttendeeCodes before creating AssignmentGroup.
+Incomplete resolution rejects the whole request with `ATTENDEE_NOT_FOUND`,
+persists that rejection through the existing UnitOfWork and skips Spot loading
+and engine execution. A three-person request cannot silently become a two-person
+group. Resolver behavior and the Stage 4 cutover remain unchanged.
 
 ### Snapshot and Concurrency Risk
 
