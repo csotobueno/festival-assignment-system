@@ -35,20 +35,22 @@ do not override this agreed Application delivery order:
    quality classification, eligibility or inventory logic is added. InMemory
    composition does not require the unused port yet; no adapter is added there.
    Application orchestration remains pending and legacy placement stays active.
-2. Prepare Assignment ExperienceQuality transition and persistence strategy
-   consistent with the cutover.
-3. Read Attendee Fairness History.
-4. Prepare Stage 4 Fairness Inputs in Application.
-5. Prepare eligibility + inventory + AssignmentSelection inside
-   ProcessAssignmentRequestUseCase.
-6. Perform coordinated final cutover: ProcessAssignmentRequestUseCase +
-   AssignmentEngine + mandatory Assignment.ExperienceQuality.
-7. Remove legacy placement logic.
+2. Define Assignment ExperienceQuality transition and neutral bootstrap — agreed
+   in the [authoritative decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap);
+   implementation remains pending.
+3. Prepare independent Application input composition using supplied histories
+   and dependencies that do not require persisted quality; legacy placement stays
+   active.
+4. Activate Stage 4 coherently: use-case AssignmentSelection integration + engine
+   migration + mandatory Assignment.ExperienceQuality + persistence/schema
+   migration + explicit rehydration + recorded-history reads + legacy removal.
 
-Steps 5–7 may form one coherent implementation issue if separate delivery would
-require a temporary incompatible API. Do not reorder this sequence without a
-concrete repository constraint. No external-caller selection contract, quality
-default or permanent parallel placement path is introduced.
+Steps 1–3 prepare dependencies; step 4 activates the coupled changes together.
+Fairness-history reads are no longer a prerequisite before recorded quality
+exists. Empty history supplies the neutral bootstrap until real outcomes are
+recorded. Do not split activation into incompatible APIs, nullable/default quality
+or a permanent parallel placement path. No external-caller selection contract
+is introduced.
 
 ---
 
@@ -95,7 +97,7 @@ Do not silently choose business semantics inside code.
 | Zone Evaluation Strategy v1 (ordering and first-feasible-Zone search implemented) | Steps 15–18 | [Exact quality/count/tie ordering](assignment-strategy-v1.md#11-zone-evaluation-strategy-v1); first feasible Zone wins. Global assigned-outcome state is deferred. |
 | Global-state influence (deferred) | Future iteration after Stage 5 evidence | A concrete fairness failure showing remaining inventory is insufficient; then define minimum recorded outcome state and population/time scope. |
 | Block Selection Policy v1 (implemented) | Before full engine integration | [Affected-Row remaining-run ranking](assignment-strategy-v1.md#block-selection-policy-v1): LargestRemainingContiguousRun descending, RowCode ascending, starting SpotNumber ascending. Zone selection remains upstream. |
-| Persisted experience representation | Steps 20–22 | Quality and the complete successful outcome saved within the existing atomic boundary. No legacy-data backfill is needed. |
+| Assignment quality transition and neutral bootstrap (agreed) | Coordinated activation across Steps 19–22 | [Authoritative decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap): required immutable quality, explicit rehydration and recorded-history reads activate together; empty history is neutral and no fake backfill is allowed. Concrete schema representation remains implementation work. |
 
 Parameter sensitivity and final calibration belong to Stage 5. An initial
 executable policy is still required in Stage 4. Final path-classification
@@ -196,7 +198,10 @@ Steps 3–8 can continue to use already-classified histories.
 
 Provide the minimum ordered information required to calculate an attendee's fairness state.
 
-History contains real previous assignments only.
+History contains reliable recorded outcomes from previous assignments only.
+With no reliable Stage 4 outcomes, empty FairnessHistory is the intentional
+neutral bootstrap, not a requirement to reconstruct pre-cutover quality. See the
+[transition decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap).
 
 Example:
 
@@ -692,8 +697,9 @@ Integrate the Stage 4 strategy with the existing application flow through the
 agreed two-step cutover above. Keep legacy placement active during dependency
 preparation; Application owns the eventual preparation of AssignmentSelection.
 Changing AssignmentEngine first would break its current available-Spots caller.
-The final transition must change that caller and engine together, activate
-mandatory Assignment quality and remove obsolete placement helpers.
+The final transition must change that caller and engine together with mandatory
+Assignment quality, persistence/schema migration, explicit quality rehydration
+and recorded-history reads (Steps 20–22), and remove obsolete placement helpers.
 
 Reuse existing ports whenever responsibilities still match.
 
@@ -707,7 +713,7 @@ Evolve the existing assignment process without weakening current application sem
 
 ## Step 20 — Integrate Persisted History
 
-Use previous real assignments as input to RotationScore.
+Use reliable recorded outcomes from previous assignments as input to RotationScore.
 
 Infrastructure should provide the required history through an application/domain-facing abstraction.
 
@@ -716,7 +722,12 @@ recorded Assignment.ExperienceQuality from oldest to most recent, never
 reclassify history from current Zones. Application prepares FairnessHistory per
 attendee and invokes GroupRotationScore, which already calculates individual
 scores internally, then TargetQualityPolicy. Scores remain derived, not stored.
-Read capability depends on the quality transition; it is not active today.
+This read capability is not active today. Implement and activate it with required
+quality, persistence and rehydration in the coordinated cutover across Steps
+19–22; this numbered work area is not an independent prerequisite before Step
+21. Initially return empty history when no reliable outcomes exist, yielding
+RotationScore zero through existing Domain logic. After the first successful
+Stage 4 commit, real recorded outcomes begin contributing to future requests.
 
 ### Goal
 
@@ -760,13 +771,14 @@ or eligibility changes.
 
 The exact persistence representation should be chosen during implementation with the smallest justified change.
 
-The database is empty at Stage 4 preparation; there are no historical assignments
-to migrate or reclassify. Prepare the transition and persistence strategy in
-Phase 1, then coordinate activation of mandatory immutable quality with the
-active Assignment creation path at final cutover. Record selection.ExperienceQuality
-as part of the atomic successful outcome. Do not introduce nullable quality as
-the target model, default Medium, fabricated history, current Zone reclassification
-or post-selection lookup. Existing records must not be assumed to contain quality.
+The [transition/bootstrap and pre-cutover data policy](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap)
+is agreed: no production history needs backfill, and disposable local/test
+databases may be recreated. Activate required immutable quality, its persistence,
+explicit rehydration and recorded-history reads with selection and the engine at
+cutover across Steps 19–22. Record selection.ExperienceQuality as part of the
+atomic successful outcome. No nullable/default quality, fabricated legacy values,
+current-Zone historical reconstruction or temporary engine Zone lookup is allowed.
+Existing records must not be assumed to contain quality.
 
 ---
 

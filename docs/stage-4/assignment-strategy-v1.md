@@ -143,7 +143,14 @@ The MVP does not assume a permanent group identity.
 
 # 2. Load Historical Fairness State
 
-The strategy should obtain the real assignment history of each attendee.
+The strategy obtains only reliable recorded `Assignment.ExperienceQuality`
+outcomes from each attendee's previous assignments, ordered oldest to most recent.
+Fairness history begins when reliable Stage 4 quality recording begins. Under the
+[transition and bootstrap decision](../architecture/stage-4-application-cutover-boundary.md#assignment-experiencequality-transition-and-bootstrap),
+no recorded outcomes means `FairnessHistory = []` and `RotationScore = 0`.
+Earlier quality is never inferred from current Zones or filled with synthetic
+experiences. Recorded-history read support activates with mandatory quality at
+the coordinated cutover, not beforehand against the old schema.
 
 History should contain previous actual experiences such as:
 
@@ -431,8 +438,9 @@ even if a later business policy classifies UpperCenter as Good
 ```
 
 Deriving current Zone quality through a policy does not mean recalculating past
-quality from today's policy. Recording historical quality remains a separate
-pending implementation step.
+quality from today's policy. Required immutable Assignment quality, persistence,
+explicit rehydration and recorded-history reads remain pending and activate
+together at the [coordinated cutover](../architecture/stage-4-application-cutover-boundary.md#phase-2--coordinated-final-cutover).
 
 ### Implemented Zone Model Evolution
 
@@ -1163,14 +1171,17 @@ Retry policy is not part of Fairness Definition v1.
 Once an assignment succeeds:
 
 ```text
-selected quality
+AssignmentSelection.ExperienceQuality
         ↓
-persisted assignment experience
+Assignment.ExperienceQuality persisted in the atomic successful outcome
         ↓
 future attendee history
 ```
 
 That experience becomes part of later RotationScore calculations.
+The first successful Stage 4 Assignment creates the first trustworthy entry
+when the attendee previously had no reliable history; an absence or unsuccessful
+request creates no experience.
 
 Each successful online decision therefore updates both:
 
@@ -1190,7 +1201,7 @@ The Stage 4 decision flow is:
 
 2. Resolve attendees and group configuration.
 
-3. Load real previous assignment history.
+3. Load reliable recorded previous outcomes; no outcomes means empty history.
 
 4. Calculate individual RotationScores.
 
