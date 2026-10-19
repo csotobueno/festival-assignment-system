@@ -27,7 +27,14 @@ currently active legacy engine remains intact. Phase 2 transitions the caller,
 engine and mandatory recorded quality together. The numbered work areas below
 do not override this agreed Application delivery order:
 
-1. Expose Current Zone Read Access.
+1. Expose Current Zone Read Access — implemented as
+   `IZoneCatalogProvider.GetZonesAsync(CancellationToken)` with the scoped
+   `PostgreSqlZoneCatalogProvider`. Returns all current Domain Zones, including
+   FrontStanding, as a read-only collection (empty is valid), without tracking.
+   ZoneId ascending is technical ordering only. No FestivalDay relationship,
+   quality classification, eligibility or inventory logic is added. InMemory
+   composition does not require the unused port yet; no adapter is added there.
+   Application orchestration remains pending and legacy placement stays active.
 2. Prepare Assignment ExperienceQuality transition and persistence strategy
    consistent with the cutover.
 3. Read Attendee Fairness History.

@@ -1,7 +1,9 @@
 using System.Data;
 using Festival.Application.Assignments.Ports;
+using Festival.Application.Zones.Ports;
 using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.Persistence;
+using Festival.Infrastructure.Zones.PostgreSql;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -89,6 +91,7 @@ public sealed class FestivalDbContextRegistrationTests
             typeof(FestivalDbContext),
             typeof(IAttendeeCodeResolver),
             typeof(IAvailableSpotProvider),
+            typeof(IZoneCatalogProvider),
             typeof(IAssignmentRequestRepository),
             typeof(IAssignmentRepository),
             typeof(IUnitOfWork)
@@ -126,6 +129,11 @@ public sealed class FestivalDbContextRegistrationTests
             descriptor.ServiceType == typeof(IAvailableSpotProvider)
             && descriptor.ImplementationType ==
                 typeof(PostgreSqlAvailableSpotProvider)
+            && descriptor.Lifetime == ServiceLifetime.Scoped);
+        services.Should().ContainSingle(descriptor =>
+            descriptor.ServiceType == typeof(IZoneCatalogProvider)
+            && descriptor.ImplementationType ==
+                typeof(PostgreSqlZoneCatalogProvider)
             && descriptor.Lifetime == ServiceLifetime.Scoped);
         services.Should().ContainSingle(descriptor =>
             descriptor.ServiceType == typeof(IAssignmentRequestRepository)

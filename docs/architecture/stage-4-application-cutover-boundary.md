@@ -10,6 +10,7 @@ boundary; it does not claim that the cutover is implemented.
 | Status | Boundary |
 | --- | --- |
 | IMPLEMENTED | Pure Stage 4 Domain selection: Zone ordering, physical feasibility, block selection and AssignmentSelection with actual ExperienceQuality. |
+| IMPLEMENTED | Current Zone catalog read access through IZoneCatalogProvider and its PostgreSQL adapter; not yet consumed by Application orchestration. |
 | NOT YET INTEGRATED | Application preparation of Stage 4 inputs, AssignmentSelectionPolicy invocation from the use case, AssignmentEngine cutover and persisted Assignment.ExperienceQuality. |
 | TEMPORARILY ACTIVE | Legacy AssignmentEngine placement from available Spots. |
 | FINAL TARGET | AssignmentSelectionPolicy selects placement; AssignmentEngine only materializes the selection. |
@@ -41,9 +42,10 @@ actual ExperienceQuality. It creates no Assignment.
 
 The current engine requires available Spots; its final contract will require an
 AssignmentSelection. ProcessAssignmentRequestUseCase cannot yet produce that
-selection: it lacks Zone read access, attendee fairness-history read access,
-TargetQuality preparation and RemainingInventoryState preparation. Assignment
-also does not yet record historical ExperienceQuality.
+selection: current Zone read access is available, but it lacks attendee
+fairness-history read access, TargetQuality preparation and
+RemainingInventoryState preparation. Assignment also does not yet record
+historical ExperienceQuality.
 
 Changing the engine first would break its current caller. The agreed solution is
 to prepare dependencies first and perform the coordinated caller/engine cutover
@@ -59,11 +61,19 @@ Application flow.
 
 ### Current Zone Read Access
 
-The first implementation dependency is a future Application read boundary for
-the current Zone catalog needed by ZoneEligibilityPolicy and
-RemainingInventoryCalculator. Application already has IAvailableSpotProvider,
-but Spots carry only ZoneId, not Zone metadata. No Application-facing Zone read
-boundary exists today; its exact interface name is not specified here.
+Implemented as `IZoneCatalogProvider.GetZonesAsync(CancellationToken)`, returning
+`IReadOnlyList<Zone>`. The scoped `PostgreSqlZoneCatalogProvider` reads all current
+Zones from `FestivalDbContext.Zones` through the existing mapping, without
+tracking, and propagates cancellation. Results are read-only and may be empty.
+ZoneId ascending is technical ordering only; business priority remains with
+Stage 4 policies. The catalog includes FrontStanding, has no FestivalDay
+relationship and adds no eligibility, quality classification or inventory logic.
+
+Application already has IAvailableSpotProvider, but Spots carry only ZoneId,
+not Zone metadata. The new port is available for future ZoneEligibilityPolicy
+and RemainingInventoryCalculator input preparation; the use case does not yet
+consume it. InMemory composition does not require the unused port today, so no
+InMemory adapter is added; its existing test/demo flow remains unchanged.
 
 Application must obtain Zones through Application ports, with Infrastructure
 implementing data access. It must not read FestivalDbContext directly. This is
@@ -236,7 +246,7 @@ AssignmentSelectionPolicy → AssignmentSelection → AssignmentEngine materiali
 
 The agreed delivery sequence is:
 
-1. Expose Current Zone Read Access.
+1. Expose Current Zone Read Access — implemented; orchestration remains pending.
 2. Prepare Assignment ExperienceQuality transition and persistence strategy
    consistent with the cutover.
 3. Read Attendee Fairness History.
