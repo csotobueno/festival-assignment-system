@@ -130,9 +130,10 @@ never reconstructed or fabricated.
 
 The [architecture decision](../architecture/stage-4-application-cutover-boundary.md#implementation-sequence)
 defines the revised preparation/activation sequence. InMemory remains lightweight
-test/demo support without required production parity. Attendee one-to-one
-resolution and pre-save snapshot consistency are recorded as separate concerns;
-this cutover does not implement their fixes or global assigned-outcome state.
+test/demo support without required production parity. Incomplete attendee
+resolution is now rejected before group creation; see the [resolved validation gap](../architecture/stage-4-application-cutover-boundary.md#attendee-resolution-completeness--resolved).
+Pre-save snapshot consistency remains a separate concern; this cutover does not
+implement its fix or global assigned-outcome state.
 
 ## Baseline and Boundaries
 

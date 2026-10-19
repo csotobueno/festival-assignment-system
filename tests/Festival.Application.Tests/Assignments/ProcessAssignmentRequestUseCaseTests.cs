@@ -91,6 +91,97 @@ public sealed class ProcessAssignmentRequestUseCaseTests
         Assert.Empty(result.Assignments);
     }
 
+    [Theory]
+    [InlineData(3, 2)]
+    [InlineData(2, 0)]
+    public async Task ExecuteAsync_ShouldRejectWholeRequestBeforePlacement_WhenResolutionIsIncomplete(
+        int requestedCount,
+        int resolvedCount)
+    {
+        var zoneId = CreateZoneId(1);
+        var context = CreateContext(
+            attendeeCount: requestedCount,
+            availableSpots:
+            [
+                CreateSpot(zoneId, "A", 10),
+                CreateSpot(zoneId, "A", 11),
+                CreateSpot(zoneId, "A", 12)
+            ]);
+        context.AttendeeResolver.AttendeeIds = context.AttendeeResolver.AttendeeIds
+            .Take(resolvedCount)
+            .ToArray();
+        using var cancellation = new CancellationTokenSource();
+
+        var result = await context.UseCase.ExecuteAsync(
+            context.Command,
+            cancellation.Token);
+
+        var savedRequest = Assert.Single(
+            context.AssignmentRequestRepository.SavedRequests);
+        var rejection = Assert.IsType<AssignmentRequestRejection>(savedRequest.Rejection);
+        Assert.Equal(AssignmentRequestStatus.Rejected, savedRequest.Status);
+        Assert.Equal(context.Command.AttendeeCodes, savedRequest.RequestedAttendeeCodes);
+        Assert.Equal(requestedCount, savedRequest.RequestedAttendeeCodes.Count);
+        Assert.Equal(AssignedAt, savedRequest.ResolvedAt);
+        Assert.Equal("ATTENDEE_NOT_FOUND", rejection.Code);
+        Assert.Equal(
+            "One or more requested attendees could not be resolved.",
+            rejection.Message);
+        Assert.Null(context.AvailableSpotProvider.ReceivedCancellationToken);
+        Assert.Empty(context.AssignmentRepository.SavedBatches);
+        Assert.Equal(1, context.UnitOfWork.InvocationCount);
+        Assert.Equal(
+            ["RequestRepository.AddAsync", "UnitOfWork.SaveChangesAsync"],
+            context.PersistenceEvents);
+        Assert.Equal(cancellation.Token, context.AttendeeResolver.ReceivedCancellationToken);
+        Assert.Equal(cancellation.Token, context.AssignmentRequestRepository.ReceivedCancellationToken);
+        Assert.Equal(cancellation.Token, context.UnitOfWork.ReceivedCancellationToken);
+        Assert.True(result.IsRejected);
+        Assert.False(result.IsAssigned);
+        Assert.Equal(savedRequest.Id, result.AssignmentRequestId);
+        Assert.Equal(AssignmentRequestStatus.Rejected, result.Status);
+        Assert.Equal(rejection.Code, result.RejectionCode);
+        Assert.Equal(rejection.Message, result.RejectionMessage);
+        Assert.Equal(RequestedAt, result.RequestedAt);
+        Assert.Equal(AssignedAt, result.ResolvedAt);
+        Assert.Empty(result.Assignments);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ExecuteAsync_ShouldAssignEntireGroup_WhenResolutionIsCompleteInEitherOrder(
+        bool reverseResolutionOrder)
+    {
+        var zoneId = CreateZoneId(1);
+        var context = CreateContext(
+            attendeeCount: 3,
+            availableSpots:
+            [
+                CreateSpot(zoneId, "A", 10),
+                CreateSpot(zoneId, "A", 11),
+                CreateSpot(zoneId, "A", 12)
+            ]);
+        var expectedAttendeeIds = context.AttendeeResolver.AttendeeIds.ToArray();
+        if (reverseResolutionOrder)
+        {
+            context.AttendeeResolver.AttendeeIds = expectedAttendeeIds.Reverse().ToArray();
+        }
+
+        var result = await context.UseCase.ExecuteAsync(context.Command);
+
+        Assert.True(result.IsAssigned);
+        Assert.Equal(3, result.Assignments.Count);
+        Assert.Equal(
+            expectedAttendeeIds.OrderBy(id => id.Value),
+            result.Assignments.Select(assignment => assignment.AttendeeId).OrderBy(id => id.Value));
+        Assert.NotNull(context.AvailableSpotProvider.ReceivedCancellationToken);
+        var savedRequest = Assert.Single(context.AssignmentRequestRepository.SavedRequests);
+        Assert.Equal(AssignmentRequestStatus.Completed, savedRequest.Status);
+        Assert.Equal(3, Assert.Single(context.AssignmentRepository.SavedBatches).Count);
+        Assert.Equal(1, context.UnitOfWork.InvocationCount);
+    }
+
     [Fact]
     public async Task ExecuteAsync_ShouldPersistAssignmentRequestAsCompleted_OnSuccess()
     {
@@ -453,7 +544,7 @@ public sealed class ProcessAssignmentRequestUseCaseTests
             AttendeeIds = attendeeIds;
         }
 
-        public IReadOnlyList<AttendeeId> AttendeeIds { get; }
+        public IReadOnlyList<AttendeeId> AttendeeIds { get; set; }
 
         public CancellationToken? ReceivedCancellationToken { get; private set; }
 

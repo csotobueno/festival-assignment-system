@@ -158,6 +158,47 @@ public sealed class ProcessAssignmentRequestUseCasePostgreSqlTests(
         (await verificationContext.Assignments.CountAsync()).Should().Be(0);
     }
 
+    [Theory]
+    [InlineData("ATT-001", "ATT-999")]
+    [InlineData("ATT-998", "ATT-999")]
+    public async Task ExecuteAsync_ShouldPersistWholeRequestAsRejected_WhenAttendeeResolutionIsIncomplete(
+        string firstCode,
+        string secondCode)
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: true);
+        var useCase = CreateUseCase(context);
+        var command = new ProcessAssignmentRequestCommand(
+            IntegrationTestData.FestivalDayId,
+            [AttendeeCode.Create(firstCode), AttendeeCode.Create(secondCode)],
+            IntegrationTestData.RequestedAt,
+            IntegrationTestData.AssignedAt,
+            new RequestEligibility(true));
+
+        var result = await useCase.ExecuteAsync(command);
+
+        result.IsRejected.Should().BeTrue();
+        result.RejectionCode.Should().Be("ATTENDEE_NOT_FOUND");
+        result.RejectionMessage.Should().Be(
+            "One or more requested attendees could not be resolved.");
+        result.Assignments.Should().BeEmpty();
+
+        await using var verificationContext = Fixture.CreateDbContext();
+        var persistedRequest = await verificationContext.AssignmentRequests
+            .Include(request => request.Attendees)
+            .SingleAsync(request =>
+                request.AssignmentRequestId == result.AssignmentRequestId);
+        persistedRequest.Status.Should().Be(AssignmentRequestStatus.Rejected);
+        persistedRequest.ResolvedAt.Should().Be(IntegrationTestData.AssignedAt);
+        persistedRequest.RejectionCode.Should().Be(result.RejectionCode);
+        persistedRequest.RejectionMessage.Should().Be(result.RejectionMessage);
+        persistedRequest.Attendees
+            .OrderBy(attendee => attendee.Position)
+            .Select(attendee => attendee.AttendeeCode)
+            .Should().Equal(command.AttendeeCodes);
+        (await verificationContext.Assignments.CountAsync()).Should().Be(0);
+    }
+
     private static ProcessAssignmentRequestUseCase CreateUseCase(
         FestivalDbContext context)
     {

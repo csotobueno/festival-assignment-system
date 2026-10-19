@@ -5,6 +5,8 @@ namespace Festival.Application.Assignments.ProcessAssignmentRequest;
 
 public sealed class ProcessAssignmentRequestUseCase
 {
+    public const string AttendeeNotFoundCode = "ATTENDEE_NOT_FOUND";
+
     public const string NoContiguousSpotsAvailableCode =
         "NO_CONTIGUOUS_SPOTS_AVAILABLE";
 
@@ -56,6 +58,24 @@ public sealed class ProcessAssignmentRequestUseCase
                 cancellationToken);
 
         ArgumentNullException.ThrowIfNull(attendeeIds);
+
+        // AssignmentRequest already guarantees distinct normalized attendee codes.
+        if (attendeeIds.Count != assignmentRequest.RequestedAttendeeCodes.Count)
+        {
+            assignmentRequest.Reject(
+                AssignmentRequestRejection.Create(
+                    AttendeeNotFoundCode,
+                    "One or more requested attendees could not be resolved."),
+                command.AssignedAt);
+
+            await assignmentRequestRepository.AddAsync(
+                assignmentRequest,
+                cancellationToken);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return ProcessAssignmentRequestResult.Rejected(assignmentRequest);
+        }
 
         var assignmentGroup = AssignmentGroup.Create(
             assignmentRequest.Id,
