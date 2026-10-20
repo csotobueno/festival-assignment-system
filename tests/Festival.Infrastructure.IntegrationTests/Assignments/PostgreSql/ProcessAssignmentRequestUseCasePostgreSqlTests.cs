@@ -6,6 +6,7 @@ using Festival.Domain.Zones;
 using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.IntegrationTests.Infrastructure;
 using Festival.Infrastructure.Persistence;
+using Festival.Infrastructure.Persistence.Mappers;
 using Festival.Infrastructure.Zones.PostgreSql;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,9 @@ public sealed class ProcessAssignmentRequestUseCasePostgreSqlTests(
     PostgreSqlContainerFixture fixture)
     : PostgreSqlIntegrationTest(fixture)
 {
+    private static readonly AttendeeId ThirdAttendeeId = AttendeeId.Create(
+        Guid.Parse("30000000-0000-0000-0000-000000000003"));
+
     [Fact]
     public async Task ExecuteAsync_ShouldPersistCompletedOutcomeThroughOneSharedContext()
     {
@@ -202,57 +206,255 @@ public sealed class ProcessAssignmentRequestUseCasePostgreSqlTests(
         (await verificationContext.Assignments.CountAsync()).Should().Be(0);
     }
 
-    [Theory]
-    [InlineData(false, ExperienceQuality.Medium)]
-    [InlineData(true, ExperienceQuality.Good)]
-    public async Task ExecuteAsync_ShouldSelectAndPersistQualityFromRecordedHistoryOrNeutralBootstrap(
-        bool hasUnfavorableHistory, ExperienceQuality expectedQuality)
+    [Fact]
+    [Trait("Category", "Stage4Acceptance")]
+    public async Task ExecuteAsync_ShouldAssignNeutralGroupWithoutHistory()
     {
         await using var context = Fixture.CreateDbContext();
         await SeedReferenceDataAsync(context, includeSecondSpot: true);
-        var goodZone = Zone.Create(ZoneId.Create(
-            Guid.Parse("20000000-0000-0000-0000-000000000002")), "Good", ZoneType.MiddleCenter);
-        context.Zones.Add(goodZone);
-        context.Spots.AddRange(Enumerable.Range(1, 2).Select(i => Spot.Create(
-            SpotCode.Create($"GOOD-A-{i:000}"), goodZone.Id, RowCode.Create("A"), SpotNumber.Create(i))));
-        if (hasUnfavorableHistory)
-        {
-            var priorDay = IntegrationTestData.CreateFestivalDay(
-                IntegrationTestData.SecondFestivalDayId, new DateOnly(2026, 8, 14));
-            var requestId = IntegrationTestData.SecondRequestId;
-            var priorRequest = IntegrationTestData.CreateRequestRow(AssignmentRequestStatus.Completed,
-                requestId, priorDay.Id, [AttendeeCode.Create("ATT-001"), AttendeeCode.Create("ATT-002")]);
-            context.AddRange(priorDay, priorRequest);
-            var attendeeIds = new[] { IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId };
-            for (var i = 0; i < 2; i++)
-            {
-                var spot = IntegrationTestData.CreateSpot($"FR-A-{i + 1:000}", "A", i + 1);
-                context.Assignments.Add(Assignment.Create(
-                    AssignmentId.Create(Guid.Parse($"50000000-0000-0000-0000-{i + 1:000000000000}")),
-                    requestId, priorDay.Id, attendeeIds[i], spot.Code, spot.ZoneId, spot.RowCode,
-                    spot.Number, ExperienceQuality.Bad, IntegrationTestData.AssignedAt.AddDays(-1)));
-            }
-        }
+        AddZoneWithSpots(context, ZoneType.MiddleCenter, "GOOD", 1, 2);
         await context.SaveChangesAsync();
         context.ChangeTracker.Clear();
+        var command = CreateCommand();
 
-        var result = await CreateUseCase(context).ExecuteAsync(CreateCommand());
+        var result = await CreateUseCase(context).ExecuteAsync(command);
 
-        result.IsAssigned.Should().BeTrue();
-        result.Assignments.Should().HaveCount(2);
-        result.Assignments.Should().OnlyContain(assignment =>
-            assignment.ZoneId == (hasUnfavorableHistory ? goodZone.Id : IntegrationTestData.ZoneId));
+        // Equal Good/Medium capacity lets the neutral target select Medium.
+        await AssertCompletedOutcomeAsync(result, command, ExperienceQuality.Medium,
+            [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId],
+            [IntegrationTestData.CreateSpot(), IntegrationTestData.CreateSpot("FR-A-002", "A", 2)]);
+    }
+
+    [Fact]
+    [Trait("Category", "Stage4Acceptance")]
+    public async Task ExecuteAsync_ShouldRecoverPersistedBadHistoryWithGoodPlacement()
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: true);
+        var goodBlock = AddZoneWithSpots(context, ZoneType.MiddleCenter, "GOOD", 1, 2);
+        AddUnfavorableHistory(context);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+        var command = CreateCommand();
+
+        var result = await CreateUseCase(context).ExecuteAsync(command);
+
+        // Same current Good/Medium capacity as bootstrap; persisted Bad changes the outcome.
+        await AssertCompletedOutcomeAsync(result, command, ExperienceQuality.Good,
+            [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId],
+            goodBlock, ExperienceQuality.Bad);
+    }
+
+    [Fact]
+    [Trait("Category", "Stage4Acceptance")]
+    public async Task ExecuteAsync_ShouldExcludeFrontStandingAndPersistEligibleZoneQuality()
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: true);
+        var frontSpots = AddZoneWithSpots(context, ZoneType.FrontStanding, "FRONT", 1, 2, 3);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+        var command = CreateCommand(allowsFrontStanding: false);
+
+        var result = await CreateUseCase(context).ExecuteAsync(command);
+
+        result.Assignments.Should().NotContain(assignment => assignment.ZoneId == frontSpots[0].ZoneId);
+        await AssertCompletedOutcomeAsync(result, command, ExperienceQuality.Medium,
+            [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId],
+            [IntegrationTestData.CreateSpot(), IntegrationTestData.CreateSpot("FR-A-002", "A", 2)]);
+    }
+
+    [Fact]
+    [Trait("Category", "Stage4Acceptance")]
+    public async Task ExecuteAsync_ShouldRecordGoodForNeutralMediumTargetWhenGoodInventoryIsAbundant()
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: true);
+        var goodSpots = AddZoneWithSpots(context, ZoneType.MiddleCenter, "GOOD", 1, 2, 3);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+        var command = CreateCommand([AttendeeCode.Create("ATT-001")]);
+
+        var result = await CreateUseCase(context).ExecuteAsync(command);
+
+        // Empty history targets Medium; three Good versus two Medium Spots puts Good first.
+        await AssertCompletedOutcomeAsync(result, command, ExperienceQuality.Good,
+            [IntegrationTestData.FirstAttendeeId], [goodSpots[0]]);
+    }
+
+    [Fact]
+    [Trait("Category", "Stage4Acceptance")]
+    public async Task ExecuteAsync_ShouldDegradeGoodTargetToCompleteMediumBlockWhenGoodIsFragmented()
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: true);
+        AddZoneWithSpots(context, ZoneType.MiddleCenter, "GOOD", 1, 3);
+        // Both members have Bad history and therefore target Good. The historical
+        // UpperLeft Zone also offers a feasible Bad block today, after Medium.
+        AddUnfavorableHistory(context);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+        var command = CreateCommand();
+
+        var result = await CreateUseCase(context).ExecuteAsync(command);
+
+        await AssertCompletedOutcomeAsync(result, command, ExperienceQuality.Medium,
+            [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId],
+            [IntegrationTestData.CreateSpot(), IntegrationTestData.CreateSpot("FR-A-002", "A", 2)],
+            ExperienceQuality.Bad);
+    }
+
+    [Fact]
+    [Trait("Category", "Stage4Acceptance")]
+    public async Task ExecuteAsync_ShouldRejectWholeGroupWhenRawCapacityHasNoContiguousBlock()
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: false);
+        context.Attendees.Add(IntegrationTestData.CreateAttendee(ThirdAttendeeId, "ATT-003", "Katherine Johnson"));
+        context.Spots.AddRange(
+            IntegrationTestData.CreateSpot("FR-A-003", "A", 3),
+            IntegrationTestData.CreateSpot("FR-B-001", "B", 1),
+            IntegrationTestData.CreateSpot("FR-B-003", "B", 3));
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+        var command = CreateCommand([
+            AttendeeCode.Create("ATT-001"), AttendeeCode.Create("ATT-002"), AttendeeCode.Create("ATT-003")]);
+
+        // Four available Spots for three attendees, but Rows A and B each contain only 1,3.
+        var available = await new PostgreSqlAvailableSpotProvider(context).GetAvailableSpotsAsync(command.FestivalDayId);
+        available.Should().HaveCount(4);
+        var result = await CreateUseCase(context).ExecuteAsync(command);
+
+        result.Status.Should().Be(AssignmentRequestStatus.Rejected);
+        result.IsRejected.Should().BeTrue();
+        result.RejectionCode.Should().Be(ProcessAssignmentRequestUseCase.NoContiguousSpotsAvailableCode);
+        result.RejectionMessage.Should().Be("No contiguous spots are available for the requested assignment group.");
+        result.Assignments.Should().BeEmpty();
+
         await using var verificationContext = Fixture.CreateDbContext();
+        var request = await verificationContext.AssignmentRequests.Include(request => request.Attendees)
+            .SingleAsync(request => request.AssignmentRequestId == result.AssignmentRequestId);
+        request.Status.Should().Be(AssignmentRequestStatus.Rejected);
+        request.RejectionCode.Should().Be(result.RejectionCode);
+        request.RejectionMessage.Should().Be(result.RejectionMessage);
+        request.ResolvedAt.Should().Be(command.AssignedAt);
+        request.Attendees.OrderBy(attendee => attendee.Position).Select(attendee => attendee.AttendeeCode)
+            .Should().Equal(command.AttendeeCodes);
+        (await verificationContext.Assignments.CountAsync()).Should().Be(0);
+        var histories = await new PostgreSqlFairnessHistoryProvider(verificationContext).GetHistoriesAsync(
+            [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId, ThirdAttendeeId]);
+        foreach (var history in histories.Values)
+        {
+            history.Experiences.Should().BeEmpty();
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Stage4Acceptance")]
+    public async Task ExecuteAsync_ShouldPersistEveryGroupMemberInSelectedBlockAndRecordEachHistory()
+    {
+        await using var context = Fixture.CreateDbContext();
+        await SeedReferenceDataAsync(context, includeSecondSpot: false);
+        context.Attendees.Add(IntegrationTestData.CreateAttendee(ThirdAttendeeId, "ATT-003", "Katherine Johnson"));
+        context.Spots.Add(IntegrationTestData.CreateSpot("FR-A-003", "A", 3));
+        Spot[] completeBlock = [
+            IntegrationTestData.CreateSpot("FR-B-004", "B", 4),
+            IntegrationTestData.CreateSpot("FR-B-005", "B", 5),
+            IntegrationTestData.CreateSpot("FR-B-006", "B", 6)];
+        context.Spots.AddRange(completeBlock);
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+        var command = CreateCommand([
+            AttendeeCode.Create("ATT-003"), AttendeeCode.Create("ATT-001"), AttendeeCode.Create("ATT-002")]);
+
+        var result = await CreateUseCase(context).ExecuteAsync(command);
+
+        // The only complete block is B:4,5,6; request member order deliberately differs from ID order.
+        await AssertCompletedOutcomeAsync(result, command, ExperienceQuality.Medium,
+            [ThirdAttendeeId, IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId], completeBlock);
+    }
+
+    private async Task AssertCompletedOutcomeAsync(
+        ProcessAssignmentRequestResult result,
+        ProcessAssignmentRequestCommand command,
+        ExperienceQuality expectedQuality,
+        IReadOnlyList<AttendeeId> expectedAttendeeIds,
+        IReadOnlyList<Spot> expectedBlock,
+        params ExperienceQuality[] previousExperiences)
+    {
+        result.Status.Should().Be(AssignmentRequestStatus.Completed);
+        result.IsAssigned.Should().BeTrue();
+        result.Assignments.Select(assignment => assignment.AttendeeId).Should().Equal(expectedAttendeeIds);
+        result.Assignments.Select(assignment => assignment.SpotCode).Should().Equal(expectedBlock.Select(spot => spot.Code));
+
+        // A new context verifies the committed outcome rather than tracked entities.
+        await using var verificationContext = Fixture.CreateDbContext();
+        var request = await verificationContext.AssignmentRequests.Include(request => request.Attendees)
+            .SingleAsync(request => request.AssignmentRequestId == result.AssignmentRequestId);
+        request.Status.Should().Be(AssignmentRequestStatus.Completed);
+        request.FestivalDayId.Should().Be(command.FestivalDayId);
+        request.RequestedAt.Should().Be(command.RequestedAt);
+        request.ResolvedAt.Should().Be(command.AssignedAt);
+        request.AllowsFrontStanding.Should().Be(command.Eligibility.AllowsFrontStanding);
+        request.Attendees.OrderBy(attendee => attendee.Position).Select(attendee => attendee.AttendeeCode)
+            .Should().Equal(command.AttendeeCodes);
+
         var assignments = await verificationContext.Assignments.AsNoTracking()
             .Where(assignment => assignment.AssignmentRequestId == result.AssignmentRequestId).ToArrayAsync();
-        assignments.Should().HaveCount(2);
-        assignments.Should().OnlyContain(assignment => assignment.ExperienceQuality == expectedQuality);
-        var histories = await new PostgreSqlFairnessHistoryProvider(verificationContext).GetHistoriesAsync(
-            [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId]);
-        var expectedHistory = hasUnfavorableHistory
-            ? new[] { ExperienceQuality.Bad, ExperienceQuality.Good }
-            : new[] { ExperienceQuality.Medium };
-        histories.Values.Should().OnlyContain(history => history.Experiences.SequenceEqual(expectedHistory));
+        assignments.Should().HaveCount(expectedAttendeeIds.Count);
+        assignments.Select(assignment => assignment.AttendeeId).Should().BeEquivalentTo(expectedAttendeeIds);
+        assignments.Select(assignment => assignment.AttendeeId).Should().OnlyHaveUniqueItems();
+        assignments.Select(assignment => assignment.SpotCode).Should().OnlyHaveUniqueItems();
+        assignments.Should().OnlyContain(assignment =>
+            assignment.ExperienceQuality == expectedQuality &&
+            assignment.FestivalDayId == command.FestivalDayId && assignment.AssignedAt == command.AssignedAt);
+        foreach (var (attendeeId, spot) in expectedAttendeeIds.Zip(expectedBlock))
+        {
+            var assignment = assignments.Single(assignment => assignment.AttendeeId == attendeeId);
+            assignment.SpotCode.Should().Be(spot.Code);
+            assignment.ZoneId.Should().Be(spot.ZoneId);
+            assignment.RowCode.Should().Be(spot.RowCode);
+            assignment.SpotNumber.Should().Be(spot.Number);
+        }
+
+        var histories = await new PostgreSqlFairnessHistoryProvider(verificationContext).GetHistoriesAsync(expectedAttendeeIds);
+        histories.Keys.Should().BeEquivalentTo(expectedAttendeeIds);
+        foreach (var attendeeId in expectedAttendeeIds)
+        {
+            histories[attendeeId].Experiences.Should().Equal([.. previousExperiences, expectedQuality]);
+        }
+    }
+
+    private static Spot[] AddZoneWithSpots(
+        FestivalDbContext context, ZoneType type, string codePrefix, params int[] spotNumbers)
+    {
+        var zone = Zone.Create(ZoneId.Create(
+            Guid.Parse($"20000000-0000-0000-0000-{(int)type + 10:000000000000}")), codePrefix, type);
+        var spots = spotNumbers.Select(number => Spot.Create(
+            SpotCode.Create($"{codePrefix}-A-{number:000}"), zone.Id, RowCode.Create("A"), SpotNumber.Create(number))).ToArray();
+        context.Zones.Add(zone);
+        context.Spots.AddRange(spots);
+        return spots;
+    }
+
+    private static void AddUnfavorableHistory(FestivalDbContext context)
+    {
+        var priorDay = IntegrationTestData.CreateFestivalDay(
+            IntegrationTestData.SecondFestivalDayId, new DateOnly(2026, 8, 14));
+        var request = AssignmentRequest.Create(IntegrationTestData.SecondRequestId, priorDay.Id,
+            [AttendeeCode.Create("ATT-001"), AttendeeCode.Create("ATT-002")],
+            IntegrationTestData.RequestedAt.AddDays(-1), new RequestEligibility(true));
+        request.Complete(IntegrationTestData.AssignedAt.AddDays(-1));
+        context.AddRange(priorDay, AssignmentRequestMapper.ToRow(request));
+        var spots = AddZoneWithSpots(context, ZoneType.UpperLeft, "BAD", 1, 2);
+        AttendeeId[] attendeeIds = [IntegrationTestData.FirstAttendeeId, IntegrationTestData.SecondAttendeeId];
+        for (var i = 0; i < attendeeIds.Length; i++)
+        {
+            context.Assignments.Add(Assignment.Create(
+                AssignmentId.Create(Guid.Parse($"50000000-0000-0000-0000-{i + 1:000000000000}")),
+                request.Id, priorDay.Id, attendeeIds[i], spots[i].Code, spots[i].ZoneId, spots[i].RowCode,
+                spots[i].Number, ExperienceQuality.Bad, IntegrationTestData.AssignedAt.AddDays(-1)));
+        }
     }
 
     private static ProcessAssignmentRequestUseCase CreateUseCase(
@@ -269,17 +471,20 @@ public sealed class ProcessAssignmentRequestUseCasePostgreSqlTests(
             new AssignmentEngine());
     }
 
-    private static ProcessAssignmentRequestCommand CreateCommand()
+    private static ProcessAssignmentRequestCommand CreateCommand(
+        IReadOnlyCollection<AttendeeCode>? attendeeCodes = null,
+        bool allowsFrontStanding = true)
     {
         return new ProcessAssignmentRequestCommand(
             IntegrationTestData.FestivalDayId,
+            attendeeCodes ??
             [
                 AttendeeCode.Create("ATT-001"),
                 AttendeeCode.Create("ATT-002")
             ],
             IntegrationTestData.RequestedAt,
             IntegrationTestData.AssignedAt,
-            new RequestEligibility(true));
+            new RequestEligibility(allowsFrontStanding));
     }
 
     private static async Task SeedReferenceDataAsync(

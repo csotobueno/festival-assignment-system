@@ -222,6 +222,14 @@ whose histories can be measured in Stage 5. The
 five-day presimulation against documented scenarios. This detects obvious
 failures; it does not prove sufficient fairness or production readiness.
 
+Representative integrated acceptance scenarios now exist in
+[`ProcessAssignmentRequestUseCasePostgreSqlTests`](../../tests/Festival.Infrastructure.IntegrationTests/Assignments/PostgreSql/ProcessAssignmentRequestUseCasePostgreSqlTests.cs)
+(`Category=Stage4Acceptance`): neutral bootstrap, historical recovery, eligibility,
+better-than-target placement, degradation, fragmented capacity rejection and
+complete-group materialization with persisted quality and history. These small
+deterministic PostgreSQL scenarios do not replace the separate presimulation or
+Stage 5 evaluation, or claim formal Stage 4 closure.
+
 Stage 5 establishes provisional measurable classification criteria before
 judging results. It evaluates path balance, recovery, access to Good experiences,
 group effects, arrival order, inventory utilization, physical capacity and
