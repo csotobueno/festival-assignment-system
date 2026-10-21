@@ -2,7 +2,13 @@
 
 ## Status and Purpose
 
-**Stage 4 Application selection, engine materialization and recorded-quality persistence are integrated.**
+**Stage 4: Completed. Stage 5: Pending.**
+
+The [authoritative completion document](completion.md) owns the final baseline,
+exit-criteria audit, acceptance and validation evidence, limitations and Stage 5
+handoff. Application selection, engine materialization and recorded-quality
+persistence are integrated. All remaining exit criteria are satisfied following
+the explicit Lean decision to defer five-day evaluation to Stage 5.
 
 The agreed [Stage 4 Application Cutover Boundary](../architecture/stage-4-application-cutover-boundary.md)
 was delivered through a **two-step cutover**: stable dependencies first, then
@@ -23,16 +29,16 @@ considerations will be refined with the organization after that evidence is
 available. The [project operating model](../project-operating-model.md) defines
 the overall scope.
 
-These documents are a versioned starting hypothesis. They do not claim that all
-selection policies are settled or already implemented. Resolve each open decision
-when its increment needs it, record a concrete scenario and expected behavior,
-and add complexity only when evidence justifies it. Final calibration is not a
-prerequisite for beginning implementation.
+These documents record the implemented provisional policies and their original
+implementation sequence. Final calibration and measured fairness remain Stage 5
+work; implemented behavior is distinguished from deferred capabilities in the
+completion checkpoint.
 
 ## Reading Order and Document Responsibilities
 
 | Order | Document | Main responsibility |
 | --- | --- | --- |
+| 0 | [Completion Checkpoint](completion.md) | Authoritative implemented baseline, closure status, exit audit and evidence. |
 | 1 | [Fairness Definition v1](fairness-definition-v1.md) | Business principles, individual/group/global fairness and evaluation dimensions. |
 | 2 | [RotationScore v1](rotation-score-v1.md) | Initial formula, signals, group average and calculated reference scenarios. |
 | 3 | [Assignment Strategy v1](assignment-strategy-v1.md) | Decision flow, agreed Zone Evaluation Strategy, availability and feasibility boundaries. |
@@ -177,11 +183,10 @@ implement its fix or global assigned-outcome state.
   Deterministic test fixtures may provide explicit scenarios; they do not justify
   fabricated historical quality, fixture-ID-specific migrations or absence records.
 
-## Implementation Readiness
+## Implementation Baseline
 
-The initial score formula, neutral state and group average are sufficiently
-specified to begin pure calculations using already-classified histories.
-Location classification need not block that work.
+The score formula, neutral state, group average, Zone classification, selection
+pipeline and Application/persistence integration are implemented.
 
 The [implementation decision table](implementation-plan.md#decisions-at-the-point-of-use)
 records the agreed Zone-quality mapping, Target Quality and Zone Evaluation
@@ -203,8 +208,11 @@ future-demand prediction and reservation, weighted randomness, complex preferenc
 ranking, internal group-dispersion optimization, automatic group restructuring,
 retrospective reassignment, and complete operational/UI/administrative workflows.
 Global assigned-outcome influence remains deferred. Block Selection Policy v1
-and its Application/engine integration are implemented. Stage 4 reference-scenario
-and presimulation exit work is not claimed complete by this cutover.
+and its Application/engine integration are implemented. Stage 4 acceptance
+evidence is recorded in the [completion checkpoint](completion.md).
+The former presimulation execution requirement is explicitly deferred to Stage 5;
+the [Lean rationale](completion.md#lean-decision-on-five-day-evaluation) records
+why a separate simulation before Stage 5 would duplicate validation work.
 Final parameter calibration and quantitative fairness evaluation belong to
 Stage 5. Detailed reasons are in the
 [trade-offs document](trade-offs-and-open-questions.md).
@@ -215,20 +223,20 @@ mention does not authorize building every operational policy.
 
 ## Exit and Stage 5 Handoff
 
-Stage 4 ends with an executable, reproducible baseline whose provisional rules
-are explicit, whose outcomes preserve invariants and persist atomically, and
-whose histories can be measured in Stage 5. The
-[exit criteria](implementation-plan.md#stage-4-exit-criteria) include a small
-five-day presimulation against documented scenarios. This detects obvious
-failures; it does not prove sufficient fairness or production readiness.
+The [completion audit](completion.md#exit-criteria-audit) verifies all remaining
+Stage 4 exit criteria. Stage 4 validates integrated correctness through
+deterministic acceptance scenarios; Stage 5 owns five-day evaluation across
+populations, capacity pressure, arrival order, fairness distributions, performance
+and concurrency. Step 26 is explicitly deferred to that fuller evaluation.
 
 Representative integrated acceptance scenarios now exist in
 [`ProcessAssignmentRequestUseCasePostgreSqlTests`](../../tests/Festival.Infrastructure.IntegrationTests/Assignments/PostgreSql/ProcessAssignmentRequestUseCasePostgreSqlTests.cs)
 (`Category=Stage4Acceptance`): neutral bootstrap, historical recovery, eligibility,
 better-than-target placement, degradation, fragmented capacity rejection and
 complete-group materialization with persisted quality and history. These small
-deterministic PostgreSQL scenarios do not replace the separate presimulation or
-Stage 5 evaluation, or claim formal Stage 4 closure.
+deterministic PostgreSQL scenarios remain the final Stage 4 functional acceptance
+evidence. They do not establish statistical fairness or scalability. The
+completion document records their latest passing results.
 
 Stage 5 establishes provisional measurable classification criteria before
 judging results. It evaluates path balance, recovery, access to Good experiences,

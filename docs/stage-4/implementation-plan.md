@@ -4,6 +4,12 @@
 
 This document defines the implementation sequence for Stage 4.
 
+**Current status: Stage 4 Completed. Stage 5 Pending.**
+The [authoritative completion checkpoint](completion.md) owns the final baseline,
+verified exit audit and validation evidence. Step 26 now records an explicit
+deferral to Stage 5; the seven integrated acceptance scenarios establish
+Stage 4 functional closure evidence.
+
 The goal is to convert the fairness model and online assignment strategy into working software through small, verifiable increments.
 
 The Stage 4 MVP should validate whether the system can produce reasonably equitable assignments across the five festival days while preserving the flexibility of daily individual or group requests.
@@ -17,8 +23,9 @@ This is an initial guide, not a completed specification. The numbered steps are
 work areas that can be grouped into small issues; they are not a mandatory
 one-issue-per-step sequence. Pure score calculations and the Domain selection
 pipeline, Application preparation, engine cutover and persisted immutable
-Assignment ExperienceQuality are implemented. Full Stage 4 exit validation and
-Stage 5 simulation remain separate work.
+Assignment ExperienceQuality are implemented. The checkpoint records passing
+acceptance and regression suites and satisfaction of all remaining exit criteria.
+Five-day presimulation/simulation is explicitly deferred to Stage 5.
 
 ## Agreed Application Cutover Delivery Sequence
 
@@ -559,13 +566,13 @@ describes its supplied snapshot and does not determine daily/festival scope.
 
 ## Step 14 — Introduce Current Global Assignment State
 
-Deferred; not a prerequisite or input to Zone Evaluation Strategy v1. A future
-iteration may add recorded outcome state if Stage 5 shows remaining inventory
-alone is insufficient. A likely model is `ZoneAssignmentState` with ZoneId,
-recorded ExperienceQuality and AssignedCount, deriving global quality totals
-from recorded outcomes. This is not implemented or a fixed production API.
-Before implementation, document the concrete failure, expected improvement,
-minimum information and population/time scope. Preserve historical quality.
+Not implemented and not required by the Stage 4 baseline: placement does not
+consume global assigned-count state. Persisted Assignment.ExperienceQuality
+provides a source for future derivation if Stage 5 evidence justifies it.
+Granularity per ExperienceQuality, per Zone or global totals, and population/time
+scope remain intentionally unresolved. No CurrentGlobalAssignmentState or
+ZoneAssignmentState contract is fixed. Before implementation, document the
+concrete failure, expected improvement and minimum required information.
 
 ---
 
@@ -838,6 +845,12 @@ policy needs a distinct rejection reason, define it in that policy's increment.
 
 ## Step 25 — Add End-to-End Reference Scenarios
 
+**Implemented:** seven deterministic PostgreSQL scenarios are selected with
+`Category=Stage4Acceptance`. See the
+[acceptance evidence](completion.md#integrated-acceptance-evidence) for their
+scope and current validation. They remain Stage 4 evidence; multi-day evaluation
+formerly assigned to Step 26 belongs to Stage 5.
+
 Create scenarios exercising:
 
 ```text
@@ -869,32 +882,46 @@ Recommended initial cases:
 
 ---
 
-## Step 26 — Run a Small Five-Day Pre-Simulation
+## Step 26 — Defer Five-Day Evaluation to Stage 5
 
-Before Stage 4 closure, execute a small controlled five-day simulation.
+**Explicit Lean scope decision: deferred to Stage 5; no Stage 4 execution or
+exit requirement remains.** No five-day presimulation result is claimed.
 
-This is not the full Stage 5 evaluation.
+Originally this step aimed to detect obvious model failures before Stage 5.
+With the integrated implementation and seven deterministic acceptance scenarios
+complete, a separate smaller simulation no longer reduces enough additional
+uncertainty to justify duplicating setup, scenarios and interpretation before
+the fuller Stage 5 simulation. The
+[completion decision](completion.md#lean-decision-on-five-day-evaluation) owns
+the closure rationale.
 
-Its goal is to detect obvious implementation or model failures.
+Stage 4 validates that the integrated baseline behaves correctly through
+deterministic acceptance scenarios. Stage 5 evaluates how well it behaves over
+multiple FestivalDays, larger populations, different arrival orders, capacity
+pressure, fairness distributions, performance and concurrency.
 
-Observe at least:
+Stage 5 explicitly owns evaluation of:
 
 - persistent Bad paths;
 - attendees never receiving Good;
 - unused Good capacity;
 - excessive early consumption of Good capacity;
-- pathological group behavior;
-- unexpected dependence on arrival order;
-- unexpected score behavior.
+- pathological group behavior across populations;
+- arrival-order sensitivity;
+- unexpected score behavior across multiple days and populations;
+- statistical fairness;
+- performance;
+- concurrency/stress;
+- the final Decision Gate.
 
 ### Goal
 
-Validate that the baseline is executable and credible enough for formal Stage 5
-measurement. Before running the presimulation, record its input, expected
-reference behavior and invariant checks. Compare results against those explicit
-expectations and record observed limitations. A negative path alone is not proof
-of an implementation defect: capacity and arrival order may explain it.
-This check does not certify a fairness percentage or final business acceptance.
+Evaluate multi-day quality and viability within Stage 5's fuller simulation.
+Record inputs, expected reference behavior and invariant checks before evaluating
+results, and retain observed limitations. A negative path alone is not proof of
+an implementation defect: capacity and arrival order may explain it. Stage 4's
+seven acceptance scenarios and existing automated suites remain its functional
+evidence; testing as a whole is not deferred.
 
 ---
 
@@ -1021,6 +1048,11 @@ extra complexity
 
 # Stage 4 Exit Criteria
 
+The [completion checkpoint audit](completion.md#exit-criteria-audit) owns the
+current verified status of these criteria. All remaining criteria are satisfied.
+The former five-day presimulation requirement was explicitly deferred to Stage 5
+under Step 26's Lean scope decision; Stage 4 is Completed.
+
 Stage 4 can be considered complete when:
 
 - Fairness Definition v1 is documented;
@@ -1046,7 +1078,8 @@ Stage 4 can be considered complete when:
 - persisted history affects future decisions;
 - persistence remains atomic;
 - concurrency regression tests remain green;
-- the small five-day pre-simulation satisfies its explicit reference expectations and invariant checks;
+- the seven deterministic integrated Stage 4 acceptance scenarios pass;
+- five-day evaluation is explicitly handed off to Stage 5 under the revised Step 26;
 - provisional selection rules, assumptions, observed limitations and any changed decisions are documented;
 - the system is ready for Stage 5 measurement.
 
@@ -1061,11 +1094,15 @@ considerations will be further validated.
 
 Stage 4 answers:
 
-> Can we build a simple, reliable, deterministic online assignment engine that uses attendee history and current system state to preserve fairness across five festival days?
+> Does the implemented assignment strategy behave correctly?
 
 Stage 5 answers:
 
-> How equitable are the resulting assignments, and where does measurable evidence justify changing the baseline?
+> How well does the strategy behave across five days, scale, variation, capacity pressure, arrival order, performance and concurrency?
+
+Stage 4 is Completed; Stage 5 remains Pending. The five-day evaluation and the
+former Step 26 concerns are Stage 5 work, while the seven deterministic integrated
+acceptance scenarios remain Stage 4 evidence.
 
 Stage 5 should measure rather than assume:
 

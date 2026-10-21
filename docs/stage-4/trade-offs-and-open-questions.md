@@ -176,7 +176,7 @@ This preserves two intended behaviors:
   when the latest experience is not `Bad`.
 The `1.00` threshold is therefore the minimum credible Stage 4 baseline for the
 current reference scenarios, not a claim of mathematical optimality.
-Its code implementation remains a subsequent task. Stage 5 must measure the
+Its code implementation is integrated into Application. Stage 5 must measure the
 resulting five-day paths, compare observed fairness outcomes, and determine
 whether evidence justifies recalibration.
 ---
@@ -370,12 +370,13 @@ inventory awareness improves outcomes before adding fragmentation metrics.
 
 ## 24. Global Assignment State Is Deferred
 
-CurrentGlobalAssignmentState is not used in Zone Evaluation Strategy v1. A future
-iteration may need it if Stage 5 finds remaining inventory insufficient. A likely
-future ZoneAssignmentState would contain ZoneId, recorded ExperienceQuality and
-AssignedCount; global Good/Medium/Bad totals could derive from recorded outcomes.
-This is not implemented. Current availability uses current Zone classification;
-historical outcomes retain the quality recorded when assigned.
+CurrentGlobalAssignmentState was not implemented and is not required by the
+Stage 4 baseline: placement does not consume global assigned-count state.
+Persisted Assignment.ExperienceQuality can support future derivation if Stage 5
+finds remaining inventory insufficient. Per-quality, per-Zone and global-total
+granularity remain unresolved; no final CurrentGlobalAssignmentState or
+ZoneAssignmentState shape is defined. Current availability uses current Zone
+classification; historical outcomes retain the quality recorded when assigned.
 
 ### Accepted Consequence
 
@@ -601,10 +602,11 @@ Keep only if materially better
 ```
 ---
 # Current Baseline Summary
-The [Stage 4 overview](README.md#baseline-and-boundaries) summarizes the baseline;
-the [implementation plan](implementation-plan.md#stage-4-exit-criteria) owns its
-exit criteria. This document preserves the reasons and consequences of the
-accepted simplifications, without maintaining another implementation checklist.
+The [completion checkpoint](completion.md) owns the final implemented baseline,
+exit-criteria audit and closure status; the [implementation plan](implementation-plan.md#stage-4-exit-criteria)
+preserves the original criteria and sequence. This document preserves the reasons
+and consequences of the accepted simplifications, without maintaining another
+implementation checklist.
 ---
 The purpose of Stage 5 is not to prove that the baseline is perfect.
 It is to determine where it is good enough, where its limitations come from, and which improvements are actually justified.
