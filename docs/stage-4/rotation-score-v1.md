@@ -455,8 +455,8 @@ suggest Medium; lower need reduces the claim on scarce Good capacity.
 
 The mapping belongs to the
 [Target Quality policy](assignment-strategy-v1.md#3-determine-target-quality),
-not the score formula. Its Stage 4 baseline is agreed; implementation remains
-a subsequent task and Stage 5 will evaluate calibration.
+not the score formula. Its Stage 4 baseline is implemented and integrated into
+Application; Stage 5 will evaluate calibration.
 
 ## Target Quality Is Not a Maximum
 

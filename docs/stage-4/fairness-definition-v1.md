@@ -560,9 +560,11 @@ A path with:
 Exact thresholds are intentionally not defined in Fairness Definition v1.
 
 Stage 5 should establish provisional measurable criteria before evaluating simulation results.
-Stage 4 instead verifies explicit reference scenarios and invariant checks in
-its small presimulation. Neither those checks nor a working RotationScore
-constitute proof that the final distribution is sufficiently fair.
+Stage 4 verifies explicit deterministic integrated acceptance scenarios and
+invariant checks. The former small presimulation requirement is
+[explicitly deferred to Stage 5](completion.md#lean-decision-on-five-day-evaluation).
+Neither the acceptance checks nor a working RotationScore constitute proof that
+the final distribution is sufficiently fair. The official 19 rules are unchanged.
 
 ---
 

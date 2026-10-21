@@ -1,6 +1,8 @@
 # Domain Glossary
 
-Este documento define el lenguaje ubicuo del sistema de asignación de ubicaciones del festival. Las propuestas de stage-4 se identifican como hipótesis v1 pendientes de implementación y evaluación.
+Este documento define el lenguaje ubicuo del sistema de asignación de ubicaciones
+del festival. El [checkpoint de stage-4](stage-4/completion.md) distingue el
+baseline implementado de la evaluación y calibración pendientes de stage-5.
 
 Las definiciones describen conceptos del negocio y no decisiones técnicas de implementación.
 
@@ -72,10 +74,11 @@ Sector del recinto que agrupa varios Spots con características similares de ubi
 
 Todos los integrantes de un AssignmentGroup deben recibir Spots pertenecientes a la misma Zone.
 
-La propuesta de stage-4 interpreta la calidad mediante Experience Quality,
-relativa a las opciones elegibles del Attendee. El mapeo concreto de ubicaciones
-se definirá durante la implementación; una Zone no implica por sí sola una
-calidad universal para todos los asistentes.
+Stage-4 deriva la calidad global de una Zone desde su ZoneType mediante
+ZoneExperienceQualityPolicy. La clasificación es la misma para cada solicitud;
+la elegibilidad solo determina si la Zone participa. El
+[mapeo acordado](stage-4/assignment-strategy-v1.md#agreed-zone-taxonomy-and-global-mapping)
+sustituye la hipótesis inicial de calidad relativa a las opciones elegibles.
 
 ---
 
@@ -129,6 +132,9 @@ Una Assignment completada no puede cancelarse ni modificarse durante ese mismo F
 Un Attendee no puede tener más de una Assignment durante un FestivalDay.
 
 Un Spot no puede formar parte de más de una Assignment durante un FestivalDay.
+
+Cada Assignment tiene una ExperienceQuality explícita, obligatoria, inmutable
+y persistida que conserva la calidad real registrada al asignar.
 
 ---
 
@@ -190,12 +196,14 @@ La fórmula, ejemplos y limitaciones están en
 ## Experience Quality
 
 Clasificación de la experiencia de una Assignment como `Good`, `Medium` o `Bad`,
-interpretada respecto de las opciones elegibles del Attendee. La clasificación
-registrada permanece estable para el cálculo histórico.
+derivada de la calidad global de la Zone seleccionada al asignar. La elegibilidad
+no cambia esa clasificación. La calidad registrada permanece estable para el
+cálculo histórico y no se reconstruye desde la clasificación actual de la Zone.
 
 La [estrategia v1](stage-4/assignment-strategy-v1.md#6-eligibility-aware-experience-quality)
-identifica las decisiones de mapeo pendientes, incluyendo grupos con diferentes
-opciones elegibles.
+define el mapeo implementado y separa calidad de elegibilidad. La solicitud
+completa comparte una RequestEligibility; la elegibilidad individual mixta no
+forma parte del baseline.
 
 ---
 
@@ -203,10 +211,11 @@ opciones elegibles.
 
 Calidad objetivo estimada a partir del RotationScore individual o grupal.
 Es una referencia para seleccionar una opción disponible, no una garantía ni
-un límite máximo. La decisión considera además elegibilidad, factibilidad,
-inventario y fairness global conocido.
+un límite máximo. La decisión considera además elegibilidad, factibilidad
+e inventario. El estado global de cantidades asignadas no es una entrada de
+selección de stage-4.
 
-La política inicial se concretará en
+La política inicial está implementada y definida en
 [Assignment Strategy v1](stage-4/assignment-strategy-v1.md#3-determine-target-quality).
 
 ---
@@ -218,8 +227,9 @@ Propiedad del proceso de asignación mediante la cual las oportunidades de recib
 Fairness considera el historial de ubicaciones y busca evitar que los mismos asistentes reciban sistemáticamente las mejores o peores Zones.
 
 [Fairness Definition v1](stage-4/fairness-definition-v1.md) establece la hipótesis
-inicial. Stage-4 concretará reglas ejecutables y escenarios verificables durante
-la implementación. Stage-5 establecerá criterios provisionales de evaluación
+inicial de 19 reglas. Stage-4 implementa reglas ejecutables y escenarios
+verificables, con el estado de cierre documentado en el checkpoint.
+Stage-5 establecerá criterios provisionales de evaluación
 antes de analizar las simulaciones y medirá sus resultados.
 
 ---
@@ -266,11 +276,11 @@ Una Assignment representa una ubicación definitiva ya otorgada a un Attendee.
 
 # Deferred definitions
 
-La fórmula inicial de RotationScore y la contigüidad ya están documentadas.
+La fórmula inicial de RotationScore, contigüidad, mapeo global de calidad,
+Target Quality, inventario y selección ya están documentados e implementados.
 Permanecen pendientes, cuando el incremento correspondiente las requiera:
 
-* mapeo de ubicaciones a Experience Quality y tratamiento de elegibilidad mixta;
-* política inicial de Target Quality, inventario y selección;
+* elegibilidad individual mixta y políticas operativas adicionales, si existe una necesidad concreta;
 * criterios cuantitativos de evaluación de fairness para stage-5;
 * horarios operativos concretos de la ventana diaria de asignación;
 * tratamiento detallado de errores durante la importación de asistentes.

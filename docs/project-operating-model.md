@@ -76,8 +76,10 @@ Otros documentos se crearán solo cuando exista una necesidad comprobada.
   notas y enlaces, sin reescribir retrospectivamente esa evidencia.
 * El cierre de stage-3 y el modelo relacional describen la base persistente
   implementada.
-* La [guía de stage-4](stage-4/README.md) contiene la propuesta inicial de fairness,
-  su fórmula y su plan de implementación. No constituye evidencia de entrega.
+* La [guía de stage-4](stage-4/README.md) enlaza las reglas provisionales y su plan
+  de implementación. El [checkpoint de cierre](stage-4/completion.md) consolida
+  el baseline implementado, la evidencia verificada y la decisión Lean de diferir
+  la evaluación de cinco días a stage-5; es la fuente autoritativa del cierre.
 
 Cuando una decisión evolucione, se documentará qué cambia, por qué y dónde queda
 la definición posterior. Las guías vigentes se actualizarán sin borrar el
@@ -99,7 +101,7 @@ El MVP técnico estará terminado cuando exista evidencia de que:
 1. **Etapa 1 — Dominio esencial: Completada.**
 2. **Etapa 2 — Dominio y Application ejecutables: Completada.** Hito de versión: `v0.1.0`.
 3. **Etapa 3 — Persistencia, invariantes globales y concurrencia: Completada.** Hito de versión: `v0.2.0`.
-4. **Etapa 4 — Motor de asignación y fairness: Próxima.**
+4. **Etapa 4 — Motor de asignación y fairness: Completada.** Véase el [cierre de stage-4](stage-4/completion.md).
 5. **Etapa 5 — Simulación y evaluación para la toma de decisiones: Pendiente.**
 
 ### Etapa 4 — Motor de asignación y fairness
@@ -107,22 +109,19 @@ El MVP técnico estará terminado cuando exista evidencia de que:
 Objetivo: implementar una base mínima de asignación online determinista y
 permitir la medición de sus decisiones y los historiales resultantes.
 
-Los [documentos de stage-4](stage-4/README.md) son una guía inicial. La fórmula
-del score está suficientemente concretada para comenzar; el mapeo de calidad y
-las reglas de selección se harán explícitos cuando su incremento de
-implementación los requiera. La etapa 4 debe terminar con reglas provisionales
-reproducibles y escenarios de referencia, no solo con una intención conceptual.
-La calibración final y la evaluación cuantitativa de fairness corresponden a la
-etapa 5.
+Los [documentos de stage-4](stage-4/README.md) describen el baseline online
+determinista integrado en Application: Fairness v1, `RotationScore`, calidad
+global de Zone, elegibilidad, inventario, selección de bloques contiguos y
+calidad histórica persistida. El [checkpoint](stage-4/completion.md) registra
+los siete escenarios de aceptación integrados y las suites verificadas. Todos
+los criterios de salida vigentes están satisfechos. La presimulación de cinco
+días antes exigida por el paso 26 se difiere explícitamente a la etapa 5 para
+evitar duplicar preparación, escenarios e interpretación. La etapa 4 está
+Completada y la etapa 5 permanece Pendiente.
 
-Esta etapa definirá Fairness v1 y `RotationScore`, introducirá únicamente las
-abstracciones de políticas de asignación cuya necesidad esté demostrada e
-implementará la selección de Zone y Spots contiguos mediante una estrategia
-ponderada determinista para el MVP. La estrategia debe contar con pruebas
-deterministas e integrarse con la base de persistencia ya completada. Se prefiere
-el determinismo durante la validación porque permite reproducir las pruebas,
-comparar los escenarios y reducir el ruido en el análisis de fairness.
-El determinismo no garantiza por sí mismo el fairness.
+La calibración final y la evaluación cuantitativa de fairness corresponden a la
+etapa 5. El determinismo permite reproducir pruebas y comparar escenarios;
+no garantiza por sí mismo el fairness.
 
 ### Etapa 5 — Simulación y evaluación para la toma de decisiones
 
@@ -139,6 +138,16 @@ las trayectorias deben registrarse antes de evaluar los resultados de las
 simulaciones. El resultado es evidencia para una propuesta a la organización,
 incluidas las limitaciones y las decisiones de negocio pendientes; no constituye
 aprobación de la organización ni preparación para producción.
+
+La simulación de cinco días de esta etapa incorpora las preocupaciones antes
+asignadas al paso 26 de stage-4: trayectorias Bad persistentes, asistentes que
+nunca reciben Good, capacidad Good sin utilizar o consumida demasiado pronto,
+comportamiento patológico de grupos entre poblaciones, sensibilidad al orden de
+llegada y comportamiento inesperado del score entre días y poblaciones. También
+evalúa fairness estadístico, presión de capacidad, rendimiento y concurrencia/
+estrés antes del Decision Gate final. La [decisión Lean de cierre](stage-4/completion.md#lean-decision-on-five-day-evaluation)
+separa esta evaluación empírica de las pruebas funcionales que permanecen como
+evidencia de stage-4.
 
 ### Hipótesis actual del MVP técnico
 
@@ -187,5 +196,6 @@ Estos objetivos orientan la evaluación de stage-5. “Fairness Score aceptable�
 la formulación inicial del objetivo; no implica que ya exista una métrica escalar
 única. Stage-5 concretará los criterios provisionales antes de evaluar resultados,
 usando las dimensiones de [Fairness Definition v1](stage-4/fairness-definition-v1.md#stage-5-measurement-dimensions).
-La presimulación de stage-4 verifica escenarios y detecta problemas evidentes;
-no demuestra por sí sola el cumplimiento de estas metas.
+Los siete escenarios de aceptación de stage-4 verifican el comportamiento
+funcional determinista; no demuestran por sí solos el cumplimiento de estas
+metas. La evaluación de cinco días pertenece a stage-5.

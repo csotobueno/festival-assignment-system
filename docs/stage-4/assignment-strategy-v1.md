@@ -802,23 +802,18 @@ decision context and never part of RotationScore.
 
 # 10. Current Global Assignment State
 
-`CurrentGlobalAssignmentState` is not used in Zone Evaluation Strategy v1 and
-remains deferred. Stage 5 may show that remaining inventory alone is insufficient
-and justify incorporating recorded assigned-outcome state in a future iteration.
-A likely future model, not an implemented contract, is:
+`CurrentGlobalAssignmentState` was not implemented. Stage 4 placement does not
+consume global assigned-count state; it is not required by this baseline.
+Persisted `Assignment.ExperienceQuality` provides a source for future derivation
+if Stage 5 demonstrates that remaining inventory alone is insufficient.
 
-```text
-ZoneAssignmentState
-- ZoneId
-- recorded ExperienceQuality
-- AssignedCount
-```
-
-Global Good/Medium/Bad assigned totals may then be derived from recorded outcomes.
-Later ZoneType or quality-policy changes must not reinterpret historical
-assignments. Global fairness is an outcome to measure, not an additional v1
-Zone-ordering input. Any future influence needs a concrete scenario and an
-explicit population/time scope before implementation.
+Granularity per ExperienceQuality, per Zone or global totals remains intentionally
+unresolved, as does population/time scope. No final CurrentGlobalAssignmentState
+or ZoneAssignmentState shape is defined. Later ZoneType or quality-policy changes
+must not reinterpret recorded outcomes. Global fairness remains an outcome to
+measure rather than an additional v1 Zone-ordering input. The
+[completion checkpoint](completion.md#global-assignment-state-and-previously-blocked-issues)
+records the final disposition of this deferred work.
 
 ---
 

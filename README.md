@@ -10,12 +10,18 @@ Stage 3 established PostgreSQL persistence, an atomic Unit of Work boundary,
 database-backed global invariant protection, stable conflict translation and
 deterministic validation of concurrent Spot and Attendee conflicts.
 
-**Stage 4 — Assignment Engine + Fairness: Next**
+**Stage 4 — Assignment Engine + Fairness: Completed**
 
-Stage 4 has an [initial implementation guide](docs/stage-4/README.md); the
-fairness-aware engine is the next implementation stage. It will build a
-reproducible online baseline using attendee history across festival days.
-Stage 5 will evaluate that baseline through simulation and a technical decision
+The deterministic online fairness baseline is integrated into Application,
+including eligibility, inventory, complete-group placement and persisted
+historical ExperienceQuality. The [authoritative completion document](docs/stage-4/completion.md)
+records the verified exit criteria and validation evidence, including seven
+deterministic integrated acceptance scenarios. The former five-day presimulation
+requirement is explicitly deferred to Stage 5 to avoid duplicating its evaluation.
+
+**Stage 5 — Simulation + Decision Gate: Pending**
+
+Stage 5 will evaluate the baseline through simulation and a technical decision
 gate, producing evidence for a proposal to the festival organization. Operational
 and business considerations will then be refined with the organization.
 The MVP validates technical feasibility and reliability; it does not deliver
@@ -23,7 +29,7 @@ the complete operational system.
 
 ## Project status
 
-**Stage 3 completed. Stage 4 — Assignment Engine + Fairness is next. Stage 5 — Simulation + Decision Gate is pending.**
+**Stage 4 Completed. Stage 5 — Simulation + Decision Gate: Pending.**
 
 
 ## Documentation
@@ -37,7 +43,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 2 Technical Validation](docs/stage-2-technical-validation.md)
 * [Stage 3 Persistence Model and Transactional Boundary](docs/stage-3-persistence-model-and-transaction-boundary.md)
 * [Stage 3 Closure](docs/stages/stage-3-closure.md)
-* [Stage 4 — Initial Implementation Guide](docs/stage-4/README.md)
+* [Stage 4 — Assignment Engine and Fairness](docs/stage-4/README.md)
+* [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 3 Technical Lead Learnings](docs/learning/stage-3-technical-lead-learnings.md)
 * [PostgreSQL Relational Model](docs/architecture/postgresql-relational-model.md)
 * [ADR 0001: Select the MVP Database Engine](docs/adr/0001-select-mvp-database-engine.md)
