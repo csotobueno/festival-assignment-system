@@ -80,6 +80,9 @@ Otros documentos se crearán solo cuando exista una necesidad comprobada.
   de implementación. El [checkpoint de cierre](stage-4/completion.md) consolida
   el baseline implementado, la evidencia verificada y la decisión Lean de diferir
   la evaluación de cinco días a stage-5; es la fuente autoritativa del cierre.
+* El [marco de evaluación de stage-5](stage-5/metrics-and-evaluation-criteria.md)
+  es la fuente autoritativa de poblaciones, rúbrica analítica versionada,
+  métricas, hipótesis y requisitos de reproducibilidad del Decision Gate.
 
 Cuando una decisión evolucione, se documentará qué cambia, por qué y dónde queda
 la definición posterior. Las guías vigentes se actualizarán sin borrar el
@@ -133,10 +136,12 @@ y la distribución, examinará casos límite, comparará estrategias y registrar
 una conclusión sobre la viabilidad del MVP, con sus limitaciones y una
 recomendación sobre el siguiente paso. La etapa 5 evalúa la estrategia de
 fairness construida en la etapa 4; la implementación central de fairness no se
-pospone hasta la etapa 5. Los criterios provisionales y medibles para clasificar
-las trayectorias deben registrarse antes de evaluar los resultados de las
-simulaciones. El resultado es evidencia para una propuesta a la organización,
-incluidas las limitaciones y las decisiones de negocio pendientes; no constituye
+pospone hasta la etapa 5. El [marco de evaluación](stage-5/metrics-and-evaluation-criteria.md)
+registra los criterios analíticos iniciales; cada ejecución debe identificar la
+versión de la rúbrica y resolver o informar sus casos límite antes de emitir
+una conclusión cuantitativa de fairness. El resultado es evidencia para una
+propuesta a la organización, incluidas las limitaciones y las decisiones de
+negocio pendientes; no constituye
 aprobación de la organización ni preparación para producción.
 
 La simulación de cinco días de esta etapa incorpora las preocupaciones antes
@@ -184,7 +189,7 @@ Lo que no contribuya a alguno de estos objetivos se pospondrá o eliminará.
 
 ## 9. Métricas de éxito
 
-Criterios de éxito del MVP
+Objetivos iniciales de planificación del MVP, conservados como contexto histórico:
 
 1. Ninguna invariante rota.
 2. Simulación de 5000 asistentes completada.
@@ -192,10 +197,18 @@ Criterios de éxito del MVP
 4. Fairness Score aceptable.
 5. Sin asignaciones duplicadas.
 
-Estos objetivos orientan la evaluación de stage-5. “Fairness Score aceptable” es
-la formulación inicial del objetivo; no implica que ya exista una métrica escalar
-única. Stage-5 concretará los criterios provisionales antes de evaluar resultados,
-usando las dimensiones de [Fairness Definition v1](stage-4/fairness-definition-v1.md#stage-5-measurement-dimensions).
-Los siete escenarios de aceptación de stage-4 verifican el comportamiento
-funcional determinista; no demuestran por sí solos el cumplimiento de estas
-metas. La evaluación de cinco días pertenece a stage-5.
+El [marco de evaluación de stage-5](stage-5/metrics-and-evaluation-criteria.md)
+refina estos objetivos y es la autoridad vigente para métricas y criterios;
+el promedio de dos segundos y “Fairness Score aceptable” no constituyen puertas
+de aceptación adicionales ni una métrica escalar implementada.
+
+La referencia física actual del recinto es aproximadamente 5,000 personas.
+Una población registrada de aproximadamente 5,500 corresponde a una variante
+de crecimiento / sobresuscripción, no a capacidad física confirmada. La demanda
+diaria depende además de la participación; cada manifiesto registra población
+y capacidad por separado.
+
+Los siete escenarios de aceptación de stage-4 verifican comportamiento funcional
+determinista y conservan su evidencia histórica. La evaluación de cinco días y
+el Decision Gate completan la evaluación del MVP técnico; una conclusión Continue
+apoya la siguiente fase de propuesta o implementación, sin iniciarla automáticamente.

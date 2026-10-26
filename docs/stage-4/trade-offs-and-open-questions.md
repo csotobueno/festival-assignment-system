@@ -468,6 +468,11 @@ operational heuristic adds no fairness rule; the official count remains 19.
 ---
 
 # Open Questions for Stage 5
+
+The subsequent [Stage 5 evaluation framework](../stage-5/metrics-and-evaluation-criteria.md)
+defines the analytical rubric, populations, core metrics and supporting diagnostics
+for these questions. The accepted Stage 4 trade-offs remain unchanged.
+
 These questions evaluate the implemented baseline and may motivate later changes.
 They do not defer the initial target, quality or selection rules beyond Stage 4;
 those rules are resolved at the
@@ -559,8 +564,8 @@ those rules are resolved at the
 - Does local Row-level optimization create undesirable Zone-level outcomes?
 - How does the heuristic behave across different GroupSize distributions?
 
-These questions evaluate the future implementation without changing v1's agreed
-metric or introducing demand assumptions now.
+These questions evaluate the implemented baseline and possible later improvements
+without changing v1's agreed metric or introducing demand assumptions now.
 
 These questions remain unanswered until Stage 5 provides evidence.
 

@@ -525,6 +525,12 @@ ZoneType as `Good`. History must not be reinterpreted automatically.
 
 # Path Classification
 
+The conceptual descriptions below preserve the Stage 4 evaluation intent.
+The subsequent [Stage 5 analytical framework](../stage-5/metrics-and-evaluation-criteria.md#4-fairness-path-classification)
+is authoritative for PathClassificationRubric v1, populations, precedence and
+versioned boundary cases. These analytical definitions add no fairness rule and
+do not change any of the 19 rules above.
+
 For Stage 5 analysis, attendee paths may be classified into three conceptual categories.
 
 ## Balanced
@@ -559,7 +565,9 @@ A path with:
 
 Exact thresholds are intentionally not defined in Fairness Definition v1.
 
-Stage 5 should establish provisional measurable criteria before evaluating simulation results.
+Stage 5 now records its initial criteria in the linked analytical framework;
+each evaluation must identify its rubric version and report unresolved boundary
+cases before drawing quantitative conclusions.
 Stage 4 verifies explicit deterministic integrated acceptance scenarios and
 invariant checks. The former small presimulation requirement is
 [explicitly deferred to Stage 5](completion.md#lean-decision-on-five-day-evaluation).
@@ -569,6 +577,10 @@ the final distribution is sufficiently fair. The official 19 rules are unchanged
 ---
 
 # Stage 5 Measurement Dimensions
+
+These dimensions record the original handoff intent. The subsequent
+[Stage 5 framework](../stage-5/metrics-and-evaluation-criteria.md) owns the initial
+core metric set and distinguishes supporting diagnostics from mandatory metrics.
 
 Although final classification thresholds are deferred, Stage 5 should at minimum be able to observe:
 

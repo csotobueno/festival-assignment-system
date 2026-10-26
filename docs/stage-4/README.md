@@ -238,8 +238,10 @@ deterministic PostgreSQL scenarios remain the final Stage 4 functional acceptanc
 evidence. They do not establish statistical fairness or scalability. The
 completion document records their latest passing results.
 
-Stage 5 establishes provisional measurable classification criteria before
-judging results. It evaluates path balance, recovery, access to Good experiences,
+The subsequent [Stage 5 evaluation framework](../stage-5/metrics-and-evaluation-criteria.md)
+owns provisional analytical classification, reporting populations, metrics and
+scenario requirements. It adds no production fairness rule. Stage 5 evaluates
+path balance, recovery, access to Good experiences,
 group effects, arrival order, inventory utilization, physical capacity and
 parameter sensitivity. It should distinguish algorithmic limitations from
 physical or operational ones and record evidence even when the outcome is

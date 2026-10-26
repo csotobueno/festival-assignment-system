@@ -229,8 +229,11 @@ Fairness considera el historial de ubicaciones y busca evitar que los mismos asi
 [Fairness Definition v1](stage-4/fairness-definition-v1.md) establece la hipótesis
 inicial de 19 reglas. Stage-4 implementa reglas ejecutables y escenarios
 verificables, con el estado de cierre documentado en el checkpoint.
-Stage-5 establecerá criterios provisionales de evaluación
-antes de analizar las simulaciones y medirá sus resultados.
+El [marco de evaluación de stage-5](stage-5/metrics-and-evaluation-criteria.md)
+define las poblaciones, PathClassificationRubric v1 y las métricas analíticas
+iniciales. Balanced, Acceptable, Not Balanced e Insufficient Evidence son
+resultados de evaluación; no modifican las 19 reglas ni las políticas de producción.
+La simulación y la calibración con stakeholders permanecen pendientes.
 
 ---
 
@@ -281,6 +284,6 @@ Target Quality, inventario y selección ya están documentados e implementados.
 Permanecen pendientes, cuando el incremento correspondiente las requiera:
 
 * elegibilidad individual mixta y políticas operativas adicionales, si existe una necesidad concreta;
-* criterios cuantitativos de evaluación de fairness para stage-5;
+* calibración de los criterios iniciales de stage-5 y resolución versionada de casos límite de su rúbrica, según el [marco de evaluación](stage-5/metrics-and-evaluation-criteria.md);
 * horarios operativos concretos de la ventana diaria de asignación;
 * tratamiento detallado de errores durante la importación de asistentes.
