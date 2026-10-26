@@ -24,6 +24,9 @@ requirement is explicitly deferred to Stage 5 to avoid duplicating its evaluatio
 Stage 5 will evaluate the baseline through simulation and a technical decision
 gate, producing evidence for a proposal to the festival organization. Operational
 and business considerations will then be refined with the organization.
+The [Stage 5 evaluation framework](docs/stage-5/metrics-and-evaluation-criteria.md)
+defines the analytical rubric, populations, metrics and scenario requirements
+for evaluating `v0.3.0 — Fair Assignment Engine`; simulation remains pending.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 
@@ -45,6 +48,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 3 Closure](docs/stages/stage-3-closure.md)
 * [Stage 4 — Assignment Engine and Fairness](docs/stage-4/README.md)
 * [Stage 4 Completion](docs/stage-4/completion.md)
+* [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
 * [Stage 3 Technical Lead Learnings](docs/learning/stage-3-technical-lead-learnings.md)
 * [PostgreSQL Relational Model](docs/architecture/postgresql-relational-model.md)
 * [ADR 0001: Select the MVP Database Engine](docs/adr/0001-select-mvp-database-engine.md)
