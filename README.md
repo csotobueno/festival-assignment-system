@@ -26,7 +26,10 @@ gate, producing evidence for a proposal to the festival organization. Operationa
 and business considerations will then be refined with the organization.
 The [Stage 5 evaluation framework](docs/stage-5/metrics-and-evaluation-criteria.md)
 defines the analytical rubric, populations, metrics and scenario requirements
-for evaluating `v0.3.0 — Fair Assignment Engine`; simulation remains pending.
+for evaluating `v0.3.0 — Fair Assignment Engine`. The
+[simulation architecture](docs/stage-5/simulation-architecture.md) defines the
+planned PostgreSQL execution, reproducibility and evidence flow; implementation
+and simulation runs remain pending.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 
@@ -49,6 +52,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 — Assignment Engine and Fairness](docs/stage-4/README.md)
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
+* [Stage 5 — Simulation Architecture and Reproducibility](docs/stage-5/simulation-architecture.md)
 * [Stage 3 Technical Lead Learnings](docs/learning/stage-3-technical-lead-learnings.md)
 * [PostgreSQL Relational Model](docs/architecture/postgresql-relational-model.md)
 * [ADR 0001: Select the MVP Database Engine](docs/adr/0001-select-mvp-database-engine.md)

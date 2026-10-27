@@ -83,6 +83,9 @@ Otros documentos se crearán solo cuando exista una necesidad comprobada.
 * El [marco de evaluación de stage-5](stage-5/metrics-and-evaluation-criteria.md)
   es la fuente autoritativa de poblaciones, rúbrica analítica versionada,
   métricas, hipótesis y requisitos de reproducibilidad del Decision Gate.
+* La [arquitectura de simulación de stage-5](stage-5/simulation-architecture.md)
+  define la composición prevista, el ciclo de vida PostgreSQL, los manifiestos
+  reproducibles y la trazabilidad de evidencia; su implementación sigue pendiente.
 
 Cuando una decisión evolucione, se documentará qué cambia, por qué y dónde queda
 la definición posterior. Las guías vigentes se actualizarán sin borrar el
