@@ -2084,4 +2084,7 @@ documented; simulation, logging/attempt-record instrumentation and empirical
 evaluation remain pending. No production behavior or test changed with this
 documentation baseline, and the official Stage 4 fairness-rule count remains 19.
 
-The simulation architecture should now be designed around this evidence rather than around an unnecessarily general simulation platform.
+The [simulation architecture and reproducibility strategy](simulation-architecture.md)
+defines the planned Application/PostgreSQL execution and evidence flow around
+this framework. Harness implementation, instrumentation and simulation runs remain
+pending; this document remains the analytical authority.
