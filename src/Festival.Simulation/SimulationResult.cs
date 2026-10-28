@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using Festival.Domain.Assignments;
+using Festival.Domain.Attendees;
 using Festival.Domain.FestivalDays;
 using Festival.Domain.Spots;
 using Festival.Domain.Zones;
@@ -15,12 +17,22 @@ public enum SimulationAttemptOutcome
 }
 
 public sealed record SimulationAttemptRecord(
+    string ScenarioId,
     FestivalDayId FestivalDayId,
     Guid SimulationRequestId,
     int AttemptSequence,
     int GroupSize,
+    ImmutableArray<AttendeeId> AttendeeIds,
+    DateTimeOffset StartedAt,
+    DateTimeOffset CompletedAt,
+    TimeSpan Duration,
     SimulationAttemptOutcome Outcome,
     AssignmentRequestId? PersistedRequestId,
+    string? DiagnosticCode,
+    string? DiagnosticType,
+    int? EligibleAvailableSpotCount,
+    bool? FeasibleContiguousBlockFound,
+    ExperienceQuality? SelectedExperienceQuality,
     string? Diagnostic);
 
 // Primitive read projection avoids exposing Infrastructure's internal EF request rows.
@@ -40,6 +52,7 @@ public sealed record SimulationDayOpeningState(
 // Raw final database observations, deliberately without metrics or artifact formats.
 public sealed record SimulationResult(
     IReadOnlyList<SimulationAttemptRecord> Attempts,
+    IReadOnlyList<DailySimulationCheckpoint> DailyCheckpoints,
     IReadOnlyList<PersistedSimulationRequest> Requests,
     IReadOnlyList<Assignment> Assignments,
     IReadOnlyList<Zone> Zones,
