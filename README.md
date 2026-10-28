@@ -28,8 +28,9 @@ The [Stage 5 evaluation framework](docs/stage-5/metrics-and-evaluation-criteria.
 defines the analytical rubric, populations, metrics and scenario requirements
 for evaluating `v0.3.0 — Fair Assignment Engine`. The
 [simulation architecture](docs/stage-5/simulation-architecture.md) defines the
-planned PostgreSQL execution, reproducibility and evidence flow; implementation
-and simulation runs remain pending.
+planned PostgreSQL execution, reproducibility and evidence flow. The first
+executable slice now exercises a deterministic two-day recovery scenario;
+the full simulation platform and evaluation remain pending.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 
@@ -64,13 +65,15 @@ src/
 ├── Festival.Api
 ├── Festival.Application
 ├── Festival.Domain
-└── Festival.Infrastructure
+├── Festival.Infrastructure
+└── Festival.Simulation (tooling executable)
 
 tests/
 ├── Festival.Application.Tests
 ├── Festival.Domain.Tests
 ├── Festival.Infrastructure.IntegrationTests
-└── Festival.Infrastructure.Tests
+├── Festival.Infrastructure.Tests
+└── Festival.Simulation.Tests
 ```
 
 The backend follows an inward dependency direction:
@@ -105,9 +108,9 @@ Run the real PostgreSQL integration suite explicitly:
 dotnet test tests/Festival.Infrastructure.IntegrationTests
 ```
 
-Docker is required only by the integration project. Testcontainers starts and
-disposes an isolated PostgreSQL container automatically, so no manual PostgreSQL
-installation, fixed host port or local database credentials are required. The
+Docker is required by the integration and simulation test projects. Testcontainers
+starts and disposes an isolated PostgreSQL container automatically, so no manual
+PostgreSQL installation, fixed host port or local database credentials are required. The
 first execution may take longer while Docker downloads and starts the pinned
 PostgreSQL image.
 
@@ -130,7 +133,41 @@ or
 DOCKER_API_VERSION=1.43 dotnet test Festival.sln
 ```
 
-Because `Festival.sln` includes the integration project,
-`dotnet test Festival.sln` also executes the PostgreSQL integration suite and
+Because `Festival.sln` includes the integration and simulation test projects,
+`dotnet test Festival.sln` also executes both PostgreSQL-backed suites and
 therefore requires Docker. CI should keep the three fast projects in its default
-job and execute the integration project in a separate Docker-enabled job.
+job and execute the PostgreSQL-backed projects in a separate Docker-enabled job.
+
+## Minimal Stage 5 simulation
+
+Run the two-day development scenario explicitly (Docker required):
+
+```bash
+dotnet run --project src/Festival.Simulation
+```
+
+The runner owns a disposable `postgres:16.3-alpine` container, applies the real
+migrations once, and executes one group of two attendees on both days through
+`AddApplication()`, `AddPostgreSqlPersistence(...)` and the real use case, with
+a fresh scope/context per request. All three Zones and their contiguous two-Spot
+blocks are seeded once. Supporting attendees occupy the Good and Medium blocks
+through four Day 1 Assignments and two Completed setup requests, leaving only
+Bad available for the evaluated group. These occupancy graphs remain persisted;
+availability is scoped to FestivalDay, so the same Good and Medium Spots are
+available on Day 2 without changing topology or resetting state. Persisted Bad history makes
+the engine choose Good; empty history would choose Medium in that inventory.
+Identities, topology, request order and business timestamps are fixed in code.
+Generated production request/Assignment IDs remain observed outputs.
+
+The executable returns zero when both attempts reconcile as Successful, and
+one otherwise; the automated test verifies stable topology and persisted Bad → Good
+recovery, two evaluated Completed requests and four evaluated Assignments. The raw
+observations also retain the two setup requests and four occupancy Assignments
+(four Completed requests/eight Assignments total). No artifacts or metrics are exported.
+
+```bash
+dotnet test tests/Festival.Simulation.Tests
+```
+
+On Docker 24, prefix either command with `DOCKER_API_VERSION=1.43`.
+This development slice is not the five-day Stage 5 evaluation or Decision Gate.
