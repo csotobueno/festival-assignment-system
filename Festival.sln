@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festival.Infrastructure.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festival.Infrastructure.IntegrationTests", "tests\Festival.Infrastructure.IntegrationTests\Festival.Infrastructure.IntegrationTests.csproj", "{22A182F6-42A5-42FA-A0AE-465BEF882476}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festival.Simulation", "src\Festival.Simulation\Festival.Simulation.csproj", "{F72C81AC-CCE5-45C9-95C8-CB41D628F76B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festival.Simulation.Tests", "tests\Festival.Simulation.Tests\Festival.Simulation.Tests.csproj", "{42982FC0-7C82-4AA2-B85E-D4D83D67F4BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +68,14 @@ Global
 		{22A182F6-42A5-42FA-A0AE-465BEF882476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22A182F6-42A5-42FA-A0AE-465BEF882476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22A182F6-42A5-42FA-A0AE-465BEF882476}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F72C81AC-CCE5-45C9-95C8-CB41D628F76B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F72C81AC-CCE5-45C9-95C8-CB41D628F76B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F72C81AC-CCE5-45C9-95C8-CB41D628F76B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F72C81AC-CCE5-45C9-95C8-CB41D628F76B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42982FC0-7C82-4AA2-B85E-D4D83D67F4BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42982FC0-7C82-4AA2-B85E-D4D83D67F4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42982FC0-7C82-4AA2-B85E-D4D83D67F4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42982FC0-7C82-4AA2-B85E-D4D83D67F4BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{35E13B8D-05F1-433C-8BE7-008DAF50DCD6} = {ED368F37-836D-415B-87BF-D24A334FF7CD}
@@ -74,5 +86,7 @@ Global
 		{7D2615C7-BE75-4C83-A99E-02F53969773A} = {35EFE745-EF8D-48F1-ABD8-853210D1B37E}
 		{DF75DD32-5BDD-41FB-8C5C-C1189C428A29} = {35EFE745-EF8D-48F1-ABD8-853210D1B37E}
 		{22A182F6-42A5-42FA-A0AE-465BEF882476} = {35EFE745-EF8D-48F1-ABD8-853210D1B37E}
+		{F72C81AC-CCE5-45C9-95C8-CB41D628F76B} = {ED368F37-836D-415B-87BF-D24A334FF7CD}
+		{42982FC0-7C82-4AA2-B85E-D4D83D67F4BD} = {35EFE745-EF8D-48F1-ABD8-853210D1B37E}
 	EndGlobalSection
 EndGlobal
