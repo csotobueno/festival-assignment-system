@@ -179,6 +179,23 @@ recovery, two evaluated Completed requests and four evaluated Assignments. The r
 observations also retain the two setup requests and four occupancy Assignments
 (four Completed requests/eight Assignments total). No artifacts or metrics are exported.
 
+Each evaluated request retains an in-memory attempt record with scenario/request
+identity, attendee membership, observed UTC start/end, monotonic processing duration,
+outcome, confirmed persisted request ID, stable diagnostic code/type and selected
+persisted quality. Timing covers the Application call through return/exception;
+scope preparation, reconciliation and checkpoints are outside that interval.
+Simulation-scoped pass-through providers capture the actual Zone/available-Spot
+inputs used by the request. Eligible capacity reuses `ZoneEligibilityPolicy`;
+block-found evidence comes from the real success/no-block result without another
+block search. Unobserved capacity/feasibility remains null. These observations
+retain the baseline's independent pre-save-read consistency limitation.
+
+One immutable end-of-day checkpoint follows each drained daily plan. Its counts
+include only that day's evaluated attempts; remaining Good/Medium/Bad/total
+capacity is global for that FestivalDay and includes setup occupancy effects.
+Attempts and checkpoints remain in `SimulationResult`; no analytical tables,
+aggregate rates, latency summaries or artifact files are generated.
+
 ```bash
 dotnet test tests/Festival.Simulation.Tests
 ```

@@ -1,10 +1,16 @@
+using System.Collections.Immutable;
+using System.Diagnostics;
 using Festival.Application;
 using Festival.Application.Assignments.Ports;
 using Festival.Application.Assignments.Persistence;
 using Festival.Application.Assignments.ProcessAssignmentRequest;
+using Festival.Application.Zones.Ports;
 using Festival.Domain.Assignments;
+using Festival.Domain.FestivalDays;
 using Festival.Infrastructure;
+using Festival.Infrastructure.Assignments.PostgreSql;
 using Festival.Infrastructure.Persistence;
+using Festival.Infrastructure.Zones.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +43,13 @@ public static class MinimalSimulationRunner
             }).Build();
         var registrations = new ServiceCollection();
         registrations.AddApplication().AddPostgreSqlPersistence(configuration);
+        registrations.AddScoped(provider => new RequestEvaluationObservation(
+            new PostgreSqlZoneCatalogProvider(provider.GetRequiredService<FestivalDbContext>()),
+            new PostgreSqlAvailableSpotProvider(provider.GetRequiredService<FestivalDbContext>())));
+        registrations.AddScoped<IZoneCatalogProvider>(provider =>
+            provider.GetRequiredService<RequestEvaluationObservation>());
+        registrations.AddScoped<IAvailableSpotProvider>(provider =>
+            provider.GetRequiredService<RequestEvaluationObservation>());
         await using var services = registrations.BuildServiceProvider(
             new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
 
@@ -63,6 +76,7 @@ public static class MinimalSimulationRunner
 
         var attempts = new List<SimulationAttemptRecord>();
         var openingStates = new List<SimulationDayOpeningState>();
+        var checkpoints = new List<DailySimulationCheckpoint>();
         foreach (var day in manifest.DailyPlans.OrderBy(day => day.DayNumber))
         {
             // Read persisted topology and real day-specific availability before execution.
@@ -80,14 +94,15 @@ public static class MinimalSimulationRunner
                     Array.AsReadOnly(openingZones), Array.AsReadOnly(openingSpots), availableSpots));
             }
 
+            var dayAttemptStart = attempts.Count;
             foreach (var request in day.Requests.OrderBy(request => request.Sequence))
             {
-                var command = new ProcessAssignmentRequestCommand(day.FestivalDayId,
-                    request.Members.Select(attendee => attendee.Code), request.RequestedAt,
-                    request.AssignedAt, request.Eligibility);
-                attempts.Add(await ExecuteAttemptAsync(services, command, request.Sequence,
-                    request.SimulationRequestId, cancellationToken));
+                attempts.Add(await ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
+                    day.FestivalDayId, request, cancellationToken));
             }
+
+            checkpoints.Add(await CaptureDailyCheckpointAsync(services, manifest.Metadata.ScenarioId,
+                day.FestivalDayId, attempts.Skip(dayAttemptStart).ToArray(), cancellationToken));
         }
 
         // Reconcile in a fresh read scope; never infer persisted quality from returned outputs.
@@ -106,27 +121,115 @@ public static class MinimalSimulationRunner
         var spots = await database.Spots.AsNoTracking().OrderBy(spot => spot.Code)
             .ToArrayAsync(cancellationToken);
 
-        return new SimulationResult(attempts.AsReadOnly(), Array.AsReadOnly(requests),
+        return new SimulationResult(attempts.AsReadOnly(), checkpoints.AsReadOnly(), Array.AsReadOnly(requests),
             Array.AsReadOnly(assignments), Array.AsReadOnly(zones), Array.AsReadOnly(spots),
             openingStates.AsReadOnly());
     }
 
-    private static async Task<SimulationAttemptRecord> ExecuteAttemptAsync(
-        ServiceProvider services, ProcessAssignmentRequestCommand command, int sequence,
-        Guid simulationRequestId, CancellationToken cancellationToken)
+    private static async Task<DailySimulationCheckpoint> CaptureDailyCheckpointAsync(
+        ServiceProvider services, string scenarioId, FestivalDayId dayId,
+        IReadOnlyList<SimulationAttemptRecord> dailyAttempts, CancellationToken cancellationToken)
     {
-        ProcessAssignmentRequestResult result;
+        await using var scope = services.CreateAsyncScope();
+        var zones = await scope.ServiceProvider.GetRequiredService<IZoneCatalogProvider>()
+            .GetZonesAsync(cancellationToken);
+        var available = await scope.ServiceProvider.GetRequiredService<IAvailableSpotProvider>()
+            .GetAvailableSpotsAsync(dayId, cancellationToken);
+        var inventory = RemainingInventoryCalculator.Calculate(zones, available);
+        return new DailySimulationCheckpoint(scenarioId, dayId, dailyAttempts.Count,
+            dailyAttempts.Count(attempt => attempt.Outcome == SimulationAttemptOutcome.Successful),
+            dailyAttempts.Count(attempt => attempt.Outcome == SimulationAttemptOutcome.DomainRejected),
+            inventory.GoodRemaining, inventory.MediumRemaining, inventory.BadRemaining, available.Count);
+    }
+
+    internal static async Task<SimulationAttemptRecord> ExecuteAttemptAsync(
+        ServiceProvider services, string scenarioId, FestivalDayId dayId,
+        DailyRequestPlan plan, CancellationToken cancellationToken = default)
+    {
+        var command = new ProcessAssignmentRequestCommand(dayId,
+            plan.Members.Select(attendee => attendee.Code), plan.RequestedAt, plan.AssignedAt, plan.Eligibility);
+        ProcessAssignmentRequestResult? result = null;
+        Exception? failure = null;
+        DateTimeOffset startedAt;
+        DateTimeOffset completedAt;
+        TimeSpan duration;
+        int? eligibleCount;
+        // Scope preparation and disposal are outside the measured use-case boundary.
+        await using (var requestScope = services.CreateAsyncScope())
+        {
+            var useCase = requestScope.ServiceProvider.GetRequiredService<ProcessAssignmentRequestUseCase>();
+            var evaluation = requestScope.ServiceProvider.GetRequiredService<RequestEvaluationObservation>();
+            startedAt = DateTimeOffset.UtcNow;
+            var timestamp = Stopwatch.GetTimestamp();
+            try
+            {
+                result = await useCase.ExecuteAsync(command, cancellationToken);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                failure = exception;
+            }
+            duration = Stopwatch.GetElapsedTime(timestamp);
+            completedAt = DateTimeOffset.UtcNow;
+            eligibleCount = evaluation.GetEligibleAvailableSpotCount(command, plan.SimulationRequestId);
+        }
+
+        if (failure is AssignmentPersistenceConflictException conflict)
+        {
+            return Record(SimulationAttemptOutcome.KnownConcurrencyConflict, null,
+                conflict.Conflict.ToString(), conflict.GetType().FullName, null, null, conflict.Message);
+        }
+        if (failure is not null)
+        {
+            // Arbitrary validation/processing exceptions are not excluded input.
+            return Record(SimulationAttemptOutcome.UnexpectedTechnicalFailure, null,
+                null, failure.GetType().FullName, null, null, failure.Message);
+        }
+
+        // The real selection result supplies block evidence; other rejections are unknown.
+        bool? blockFound = result!.IsAssigned ? true
+            : result.RejectionCode == ProcessAssignmentRequestUseCase.NoContiguousSpotsAvailableCode ? false : null;
+        AssignmentRequestId? confirmedRequestId = null;
         try
         {
-            // Each request gets its own context, repositories and Unit of Work.
-            await using var requestScope = services.CreateAsyncScope();
-            result = await requestScope.ServiceProvider
-                .GetRequiredService<ProcessAssignmentRequestUseCase>()
-                .ExecuteAsync(command, cancellationToken);
-        }
-        catch (AssignmentPersistenceConflictException exception)
-        {
-            return Record(SimulationAttemptOutcome.KnownConcurrencyConflict, null, exception.ToString());
+            // Reconcile after timing in a fresh read scope. Quality comes only from
+            // durable Assignments, never scenario intent or current Zone quality.
+            await using var observation = services.CreateAsyncScope();
+            var database = observation.ServiceProvider.GetRequiredService<FestivalDbContext>();
+            var requestId = result.AssignmentRequestId.Value;
+            var persisted = await database.Database.SqlQuery<PersistedSimulationRequest>($"""
+                SELECT "AssignmentRequestId", "FestivalDayId", "Status", "RequestedAt"
+                FROM "AssignmentRequests" WHERE "AssignmentRequestId" = {requestId}
+                """).SingleOrDefaultAsync(cancellationToken);
+            confirmedRequestId = persisted is null ? null : result.AssignmentRequestId;
+            var assignments = await database.Assignments.AsNoTracking()
+                .Where(assignment => assignment.AssignmentRequestId == result.AssignmentRequestId)
+                .Select(assignment => new { assignment.Id, assignment.AttendeeId, assignment.ExperienceQuality })
+                .ToArrayAsync(cancellationToken);
+            var qualities = assignments.Select(assignment => assignment.ExperienceQuality).Distinct().ToArray();
+            var matches = persisted is not null
+                && persisted.FestivalDayId == command.FestivalDayId.Value
+                && persisted.Status == result.Status.ToString()
+                && assignments.Select(assignment => assignment.Id).ToHashSet()
+                    .SetEquals(result.Assignments.Select(item => item.AssignmentId));
+            var outcome = matches && result.IsAssigned && assignments.Length == command.AttendeeCodes.Count
+                && qualities.Length == 1
+                && assignments.Select(assignment => assignment.AttendeeId).ToHashSet()
+                    .SetEquals(plan.Members.Select(member => member.Id))
+                ? SimulationAttemptOutcome.Successful
+                : matches && result.IsRejected && assignments.Length == 0
+                    ? SimulationAttemptOutcome.DomainRejected
+                    : SimulationAttemptOutcome.UnexpectedTechnicalFailure;
+            return Record(outcome, confirmedRequestId,
+                outcome == SimulationAttemptOutcome.UnexpectedTechnicalFailure ? "PERSISTED_OUTCOME_MISMATCH" : result.RejectionCode,
+                null, blockFound, outcome == SimulationAttemptOutcome.Successful ? qualities[0] : null,
+                outcome == SimulationAttemptOutcome.UnexpectedTechnicalFailure
+                    ? "Returned outcome did not reconcile with persisted request/Assignments."
+                    : result.RejectionMessage);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -134,40 +237,16 @@ public static class MinimalSimulationRunner
         }
         catch (Exception exception)
         {
-            // Do not misclassify arbitrary ArgumentExceptions as invalid input.
-            // This code-defined scenario has no external-input exclusion boundary.
-            return Record(SimulationAttemptOutcome.UnexpectedTechnicalFailure, null, exception.ToString());
+            return Record(SimulationAttemptOutcome.UnexpectedTechnicalFailure, confirmedRequestId,
+                "RECONCILIATION_FAILED", exception.GetType().FullName, blockFound, null, exception.Message);
         }
 
-        // Confirm durable request status and the exact returned Assignment identities
-        // before marking this attempt Successful or DomainRejected.
-        await using var observation = services.CreateAsyncScope();
-        var database = observation.ServiceProvider.GetRequiredService<FestivalDbContext>();
-        var requestId = result.AssignmentRequestId.Value;
-        var persisted = await database.Database.SqlQuery<PersistedSimulationRequest>($"""
-            SELECT "AssignmentRequestId", "FestivalDayId", "Status", "RequestedAt"
-            FROM "AssignmentRequests" WHERE "AssignmentRequestId" = {requestId}
-            """).SingleOrDefaultAsync(cancellationToken);
-        var assignmentIds = await database.Assignments.AsNoTracking()
-            .Where(assignment => assignment.AssignmentRequestId == result.AssignmentRequestId)
-            .Select(assignment => assignment.Id).ToArrayAsync(cancellationToken);
-        var matches = persisted is not null
-            && persisted.FestivalDayId == command.FestivalDayId.Value
-            && persisted.Status == result.Status.ToString()
-            && assignmentIds.ToHashSet().SetEquals(result.Assignments.Select(item => item.AssignmentId));
-        var outcome = matches && result.IsAssigned && assignmentIds.Length == command.AttendeeCodes.Count
-            ? SimulationAttemptOutcome.Successful
-            : matches && result.IsRejected && assignmentIds.Length == 0
-                ? SimulationAttemptOutcome.DomainRejected
-                : SimulationAttemptOutcome.UnexpectedTechnicalFailure;
-        return Record(outcome, persisted is null ? null : result.AssignmentRequestId,
-            outcome == SimulationAttemptOutcome.UnexpectedTechnicalFailure
-                ? "Returned outcome did not reconcile with persisted request/Assignments."
-                : result.RejectionCode);
-
         SimulationAttemptRecord Record(SimulationAttemptOutcome outcome,
-            AssignmentRequestId? persistedId, string? diagnostic) =>
-            new(command.FestivalDayId, simulationRequestId, sequence, command.AttendeeCodes.Count,
-                outcome, persistedId, diagnostic);
+            AssignmentRequestId? persistedId, string? diagnosticCode, string? diagnosticType,
+            bool? feasibleBlockFound, ExperienceQuality? selectedQuality, string? diagnostic) =>
+            new(scenarioId, dayId, plan.SimulationRequestId, plan.Sequence, command.AttendeeCodes.Count,
+                plan.Members.Select(member => member.Id).ToImmutableArray(), startedAt, completedAt, duration,
+                outcome, persistedId, diagnosticCode, diagnosticType, eligibleCount, feasibleBlockFound,
+                selectedQuality, diagnostic);
     }
 }

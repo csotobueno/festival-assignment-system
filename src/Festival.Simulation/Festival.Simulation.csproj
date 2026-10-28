@@ -11,6 +11,9 @@
     <PackageReference Include="Testcontainers.PostgreSql" Version="4.13.0" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Festival.Simulation.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Festival.Application\Festival.Application.csproj" />
     <ProjectReference Include="..\Festival.Infrastructure\Festival.Infrastructure.csproj" />
     <ProjectReference Include="..\Festival.Domain\Festival.Domain.csproj" />

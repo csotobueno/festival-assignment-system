@@ -10,6 +10,58 @@ namespace Festival.Simulation.Tests;
 public sealed class MinimalSimulationTests
 {
     [Fact]
+    public async Task RunAsync_ObservesEligibleCapacityAtEachEvaluationAndGlobalClosingInventory()
+    {
+        var definition = MinimalRecoveryScenarioDefinition.Create();
+        definition = definition with
+        {
+            AttendeeCount = 5,
+            Topology =
+            [
+                new("front", ZoneType.FrontStanding, 2),
+                new("medium", ZoneType.MiddleLeft, 2),
+                new("bad", ZoneType.UpperLeft, 2)
+            ],
+            Days =
+            [
+                new(1, [],
+                [
+                    new(1, [3, 4, 5], new RequestEligibility(false)),
+                    new(2, [3, 4, 5], new RequestEligibility(true)),
+                    new(3, [1, 2], new RequestEligibility(false)),
+                    new(4, [3, 4, 5], new RequestEligibility(false))
+                ])
+            ]
+        };
+        var manifest = new ScenarioMaterializer().Materialize(definition);
+
+        var result = await MinimalSimulationRunner.RunAsync(manifest);
+
+        result.Attempts.Should().HaveCount(4);
+        result.Attempts.Select(attempt => attempt.Outcome).Should().Equal(
+            SimulationAttemptOutcome.DomainRejected, SimulationAttemptOutcome.DomainRejected,
+            SimulationAttemptOutcome.Successful, SimulationAttemptOutcome.DomainRejected);
+        result.Attempts.Select(attempt => attempt.EligibleAvailableSpotCount).Should().Equal(4, 6, 4, 2);
+        result.Attempts.Select(attempt => attempt.FeasibleContiguousBlockFound).Should().Equal(false, false, true, false);
+        result.Attempts.Select(attempt => attempt.SelectedExperienceQuality).Should().Equal(
+            null, null, ExperienceQuality.Medium, null);
+        // First rejections have enough eligible raw capacity split across two-Spot blocks;
+        // the final rejection has only two eligible Spots for three members.
+        var rejected = result.Attempts.Where(attempt => attempt.Outcome == SimulationAttemptOutcome.DomainRejected).ToArray();
+        rejected.Should().OnlyContain(attempt => attempt.DiagnosticCode == "NO_CONTIGUOUS_SPOTS_AVAILABLE"
+            && attempt.PersistedRequestId.HasValue && attempt.DiagnosticType == null);
+        var rejectedIds = rejected.Select(attempt => attempt.PersistedRequestId!.Value.Value).ToHashSet();
+        result.Requests.Where(request => rejectedIds.Contains(request.AssignmentRequestId))
+            .Should().HaveCount(3).And.OnlyContain(request => request.Status == "Rejected");
+        result.Assignments.Should().HaveCount(2).And.NotContain(assignment => rejectedIds.Contains(assignment.AssignmentRequestId.Value));
+        result.Attempts.Should().OnlyContain(attempt => attempt.StartedAt <= attempt.CompletedAt
+            && attempt.Duration >= TimeSpan.Zero);
+        result.DailyCheckpoints.Should().ContainSingle().Which.Should().Be(
+            new DailySimulationCheckpoint(definition.ScenarioId, manifest.DailyPlans[0].FestivalDayId,
+                4, 1, 3, 2, 0, 2, 4));
+    }
+
+    [Fact]
     public async Task RunAsync_ExecutesManifestMembershipAndSequenceInsteadOfCollectionOrder()
     {
         var definition = MinimalRecoveryScenarioDefinition.Create();
@@ -41,9 +93,13 @@ public sealed class MinimalSimulationTests
 
         result.Attempts.Select(attempt => attempt.AttemptSequence).Should().Equal(10, 20, 30);
         result.Attempts.Select(attempt => attempt.GroupSize).Should().Equal(1, 1, 2);
+        result.Attempts.Select(attempt => attempt.EligibleAvailableSpotCount).Should().Equal(2, 1, 6);
         result.Attempts.Should().OnlyContain(attempt => attempt.Outcome == SimulationAttemptOutcome.Successful);
         result.OpeningStates.Select(state => state.FestivalDayId).Should().Equal(
             materialized.DailyPlans.Select(day => day.FestivalDayId));
+        result.DailyCheckpoints.Select(checkpoint => checkpoint.EvaluatedRequestCount).Should().Equal(2, 1);
+        result.DailyCheckpoints.Select(checkpoint => checkpoint.SuccessfulAttemptCount).Should().Equal(2, 1);
+        result.DailyCheckpoints.Select(checkpoint => checkpoint.RejectedAttemptCount).Should().Equal(0, 0);
         var orderedRequests = materialized.DailyPlans.SelectMany(day => day.Requests).ToArray();
         for (var index = 0; index < orderedRequests.Length; index++)
         {
@@ -75,6 +131,25 @@ public sealed class MinimalSimulationTests
         result.Attempts.Should().OnlyContain(attempt =>
             attempt.Outcome == SimulationAttemptOutcome.Successful && attempt.GroupSize == 2
             && attempt.PersistedRequestId.HasValue && attempt.Diagnostic == null);
+        result.Attempts.Should().OnlyContain(attempt => attempt.ScenarioId == definition.ScenarioId
+            && attempt.StartedAt <= attempt.CompletedAt && attempt.Duration >= TimeSpan.Zero
+            && attempt.FeasibleContiguousBlockFound == true
+            && attempt.DiagnosticCode == null && attempt.DiagnosticType == null);
+        result.Attempts.Select(attempt => attempt.EligibleAvailableSpotCount).Should().Equal(2, 6);
+        result.Attempts.Select(attempt => attempt.SelectedExperienceQuality).Should().Equal(
+            ExperienceQuality.Bad, ExperienceQuality.Good);
+        for (var index = 0; index < manifest.DailyPlans.Length; index++)
+        {
+            var day = manifest.DailyPlans[index];
+            var attempt = result.Attempts[index];
+            attempt.FestivalDayId.Should().Be(day.FestivalDayId);
+            attempt.AttendeeIds.Should().Equal(day.Requests[0].Members.Select(member => member.Id));
+        }
+        result.DailyCheckpoints.Should().Equal(
+            new DailySimulationCheckpoint(definition.ScenarioId, manifest.DailyPlans[0].FestivalDayId,
+                1, 1, 0, 0, 0, 0, 0),
+            new DailySimulationCheckpoint(definition.ScenarioId, manifest.DailyPlans[1].FestivalDayId,
+                1, 1, 0, 0, 2, 2, 4));
         var evaluatedRequestIds = result.Attempts
             .Select(attempt => attempt.PersistedRequestId!.Value.Value).ToHashSet();
         var evaluatedRequests = result.Requests
