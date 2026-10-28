@@ -16,6 +16,7 @@ public enum SimulationAttemptOutcome
 
 public sealed record SimulationAttemptRecord(
     FestivalDayId FestivalDayId,
+    Guid SimulationRequestId,
     int AttemptSequence,
     int GroupSize,
     SimulationAttemptOutcome Outcome,
