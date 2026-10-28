@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Festival.Domain.Assignments;
 using Festival.Domain.Zones;
 using Festival.Simulation;
@@ -9,9 +10,65 @@ namespace Festival.Simulation.Tests;
 public sealed class MinimalSimulationTests
 {
     [Fact]
+    public async Task RunAsync_ExecutesManifestMembershipAndSequenceInsteadOfCollectionOrder()
+    {
+        var definition = MinimalRecoveryScenarioDefinition.Create();
+        definition = definition with
+        {
+            Days =
+            [
+                definition.Days[0] with
+                {
+                    Requests =
+                    [
+                        new(20, [2], new RequestEligibility(true)),
+                        new(10, [1], new RequestEligibility(true))
+                    ]
+                },
+                definition.Days[1] with { Requests = [new(30, [1, 2], new RequestEligibility(true))] }
+            ]
+        };
+        var materialized = new ScenarioMaterializer().Materialize(definition);
+        var manifest = materialized with
+        {
+            DailyPlans = materialized.DailyPlans.Reverse().Select(day => day with
+            {
+                Requests = day.Requests.Reverse().ToImmutableArray()
+            }).ToImmutableArray()
+        };
+
+        var result = await MinimalSimulationRunner.RunAsync(manifest);
+
+        result.Attempts.Select(attempt => attempt.AttemptSequence).Should().Equal(10, 20, 30);
+        result.Attempts.Select(attempt => attempt.GroupSize).Should().Equal(1, 1, 2);
+        result.Attempts.Should().OnlyContain(attempt => attempt.Outcome == SimulationAttemptOutcome.Successful);
+        result.OpeningStates.Select(state => state.FestivalDayId).Should().Equal(
+            materialized.DailyPlans.Select(day => day.FestivalDayId));
+        var orderedRequests = materialized.DailyPlans.SelectMany(day => day.Requests).ToArray();
+        for (var index = 0; index < orderedRequests.Length; index++)
+        {
+            var attempt = result.Attempts[index];
+            var planned = orderedRequests[index];
+            attempt.SimulationRequestId.Should().Be(planned.SimulationRequestId);
+            var assignments = result.Assignments.Where(assignment =>
+                assignment.AssignmentRequestId == attempt.PersistedRequestId).ToArray();
+            assignments.Select(assignment => assignment.AttendeeId).Should().BeEquivalentTo(
+                planned.Members.Select(member => member.Id));
+            assignments.Should().OnlyContain(assignment => assignment.AssignedAt == planned.AssignedAt);
+        }
+    }
+
+    [Fact]
     public async Task RunAsync_RecoversFromPersistedBadHistoryAcrossFestivalDays()
     {
-        var result = await MinimalSimulationRunner.RunAsync();
+        var definition = MinimalRecoveryScenarioDefinition.Create();
+        var manifest = new ScenarioMaterializer().Materialize(definition);
+        var originalManifest = new ScenarioMaterializer().Materialize(definition);
+        var result = await MinimalSimulationRunner.RunAsync(manifest);
+
+        manifest.Should().BeEquivalentTo(originalManifest, options => options.WithStrictOrdering());
+        result.Attempts.Select(attempt => attempt.SimulationRequestId).Should().Equal(
+            manifest.DailyPlans.SelectMany(day => day.Requests).Select(request => request.SimulationRequestId));
 
         result.Attempts.Should().HaveCount(2);
         result.Attempts.Select(attempt => attempt.AttemptSequence).Should().Equal(1, 2);
@@ -38,12 +95,17 @@ public sealed class MinimalSimulationTests
         occupancyRequests.Should().HaveCount(2).And.OnlyContain(request =>
             request.FestivalDayId == result.Attempts[0].FestivalDayId.Value
             && request.RequestedAt < evaluatedRequests[0].RequestedAt);
+        occupancyRequests.Select(request => request.AssignmentRequestId).Should().BeEquivalentTo(
+            manifest.Setup.CompletedRequests.Select(request => request.Id.Value));
         var occupancyAssignments = result.Assignments
             .Where(assignment => !evaluatedRequestIds.Contains(assignment.AssignmentRequestId.Value)).ToArray();
         occupancyAssignments.Should().HaveCount(4).And.OnlyContain(assignment =>
             assignment.FestivalDayId == result.Attempts[0].FestivalDayId
             && assignment.ExperienceQuality != ExperienceQuality.Bad
             && !evaluatedAssignments.Select(item => item.AttendeeId).Contains(assignment.AttendeeId));
+        occupancyAssignments.Should().BeEquivalentTo(manifest.Setup.Assignments);
+        evaluatedAssignments.Select(assignment => assignment.AttendeeId).Distinct().Should().BeEquivalentTo(
+            manifest.Catalog.Attendees.Select(attendee => attendee.Id));
         foreach (var request in occupancyRequests)
         {
             var assignments = occupancyAssignments

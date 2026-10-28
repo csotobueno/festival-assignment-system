@@ -156,8 +156,22 @@ Bad available for the evaluated group. These occupancy graphs remain persisted;
 availability is scoped to FestivalDay, so the same Good and Medium Spots are
 available on Day 2 without changing topology or resetting state. Persisted Bad history makes
 the engine choose Good; empty history would choose Medium in that inventory.
-Identities, topology, request order and business timestamps are fixed in code.
-Generated production request/Assignment IDs remain observed outputs.
+`MinimalRecoveryScenarioDefinition.Create()` declares the small population,
+three contiguous blocks and daily occupancy/request intent. `ScenarioMaterializer`
+turns it into a read-only `ScenarioManifest` with metadata, a shared catalog,
+separate supporting setup and explicitly sequenced daily requests. The runner
+seeds and executes that exact input. All manifest collections are immutable;
+execution state stays in PostgreSQL and observation records.
+
+Generator `v1` derives IDs from SHA-256 of stable scenario/entity keys, orders
+days and requests explicitly, and derives UTC business timestamps from the
+definition's first date (setup after 13:00, evaluated requests from 14:00 in
+two-minute steps). The seed is recorded but this nonrandom scenario needs no
+sampling. The same definition, seed and generator version reproduce equivalent
+manifests, including topology and setup. Evaluated attendees have no initial
+history. Generated production request/Assignment IDs remain observed outputs.
+Definition/materialization/manifest execution is in-memory only; no serialization
+or replay format is implemented.
 
 The executable returns zero when both attempts reconcile as Successful, and
 one otherwise; the automated test verifies stable topology and persisted Bad → Good

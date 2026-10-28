@@ -14,8 +14,14 @@ namespace Festival.Simulation;
 
 public static class MinimalSimulationRunner
 {
-    public static async Task<SimulationResult> RunAsync(CancellationToken cancellationToken = default)
+    public static async Task<SimulationResult> RunAsync(
+        ScenarioManifest manifest, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(manifest);
+        if (manifest.Metadata.ExecutionMode != SimulationExecutionMode.Sequential
+            || manifest.Metadata.ConcurrencyLevel != 1)
+            throw new NotSupportedException("Only sequential execution with concurrency level 1 is supported.");
+
         await using var container = new PostgreSqlBuilder("postgres:16.3-alpine")
             .WithDatabase("festival_simulation")
             .WithUsername("festival_simulation")
@@ -38,16 +44,27 @@ public static class MinimalSimulationRunner
         {
             var context = setup.ServiceProvider.GetRequiredService<FestivalDbContext>();
             await context.Database.MigrateAsync(cancellationToken);
-            await MinimalRecoveryScenario.SeedAsync(context,
-                setup.ServiceProvider.GetRequiredService<IAssignmentRequestRepository>(), cancellationToken);
+            context.Attendees.AddRange(manifest.Catalog.Attendees);
+            context.Attendees.AddRange(manifest.Setup.SupportingAttendees);
+            context.FestivalDays.AddRange(manifest.Catalog.FestivalDays);
+            context.Zones.AddRange(manifest.Catalog.Zones);
+            context.Spots.AddRange(manifest.Catalog.Spots);
+            var repository = setup.ServiceProvider.GetRequiredService<IAssignmentRequestRepository>();
+            foreach (var supporting in manifest.Setup.CompletedRequests)
+            {
+                var request = AssignmentRequest.Create(supporting.Id, supporting.FestivalDayId,
+                    supporting.AttendeeCodes, supporting.RequestedAt, supporting.Eligibility);
+                request.Complete(supporting.CompletedAt);
+                await repository.AddAsync(request, cancellationToken);
+            }
+            context.Assignments.AddRange(manifest.Setup.Assignments);
             await context.SaveChangesAsync(cancellationToken);
         }
 
         var attempts = new List<SimulationAttemptRecord>();
         var openingStates = new List<SimulationDayOpeningState>();
-        for (var index = 0; index < MinimalRecoveryScenario.Requests.Count; index++)
+        foreach (var day in manifest.DailyPlans.OrderBy(day => day.DayNumber))
         {
-            var command = MinimalRecoveryScenario.Requests[index];
             // Read persisted topology and real day-specific availability before execution.
             // There are no catalog or occupancy writes between FestivalDays.
             await using (var opening = services.CreateAsyncScope())
@@ -58,12 +75,19 @@ public static class MinimalSimulationRunner
                 var openingSpots = await context.Spots.AsNoTracking().OrderBy(spot => spot.Code)
                     .ToArrayAsync(cancellationToken);
                 var availableSpots = await opening.ServiceProvider.GetRequiredService<IAvailableSpotProvider>()
-                    .GetAvailableSpotsAsync(command.FestivalDayId, cancellationToken);
-                openingStates.Add(new SimulationDayOpeningState(command.FestivalDayId,
+                    .GetAvailableSpotsAsync(day.FestivalDayId, cancellationToken);
+                openingStates.Add(new SimulationDayOpeningState(day.FestivalDayId,
                     Array.AsReadOnly(openingZones), Array.AsReadOnly(openingSpots), availableSpots));
             }
 
-            attempts.Add(await ExecuteAttemptAsync(services, command, index + 1, cancellationToken));
+            foreach (var request in day.Requests.OrderBy(request => request.Sequence))
+            {
+                var command = new ProcessAssignmentRequestCommand(day.FestivalDayId,
+                    request.Members.Select(attendee => attendee.Code), request.RequestedAt,
+                    request.AssignedAt, request.Eligibility);
+                attempts.Add(await ExecuteAttemptAsync(services, command, request.Sequence,
+                    request.SimulationRequestId, cancellationToken));
+            }
         }
 
         // Reconcile in a fresh read scope; never infer persisted quality from returned outputs.
@@ -89,7 +113,7 @@ public static class MinimalSimulationRunner
 
     private static async Task<SimulationAttemptRecord> ExecuteAttemptAsync(
         ServiceProvider services, ProcessAssignmentRequestCommand command, int sequence,
-        CancellationToken cancellationToken)
+        Guid simulationRequestId, CancellationToken cancellationToken)
     {
         ProcessAssignmentRequestResult result;
         try
@@ -143,6 +167,7 @@ public static class MinimalSimulationRunner
 
         SimulationAttemptRecord Record(SimulationAttemptOutcome outcome,
             AssignmentRequestId? persistedId, string? diagnostic) =>
-            new(command.FestivalDayId, sequence, command.AttendeeCodes.Count, outcome, persistedId, diagnostic);
+            new(command.FestivalDayId, simulationRequestId, sequence, command.AttendeeCodes.Count,
+                outcome, persistedId, diagnostic);
     }
 }
