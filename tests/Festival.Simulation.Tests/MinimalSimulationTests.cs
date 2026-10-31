@@ -238,6 +238,8 @@ public sealed class MinimalSimulationTests
             episode.RecoveryAssignedAt.Should().Be(persisted[1].AssignedAt);
             episode.Status.Should().Be(RecoveryEpisodeStatus.Recovered);
             episode.RecoveryQuality.Should().Be(ExperienceQuality.Good);
+            episode.ObservedOpportunities.Should().Be(1);
+            episode.RecoveryEligible.Should().BeTrue();
             episode.OpportunitiesToRecovery.Should().Be(1);
         }
         foreach (var request in occupancyRequests)
