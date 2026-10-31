@@ -49,13 +49,14 @@ public sealed record SimulationDayOpeningState(
     IReadOnlyList<Spot> Spots,
     IReadOnlyList<Spot> AvailableSpots);
 
-// Final persisted observations and individual path analytics, without aggregate
-// metrics or artifact formats. Empty paths retain evaluated population context.
+// Raw evidence and derived analytical metrics remain separate and in memory.
+// Empty paths retain evaluated population context.
 public sealed record SimulationResult(
     IReadOnlyList<SimulationAttemptRecord> Attempts,
     IReadOnlyList<DailySimulationCheckpoint> DailyCheckpoints,
     ImmutableArray<AttendeePathRecord> AttendeePaths,
     ImmutableArray<AttendeeRecoveryRecord> RecoveryObservations,
+    SimulationMetrics Metrics,
     IReadOnlyList<PersistedSimulationRequest> Requests,
     IReadOnlyList<Assignment> Assignments,
     IReadOnlyList<Zone> Zones,

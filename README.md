@@ -193,8 +193,9 @@ retain the baseline's independent pre-save-read consistency limitation.
 One immutable end-of-day checkpoint follows each drained daily plan. Its counts
 include only that day's evaluated attempts; remaining Good/Medium/Bad/total
 capacity is global for that FestivalDay and includes setup occupancy effects.
-Attempts, checkpoints, attendee paths and recovery observations remain in `SimulationResult`; no analytical tables,
-aggregate rates, latency summaries or artifact files are generated.
+Attempts, checkpoints, attendee paths and recovery observations remain in
+`SimulationResult`, alongside derived fairness/recovery metrics. No analytical
+tables, latency summaries or artifact files are generated.
 
 Attendee-path reconstruction selects distinct participants from the manifest's
 evaluated `DailyPlans` workload, excluding setup/supporting attendees. One
@@ -219,8 +220,17 @@ days or requests without Assignments. Both evaluated attendees in the minimal
 scenario have one Bad → Good episode with distance 1. Immutable attendee recovery
 records, including empty Episodes for attendees without Bad, are exposed through
 `SimulationResult.RecoveryObservations`; supporting attendees remain excluded.
-Recovery does not influence path classification. Aggregate recovery metrics,
-calendar-day recovery metrics and artifact export remain deferred.
+Recovery does not influence path classification. `SimulationMetricsCalculator`
+consumes these existing paths and recovery records without additional database
+queries or reinterpretation. `SimulationResult.Metrics.Fairness` exposes population
+coverage, stored classification counts/rates and persisted quality counts/rates.
+`Metrics.Recovery` exposes episode/eligibility/recovery-quality counts, recovery
+rate, decimal average/median distance and immutable ascending opportunity buckets.
+Rates are nullable decimal ratios (0.85 = 85%); zero denominators are null/N/A.
+RecoveryRate uses eligible episodes only, while speed uses recovered episodes
+only. Bad outcomes and recovery episodes remain separate counts. Calendar-day
+recovery metrics, other aggregate families, Decision Gate verdicts and artifact
+export remain deferred.
 
 ```bash
 dotnet test tests/Festival.Simulation.Tests

@@ -7,8 +7,9 @@ full simulation platform and empirical evaluation remain pending.**
 This document defines the minimum planned architecture for evaluating
 `v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
 attempts, daily checkpoints, individual attendee-path reconstruction and
-classification, and attendee recovery observations in memory. Aggregate metrics
-and artifact export remain deferred. No simulation analysis changes production behavior.
+classification, attendee recovery observations and aggregate fairness/recovery
+metrics in memory. Other metric families, Decision Gate verdicts and artifact
+export remain deferred. No simulation analysis changes production behavior.
 
 The [Stage 5 metrics and evaluation framework](metrics-and-evaluation-criteria.md)
 is authoritative for analytical outcomes, populations, denominators,
@@ -370,8 +371,9 @@ FestivalDate remains evidence, without calendar weighting of recovery distance.
 
 Thresholds remain analytical hypotheses requiring stakeholder calibration.
 Retain original evidence/classifications when revising the rubric. Current
-paths remain in memory; analytical database persistence, aggregate rates and
-the planned attendee-paths.json export are not implemented in this slice.
+paths and aggregate fairness/recovery metrics remain in memory; analytical
+database persistence and the planned attendee-paths.json export are not
+implemented in this slice.
 
 Final reconciliation reads existing business tables in fresh scopes. Public
 DbSets and simulation-side read-only projections/SQL can supply the required
@@ -444,7 +446,44 @@ verifies integration with persisted paths.
 Recovery never changes OverallQuality, DirectionScore, OverallQualityBand,
 Direction, Classification or PathClassificationRubric v1. Observations remain in
 SimulationResult only; there is no recovery database persistence, artifact export,
-aggregate metric evaluation or scenario acceptance/gate logic in this increment.
+or scenario acceptance/gate logic. Separate aggregation consumes this evidence.
+
+## Implemented Aggregate Fairness and Recovery Metrics
+
+```text
+AttendeePaths + RecoveryObservations
+→ SimulationMetricsCalculator
+→ SimulationMetrics (Fairness + Recovery)
+→ SimulationResult.Metrics
+```
+
+The runner calls this pure calculator once after reconstruction and recovery
+analysis. It reads only the existing analytical records for the same evaluated
+population and period, without PostgreSQL access, new path reconstruction,
+request-status inspection or scenario intent. Classification is counted from
+AttendeePathRecord.Classification; recovery status, eligibility, quality and
+distance come from supplied RecoveryEpisodes. The rubric and analyzer remain
+unchanged. Raw attempts, checkpoints, paths and recovery records remain available.
+
+ScenarioFairnessMetrics retains evaluated/no-path/insufficient/classifiable
+counts and coverage ratios over all evaluated attendees, classification counts
+and ratios over classifiable paths only, and Good/Medium/Bad outcome counts and
+ratios over persisted path entries only. No-path attendees stay in the population;
+setup/supporting attendees remain excluded upstream.
+
+ScenarioRecoveryMetrics retains total/recovered/unresolved/eligible/ineligible
+episode counts, RecoveryRate = recovered / eligible, Medium/Good recovery counts,
+decimal average/median opportunity distance and an immutable ascending opportunity
+distribution. Eligibility is ObservedOpportunities > 0. Distribution rates use
+RecoveredEpisodeCount; unresolved episodes never enter speed calculations. Buckets
+have no hard-coded maximum. A final Bad still contributes to BadOutcomeCount,
+while consecutive Bad outcomes can belong to one recovery episode.
+
+Rates are nullable decimal ratios in [0, 1] (0.85 means 85%). Zero denominators
+produce null/N/A; no recovered episodes produce null average/median and an empty
+distribution. This is an in-memory result only: no aggregate database storage,
+artifact export, thresholds, verdicts or production behavior changes. Other metric
+families and the broader ScenarioResult below remain planned.
 
 ## MetricEvaluator and ScenarioResult
 

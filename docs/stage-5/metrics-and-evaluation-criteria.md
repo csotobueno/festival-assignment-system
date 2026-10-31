@@ -202,6 +202,12 @@ uses the named denominator for the same scenario, period and reported segment.
 Report numerator and denominator counts alongside rates. When any denominator
 is zero, report `N/A`, never 0% or 100%. Counts can be zero.
 
+Implemented in-memory aggregate rates use nullable decimal ratios in [0, 1]:
+numerator / denominator, without rounding. Thus 0.85 represents 85%; percentage
+formulas below multiply the stored ratio by 100 for presentation. Null represents
+N/A when the denominator is zero. Average and median recovery opportunities also
+use nullable decimal values; their unit is assigned opportunities, not a ratio.
+
 ClassifiablePaths defines eligibility for the three-category fairness gate;
 one-outcome paths are reported separately as Insufficient Evidence. The
 quantitative PathClassificationRubric v1 below exhaustively classifies every
@@ -334,7 +340,7 @@ Direction primarily modifies borderline/intermediate cases.
 Recovery remains a separate diagnostic under sections 6.5–6.6 and never overrides
 the matrix or changes OverallQuality, DirectionScore, OverallQualityBand,
 Direction or Classification. Attendee-level recovery observations are implemented
-in memory; aggregate recovery metrics remain deferred. A path ending with an
+in memory, alongside separate aggregate fairness and recovery metrics. A path ending with an
 open episode is Unresolved, which does not mean failed recovery.
 
 ---
@@ -425,6 +431,8 @@ Equivalently, NotBalancedPathRate <= 15%, when the path rates are evaluable.
 Status: **Initial evaluation hypothesis — Requires stakeholder calibration**.
 This is not a validated organizational requirement. Report all three categories
 separately. N/A does not satisfy or fail the quantitative hypothesis.
+The metrics calculator produces observations only; this hypothesis is not
+implemented as a threshold, pass/fail check or Decision Gate verdict.
 
 ## 6.5 Attendee Recovery Observations
 
@@ -465,10 +473,10 @@ Unresolved). These are analytical in-memory observations,
 not PostgreSQL entities or exported artifacts.
 
 This episode definition replaces the earlier independent-Bad-event recovery
-definition. RecoveryRate and other aggregate recovery rates, averages, medians
-and percentiles are deferred to a later aggregate evaluation feature. This
-increment produces only the raw attendee-level evidence, without acceptance
-thresholds or Decision Gate verdicts.
+definition. ScenarioRecoveryMetrics now aggregates episode counts, RecoveryRate,
+recovery quality, opportunity distribution, average and median from this evidence.
+Recovery percentiles remain deferred. No acceptance thresholds or Decision Gate
+verdicts are calculated.
 
 ### ObservedOpportunities and Recovery Eligibility
 
@@ -490,10 +498,31 @@ B → B is Unresolved with one observed opportunity and is eligible. B → B →
 has two observed opportunities and remains Unresolved and eligible. Neither
 Unresolved case establishes a definitive production failure.
 
-This evidence supports the later aggregate formula RecoveryRate =
-RecoveredEpisodes / RecoveryEligibleEpisodes, where eligible episodes have
-ObservedOpportunities > 0. No episode totals or recovery rate are calculated in
-this increment.
+Recovery effectiveness uses these existing episode properties:
+
+```text
+RecoveryEpisodeCount = count of all supplied recovery episodes
+RecoveredEpisodeCount = count where Status = Recovered
+UnresolvedEpisodeCount = count where Status = Unresolved
+RecoveryEligibleEpisodeCount = count where RecoveryEligible = true
+RecoveryIneligibleEpisodeCount = count where ObservedOpportunities = 0
+
+RecoveryEpisodeCount = RecoveredEpisodeCount + UnresolvedEpisodeCount
+RecoveryEpisodeCount = RecoveryEligibleEpisodeCount + RecoveryIneligibleEpisodeCount
+
+RecoveryRate = RecoveredEpisodeCount / RecoveryEligibleEpisodeCount
+```
+
+Eligibility is exactly ObservedOpportunities > 0. B is reported as ineligible
+and does not reduce RecoveryRate; B → B is eligible and unresolved, so it enters
+the denominator without entering the numerator. With 68 recovered, 12 eligible
+unresolved and 20 ineligible episodes, RecoveryRate = 68 / 80 = 0.85 (85%). All
+32 unresolved episodes remain visible. No eligible episodes means RecoveryRate
+is null/N/A, even if ineligible unresolved episodes exist.
+
+RecoveredToMediumCount and RecoveredToGoodCount count only Recovered episodes
+with the corresponding RecoveryQuality. They retain the Medium/Good distinction
+without changing RecoveryRate or adding another recovery status.
 
 ## 6.6 OpportunitiesToRecovery
 
@@ -541,6 +570,31 @@ here. FestivalDayId, FestivalDate and AssignedAt remain traceable evidence.
 Recovery observations are independent of PathClassificationRubric v1 and cannot
 override or influence any of its formulas, thresholds, scores, bands or labels.
 
+### Aggregate Recovery Speed
+
+Only Recovered episodes with non-null OpportunitiesToRecovery contribute to
+speed. Unresolved episodes never contribute zero, an observed-opportunity count,
+or an invented duration to these calculations.
+
+```text
+AverageOpportunitiesToRecovery = sum(recovered opportunity values) / value count
+MedianOpportunitiesToRecovery = middle value after ascending sort (odd count)
+                               or mean of the two middle values (even count)
+```
+
+Both calculations use deterministic decimal arithmetic. [1, 1, 2, 3] yields
+average 1.75 and median 1.5; [1, 1, 1] yields 1 for both. Without recovered values,
+both are null/N/A.
+
+OpportunityDistribution is an immutable collection of
+RecoveryOpportunityDistribution records, sorted ascending by Opportunities.
+Each bucket retains Opportunities, EpisodeCount and RateAmongRecovered =
+EpisodeCount / RecoveredEpisodeCount. Include only observed buckets, with no
+hard-coded maximum opportunity count. No recovered episodes means an empty
+distribution. For 75, 20 and 5 episodes recovering in 1, 2 and 3 opportunities,
+the corresponding ratios are 0.75, 0.20 and 0.05 (75%, 20%, 5%). No percentile
+metric is implemented.
+
 ## 6.7 NeverGoodRate
 
 ```text
@@ -577,17 +631,65 @@ Report per FestivalDay, cumulative across the festival, and per scenario, using
 PersistedAssignments for that scope. These metrics describe output; alone they
 do not determine attendee fairness.
 
+The implemented scenario aggregate uses entries from evaluated AttendeePaths
+only. PersistedOutcomeCount is their total PathLength; GoodOutcomeCount,
+MediumOutcomeCount and BadOutcomeCount count the respective recorded qualities.
+Each outcome rate uses PersistedOutcomeCount as denominator. Every persisted Bad
+counts, including one on the final observed participation. Absence, rejection,
+conflict, technical failure and invalid input add no outcome.
+
+BadOutcomeCount is distinct from RecoveryEpisodeCount. M → G → B → B → G has
+two Bad outcomes but one recovered episode with OpportunitiesToRecovery = 2.
+Consecutive Bad entries continue one episode; a later Bad after recovery opens
+another. Daily/cumulative breakdowns beyond the scenario total remain planned.
+
 ## 6.10 Insufficient Evidence Reporting
 
 ```text
-InsufficientEvidencePathCount = InsufficientEvidencePaths
-InsufficientEvidencePathRate = InsufficientEvidencePaths
-                               / EvaluatedPaths × 100
+EvaluatedAttendeeCount = AttendeePaths.Count
+NoPersistedPathCount = count where PathLength = 0
+InsufficientEvidenceCount = count where PathLength = 1
+ClassifiablePathCount = count where PathLength >= 2
+
+NoPersistedPathRate = NoPersistedPathCount / EvaluatedAttendeeCount
+InsufficientEvidenceRate = InsufficientEvidenceCount / EvaluatedAttendeeCount
+ClassifiablePathRate = ClassifiablePathCount / EvaluatedAttendeeCount
 ```
 
-EvaluatedPaths has one entry per ParticipatingAttendee. Report the count and rate
-alongside ClassifiablePaths, never inside the
-three-category fairness-rate denominator. No EvaluatedPaths means the rate is N/A.
+These coverage rates include evaluated attendees with no persisted Assignments
+and sum to 1 (100%) when the population is non-empty, subject to decimal precision.
+No evaluated attendees means all three rates are null/N/A. This population-level
+coverage definition replaces the earlier path-only insufficient-evidence rate.
+It prevents favorable classification rates from hiding sparse evidence.
+
+BalancedPathCount, AcceptablePathCount and NotBalancedPathCount count existing
+Classification values only among ClassifiablePaths. Their rates use
+ClassifiablePathCount, excluding lengths 0 and 1, and sum to 1 (100%) when that
+denominator is non-zero. Without classifiable paths, all three rates are null/N/A.
+The calculator never reruns PathClassificationRubric v1.
+
+## 6.11 Implemented Scenario Aggregates
+
+SimulationMetricsCalculator consumes the already reconstructed AttendeePaths
+and corresponding RecoveryObservations for the same evaluated population and
+period. It does not query PostgreSQL, reconstruct paths/recovery, inspect request
+statuses or infer results from scenario intent. Setup/supporting attendees remain
+excluded by the existing reconstruction layer. The typed SimulationMetrics result
+is exposed as SimulationResult.Metrics alongside all raw evidence:
+
+| Family | Model / observations | Rate denominator |
+| --- | --- | --- |
+| Path fairness and evidence coverage | ScenarioFairnessMetrics: evaluated, no-path, insufficient, classifiable and three classification counts/rates | EvaluatedAttendeeCount for coverage; ClassifiablePathCount for classifications |
+| Outcome quality | ScenarioFairnessMetrics: persisted, Good, Medium and Bad outcome counts; three quality rates | PersistedOutcomeCount |
+| Recovery effectiveness | ScenarioRecoveryMetrics: total, recovered, unresolved, eligible/ineligible and recovery-quality counts; RecoveryRate | RecoveryEligibleEpisodeCount for RecoveryRate |
+| Recovery speed | ScenarioRecoveryMetrics: average/median OpportunitiesToRecovery and OpportunityDistribution | RecoveredEpisodeCount for bucket rates; recovered non-null values for average/median |
+
+All counts retain numerator/denominator evidence for their corresponding rates.
+Metrics remain in memory with no analytical tables, artifact export, acceptance
+thresholds or Decision Gate verdicts. Other planned metrics such as NeverGoodRate,
+EndsInBadRate, feasibility, reliability and performance summaries are not added
+by this increment. Existing hypotheses remain provisional and require stakeholder
+calibration; calculated observations do not decide whether a scenario passes.
 
 ---
 
@@ -1796,19 +1898,40 @@ Preserve N/A results and their reason; never replace them with favorable zeros.
 ## Fairness
 
 ```text
-InsufficientEvidencePathCount
-InsufficientEvidencePathRate
+EvaluatedAttendeeCount
+NoPersistedPathCount
+InsufficientEvidenceCount
+ClassifiablePathCount
+NoPersistedPathRate
+InsufficientEvidenceRate
+ClassifiablePathRate
 
+BalancedPathCount
+AcceptablePathCount
+NotBalancedPathCount
 BalancedPathRate
 AcceptablePathRate
 NotBalancedPathRate
 
+RecoveryEpisodeCount
+RecoveredEpisodeCount
+UnresolvedEpisodeCount
+RecoveryEligibleEpisodeCount
+RecoveryIneligibleEpisodeCount
 RecoveryRate
-OpportunitiesToRecovery
+RecoveredToMediumCount
+RecoveredToGoodCount
+AverageOpportunitiesToRecovery
+MedianOpportunitiesToRecovery
+OpportunityDistribution
 
 NeverGoodRate
 EndsInBadRate
 
+PersistedOutcomeCount
+GoodOutcomeCount
+MediumOutcomeCount
+BadOutcomeCount
 GoodOutcomeRate
 MediumOutcomeRate
 BadOutcomeRate
@@ -2166,9 +2289,11 @@ Scenario distributions
 
 This document defines what Stage 5 needs to learn. The minimal sequential
 development runner now retains attempts, daily checkpoints and individual
-persisted attendee-path analysis and recovery observations in memory. Aggregate
-metric evaluation (including RecoveryRate), export and representative empirical
-evaluation remain pending. No production behavior changes; the Stage 4 fairness-rule count remains 19.
+persisted attendee-path analysis, recovery observations and aggregate path
+fairness, evidence coverage, outcome quality and recovery metrics in memory.
+Other aggregate families, Decision Gate verdicts, export and representative
+empirical evaluation remain pending. No production behavior changes; the Stage 4
+fairness-rule count remains 19.
 
 The [simulation architecture and reproducibility strategy](simulation-architecture.md)
 defines the planned Application/PostgreSQL execution and evidence flow around
