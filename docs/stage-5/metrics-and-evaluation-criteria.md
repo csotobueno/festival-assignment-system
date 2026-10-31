@@ -143,9 +143,16 @@ every identifiable member of a group request, not just its submitter.
 | Population | Definition |
 | --- | --- |
 | RegisteredAttendees | All attendees registered in the scenario, including those who never request. |
+| EvaluatedAttendees | Distinct attendees appearing in the evaluated workload in ScenarioManifest.DailyPlans. Supporting/setup attendees outside that workload are excluded, even when they have persisted requests and Assignments. |
 | RequestingAttendees | Attendees included in at least one AttemptedRequest, as defined in section 8. ExcludedInvalidInput attempts and their identifiable attendees are reported separately. |
 | ParticipatingAttendees | Attendees with at least one successfully persisted Assignment during the evaluated period. |
 | AttendeesWithOnlyRejectedOrFailedAttempts | RequestingAttendees with no successfully persisted Assignment in the period. This reporting population includes known conflicts; its name does not imply a persisted Failed status. |
+
+Path analysis and its persisted outcomes are restricted to EvaluatedAttendees
+and the evaluated FestivalDays represented by DailyPlans. Do not select the
+evaluated population from all registered attendees or all persisted Assignments.
+A representative manifest may include all 5,000 attendees as evaluated workload
+participants; this is not a fixed size or a catalog-based selection rule.
 
 Report these population counts separately. Do not silently omit attendees who
 request but receive no Assignment, or input-only requesters. Record excluded
@@ -159,7 +166,9 @@ ExperienceQuality outcome and no additional participation.
 
 `EvaluatedPath` is the chronological sequence of persisted
 `Assignment.ExperienceQuality` values for one attendee during the evaluated
-period. Retain FestivalDay indices with the outcomes for recovery timing.
+period. Order by AssignedAt ASC, then AssignmentId ASC for equal timestamps;
+FestivalDayId is not a chronological key. Retain persisted FestivalDay.Date with
+the outcomes for contextual analysis and later recovery timing.
 
 ```text
 Day 1: Good
@@ -194,10 +203,9 @@ Report numerator and denominator counts alongside rates. When any denominator
 is zero, report `N/A`, never 0% or 100%. Counts can be zero.
 
 ClassifiablePaths defines eligibility for the three-category fairness gate;
-one-outcome paths are reported separately as Insufficient Evidence. An unresolved
-rubric boundary case remains in ClassifiablePaths and blocks calculation of the
-three path rates and fairness gate until explicitly resolved; never shrink the
-denominator to obtain a favorable result.
+one-outcome paths are reported separately as Insufficient Evidence. The
+quantitative PathClassificationRubric v1 below exhaustively classifies every
+valid path of length >= 2; stakeholder calibration remains provisional.
 
 ---
 
@@ -209,111 +217,124 @@ PathClassificationRubric v1 is a provisional analytical rubric for Stage 5
 evaluation only. It is not a production domain policy, part of RotationScore,
 TargetQuality or AssignmentSelectionPolicy, or an additional fairness rule.
 
-Apply the precedence below to each persisted outcome sequence. Record the rubric
-version and any boundary-case decisions with scenario results before interpreting
-the fairness gate. Later calibration must use a new identified rubric revision;
-retain earlier classifications and results with their original version.
+This quantitative definition refines and replaces the earlier qualitative
+wording: OverallQuality + DirectionScore + an exhaustive classification matrix.
+Apply it to persisted evidence only. Numeric mapping, weights and thresholds
+are provisional analytical hypotheses requiring stakeholder calibration. They
+do not change production ExperienceQuality or the 19 Stage 4 fairness rules.
+Record rubric version `v1` with individual results. Later calibration needs an
+identified rubric revision; retain earlier evidence and results with their
+original definition/version.
 
-Temporal order matters. These paths both contain 2 Good, 1 Medium and 2 Bad:
-
-```text
-Bad → Bad → Medium → Good → Good
-Good → Good → Medium → Bad → Bad
-```
-
-The first shows recovery; the second has an unresolved negative ending, covered
-by Step 2 below. Aggregate counts alone cannot classify the experience.
-
-## 4.2 Step 1 — Insufficient Evidence
+## 4.2 Evidence and Short Paths
 
 ```text
-PathLength < 2 → Insufficient Evidence
+PathLength = 0 → no EvaluatedPath, no scores, no classification
+PathLength = 1 → InsufficientEvidence, no DirectionScore or Direction
+PathLength >= 2 → apply both scores, bands and the matrix below
 ```
 
-Among EvaluatedPaths this means PathLength = 1. It is not Balanced, Acceptable or
-Not Balanced. An empty sequence does not create an EvaluatedPath; report its
-attendee in the population accounting instead.
+A zero-length AttendeePathRecord preserves evaluated population context only.
+Its scores, bands and classification are null. A singleton retains diagnostic OverallQuality
+and OverallQualityBand but cannot support a directional classification.
+Absence, rejection, concurrency conflict and technical failure create no
+synthetic entry or Bad. Only persisted Assignment.ExperienceQuality contributes.
 
-## 4.3 Step 2 — Not Balanced
+Each immutable AttendeePathEntry retains AssignmentId, FestivalDayId,
+FestivalDate (from persisted FestivalDay.Date), AssignedAt and ExperienceQuality.
+AttendeePathRecord retains AttendeeId, ordered Entries, PathLength,
+OverallQuality, DirectionScore, OverallQualityBand, Direction, Classification
+and RubricVersion. Entries remain evidence; all scores/bands are derivations.
 
-For PathLength >= 2, classify as Not Balanced when either condition holds:
+## 4.3 OverallQuality
 
-1. The final outcome is Bad: an unresolved negative ending.
-2. A persistent or recurring negative pattern has no meaningful favorable recovery:
-   two consecutive Bad outcomes without a later Good, or multiple Bad episodes
-   without any later Good outcome.
+Use analytical numeric values Good = +1, Medium = 0 and Bad = -1:
 
-For this v1 test, consecutive means adjacent persisted outcomes, not adjacent
-calendar days; a Bad episode is a maximal consecutive run of Bad outcomes.
-The consecutive-Bad indicator is met if a pair has no Good after that pair.
-The recurring-episode indicator is unambiguous when there are at least two
-episodes and no Good after the first Bad. Patterns with intervening Good that
-remain ambiguous are handled by section 4.6, unless another decisive condition
-or reference example applies. Do not infer a new compensation threshold.
+```text
+OverallQuality = sum(QualityValue) / PathLength
+```
 
-Reference examples (G = Good, M = Medium, B = Bad):
+The average lies within [-1, +1]. For example G G G G B = +0.60,
+B B B B G = -0.60 and B M G = 0.00.
 
-| Path | Classification |
+| OverallQualityBand | Threshold |
 | --- | --- |
-| G M M B B | Not Balanced |
-| M M M M B | Not Balanced |
-| M B M B M | Not Balanced |
+| High | OverallQuality >= +0.40 |
+| Medium | OverallQuality > -0.20 AND OverallQuality < +0.40 |
+| Low | OverallQuality <= -0.20 |
 
-## 4.4 Step 3 — Acceptable
+## 4.4 DirectionScore
 
-After Steps 1–2, Acceptable describes meaningful negative exposure with some
-recovery or stabilization, insufficient for Balanced. An all-Medium path is also
-an explicitly accepted reference despite having no Bad exposure.
+For each consecutive participation transition, with i starting at 1 for 1→2:
 
-The following exact v1 reference sequences resolve that interpretation:
+```text
+NormalizedChange(i) = (Quality[i] - Quality[i-1]) / 2
+TransitionScore(i) = 0.60 × Quality[i] + 0.40 × NormalizedChange(i)
+Weight(i) = i
+DirectionScore = Σ(TransitionScore(i) × Weight(i)) / Σ Weight(i)
+```
 
-| Path | Classification |
+For five participations, transition weights are 1, 2, 3, 4. This accounts for
+both the current level and improvement/deterioration, with more weight on recent
+transitions. G→G contributes +0.60, M→M 0, B→B -0.60, B→G +1 and G→B -1.
+The weighted average lies within [-1, +1]. Use decimal arithmetic without
+rounding before band selection.
+
+Weights depend only on participation sequence, never wall-clock gaps or
+calendar dates. Bad on Day 1 followed by Good on Day 3 is one transition when
+Day 2 was absent. Retain FestivalDate for later diagnostics, without adding
+an absent-day outcome.
+
+| Direction | Threshold |
 | --- | --- |
-| B M M M M | Acceptable |
-| G B B G M | Acceptable |
-| B B B G G | Acceptable |
-| B M B M G | Acceptable |
-| M M M M M | Acceptable |
-| G G B B G | Acceptable — provisional, calibratable boundary case |
+| Positive | DirectionScore >= +0.20 |
+| Neutral | DirectionScore > -0.20 AND DirectionScore < +0.20 |
+| Negative | DirectionScore <= -0.20 |
 
-The G G B B G boundary is resolved as Acceptable in v1; a later rubric revision
-may change it without rewriting earlier results.
+## 4.5 Classification Matrix
 
-## 4.5 Step 4 — Balanced
+For PathLength >= 2:
 
-After earlier steps, Balanced describes a reasonably balanced complete trajectory
-with no persistent unresolved negative pattern; unfavorable outcomes are isolated
-or sufficiently recovered. The exact v1 reference sequences are:
+| OverallQualityBand | Positive Direction | Neutral Direction | Negative Direction |
+| --- | --- | --- | --- |
+| High | Balanced | Balanced | Acceptable |
+| Medium | Balanced | Acceptable | NotBalanced |
+| Low | Acceptable | NotBalanced | NotBalanced |
 
-| Path | Classification |
-| --- | --- |
-| G G M G M | Balanced |
-| M G M M G | Balanced |
-| B G M M G | Balanced |
-| G G M B M | Balanced |
-| B B M G G | Balanced |
-| B M M M G | Balanced |
-| G M B M G | Balanced |
+Threshold inclusivity is intentional: +0.40 quality is High, -0.20 quality is
+Low, +0.20 direction is Positive and -0.20 direction is Negative. Every valid
+path is deterministically covered. There is no unresolved-path fallback or
+additional rule based on ending in Bad, Bad counts/runs or recovery events.
+The displayed labels Not Balanced and Insufficient Evidence correspond to
+the analytical values NotBalanced and InsufficientEvidence.
 
-## 4.6 Unresolved Boundary Cases
+## 4.6 Reference Examples and Recovery Separation
 
-The qualitative descriptions are not permission to invent a numerical balance
-threshold, generalize the reference examples by aggregate counts, or default
-every remaining path to Acceptable or Balanced. If Steps 1–2 and the exact
-references do not decide a path, retain it as an unresolved versioned boundary
-case rather than silently inventing a business principle.
+G = Good, M = Medium, B = Bad:
 
-For each such sequence, record the exact path, occurrence count, rubric version,
-reason for ambiguity, and any explicit later decision and its revision. This is
-an evaluation record, not a fourth fairness category or a production abstraction.
-This procedure also applies to unlisted paths of length 2..4.
+| Path | OverallQuality | DirectionScore | Quality band | Direction | Classification |
+| --- | --- | --- | --- | --- | --- |
+| G G G G G | +1.00 | +0.60 | High | Positive | Balanced |
+| G G G G B | +0.60 | -0.04 | High | Neutral | Balanced |
+| B B B B G | -0.60 | +0.04 | Low | Neutral | NotBalanced |
+| M M M M M | 0.00 | 0.00 | Medium | Neutral | Acceptable |
+| B M M M G | 0.00 | +0.34 | Medium | Positive | Balanced |
+| G M M M B | 0.00 | -0.34 | Medium | Negative | NotBalanced |
+| B B M G G | 0.00 | +0.46 | Medium | Positive | Balanced |
+| B B B G G | -0.20 | +0.36 | Low | Positive | Acceptable |
+| B M B M G | -0.20 | +0.24 | Low | Positive | Acceptable |
+| M B M B M | -0.40 | -0.20 | Low | Negative | NotBalanced |
+| B M G | 0.00 | +0.60 | Medium | Positive | Balanced |
+| G M B | 0.00 | -0.60 | Medium | Negative | NotBalanced |
 
-Report known classification counts and unresolved sequences. Do not exclude an
-unresolved ClassifiablePath, count it as Insufficient Evidence, or publish a
-partial three-category rate as the completed result. Until every ClassifiablePath
-has a recorded classification, report those rates and the fairness gate as
-`N/A — unresolved rubric boundary cases`. The rubric intentionally preserves
-unresolved judgments instead of claiming exhaustive business calibration.
+Overall quality is dominant: G G G G B remains Balanced after sustained Good;
+one late Good in B B B B G does not erase the poor accumulated experience.
+Direction primarily modifies borderline/intermediate cases.
+
+Recovery remains a separate diagnostic under sections 6.5–6.6 and never overrides
+the matrix. A final Bad with no later participation opportunity is not
+automatically failed recovery. Recovery observations/metrics are deferred;
+persisted FestivalDate and evidence are retained for their later implementation.
 
 ---
 
@@ -389,7 +410,7 @@ BalancedPathRate + AcceptablePathRate + NotBalancedPathRate = 100%
 ```
 
 The identity applies when ClassifiablePaths is non-empty and fully classified.
-Zero population or unresolved rubric boundaries produce N/A, as defined above.
+Zero population produces N/A, as defined above.
 Short paths and unsuccessfully requesting attendees remain separately visible.
 
 ## 6.4 Initial Fairness Gate
@@ -463,8 +484,8 @@ NeverGoodRate = ParticipatingAttendees with no Good in EvaluatedPath
                 / ParticipatingAttendees × 100
 ```
 
-Includes one-outcome paths. NeverGoodRate is not NotBalancedPathRate: M M M M M
-and B M M M M are Acceptable reference paths without any Good.
+Includes one-outcome paths. NeverGoodRate is not NotBalancedPathRate:
+M M M M M is an Acceptable reference path without any Good.
 
 ## 6.8 EndsInBadRate
 
@@ -501,7 +522,7 @@ InsufficientEvidencePathRate = InsufficientEvidencePaths
 ```
 
 EvaluatedPaths has one entry per ParticipatingAttendee. Report the count and rate
-alongside ClassifiablePaths and any unresolved rubric cases, never inside the
+alongside ClassifiablePaths, never inside the
 three-category fairness-rate denominator. No EvaluatedPaths means the rate is N/A.
 
 ---
@@ -519,7 +540,7 @@ Decision Gate metrics:
 | Does GroupRotationScore averaging hide meaningful individual imbalance? | Inspect existing attendee-level paths in group scenarios when needed: NotBalancedPathRate for attendees assigned in groups, NeverGoodRate by group-size range, and individual paths inside heterogeneous groups. |
 
 Use the same named denominators restricted to each explicitly recorded cohort;
-retain short-path and unresolved-boundary reporting within those cohorts.
+retain short-path reporting within those cohorts.
 Record group membership per day rather than assuming permanent groups.
 GroupSizeSuccessRate alone does not answer the fairness question. Inventory
 checkpoints and these breakdowns remain diagnostics unless measured evidence
@@ -1687,7 +1708,7 @@ deterministic generation procedure with all inputs needed to reconstruct:
 
 Preserve or regenerate the actual workload, not only its marginal distributions.
 Deterministic Zone identities matter because ZoneId is an exact-tie ordering key.
-Record PathClassificationRubric version and boundary-case resolutions with the
+Record PathClassificationRubric version, formulas and inclusive thresholds with the
 evaluation configuration, plus benchmark environment and warm-up/cold-start
 treatment for performance runs.
 
@@ -1705,7 +1726,7 @@ Each scenario should produce the same core summary. Report the evaluated period,
 scenario/repository/rubric revisions, named denominator counts and exclusions.
 Include RegisteredAttendees, RequestingAttendees, ParticipatingAttendees,
 AttendeesWithOnlyRejectedOrFailedAttempts, EvaluatedPaths, ClassifiablePaths,
-unresolved boundary sequences/counts, and all five analytical attempt counts.
+InsufficientEvidencePaths, and all five analytical attempt counts.
 Preserve N/A results and their reason; never replace them with favorable zeros.
 
 ## Fairness
@@ -2061,7 +2082,7 @@ Current status:
 
 ```text
 Fairness classification
-→ PathClassificationRubric v1; provisional analytical baseline with explicit boundary cases
+→ PathClassificationRubric v1; exhaustive quantitative matrix with provisional analytical thresholds
 
 Fairness threshold
 → initial hypothesis
@@ -2079,12 +2100,13 @@ Scenario distributions
 → engineering hypotheses pending real organization data
 ```
 
-This document defines what Stage 5 needs to learn. The initial framework is
-documented; simulation, logging/attempt-record instrumentation and empirical
-evaluation remain pending. No production behavior or test changed with this
-documentation baseline, and the official Stage 4 fairness-rule count remains 19.
+This document defines what Stage 5 needs to learn. The minimal sequential
+development runner now retains attempts, daily checkpoints and individual
+persisted attendee-path analysis in memory. Aggregate metric evaluation,
+recovery observations, export and representative empirical evaluation remain
+pending. No production behavior changes; the Stage 4 fairness-rule count remains 19.
 
 The [simulation architecture and reproducibility strategy](simulation-architecture.md)
 defines the planned Application/PostgreSQL execution and evidence flow around
-this framework. Harness implementation, instrumentation and simulation runs remain
+this framework. The full evaluation platform and representative runs remain
 pending; this document remains the analytical authority.

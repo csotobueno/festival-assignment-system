@@ -193,8 +193,19 @@ retain the baseline's independent pre-save-read consistency limitation.
 One immutable end-of-day checkpoint follows each drained daily plan. Its counts
 include only that day's evaluated attempts; remaining Good/Medium/Bad/total
 capacity is global for that FestivalDay and includes setup occupancy effects.
-Attempts and checkpoints remain in `SimulationResult`; no analytical tables,
+Attempts, checkpoints and attendee paths remain in `SimulationResult`; no analytical tables,
 aggregate rates, latency summaries or artifact files are generated.
+
+Attendee-path reconstruction selects distinct participants from the manifest's
+evaluated `DailyPlans` workload, excluding setup/supporting attendees. One
+read-only batched PostgreSQL query joins Assignments to FestivalDays, retaining
+persisted dates and quality in `AssignedAt`, then `AssignmentId` order. The
+Stage 5 analytical rubric v1 derives OverallQuality, participation-weighted
+DirectionScore and the classification matrix in memory. Evaluated attendees
+without Assignments retain zero-length context records with null scores and
+classification; singletons are InsufficientEvidence without directional scores.
+Absence, rejection, conflict and technical failure add no synthetic outcomes.
+Recovery diagnostics and aggregate evaluation remain deferred.
 
 ```bash
 dotnet test tests/Festival.Simulation.Tests
