@@ -74,6 +74,9 @@ public sealed class MinimalSimulationTests
             .And.OnlyContain(path => path.Entries.IsEmpty && path.OverallQuality == null
                 && path.DirectionScore == null && path.OverallQualityBand == null
                 && path.Direction == null && path.Classification == null);
+        result.RecoveryObservations.Select(record => record.AttendeeId).Should().Equal(
+            result.AttendeePaths.Select(path => path.AttendeeId));
+        result.RecoveryObservations.Should().HaveCount(5).And.OnlyContain(record => record.Episodes.IsEmpty);
     }
 
     [Fact]
@@ -202,6 +205,9 @@ public sealed class MinimalSimulationTests
         result.AttendeePaths.Select(path => path.AttendeeId).Should().BeEquivalentTo(evaluatedAttendees);
         result.AttendeePaths.Should().HaveCount(2).And.NotContain(path =>
             manifest.Setup.SupportingAttendees.Any(attendee => attendee.Id == path.AttendeeId));
+        result.RecoveryObservations.Select(record => record.AttendeeId).Should().BeEquivalentTo(evaluatedAttendees);
+        result.RecoveryObservations.Should().HaveCount(2).And.NotContain(record =>
+            manifest.Setup.SupportingAttendees.Any(attendee => attendee.Id == record.AttendeeId));
         foreach (var path in result.AttendeePaths)
         {
             var persisted = evaluatedAssignments.Where(assignment => assignment.AttendeeId == path.AttendeeId)
@@ -218,6 +224,21 @@ public sealed class MinimalSimulationTests
             path.OverallQualityBand.Should().Be(OverallQualityBand.Medium);
             path.Direction.Should().Be(PathDirection.Positive);
             path.Classification.Should().Be(PathClassification.Balanced);
+
+            var episode = result.RecoveryObservations.Single(record => record.AttendeeId == path.AttendeeId)
+                .Episodes.Should().ContainSingle().Subject;
+            episode.AttendeeId.Should().Be(path.AttendeeId);
+            episode.StartAssignmentId.Should().Be(persisted[0].Id);
+            episode.StartFestivalDayId.Should().Be(persisted[0].FestivalDayId);
+            episode.StartFestivalDate.Should().Be(path.Entries[0].FestivalDate);
+            episode.StartAssignedAt.Should().Be(persisted[0].AssignedAt);
+            episode.RecoveryAssignmentId.Should().Be(persisted[1].Id);
+            episode.RecoveryFestivalDayId.Should().Be(persisted[1].FestivalDayId);
+            episode.RecoveryFestivalDate.Should().Be(path.Entries[1].FestivalDate);
+            episode.RecoveryAssignedAt.Should().Be(persisted[1].AssignedAt);
+            episode.Status.Should().Be(RecoveryEpisodeStatus.Recovered);
+            episode.RecoveryQuality.Should().Be(ExperienceQuality.Good);
+            episode.OpportunitiesToRecovery.Should().Be(1);
         }
         foreach (var request in occupancyRequests)
         {

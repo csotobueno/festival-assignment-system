@@ -193,7 +193,7 @@ retain the baseline's independent pre-save-read consistency limitation.
 One immutable end-of-day checkpoint follows each drained daily plan. Its counts
 include only that day's evaluated attempts; remaining Good/Medium/Bad/total
 capacity is global for that FestivalDay and includes setup occupancy effects.
-Attempts, checkpoints and attendee paths remain in `SimulationResult`; no analytical tables,
+Attempts, checkpoints, attendee paths and recovery observations remain in `SimulationResult`; no analytical tables,
 aggregate rates, latency summaries or artifact files are generated.
 
 Attendee-path reconstruction selects distinct participants from the manifest's
@@ -205,7 +205,18 @@ DirectionScore and the classification matrix in memory. Evaluated attendees
 without Assignments retain zero-length context records with null scores and
 classification; singletons are InsufficientEvidence without directional scores.
 Absence, rejection, conflict and technical failure add no synthetic outcomes.
-Recovery diagnostics and aggregate evaluation remain deferred.
+The independent `AttendeeRecoveryAnalyzer` derives recovery episodes only from
+those reconstructed path entries. Bad opens an episode, consecutive Bad keeps it
+open, and the first later Medium/Good closes it as Recovered while preserving
+recovery quality. A later Bad starts another episode; an open episode at path end
+is Unresolved, not failed recovery. `OpportunitiesToRecovery` counts later
+persisted Assignments through recovery, excluding the opening Bad and any absent
+days or requests without Assignments. Both evaluated attendees in the minimal
+scenario have one Bad → Good episode with distance 1. Immutable attendee recovery
+records, including empty Episodes for attendees without Bad, are exposed through
+`SimulationResult.RecoveryObservations`; supporting attendees remain excluded.
+Recovery does not influence path classification. Aggregate recovery metrics,
+calendar-day recovery metrics and artifact export remain deferred.
 
 ```bash
 dotnet test tests/Festival.Simulation.Tests
