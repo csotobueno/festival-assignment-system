@@ -2,10 +2,13 @@
 
 ## Status, Purpose and Authority
 
-**Architecture agreed; implementation and empirical evaluation remain pending.**
+**Architecture agreed; minimal sequential development slice implemented;
+full simulation platform and empirical evaluation remain pending.**
 This document defines the minimum planned architecture for evaluating
-`v0.3.0 — Fair Assignment Engine`. It introduces no executable project, production
-change, instrumentation or new test.
+`v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
+attempts, daily checkpoints and individual attendee-path reconstruction and
+classification in memory. Aggregate metrics, recovery observations and artifact
+export remain deferred. No simulation analysis changes production behavior.
 
 The [Stage 5 metrics and evaluation framework](metrics-and-evaluation-criteria.md)
 is authoritative for analytical outcomes, populations, denominators,
@@ -318,42 +321,57 @@ not replace the actual request-time evidence needed for no-block diagnosis.
 
 ## Persisted Evidence and AttendeePathRecord
 
-At scenario completion, PostgreSQL Assignments are the source of truth:
+At scenario completion, the evaluated population is the distinct attendee
+membership in ScenarioManifest.DailyPlans' request workload. It is not all
+registered attendees or all Assignment owners. Setup/supporting attendees outside
+that workload are excluded even when their requests/Assignments are persisted.
+PostgreSQL Assignments are the source of truth for real experiences:
 
 ```text
-persisted Assignments in the evaluated period
+ScenarioManifest.DailyPlans → distinct EvaluatedAttendees
+→ persisted Assignments for that population in evaluated FestivalDays
 → group by AttendeeId
-→ chronological recorded ExperienceQuality with FestivalDay indices
+→ chronological entries ordered by AssignedAt ASC, AssignmentId ASC
 → EvaluatedPath
-→ PathClassificationRubric v1
+→ OverallQuality + DirectionScore → PathClassificationRubric v1 matrix
 → AttendeePathRecord
 ```
 
-Each path record retains AttendeeId, ParticipationCount/PathLength, chronological
-persisted outcomes and their provenance, rubric/classification or unresolved-case
-reason, and recovery observations. Retain AssignmentId, AssignmentRequestId,
-FestivalDayId/index, AssignedAt, recorded quality and SpotCode/location facts in
-the persisted outcome projection. Together with attempts and the manifest, this
-supports assignment distribution, duplicate checks, complete-group checks and
-drill-down to individual placements after the disposable database is gone.
-Do not replace persisted outcomes with the simulator's remembered return values.
+AttendeePathReconstructor performs one no-tracking batched Assignment/FestivalDay
+join for all evaluated attendees, filtered to the FestivalDays in DailyPlans.
+FestivalDate comes from persisted FestivalDay.Date in that projection, without
+N+1 queries or using FestivalDayId as chronological order. Grouping and analytical
+derivations happen in memory after the read. Initial history outside those days
+can influence production decisions but is excluded from evaluated paths.
 
-Exactly one non-empty path belongs to each ParticipatingAttendee. A representative
-five-day scenario may produce around 5,000 records depending on successful
-participation; this is not a hard-coded limit. Export them separately in
-`attendee-paths.json`. Registered/requesting attendees with no persisted Assignment
-remain visible through the manifest, attempts and population accounting, with
-no synthetic empty EvaluatedPath or quality for absent/rejected/failed days.
-Initial history influences production decisions but is excluded from evaluated
-paths and period metrics. Recovery durations retain FestivalDay indices rather
-than compressed outcome positions.
+Each immutable AttendeePathEntry retains AssignmentId, FestivalDayId,
+FestivalDate, AssignedAt and recorded ExperienceQuality. AttendeePathRecord
+retains AttendeeId, ordered Entries, PathLength, OverallQuality, DirectionScore,
+OverallQualityBand, Direction, Classification and RubricVersion. Other placement
+facts, including AssignmentRequestId and Spot/location, remain in the existing
+raw persisted Assignment observations. Do not replace persisted evidence with
+Application return values, attempts, scenario intent or current Zone quality.
 
-Use the framework's exact path classification and unresolved-boundary procedure.
-PathLength = 1 is Insufficient Evidence; ClassifiablePaths have length >= 2.
-Unresolved ClassifiablePaths stay in that denominator and block the three path
-rates/fairness gate with `N/A — unresolved rubric boundary cases`. Do not invent
-a fourth fairness category or default unlisted paths to a favorable class.
-Record later rubric revisions and retain the original evidence/classifications.
+SimulationResult.AttendeePaths contains one record per evaluated attendee.
+Only non-empty records represent EvaluatedPaths: zero-length records preserve
+population context with null scores, bands and classification. PathLength = 1 is
+InsufficientEvidence, with diagnostic OverallQuality/band and null DirectionScore
+and Direction. ClassifiablePaths have length >= 2. A representative manifest
+may evaluate all 5,000 attendees; no fixed limit or population size is assumed.
+
+The framework defines the exhaustive matrix and inclusive thresholds. Quality
+values Good/Medium/Bad map to +1/0/-1 only in Simulation. Direction accounts for
+current quality and normalized change with participation-transition weights
+1, 2, 3, ...; calendar gaps never weight classification. Absence, rejection,
+conflict and technical failure add no synthetic outcomes. Recovery is a separate
+deferred diagnostic, cannot override the matrix, and a final Bad without later
+participation is not automatically failed recovery. Retained FestivalDate will
+support later FestivalDay progression/recovery calculations.
+
+Thresholds remain analytical hypotheses requiring stakeholder calibration.
+Retain original evidence/classifications when revising the rubric. Current
+paths remain in memory; analytical database persistence, aggregate rates and
+the planned attendee-paths.json export are not implemented in this slice.
 
 Final reconciliation reads existing business tables in fresh scopes. Public
 DbSets and simulation-side read-only projections/SQL can supply the required
@@ -381,7 +399,7 @@ consistency, performance and relevant diagnostics. It follows the
 without duplicating all raw records. Report RegisteredAttendees,
 RequestingAttendees, ParticipatingAttendees,
 AttendeesWithOnlyRejectedOrFailedAttempts, EvaluatedPaths, ClassifiablePaths,
-InsufficientEvidencePaths, unresolved cases and all five attempt categories.
+InsufficientEvidencePaths and all five attempt categories.
 
 Keep the framework's named denominators: NormallyProcessedRequests for normal
 success/rejection rates, AttemptedRequests for technical errors/conflicts and
@@ -473,7 +491,7 @@ ExecutionMode, ConcurrencyLevel, StartedAt, CompletedAt
 ```
 
 Include the evaluated period, manifest identity/content fingerprint, rubric
-boundary decisions, benchmark environment and run completeness. EngineVersion
+formulas/thresholds, benchmark environment and run completeness. EngineVersion
 identifies the conceptual baseline/release; RepositoryCommitSha identifies the
 source revision. Record working-tree state and preserve a source diff/content
 identity for a dirty evidence run: a commit SHA alone cannot identify modified
@@ -535,8 +553,8 @@ compatibility checks; deterministic ID/random-generator algorithms; concrete
 materialization and pass-through observation mechanics; minimal checkpoint
 fields/segment cadence and read projections; artifact retention/publication;
 future concurrent scheduling; and later multi-scenario comparison tooling.
-Unresolved rubric cases and real organization distributions/thresholds follow
-the metrics framework's existing calibration process, not new architecture rules.
+Rubric thresholds and real organization distributions follow the metrics
+framework's stakeholder calibration process, not new architecture rules.
 
 No generic simulation plugin system, shared test framework, analytics database,
 dashboard, event sourcing, production global-state abstraction, new request

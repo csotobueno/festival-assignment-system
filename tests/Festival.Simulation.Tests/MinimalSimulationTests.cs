@@ -15,7 +15,7 @@ public sealed class MinimalSimulationTests
         var definition = MinimalRecoveryScenarioDefinition.Create();
         definition = definition with
         {
-            AttendeeCount = 5,
+            AttendeeCount = 6,
             Topology =
             [
                 new("front", ZoneType.FrontStanding, 2),
@@ -59,6 +59,21 @@ public sealed class MinimalSimulationTests
         result.DailyCheckpoints.Should().ContainSingle().Which.Should().Be(
             new DailySimulationCheckpoint(definition.ScenarioId, manifest.DailyPlans[0].FestivalDayId,
                 4, 1, 3, 2, 0, 2, 4));
+
+        // Catalog attendee 6 never requests. Rejected-only attendees 3..5 remain
+        // evaluated, without synthetic Bad entries or empty classifications.
+        result.AttendeePaths.Select(path => path.AttendeeId).Should().BeEquivalentTo(
+            manifest.DailyPlans.SelectMany(day => day.Requests).SelectMany(request => request.Members)
+                .Select(member => member.Id).Distinct());
+        result.AttendeePaths.Should().HaveCount(5);
+        result.AttendeePaths.Where(path => path.PathLength == 1).Should().HaveCount(2)
+            .And.OnlyContain(path => path.Entries[0].ExperienceQuality == ExperienceQuality.Medium
+                && path.Classification == PathClassification.InsufficientEvidence
+                && path.DirectionScore == null && path.Direction == null);
+        result.AttendeePaths.Where(path => path.PathLength == 0).Should().HaveCount(3)
+            .And.OnlyContain(path => path.Entries.IsEmpty && path.OverallQuality == null
+                && path.DirectionScore == null && path.OverallQualityBand == null
+                && path.Direction == null && path.Classification == null);
     }
 
     [Fact]
@@ -181,6 +196,29 @@ public sealed class MinimalSimulationTests
         occupancyAssignments.Should().BeEquivalentTo(manifest.Setup.Assignments);
         evaluatedAssignments.Select(assignment => assignment.AttendeeId).Distinct().Should().BeEquivalentTo(
             manifest.Catalog.Attendees.Select(attendee => attendee.Id));
+
+        var evaluatedAttendees = manifest.DailyPlans.SelectMany(day => day.Requests)
+            .SelectMany(request => request.Members).Select(member => member.Id).Distinct().ToArray();
+        result.AttendeePaths.Select(path => path.AttendeeId).Should().BeEquivalentTo(evaluatedAttendees);
+        result.AttendeePaths.Should().HaveCount(2).And.NotContain(path =>
+            manifest.Setup.SupportingAttendees.Any(attendee => attendee.Id == path.AttendeeId));
+        foreach (var path in result.AttendeePaths)
+        {
+            var persisted = evaluatedAssignments.Where(assignment => assignment.AttendeeId == path.AttendeeId)
+                .OrderBy(assignment => assignment.AssignedAt).ThenBy(assignment => assignment.Id.Value).ToArray();
+            path.Entries.Select(entry => entry.AssignmentId).Should().Equal(persisted.Select(assignment => assignment.Id));
+            path.Entries.Select(entry => entry.FestivalDayId).Should().Equal(persisted.Select(assignment => assignment.FestivalDayId));
+            path.Entries.Select(entry => entry.FestivalDate).Should().Equal(persisted.Select(assignment =>
+                manifest.Catalog.FestivalDays.Single(day => day.Id == assignment.FestivalDayId).Date));
+            path.Entries.Select(entry => entry.AssignedAt).Should().Equal(persisted.Select(assignment => assignment.AssignedAt));
+            path.Entries.Select(entry => entry.ExperienceQuality).Should().Equal(ExperienceQuality.Bad, ExperienceQuality.Good);
+            path.PathLength.Should().Be(2);
+            path.OverallQuality.Should().Be(0m);
+            path.DirectionScore.Should().Be(1m);
+            path.OverallQualityBand.Should().Be(OverallQualityBand.Medium);
+            path.Direction.Should().Be(PathDirection.Positive);
+            path.Classification.Should().Be(PathClassification.Balanced);
+        }
         foreach (var request in occupancyRequests)
         {
             var assignments = occupancyAssignments

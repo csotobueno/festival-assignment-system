@@ -22,7 +22,8 @@ public sealed record ScenarioMetadata(
     SimulationExecutionMode ExecutionMode,
     int ConcurrencyLevel);
 
-// Physical topology is shared by every day; Attendees contains the evaluated population.
+// Physical topology is shared by every day. Attendees is the registered catalog;
+// evaluated population is the distinct membership of DailyPlans' workload.
 public sealed record ScenarioCatalog(
     ImmutableArray<FestivalDay> FestivalDays,
     ImmutableArray<Attendee> Attendees,
