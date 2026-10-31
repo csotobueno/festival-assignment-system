@@ -414,6 +414,17 @@ fields for the closing Assignment, RecoveryQuality and OpportunitiesToRecovery.
 Those recovery fields are null for Unresolved episodes. Get-only properties and
 immutable collections preserve read-only evidence without copying attendee paths.
 
+Every episode also retains non-negative ObservedOpportunities: later persisted
+path entries after the opening Bad while the episode is open, including the
+closing Medium/Good when present. For Unresolved episodes, count through the end
+of the path. RecoveryEligible is computed as ObservedOpportunities > 0, without
+extra statuses or stored mutable state. B is Unresolved with zero opportunities
+and is not eligible; B → B is Unresolved with one and is eligible. Neither is a
+definitive production failure. Recovered episodes have ObservedOpportunities equal
+to OpportunitiesToRecovery; Unresolved episodes keep OpportunitiesToRecovery null.
+The analyzer uses the same path-entry indices for both counts, with no new reads
+or changes to SimulationResult.RecoveryObservations.
+
 OpportunitiesToRecovery counts entries after the opening Bad through the closing
 Medium/Good (closing index minus opening index). B → B → M has distance 2.
 Absence and any rejected/conflicted/failed/invalid request without a persisted
@@ -425,7 +436,8 @@ and deferred; retained dates remain evidence only.
 
 The deterministic minimal scenario produces one Recovered episode per evaluated
 attendee from persisted Bad → Good, with RecoveryQuality = Good and
-OpportunitiesToRecovery = 1. Supporting occupancy remains excluded. Pure
+ObservedOpportunities = OpportunitiesToRecovery = 1 and RecoveryEligible = true.
+Supporting occupancy remains excluded. Pure
 analytical tests cover episode derivation; the existing PostgreSQL-backed run
 verifies integration with persisted paths.
 

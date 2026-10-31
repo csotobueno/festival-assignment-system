@@ -459,8 +459,9 @@ no Assignments (Episodes is empty). Setup/supporting attendees outside the
 evaluated workload remain excluded. Each RecoveryEpisode retains AttendeeId;
 StartAssignmentId, StartFestivalDayId, StartFestivalDate and StartAssignedAt;
 nullable RecoveryAssignmentId, RecoveryFestivalDayId, RecoveryFestivalDate and
-RecoveryAssignedAt; nullable RecoveryQuality and OpportunitiesToRecovery; and
-Status (Recovered or Unresolved). These are analytical in-memory observations,
+RecoveryAssignedAt; nullable RecoveryQuality and OpportunitiesToRecovery;
+ObservedOpportunities and computed RecoveryEligible; and Status (Recovered or
+Unresolved). These are analytical in-memory observations,
 not PostgreSQL entities or exported artifacts.
 
 This episode definition replaces the earlier independent-Bad-event recovery
@@ -469,10 +470,37 @@ and percentiles are deferred to a later aggregate evaluation feature. This
 increment produces only the raw attendee-level evidence, without acceptance
 thresholds or Decision Gate verdicts.
 
+### ObservedOpportunities and Recovery Eligibility
+
+ObservedOpportunities is a non-negative integer counting later persisted
+Assignment-derived path entries observed while the episode is open. The opening
+Bad is excluded; the first later Medium/Good is included and ends the count.
+For an Unresolved episode, count through the end of the path instead.
+
+```text
+RecoveryEligible = ObservedOpportunities > 0
+
+Recovered: ObservedOpportunities = OpportunitiesToRecovery
+Unresolved: ObservedOpportunities >= 0, OpportunitiesToRecovery = null
+```
+
+RecoveryEligible is a computed read-only property, not a new status or stored
+mutable state. B is Unresolved with zero later opportunities and is not eligible;
+B → B is Unresolved with one observed opportunity and is eligible. B → B → B
+has two observed opportunities and remains Unresolved and eligible. Neither
+Unresolved case establishes a definitive production failure.
+
+This evidence supports the later aggregate formula RecoveryRate =
+RecoveredEpisodes / RecoveryEligibleEpisodes, where eligible episodes have
+ObservedOpportunities > 0. No episode totals or recovery rate are calculated in
+this increment.
+
 ## 6.6 OpportunitiesToRecovery
 
 The primary recovery distance counts persisted Assignments **after** the Bad
-that opens the episode, **including** the Medium or Good that closes it:
+that opens the episode, **including** the Medium or Good that closes it.
+It is populated only for Recovered episodes; Unresolved episodes retain null
+regardless of their ObservedOpportunities:
 
 ```text
 OpportunitiesToRecovery = recovery entry index - opening Bad entry index
@@ -481,24 +509,28 @@ OpportunitiesToRecovery = recovery entry index - opening Bad entry index
 Indices refer to the already ordered attendee path, not FestivalDay indices,
 calendar dates or request attempts.
 
-| Persisted path | Recovery episodes | OpportunitiesToRecovery | RecoveryQuality |
-| --- | --- | --- | --- |
-| G → G → M or M → G | None | — | — |
-| B → M | One Recovered | 1 | Medium |
-| B → G | One Recovered | 1 | Good |
-| B → B → M | One Recovered | 2 | Medium |
-| B → B → B → G | One Recovered | 3 | Good |
-| B → M → B → G | Two Recovered | 1, 1 | Medium, Good |
-| B → B → M → B → B → G | Two Recovered | 2, 2 | Medium, Good |
-| B → B → M → G → B → B → G | Two Recovered | 2, 2 | Medium, Good |
-| B or B → B | One Unresolved | null | null |
+| Persisted path | Recovery episodes | ObservedOpportunities | RecoveryEligible | OpportunitiesToRecovery | RecoveryQuality |
+| --- | --- | --- | --- | --- | --- |
+| G → G → M or M → G | None | — | — | — | — |
+| B | One Unresolved | 0 | false | null | null |
+| B → B | One Unresolved | 1 | true | null | null |
+| B → B → B | One Unresolved | 2 | true | null | null |
+| B → M | One Recovered | 1 | true | 1 | Medium |
+| B → G | One Recovered | 1 | true | 1 | Good |
+| B → B → M | One Recovered | 2 | true | 2 | Medium |
+| B → B → G | One Recovered | 2 | true | 2 | Good |
+| B → B → B → G | One Recovered | 3 | true | 3 | Good |
+| B → M → B → G | Two Recovered | 1, 1 | true, true | 1, 1 | Medium, Good |
+| B → M → B → B → G | Two Recovered | 1, 2 | true, true | 1, 2 | Medium, Good |
+| B → B → M → B → B → G | Two Recovered | 2, 2 | true, true | 2, 2 | Medium, Good |
+| B → B → M → G → B → B → G | Two Recovered | 2, 2 | true, true | 2, 2 | Medium, Good |
 
 Absence, DomainRejected requests, concurrency conflicts, technical failures,
 invalid inputs and any request without a persisted Assignment add no path entry
 and no recovery opportunity. Bad on Day 1, absence on Day 2 and Good on Day 3
 therefore produces B → G with OpportunitiesToRecovery = 1. Bad, a rejected
 request and Good also yields 1. SimulationAttemptRecord is never used to
-calculate recovery distance.
+calculate recovery distance, ObservedOpportunities or RecoveryEligible.
 
 Absence or failed requests should not make the Assignment Engine appear slower
 to recover when it did not have an assigned opportunity to produce a new

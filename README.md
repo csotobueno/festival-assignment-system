@@ -209,7 +209,11 @@ The independent `AttendeeRecoveryAnalyzer` derives recovery episodes only from
 those reconstructed path entries. Bad opens an episode, consecutive Bad keeps it
 open, and the first later Medium/Good closes it as Recovered while preserving
 recovery quality. A later Bad starts another episode; an open episode at path end
-is Unresolved, not failed recovery. `OpportunitiesToRecovery` counts later
+is Unresolved, not failed recovery. `ObservedOpportunities` counts later persisted
+path entries while the episode is open; `RecoveryEligible` is computed as that
+count being greater than zero. Thus B has no later opportunity, while B → B has
+one; both remain Unresolved. `OpportunitiesToRecovery` is populated only for
+Recovered episodes, equals their `ObservedOpportunities`, and counts later
 persisted Assignments through recovery, excluding the opening Bad and any absent
 days or requests without Assignments. Both evaluated attendees in the minimal
 scenario have one Bad → Good episode with distance 1. Immutable attendee recovery

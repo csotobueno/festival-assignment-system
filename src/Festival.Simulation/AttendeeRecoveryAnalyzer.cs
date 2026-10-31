@@ -31,7 +31,8 @@ public static class AttendeeRecoveryAnalyzer
         }
 
         if (startIndex >= 0)
-            episodes.Add(new RecoveryEpisode(path.AttendeeId, path.Entries[startIndex], null, null));
+            episodes.Add(new RecoveryEpisode(path.AttendeeId, path.Entries[startIndex], null,
+                path.Entries.Length - startIndex - 1));
 
         return new AttendeeRecoveryRecord(path.AttendeeId, episodes.ToImmutable());
     }

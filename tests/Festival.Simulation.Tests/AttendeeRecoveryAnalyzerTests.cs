@@ -30,6 +30,7 @@ public sealed class AttendeeRecoveryAnalyzerTests
     [InlineData("BM", ExperienceQuality.Medium, 1)]
     [InlineData("BG", ExperienceQuality.Good, 1)]
     [InlineData("BBM", ExperienceQuality.Medium, 2)]
+    [InlineData("BBG", ExperienceQuality.Good, 2)]
     [InlineData("BBBG", ExperienceQuality.Good, 3)]
     [InlineData("BBMG", ExperienceQuality.Medium, 2)]
     public void Analyze_FirstMediumOrGoodClosesOneEpisodeFromFirstBad(
@@ -51,14 +52,18 @@ public sealed class AttendeeRecoveryAnalyzerTests
         episode.RecoveryFestivalDate.Should().Be(entries[opportunities].FestivalDate);
         episode.RecoveryAssignedAt.Should().Be(entries[opportunities].AssignedAt);
         episode.RecoveryQuality.Should().Be(recoveryQuality);
+        episode.ObservedOpportunities.Should().Be(opportunities);
+        episode.RecoveryEligible.Should().BeTrue();
         episode.OpportunitiesToRecovery.Should().Be(opportunities);
     }
 
     [Theory]
-    [InlineData("B")]
-    [InlineData("BB")]
-    [InlineData("GBBB")]
-    public void Analyze_PathEndingInBadLeavesOneUnresolvedEpisode(string sequence)
+    [InlineData("B", 0, false)]
+    [InlineData("BB", 1, true)]
+    [InlineData("BBB", 2, true)]
+    [InlineData("GBBB", 2, true)]
+    public void Analyze_PathEndingInBadLeavesOneUnresolvedEpisode(
+        string sequence, int observedOpportunities, bool recoveryEligible)
     {
         var entries = Entries(sequence);
         var path = PathClassificationRubric.Evaluate(AttendeeId, entries);
@@ -68,6 +73,8 @@ public sealed class AttendeeRecoveryAnalyzerTests
         episode.AttendeeId.Should().Be(AttendeeId);
         episode.StartAssignmentId.Should().Be(entries[sequence.IndexOf('B')].AssignmentId);
         episode.Status.Should().Be(RecoveryEpisodeStatus.Unresolved);
+        episode.ObservedOpportunities.Should().Be(observedOpportunities);
+        episode.RecoveryEligible.Should().Be(recoveryEligible);
         episode.RecoveryAssignmentId.Should().BeNull();
         episode.RecoveryFestivalDayId.Should().BeNull();
         episode.RecoveryFestivalDate.Should().BeNull();
@@ -78,6 +85,7 @@ public sealed class AttendeeRecoveryAnalyzerTests
 
     [Theory]
     [InlineData("BMBG", 1, 1)]
+    [InlineData("BMBBG", 1, 2)]
     [InlineData("BBMBBG", 2, 2)]
     [InlineData("BBMGBBG", 2, 2)]
     public void Analyze_LaterBadAfterRecoveryStartsAnIndependentEpisode(
@@ -89,6 +97,9 @@ public sealed class AttendeeRecoveryAnalyzerTests
         var episodes = AttendeeRecoveryAnalyzer.Analyze(path).Episodes;
 
         episodes.Should().HaveCount(2).And.OnlyContain(episode => episode.Status == RecoveryEpisodeStatus.Recovered);
+        episodes.Select(episode => episode.ObservedOpportunities).Should().Equal(firstOpportunities, secondOpportunities);
+        episodes.Should().OnlyContain(episode => episode.RecoveryEligible
+            && episode.OpportunitiesToRecovery == episode.ObservedOpportunities);
         episodes.Select(episode => episode.OpportunitiesToRecovery).Should().Equal(firstOpportunities, secondOpportunities);
         episodes.Select(episode => episode.RecoveryQuality).Should().Equal(ExperienceQuality.Medium, ExperienceQuality.Good);
         episodes[0].StartAssignmentId.Should().Be(entries[0].AssignmentId);
@@ -107,8 +118,12 @@ public sealed class AttendeeRecoveryAnalyzerTests
 
         episodes.Should().HaveCount(2);
         episodes[0].Status.Should().Be(RecoveryEpisodeStatus.Recovered);
+        episodes[0].ObservedOpportunities.Should().Be(1);
+        episodes[0].RecoveryEligible.Should().BeTrue();
         episodes[0].OpportunitiesToRecovery.Should().Be(1);
         episodes[1].Status.Should().Be(RecoveryEpisodeStatus.Unresolved);
+        episodes[1].ObservedOpportunities.Should().Be(1);
+        episodes[1].RecoveryEligible.Should().BeTrue();
         episodes[1].StartAssignmentId.Should().Be(entries[2].AssignmentId);
         episodes[1].RecoveryAssignmentId.Should().BeNull();
         episodes[1].RecoveryQuality.Should().BeNull();
@@ -129,6 +144,8 @@ public sealed class AttendeeRecoveryAnalyzerTests
 
         var episode = AttendeeRecoveryAnalyzer.Analyze(path).Episodes.Should().ContainSingle().Subject;
 
+        episode.ObservedOpportunities.Should().Be(1);
+        episode.RecoveryEligible.Should().BeTrue();
         episode.OpportunitiesToRecovery.Should().Be(1);
         episode.StartFestivalDate.Should().Be(entries[0].FestivalDate);
         episode.RecoveryFestivalDate.Should().Be(entries[1].FestivalDate);
