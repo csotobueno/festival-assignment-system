@@ -55,6 +55,7 @@ public sealed record SimulationResult(
     IReadOnlyList<SimulationAttemptRecord> Attempts,
     IReadOnlyList<DailySimulationCheckpoint> DailyCheckpoints,
     ImmutableArray<AttendeePathRecord> AttendeePaths,
+    ImmutableArray<AttendeeRecoveryRecord> RecoveryObservations,
     IReadOnlyList<PersistedSimulationRequest> Requests,
     IReadOnlyList<Assignment> Assignments,
     IReadOnlyList<Zone> Zones,

@@ -6,9 +6,9 @@
 full simulation platform and empirical evaluation remain pending.**
 This document defines the minimum planned architecture for evaluating
 `v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
-attempts, daily checkpoints and individual attendee-path reconstruction and
-classification in memory. Aggregate metrics, recovery observations and artifact
-export remain deferred. No simulation analysis changes production behavior.
+attempts, daily checkpoints, individual attendee-path reconstruction and
+classification, and attendee recovery observations in memory. Aggregate metrics
+and artifact export remain deferred. No simulation analysis changes production behavior.
 
 The [Stage 5 metrics and evaluation framework](metrics-and-evaluation-criteria.md)
 is authoritative for analytical outcomes, populations, denominators,
@@ -28,7 +28,8 @@ development scenarios and festival-scale evidence use the same execution path.
 `Festival.Simulation` will be a dedicated tooling executable. Its responsibilities
 are scenario loading/generation, materialization, daily request planning,
 execution, observation, evaluation and export. SimulationAttemptRecord,
-DailySimulationCheckpoint, AttendeePathRecord and the analytical rubric belong
+DailySimulationCheckpoint, AttendeePathRecord, AttendeeRecoveryRecord,
+RecoveryEpisode and the analytical rubric belong
 to this tooling boundary. They are not production Domain concepts or business
 database tables.
 
@@ -364,9 +365,8 @@ values Good/Medium/Bad map to +1/0/-1 only in Simulation. Direction accounts for
 current quality and normalized change with participation-transition weights
 1, 2, 3, ...; calendar gaps never weight classification. Absence, rejection,
 conflict and technical failure add no synthetic outcomes. Recovery is a separate
-deferred diagnostic, cannot override the matrix, and a final Bad without later
-participation is not automatically failed recovery. Retained FestivalDate will
-support later FestivalDay progression/recovery calculations.
+analytical derivation from these same entries and cannot override the matrix.
+FestivalDate remains evidence, without calendar weighting of recovery distance.
 
 Thresholds remain analytical hypotheses requiring stakeholder calibration.
 Retain original evidence/classifications when revising the rubric. Current
@@ -383,6 +383,56 @@ and report unmatched/unexpected rows explicitly. Invariant checks remain separat
 from outcome classification; missing reads or uncertain commit state cannot be
 reported as confirmed zero violations. Preserve partial artifacts and mark an
 interrupted/unreconciled run incomplete instead of claiming final gate evidence.
+
+## Attendee Recovery Observations
+
+After reconstructing paths, the runner performs a separate in-memory analysis:
+
+```text
+AttendeePathRecord.Entries (ordered persisted ExperienceQuality)
+→ AttendeeRecoveryAnalyzer
+→ AttendeeRecoveryRecord.Episodes
+→ SimulationResult.RecoveryObservations
+```
+
+The analyzer consumes only an existing AttendeePathRecord. It does not re-query
+PostgreSQL or read ScenarioDefinition, manifest intent, attempts, request statuses
+or Application return values. One immutable result per evaluated path retains
+AttendeeId and an ImmutableArray of RecoveryEpisodes; no Bad means empty Episodes,
+including zero-length paths. The runner analyzes only AttendeePaths, preserving
+the evaluated population and exclusion of setup/supporting attendees.
+
+A persisted Bad opens an episode. Additional Bad entries continue that episode;
+the first later Medium or Good closes it as Recovered. RecoveryQuality preserves
+Medium or Good. After closure a later Bad starts a new episode. B → B → M is one
+episode; B → M → B → G is two. An open episode at the end is Unresolved, meaning
+no later Medium/Good was observed during the evaluated path, not failed recovery.
+
+Each episode retains AttendeeId and the opening persisted Assignment's ID,
+FestivalDayId, FestivalDate and AssignedAt. Recovered episodes retain the same
+fields for the closing Assignment, RecoveryQuality and OpportunitiesToRecovery.
+Those recovery fields are null for Unresolved episodes. Get-only properties and
+immutable collections preserve read-only evidence without copying attendee paths.
+
+OpportunitiesToRecovery counts entries after the opening Bad through the closing
+Medium/Good (closing index minus opening index). B → B → M has distance 2.
+Absence and any rejected/conflicted/failed/invalid request without a persisted
+Assignment add neither an entry nor a recovery opportunity. Thus Bad on Day 1
+and Good on Day 3 with Day 2 absent has distance 1. Absence or failed requests
+should not make the Assignment Engine appear slower when it did not have an
+assigned opportunity to produce a new experience. Calendar distance is secondary
+and deferred; retained dates remain evidence only.
+
+The deterministic minimal scenario produces one Recovered episode per evaluated
+attendee from persisted Bad → Good, with RecoveryQuality = Good and
+OpportunitiesToRecovery = 1. Supporting occupancy remains excluded. Pure
+analytical tests cover episode derivation; the existing PostgreSQL-backed run
+verifies integration with persisted paths.
+
+Recovery never changes OverallQuality, DirectionScore, OverallQualityBand,
+Direction, Classification or PathClassificationRubric v1. Observations remain in
+SimulationResult only; there is no recovery database persistence, artifact export,
+aggregate metric evaluation or scenario acceptance/gate logic in this increment.
 
 ## MetricEvaluator and ScenarioResult
 

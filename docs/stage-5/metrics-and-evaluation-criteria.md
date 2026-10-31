@@ -168,7 +168,7 @@ ExperienceQuality outcome and no additional participation.
 `Assignment.ExperienceQuality` values for one attendee during the evaluated
 period. Order by AssignedAt ASC, then AssignmentId ASC for equal timestamps;
 FestivalDayId is not a chronological key. Retain persisted FestivalDay.Date with
-the outcomes for contextual analysis and later recovery timing.
+the outcomes for contextual analysis and recovery evidence traceability.
 
 ```text
 Day 1: Good
@@ -332,9 +332,10 @@ one late Good in B B B B G does not erase the poor accumulated experience.
 Direction primarily modifies borderline/intermediate cases.
 
 Recovery remains a separate diagnostic under sections 6.5–6.6 and never overrides
-the matrix. A final Bad with no later participation opportunity is not
-automatically failed recovery. Recovery observations/metrics are deferred;
-persisted FestivalDate and evidence are retained for their later implementation.
+the matrix or changes OverallQuality, DirectionScore, OverallQualityBand,
+Direction or Classification. Attendee-level recovery observations are implemented
+in memory; aggregate recovery metrics remain deferred. A path ending with an
+open episode is Unresolved, which does not mean failed recovery.
 
 ---
 
@@ -425,57 +426,88 @@ Status: **Initial evaluation hypothesis — Requires stakeholder calibration**.
 This is not a validated organizational requirement. Report all three categories
 separately. N/A does not satisfy or fail the quantitative hypothesis.
 
-## 6.5 RecoveryRate
+## 6.5 Attendee Recovery Observations
 
-After receiving Bad, how often does an attendee later recover to Medium or Good?
+After an attendee receives persisted Bad, how many later assigned opportunities
+are required before the first later persisted Medium or Good?
 
-```text
-RecoverableBadEvents = persisted Bad events with at least one later
-                       successfully persisted Assignment for that attendee
-                       within the evaluated period
-
-RecoveredBadEvents = RecoverableBadEvents followed by a later Medium or Good
-
-RecoveryRate = RecoveredBadEvents / RecoverableBadEvents × 100
-```
-
-A later participation opportunity means later participation as defined in
-section 3, including a later Bad Assignment. Later absence, rejection, conflict
-or technical failure alone creates no recovery opportunity. Each Bad event is
-counted independently: in B B M, both Bad events recover at M. This event-based
-rate measures transition to Medium/Good, not complete path compensation.
-
-A Bad on the attendee's final participation day is not failed recovery if there
-is no later participation opportunity, even if the festival continues. Final-path
-metrics retain that outcome. If RecoverableBadEvents = 0, RecoveryRate = N/A.
-
-## 6.6 DaysToRecovery
-
-For each RecoveredBadEvent:
+Recovery is derived exclusively from the ordered AttendeePathRecord.Entries:
 
 ```text
-DaysToRecovery = FestivalDay index of first later Medium/Good
-                 - FestivalDay index of Bad
+persisted Bad → opens a recovery episode
+subsequent persisted Bad → continues the same open episode
+first later persisted Medium or Good → closes the episode as Recovered
+path ends with an open episode → Unresolved
 ```
 
-Use chronological FestivalDay indices across the scenario, not compressed path
-positions. An absent day adds no history but remains part of elapsed time.
-For each RecoverableBadEvent, report exactly one exclusive bucket:
+Medium and Good alone create no recovery need. Consecutive Bad outcomes never
+open overlapping episodes: B → B → M is one episode. After recovery, a later Bad
+starts a new independent episode: B → M → B → G is two recovered episodes.
+The Good immediately after recovery to Medium does not open another episode.
+RecoveryQuality preserves Medium or Good as distinct evidence, even though both
+complete recovery.
+
+Unresolved means the evaluated path ended without observing a later Medium or
+Good. It does **not** mean failed recovery, even when several Bad outcomes were
+observed; no future assigned opportunity may have existed. B and B → B each
+produce one Unresolved episode. Recovery endpoint fields, RecoveryQuality and
+OpportunitiesToRecovery are null for Unresolved episodes.
+
+SimulationResult.RecoveryObservations contains one immutable
+AttendeeRecoveryRecord per evaluated attendee, including those with no Bad or
+no Assignments (Episodes is empty). Setup/supporting attendees outside the
+evaluated workload remain excluded. Each RecoveryEpisode retains AttendeeId;
+StartAssignmentId, StartFestivalDayId, StartFestivalDate and StartAssignedAt;
+nullable RecoveryAssignmentId, RecoveryFestivalDayId, RecoveryFestivalDate and
+RecoveryAssignedAt; nullable RecoveryQuality and OpportunitiesToRecovery; and
+Status (Recovered or Unresolved). These are analytical in-memory observations,
+not PostgreSQL entities or exported artifacts.
+
+This episode definition replaces the earlier independent-Bad-event recovery
+definition. RecoveryRate and other aggregate recovery rates, averages, medians
+and percentiles are deferred to a later aggregate evaluation feature. This
+increment produces only the raw attendee-level evidence, without acceptance
+thresholds or Decision Gate verdicts.
+
+## 6.6 OpportunitiesToRecovery
+
+The primary recovery distance counts persisted Assignments **after** the Bad
+that opens the episode, **including** the Medium or Good that closes it:
 
 ```text
-Recovery in 1 day
-Recovery in 2 days
-Recovery in 3 days
-Recovery in 4 days
-No recovery
+OpportunitiesToRecovery = recovery entry index - opening Bad entry index
 ```
 
-These buckets cover the five-day horizon and their counts sum to
-RecoverableBadEvents. If rates are reported, each bucket uses RecoverableBadEvents
-as denominator; with none, rates are N/A. No recovery has no numeric duration.
-Later median/p90 diagnostics would use RecoveredBadEvents only, with unrecovered
-events still reported separately. Longer-horizon scenarios must extend the
-exclusive day buckets explicitly.
+Indices refer to the already ordered attendee path, not FestivalDay indices,
+calendar dates or request attempts.
+
+| Persisted path | Recovery episodes | OpportunitiesToRecovery | RecoveryQuality |
+| --- | --- | --- | --- |
+| G → G → M or M → G | None | — | — |
+| B → M | One Recovered | 1 | Medium |
+| B → G | One Recovered | 1 | Good |
+| B → B → M | One Recovered | 2 | Medium |
+| B → B → B → G | One Recovered | 3 | Good |
+| B → M → B → G | Two Recovered | 1, 1 | Medium, Good |
+| B → B → M → B → B → G | Two Recovered | 2, 2 | Medium, Good |
+| B → B → M → G → B → B → G | Two Recovered | 2, 2 | Medium, Good |
+| B or B → B | One Unresolved | null | null |
+
+Absence, DomainRejected requests, concurrency conflicts, technical failures,
+invalid inputs and any request without a persisted Assignment add no path entry
+and no recovery opportunity. Bad on Day 1, absence on Day 2 and Good on Day 3
+therefore produces B → G with OpportunitiesToRecovery = 1. Bad, a rejected
+request and Good also yields 1. SimulationAttemptRecord is never used to
+calculate recovery distance.
+
+Absence or failed requests should not make the Assignment Engine appear slower
+to recover when it did not have an assigned opportunity to produce a new
+experience. This replaces DaysToRecovery as the primary Stage 5 recovery-distance
+concept. A future calendar-based metric is secondary/deferred; none is derived
+here. FestivalDayId, FestivalDate and AssignedAt remain traceable evidence.
+
+Recovery observations are independent of PathClassificationRubric v1 and cannot
+override or influence any of its formulas, thresholds, scores, bands or labels.
 
 ## 6.7 NeverGoodRate
 
@@ -1740,7 +1772,7 @@ AcceptablePathRate
 NotBalancedPathRate
 
 RecoveryRate
-DaysToRecovery
+OpportunitiesToRecovery
 
 NeverGoodRate
 EndsInBadRate
@@ -2102,9 +2134,9 @@ Scenario distributions
 
 This document defines what Stage 5 needs to learn. The minimal sequential
 development runner now retains attempts, daily checkpoints and individual
-persisted attendee-path analysis in memory. Aggregate metric evaluation,
-recovery observations, export and representative empirical evaluation remain
-pending. No production behavior changes; the Stage 4 fairness-rule count remains 19.
+persisted attendee-path analysis and recovery observations in memory. Aggregate
+metric evaluation (including RecoveryRate), export and representative empirical
+evaluation remain pending. No production behavior changes; the Stage 4 fairness-rule count remains 19.
 
 The [simulation architecture and reproducibility strategy](simulation-architecture.md)
 defines the planned Application/PostgreSQL execution and evidence flow around

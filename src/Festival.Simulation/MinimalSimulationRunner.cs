@@ -121,8 +121,10 @@ public static class MinimalSimulationRunner
         var spots = await database.Spots.AsNoTracking().OrderBy(spot => spot.Code)
             .ToArrayAsync(cancellationToken);
         var attendeePaths = await AttendeePathReconstructor.ReconstructAsync(database, manifest, cancellationToken);
+        var recoveryObservations = attendeePaths.Select(AttendeeRecoveryAnalyzer.Analyze).ToImmutableArray();
 
-        return new SimulationResult(attempts.AsReadOnly(), checkpoints.AsReadOnly(), attendeePaths, Array.AsReadOnly(requests),
+        return new SimulationResult(attempts.AsReadOnly(), checkpoints.AsReadOnly(), attendeePaths,
+            recoveryObservations, Array.AsReadOnly(requests),
             Array.AsReadOnly(assignments), Array.AsReadOnly(zones), Array.AsReadOnly(spots),
             openingStates.AsReadOnly());
     }
