@@ -122,9 +122,10 @@ public static class MinimalSimulationRunner
             .ToArrayAsync(cancellationToken);
         var attendeePaths = await AttendeePathReconstructor.ReconstructAsync(database, manifest, cancellationToken);
         var recoveryObservations = attendeePaths.Select(AttendeeRecoveryAnalyzer.Analyze).ToImmutableArray();
+        var metrics = SimulationMetricsCalculator.Calculate(attendeePaths, recoveryObservations);
 
         return new SimulationResult(attempts.AsReadOnly(), checkpoints.AsReadOnly(), attendeePaths,
-            recoveryObservations, Array.AsReadOnly(requests),
+            recoveryObservations, metrics, Array.AsReadOnly(requests),
             Array.AsReadOnly(assignments), Array.AsReadOnly(zones), Array.AsReadOnly(spots),
             openingStates.AsReadOnly());
     }

@@ -77,6 +77,20 @@ public sealed class MinimalSimulationTests
         result.RecoveryObservations.Select(record => record.AttendeeId).Should().Equal(
             result.AttendeePaths.Select(path => path.AttendeeId));
         result.RecoveryObservations.Should().HaveCount(5).And.OnlyContain(record => record.Episodes.IsEmpty);
+        var fairness = result.Metrics.Fairness;
+        fairness.EvaluatedAttendeeCount.Should().Be(5);
+        fairness.NoPersistedPathCount.Should().Be(3);
+        fairness.InsufficientEvidenceCount.Should().Be(2);
+        fairness.ClassifiablePathCount.Should().Be(0);
+        fairness.NoPersistedPathRate.Should().Be(0.6m);
+        fairness.InsufficientEvidenceRate.Should().Be(0.4m);
+        fairness.BalancedPathRate.Should().BeNull();
+        fairness.PersistedOutcomeCount.Should().Be(2);
+        fairness.MediumOutcomeCount.Should().Be(2);
+        fairness.MediumOutcomeRate.Should().Be(1m);
+        fairness.BadOutcomeCount.Should().Be(0);
+        result.Metrics.Recovery.RecoveryEpisodeCount.Should().Be(0);
+        result.Metrics.Recovery.RecoveryRate.Should().BeNull();
     }
 
     [Fact]
@@ -208,6 +222,30 @@ public sealed class MinimalSimulationTests
         result.RecoveryObservations.Select(record => record.AttendeeId).Should().BeEquivalentTo(evaluatedAttendees);
         result.RecoveryObservations.Should().HaveCount(2).And.NotContain(record =>
             manifest.Setup.SupportingAttendees.Any(attendee => attendee.Id == record.AttendeeId));
+        var fairness = result.Metrics.Fairness;
+        fairness.EvaluatedAttendeeCount.Should().Be(2);
+        fairness.ClassifiablePathCount.Should().Be(2);
+        fairness.BalancedPathCount.Should().Be(2);
+        fairness.BalancedPathRate.Should().Be(1m);
+        fairness.PersistedOutcomeCount.Should().Be(4);
+        fairness.GoodOutcomeCount.Should().Be(2);
+        fairness.MediumOutcomeCount.Should().Be(0);
+        fairness.BadOutcomeCount.Should().Be(2);
+        fairness.GoodOutcomeRate.Should().Be(0.5m);
+        fairness.BadOutcomeRate.Should().Be(0.5m);
+        var recovery = result.Metrics.Recovery;
+        recovery.RecoveryEpisodeCount.Should().Be(2);
+        recovery.RecoveredEpisodeCount.Should().Be(2);
+        recovery.RecoveryEligibleEpisodeCount.Should().Be(2);
+        recovery.RecoveryIneligibleEpisodeCount.Should().Be(0);
+        recovery.UnresolvedEpisodeCount.Should().Be(0);
+        recovery.RecoveryRate.Should().Be(1m);
+        recovery.RecoveredToGoodCount.Should().Be(2);
+        recovery.RecoveredToMediumCount.Should().Be(0);
+        recovery.AverageOpportunitiesToRecovery.Should().Be(1m);
+        recovery.MedianOpportunitiesToRecovery.Should().Be(1m);
+        recovery.OpportunityDistribution.Should().ContainSingle().Which
+            .Should().Be(new RecoveryOpportunityDistribution(1, 2, 1m));
         foreach (var path in result.AttendeePaths)
         {
             var persisted = evaluatedAssignments.Where(assignment => assignment.AttendeeId == path.AttendeeId)
