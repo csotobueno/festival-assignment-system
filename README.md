@@ -170,14 +170,18 @@ two-minute steps). The seed is recorded but this nonrandom scenario needs no
 sampling. The same definition, seed and generator version reproduce equivalent
 manifests, including topology and setup. Evaluated attendees have no initial
 history. Generated production request/Assignment IDs remain observed outputs.
-Definition/materialization/manifest execution is in-memory only; no serialization
-or replay format is implemented.
+Definition/materialization/manifest execution uses in-memory objects; the exact
+consumed manifest is now exported as JSON after the completed run. Loading an
+exported manifest for replay remains deferred.
 
 The executable returns zero when both attempts reconcile as Successful, and
 one otherwise; the automated test verifies stable topology and persisted Bad → Good
 recovery, two evaluated Completed requests and four evaluated Assignments. The raw
 observations also retain the two setup requests and four occupancy Assignments
-(four Completed requests/eight Assignments total). No artifacts or metrics are exported.
+(four Completed requests/eight Assignments total). After the result is complete,
+the executable exports eight JSON evidence files under
+`artifacts/simulations/<scenario>/<run>/` and prints the completed directory.
+Run IDs are generated per invocation. Paths are relative to the working directory.
 
 Each evaluated request retains an in-memory attempt record with scenario/request
 identity, attendee membership, observed UTC start/end, monotonic processing duration,
@@ -194,8 +198,8 @@ One immutable end-of-day checkpoint follows each drained daily plan. Its counts
 include only that day's evaluated attempts; remaining Good/Medium/Bad/total
 capacity is global for that FestivalDay and includes setup occupancy effects.
 Attempts, checkpoints, attendee paths and recovery observations remain in
-`SimulationResult`, alongside derived fairness/recovery metrics. No analytical
-tables, latency summaries or artifact files are generated.
+`SimulationResult`, alongside derived fairness/recovery metrics, and are exported
+after execution. No analytical tables or latency summaries are generated.
 
 Attendee-path reconstruction selects distinct participants from the manifest's
 evaluated `DailyPlans` workload, excluding setup/supporting attendees. One
@@ -229,8 +233,36 @@ rate, decimal average/median distance and immutable ascending opportunity bucket
 Rates are nullable decimal ratios (0.85 = 85%); zero denominators are null/N/A.
 RecoveryRate uses eligible episodes only, while speed uses recovered episodes
 only. Bad outcomes and recovery episodes remain separate counts. Calendar-day
-recovery metrics, other aggregate families, Decision Gate verdicts and artifact
-export remain deferred.
+recovery metrics, other aggregate families and Decision Gate verdicts remain deferred.
+
+The evidence package separates scenario intent, exact input and observed results:
+
+```text
+artifacts/simulations/minimal-recovery/<run>/
+├── run-metadata.json          # reproducibility context
+├── definition.json            # compact scenario intent
+├── manifest.json              # exact materialized input consumed by the runner
+├── attempts.json              # raw request execution evidence
+├── checkpoints.json           # raw daily counts and remaining capacity
+├── attendee-paths.json        # individual persisted paths and classification
+├── recovery-observations.json # individual recovery episodes
+└── metrics.json               # aggregate fairness and recovery observations
+```
+
+JSON is indented UTF-8 without BOM, with camelCase properties, named enums and
+UTC timestamps. **JSON null = analytical N/A**. Observations have deterministic
+ordering; the manifest retains its original collection order. Existing run
+directories are rejected, and files are staged before publishing the complete
+directory. Export errors propagate and prevent a success message/exit.
+`artifacts/` is already ignored by Git; selected final runs may later be
+intentionally retained as Decision Gate evidence. Generated test runs are not
+committed. Set `FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA` explicitly when a
+reliable source revision is available. Missing SHA, definition version and
+metrics-framework version are null; the engine label is the documented `v0.3.0`
+baseline and RubricVersion is the existing `v1`. A supplied SHA alone does not
+identify uncommitted changes. See the
+[evidence contract](docs/stage-5/simulation-architecture.md#artifacts-and-evidence-versioning)
+for the metadata and export boundary.
 
 ```bash
 dotnet test tests/Festival.Simulation.Tests

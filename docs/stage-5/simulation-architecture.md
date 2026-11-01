@@ -8,8 +8,8 @@ This document defines the minimum planned architecture for evaluating
 `v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
 attempts, daily checkpoints, individual attendee-path reconstruction and
 classification, attendee recovery observations and aggregate fairness/recovery
-metrics in memory. Other metric families, Decision Gate verdicts and artifact
-export remain deferred. No simulation analysis changes production behavior.
+metrics, with a completed-run JSON evidence exporter. Other metric families and
+Decision Gate verdicts remain deferred. No simulation analysis changes production behavior.
 
 The [Stage 5 metrics and evaluation framework](metrics-and-evaluation-criteria.md)
 is authoritative for analytical outcomes, populations, denominators,
@@ -177,9 +177,10 @@ ScenarioDefinition + Seed + GeneratorVersion
 | Request plans | Exact order, deterministic business timestamps and any arrival schedule; execution mode and numeric concurrency limit. |
 | Provenance | Definition/version, Seed, GeneratorVersion and applicable baseline/configuration identifiers. |
 
-The full materialized plans are exported before relying on their results. Replay
-loads an exported manifest directly, without resampling from distributions or
-regenerating it with a newer generator. Validate references and basic input
+The full materialized plans are exported after execution as part of the completed
+evidence package. Future replay will load an exported manifest directly, without
+resampling from distributions or regenerating it with a newer generator. Replay
+loading is not implemented. Validate references and basic input
 structure before seeding; never silently repair or reorder the manifest.
 
 Physical exclusions must be represented in the assignable catalog supported by
@@ -228,7 +229,7 @@ does not need real-time sleeping to represent another FestivalDay. Groups contai
 
 Initially `ExecutionMode = Sequential` and `ConcurrencyLevel = 1`:
 
-1. Load or generate/export the manifest and seed its exact initial state.
+1. Load or generate the manifest and seed its exact initial state.
 2. For Day 1, capture opening inventory facts and execute each planned request in
    order, awaiting its terminal outcome before the next request.
 3. Give each invocation a fresh DI scope, resolve the real use case and execute
@@ -371,9 +372,8 @@ FestivalDate remains evidence, without calendar weighting of recovery distance.
 
 Thresholds remain analytical hypotheses requiring stakeholder calibration.
 Retain original evidence/classifications when revising the rubric. Current
-paths and aggregate fairness/recovery metrics remain in memory; analytical
-database persistence and the planned attendee-paths.json export are not
-implemented in this slice.
+paths and aggregate fairness/recovery metrics are exported after execution;
+analytical database persistence remains outside this tooling boundary.
 
 Final reconciliation reads existing business tables in fresh scopes. Public
 DbSets and simulation-side read-only projections/SQL can supply the required
@@ -445,8 +445,9 @@ verifies integration with persisted paths.
 
 Recovery never changes OverallQuality, DirectionScore, OverallQualityBand,
 Direction, Classification or PathClassificationRubric v1. Observations remain in
-SimulationResult only; there is no recovery database persistence, artifact export,
-or scenario acceptance/gate logic. Separate aggregation consumes this evidence.
+SimulationResult and the completed-run `recovery-observations.json`; there is no
+recovery database persistence or scenario acceptance/gate logic. Separate
+aggregation consumes this evidence.
 
 ## Implemented Aggregate Fairness and Recovery Metrics
 
@@ -481,8 +482,8 @@ while consecutive Bad outcomes can belong to one recovery episode.
 
 Rates are nullable decimal ratios in [0, 1] (0.85 means 85%). Zero denominators
 produce null/N/A; no recovered episodes produce null average/median and an empty
-distribution. This is an in-memory result only: no aggregate database storage,
-artifact export, thresholds, verdicts or production behavior changes. Other metric
+distribution. This result is exported directly as `metrics.json`, without new
+derivations, aggregate database storage, thresholds, verdicts or production behavior changes. Other metric
 families and the broader ScenarioResult below remain planned.
 
 ## MetricEvaluator and ScenarioResult
@@ -564,48 +565,99 @@ them or introduce database profiling infrastructure before evidence justifies it
 Default output is outside production source directories:
 
 ```text
-artifacts/simulations/<scenario-id>/<run-id>/
-├── scenario-definition.json
-├── scenario-manifest.json
+artifacts/simulations/minimal-recovery/run-001/
+├── run-metadata.json
+├── definition.json
+├── manifest.json
 ├── attempts.json
-├── daily-checkpoints.json
+├── checkpoints.json
 ├── attendee-paths.json
-├── scenario-result.json
-└── summary.md
+├── recovery-observations.json
+└── metrics.json
 ```
 
-Definition and manifest preserve configuration and actual execution input.
-Attempts, checkpoints and path records preserve detailed evidence; result and
-summary aggregate and interpret it. Replays get a new RunId and retain the source
-manifest identity. The existing `.gitignore` already ignores `artifacts/`.
-Routine outputs are not versioned by default. Selected Decision Gate evidence
-may later be copied to an explicit documentation/evidence location; publication
-and retention workflow are deferred.
+The general layout is `artifacts/simulations/<scenario>/<run>/`.
+`SimulationEvidenceExportRequest` supplies Definition, the exact Manifest consumed
+by the runner, the completed Result, RunMetadata and DestinationRoot (normally
+`artifacts/simulations`). `SimulationEvidenceExporter` uses only those inputs;
+it never regenerates the manifest, queries PostgreSQL, reads Git/global state or
+recomputes analytical results. The executable calls it once after RunAsync has
+returned the complete result, then prints the published directory. Export failure
+propagates to a nonzero process exit without claiming package completion.
 
-Every run's metadata identifies:
+| File | Responsibility |
+| --- | --- |
+| `run-metadata.json` | Reproducibility context and observed run lifecycle. |
+| `definition.json` | Compact ScenarioDefinition intent: what was requested. |
+| `manifest.json` | Exact ScenarioManifest execution input, including catalog, IDs, timestamps, setup/supporting occupancy and ordered workload. This is the authoritative reproduction input. |
+| `attempts.json` | Raw SimulationAttemptRecord execution evidence, including timing, diagnostics, membership, persisted request identity, capacity/feasibility and selected quality. |
+| `checkpoints.json` | Raw DailySimulationCheckpoint evidence: FestivalDay, daily evaluated request counts and global Good/Medium/Bad/Total remaining capacity. |
+| `attendee-paths.json` | Individual AttendeePathRecords, retaining all persisted Assignment/FestivalDay entries, scores, bands, direction, classification and RubricVersion. |
+| `recovery-observations.json` | Individual AttendeeRecoveryRecords and RecoveryEpisodes, retaining opening/recovery Assignment evidence, status, quality, observed opportunities, eligibility and distance. |
+| `metrics.json` | Existing SimulationResult.Metrics fairness/recovery aggregates, including nullable rates and recovery distance. |
 
-```text
-RunId, ScenarioId, ScenarioDefinitionVersion, GeneratorVersion, Seed
-EngineVersion (e.g. v0.3.0), RepositoryCommitSha
-PathClassificationRubricVersion, MetricsFrameworkVersion
-ExecutionMode, ConcurrencyLevel, StartedAt, CompletedAt
-```
+No summary, verdict, archive, dashboard or database analytics is produced.
+Supporting attendees remain in the exact setup manifest but outside evaluated
+path/recovery exports; the exporter preserves the runner's population boundary.
+Existing path/recovery fields are exported in full, without quality-letter
+compression or additional derivations.
 
-Include the evaluated period, manifest identity/content fingerprint, rubric
-formulas/thresholds, benchmark environment and run completeness. EngineVersion
-identifies the conceptual baseline/release; RepositoryCommitSha identifies the
-source revision. Record working-tree state and preserve a source diff/content
-identity for a dirty evidence run: a commit SHA alone cannot identify modified
-executed code. Raw artifact references must identify the same run/manifest;
-later evaluation revisions retain their original inputs and prior results.
-Version artifact formats when compatibility requires it, without assigning
-semantic versions to every internal simulation class.
+Metadata uses camelCase JSON properties for these explicit model fields:
 
-Use a stable `summary.md` structure: Scenario; Execution Metadata; Population;
-Request Outcomes; Fairness; Feasibility; Reliability / Consistency; Performance;
-Relevant Diagnostics; Initial Decision Gate Observations. Include N/A reasons,
-unresolved judgments and links to detailed run artifacts, rather than replacing
-them with favorable summary values.
+| Fields | Source / unavailable behavior |
+| --- | --- |
+| RunId | Explicit safe identifier; executable supplies a fresh GUID in N format. |
+| ScenarioId, GeneratorVersion, Seed, ExecutionMode, ConcurrencyLevel | Copied from the consumed manifest; provenance must agree with definition and metadata. |
+| ScenarioDefinitionVersion | null: no explicit definition version exists in code yet. |
+| EngineVersion | `v0.3.0`, the documented Stage 4 conceptual baseline; not a claim of source identity. |
+| RepositoryCommitSha | Optional explicit run input; executable reads `FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA`. No Git command/discovery is required; absence is null and never prevents export. |
+| RubricVersion | Existing PathClassificationRubric.Version (`v1`). |
+| MetricsFrameworkVersion | null: the framework is described as v1 in documentation but has no explicit code version value yet. |
+| StartedAt, CompletedAt | Observed UTC lifecycle around the full runner invocation, including setup, analysis and teardown; excludes export and is separate from request latency and deterministic business timestamps. |
+
+A supplied SHA alone cannot identify uncommitted executed changes. Capturing
+working-tree diffs, content fingerprints and broader benchmark environment
+metadata remains future evidence work; unavailable values are not fabricated.
+Callers can supply explicit known version values in RunMetadata without a new
+versioning system. No replay loader or schema migration contract is added.
+
+One explicit, read-only System.Text.Json configuration writes indented UTF-8
+without BOM, camelCase property names, enums as their declared names (not numeric
+values), and all DateTimeOffset timestamps as UTC ISO 8601 with seven fractional
+digits and `Z`. DateOnly/TimeOnly retain their ISO representations. Domain value
+objects keep their public structure (for example, an identity has a `value`).
+JSON uses LF and a final newline. Nulls are always included:
+**JSON null = analytical N/A**. Zero denominators never become 0, -1, strings or NaN.
+
+Ordering is deterministic: attempts by AttemptSequence then SimulationRequestId;
+checkpoints by manifest FestivalDate then FestivalDayId; paths/recovery records by
+AttendeeId; path entries by AssignedAt then AssignmentId; episodes by
+StartAssignedAt then StartAssignmentId; opportunity buckets by Opportunities
+ascending. The exact definition and manifest retain their original collection
+order, including execution order and member order. Sorting copies observations,
+without mutating source evidence or recalculating classifications/metrics.
+Equivalent supplied evidence/metadata produces identical bytes; runtime-generated
+business IDs, observed timestamps and durations naturally differ between runs.
+
+ScenarioId and RunId must contain 1..128 ASCII letters/digits, hyphens or
+underscores, starting with a letter/digit. Unsafe identifiers are rejected instead
+of rewritten. **Any existing run destination is rejected**, even an empty
+directory; individual files are never overwritten. All eight files are written
+to a unique hidden sibling temporary directory before one final directory move.
+Failures/cancellation propagate and trigger best-effort temporary cleanup. An
+abrupt process termination may leave a `.tmp` sibling, which is not a completed
+run directory. There is no transactional filesystem framework.
+
+The existing `.gitignore` already ignores `artifacts/`; no duplicate rule is
+needed. Routine outputs and generated test evidence are not committed. Selected
+final runs may later be intentionally retained as Decision Gate evidence;
+publication and retention workflow are deferred.
+
+Pure temporary-directory tests cover serialization, ordering, immutable inputs,
+safe paths, existing runs and failed/cancelled export cleanup. The existing real
+PostgreSQL deterministic recovery test also exports a complete package and checks
+the consumed manifest, raw records, persisted Bad → Good paths, recovered episodes,
+aggregate result equality and supporting-attendee exclusion.
 
 ## Future Concurrent Execution
 
