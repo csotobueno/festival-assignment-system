@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Festival.Domain.Assignments;
 using Festival.Domain.Zones;
 using Festival.Simulation;
@@ -152,7 +154,10 @@ public sealed class MinimalSimulationTests
         var definition = MinimalRecoveryScenarioDefinition.Create();
         var manifest = new ScenarioMaterializer().Materialize(definition);
         var originalManifest = new ScenarioMaterializer().Materialize(definition);
+        var startedAt = DateTimeOffset.UtcNow;
         var result = await MinimalSimulationRunner.RunAsync(manifest);
+
+        await VerifyEvidencePackageAsync(definition, manifest, result, startedAt);
 
         manifest.Should().BeEquivalentTo(originalManifest, options => options.WithStrictOrdering());
         result.Attempts.Select(attempt => attempt.SimulationRequestId).Should().Equal(
@@ -354,5 +359,65 @@ public sealed class MinimalSimulationTests
         historicalScore.Should().BeGreaterThanOrEqualTo(1m);
         TargetQualityPolicy.Calculate(historicalScore).Should().Be(TargetQuality.Good);
         secondDay.Should().OnlyContain(assignment => assignment.AssignedAt > firstDay[0].AssignedAt);
+    }
+
+    private static async Task VerifyEvidencePackageAsync(ScenarioDefinition definition,
+        ScenarioManifest manifest, SimulationResult result, DateTimeOffset startedAt)
+    {
+        var root = Path.Combine(Path.GetTempPath(), $"festival-recovery-evidence-{Guid.NewGuid():N}");
+        try
+        {
+            var metadata = SimulationRunMetadata.Create("run-001", manifest, startedAt, DateTimeOffset.UtcNow);
+            var directory = await new SimulationEvidenceExporter().ExportAsync(new(definition, manifest, result, metadata, root));
+            Directory.GetFiles(directory).Select(Path.GetFileName).Should()
+                .BeEquivalentTo(SimulationEvidenceExporterTests.FileNames);
+            foreach (var file in Directory.GetFiles(directory))
+            {
+                using var validJson = JsonDocument.Parse(await File.ReadAllTextAsync(file));
+            }
+            using var input = SimulationEvidenceExporterTests.Read(directory, "manifest.json");
+            input.RootElement.GetRawText().Should().Be(JsonSerializer.Serialize(manifest, SimulationEvidenceExporter.JsonOptions));
+            input.RootElement.GetProperty("setup").GetProperty("assignments").GetArrayLength().Should().Be(4);
+            input.RootElement.GetProperty("dailyPlans").EnumerateArray()
+                .SelectMany(day => day.GetProperty("requests").EnumerateArray())
+                .Select(request => request.GetProperty("simulationRequestId").GetGuid()).Should()
+                .Equal(result.Attempts.Select(attempt => attempt.SimulationRequestId));
+
+            using var attempts = SimulationEvidenceExporterTests.Read(directory, "attempts.json");
+            attempts.RootElement.GetRawText().Should().Be(JsonSerializer.Serialize(result.Attempts, SimulationEvidenceExporter.JsonOptions));
+            using var checkpoints = SimulationEvidenceExporterTests.Read(directory, "checkpoints.json");
+            checkpoints.RootElement.GetRawText().Should().Be(JsonSerializer.Serialize(result.DailyCheckpoints, SimulationEvidenceExporter.JsonOptions));
+            using var paths = SimulationEvidenceExporterTests.Read(directory, "attendee-paths.json");
+            var evaluatedIds = result.AttendeePaths.Select(path => path.AttendeeId.Value).Order().ToArray();
+            paths.RootElement.EnumerateArray().Select(path => SimulationEvidenceExporterTests.Id(path, "attendeeId"))
+                .Should().Equal(evaluatedIds).And.NotIntersectWith(manifest.Setup.SupportingAttendees.Select(attendee => attendee.Id.Value));
+            foreach (var path in paths.RootElement.EnumerateArray())
+            {
+                var source = result.AttendeePaths.Single(item => item.AttendeeId.Value == SimulationEvidenceExporterTests.Id(path, "attendeeId"));
+                JsonNode.DeepEquals(JsonNode.Parse(path.GetRawText()),
+                    JsonSerializer.SerializeToNode(source, SimulationEvidenceExporter.JsonOptions)).Should().BeTrue();
+                path.GetProperty("entries").EnumerateArray().Select(entry => entry.GetProperty("experienceQuality").GetString())
+                    .Should().Equal("Bad", "Good");
+            }
+            using var recovery = SimulationEvidenceExporterTests.Read(directory, "recovery-observations.json");
+            recovery.RootElement.EnumerateArray().Select(record => SimulationEvidenceExporterTests.Id(record, "attendeeId"))
+                .Should().Equal(evaluatedIds).And.NotIntersectWith(manifest.Setup.SupportingAttendees.Select(attendee => attendee.Id.Value));
+            foreach (var record in recovery.RootElement.EnumerateArray())
+            {
+                var source = result.RecoveryObservations.Single(item => item.AttendeeId.Value == SimulationEvidenceExporterTests.Id(record, "attendeeId"));
+                JsonNode.DeepEquals(JsonNode.Parse(record.GetRawText()),
+                    JsonSerializer.SerializeToNode(source, SimulationEvidenceExporter.JsonOptions)).Should().BeTrue();
+                var episode = record.GetProperty("episodes")[0];
+                episode.GetProperty("status").GetString().Should().Be("Recovered");
+                episode.GetProperty("recoveryQuality").GetString().Should().Be("Good");
+                episode.GetProperty("opportunitiesToRecovery").GetInt32().Should().Be(1);
+            }
+            using var metrics = SimulationEvidenceExporterTests.Read(directory, "metrics.json");
+            metrics.RootElement.GetRawText().Should().Be(JsonSerializer.Serialize(result.Metrics, SimulationEvidenceExporter.JsonOptions));
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
     }
 }

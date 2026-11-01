@@ -469,8 +469,8 @@ StartAssignmentId, StartFestivalDayId, StartFestivalDate and StartAssignedAt;
 nullable RecoveryAssignmentId, RecoveryFestivalDayId, RecoveryFestivalDate and
 RecoveryAssignedAt; nullable RecoveryQuality and OpportunitiesToRecovery;
 ObservedOpportunities and computed RecoveryEligible; and Status (Recovered or
-Unresolved). These are analytical in-memory observations,
-not PostgreSQL entities or exported artifacts.
+Unresolved). These analytical observations are exported in
+`recovery-observations.json` after a completed run; they are not PostgreSQL entities.
 
 This episode definition replaces the earlier independent-Bad-event recovery
 definition. ScenarioRecoveryMetrics now aggregates episode counts, RecoveryRate,
@@ -685,8 +685,10 @@ is exposed as SimulationResult.Metrics alongside all raw evidence:
 | Recovery speed | ScenarioRecoveryMetrics: average/median OpportunitiesToRecovery and OpportunityDistribution | RecoveredEpisodeCount for bucket rates; recovered non-null values for average/median |
 
 All counts retain numerator/denominator evidence for their corresponding rates.
-Metrics remain in memory with no analytical tables, artifact export, acceptance
-thresholds or Decision Gate verdicts. Other planned metrics such as NeverGoodRate,
+Metrics are exported directly from SimulationResult.Metrics into `metrics.json`,
+without recalculation, analytical tables, acceptance thresholds or Decision Gate
+verdicts. **JSON null = analytical N/A**; zero, -1 and strings do not replace
+unavailable values. Other planned metrics such as NeverGoodRate,
 EndsInBadRate, feasibility, reliability and performance summaries are not added
 by this increment. Existing hypotheses remain provisional and require stakeholder
 calibration; calculated observations do not decide whether a scenario passes.
@@ -2291,7 +2293,20 @@ This document defines what Stage 5 needs to learn. The minimal sequential
 development runner now retains attempts, daily checkpoints and individual
 persisted attendee-path analysis, recovery observations and aggregate path
 fairness, evidence coverage, outcome quality and recovery metrics in memory.
-Other aggregate families, Decision Gate verdicts, export and representative
+The completed run now exports eight files under
+`artifacts/simulations/<scenario>/<run>/`: `definition.json` preserves compact
+scenario intent; `manifest.json` preserves exact executed input;
+`attempts.json`/`checkpoints.json` retain raw execution evidence;
+`attendee-paths.json`/`recovery-observations.json` retain individual analytical
+evidence; `metrics.json` retains aggregate analytical evidence; and
+`run-metadata.json` retains reproducibility context. Export does not derive new
+metrics or include supporting attendees in evaluated analytical populations.
+Artifacts are ignored by Git by default; selected final runs may later be
+intentionally retained as Decision Gate evidence. See the
+[architecture evidence contract](simulation-architecture.md#artifacts-and-evidence-versioning)
+for serialization, ordering and completion behavior.
+
+Other aggregate families, Decision Gate verdicts and representative
 empirical evaluation remain pending. No production behavior changes; the Stage 4
 fairness-rule count remains 19.
 
