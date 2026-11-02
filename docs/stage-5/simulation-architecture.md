@@ -20,6 +20,12 @@ baseline and its acceptance evidence; the [glossary](../glossary.md) and
 [critical invariants](../critical-invariants.md) retain their responsibilities.
 The official fairness-rule count remains **19**.
 
+The [S1/S2 representative scenario contracts](representative-scenarios.md)
+document shared venue inputs, demand, participation continuity and simulated
+arrival profiles, with explicit provisional hypotheses and unresolved input
+decisions. Their generation and execution remain pending; the minimal proof
+scenario's supporting setup is not part of these representative scenarios.
+
 The architecture must exercise real assignment behavior, preserve reproducible
 inputs and explain aggregate results through individual observations. Small
 development scenarios and festival-scale evidence use the same execution path.
