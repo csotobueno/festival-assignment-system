@@ -155,8 +155,26 @@ numeric ConcurrencyLevel. It also identifies relevant scenario assumptions.
 
 The existing definition now also supports a declarative
 RepresentativeWorkloadDefinition with GroupSizeBand and ArrivalTimeBand profiles.
-S1/S2 factories require Seed, FirstDate and an explicit FrontStanding request
-eligibility share; there is no invented business default. Generator v2 uses
+S1/S2 factories require Seed and FirstDate and share the initial Stage 5 baseline
+`FrontStandingAllowedRequestShare = 50%`, stored as
+`RepresentativeWorkloadDefinition.AllowsFrontStandingRequestShare` (`0.50`).
+The existing explicit-share input remains available. The share counts daily
+requests/groups, not Attendees. `PercentageAllocation` allocates allowed/excluded
+requests by largest remainder (declared-order ties), then an independent daily
+stream derived from ScenarioId, Seed, GeneratorVersion and DayNumber shuffles
+eligibility. Each request materializes the existing `RequestEligibility`; no
+attendee-level eligibility state or cross-day preference-transition logic exists.
+The same Attendee may join requests with different eligibility on different
+FestivalDays. This does not affect daily requester counts, group membership,
+group-size or arrival distributions, or participation continuity.
+
+The separate current business hypothesis is that approximately 75–80% of
+requests may allow FrontStanding. The 50% simulation input is a conservative
+initial baseline while stakeholder data is unavailable, not an observed festival
+value. Both remain **Requires stakeholder validation**; S1 and S2 keep the same
+baseline for comparison.
+
+Generator v2 uses
 GroupDistributionGenerator to preserve exact daily attendee totals while
 targeting group percentages, and ArrivalDistributionGenerator to allocate
 request-level arrival shares and deterministic simulated timestamps. Both feed

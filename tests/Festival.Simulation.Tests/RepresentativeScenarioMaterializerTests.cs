@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Collections.Immutable;
 using Festival.Domain.Assignments;
+using Festival.Domain.Attendees;
 using Festival.Domain.Zones;
 using Festival.Simulation;
 using FluentAssertions;
@@ -10,13 +11,11 @@ namespace Festival.Simulation.Tests;
 
 public sealed class RepresentativeScenarioMaterializerTests
 {
-    // Explicit test configuration only: no stakeholder eligibility mix has been supplied.
-    private const decimal EligibilityFixtureShare = .60m;
     private static readonly DateOnly FirstDate = new(2026, 8, 15);
 
     internal static ScenarioDefinition Definition(bool baseline, int seed = 42) => baseline
-        ? S2ExpectedBaselineScenarioDefinition.Create(seed, FirstDate, EligibilityFixtureShare)
-        : S1BestPlausibleScenarioDefinition.Create(seed, FirstDate, EligibilityFixtureShare);
+        ? S2ExpectedBaselineScenarioDefinition.Create(seed, FirstDate)
+        : S1BestPlausibleScenarioDefinition.Create(seed, FirstDate);
 
     [Theory]
     [InlineData(false)]
@@ -32,7 +31,7 @@ public sealed class RepresentativeScenarioMaterializerTests
         definition.ConcurrencyLevel.Should().Be(1);
         workload.DailyRequesterCount.Should().Be(baseline ? 4400 : 3300);
         workload.DailyParticipationContinuity.Should().Be(.90m);
-        workload.AllowsFrontStandingRequestShare.Should().Be(EligibilityFixtureShare);
+        workload.AllowsFrontStandingRequestShare.Should().Be(.50m);
         workload.GroupSizeProfile.Select(band => (band.MinSize, band.MaxSize, band.Percentage)).Should().Equal(baseline
             ? [(1, 1, .15m), (2, 2, .30m), (3, 3, .25m), (4, 4, .15m), (5, 5, .08m), (6, 7, .05m), (8, 10, .02m)]
             : [(1, 1, .25m), (2, 2, .35m), (3, 3, .25m), (4, 4, .10m), (5, 10, .05m)]);
@@ -182,11 +181,83 @@ public sealed class RepresentativeScenarioMaterializerTests
                 festivalDay.AssignmentWindow.Contains(TimeOnly.FromDateTime(request.RequestedAt.UtcDateTime)).Should().BeTrue();
                 request.AssignedAt.Should().Be(request.RequestedAt);
             }
-            requests.Count(request => request.Eligibility.AllowsFrontStanding).Should()
-                .BeInRange((int)decimal.Floor(requests.Length * EligibilityFixtureShare),
-                    (int)decimal.Ceiling(requests.Length * EligibilityFixtureShare));
-            requests.Should().Contain(request => !request.Eligibility.AllowsFrontStanding);
         }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Materialize_HalfOfEachDaysRequestsAllowFrontStandingWithDeclaredOrderRemainder(bool baseline)
+    {
+        var manifest = new ScenarioMaterializer().Materialize(Definition(baseline));
+
+        foreach (var day in manifest.DailyPlans)
+        {
+            // S1 has 1,333 requests: the tied remainder goes to the first (allowed) bucket.
+            // S2 has 1,464 requests, so both buckets have exactly 732 requests.
+            day.Requests.Count(request => request.Eligibility.AllowsFrontStanding).Should().Be(baseline ? 732 : 667);
+            day.Requests.Count(request => !request.Eligibility.AllowsFrontStanding).Should().Be(baseline ? 732 : 666);
+        }
+    }
+
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(false, 1)]
+    [InlineData(true, 0)]
+    [InlineData(true, 1)]
+    public void Materialize_EligibilityShareDoesNotChangeMembershipGroupsContinuityOrArrivals(bool baseline, int share)
+    {
+        var definition = Definition(baseline);
+        var materializer = new ScenarioMaterializer();
+        var expected = materializer.Materialize(definition);
+        var actual = materializer.Materialize(definition with
+        {
+            Workload = definition.Workload! with { AllowsFrontStandingRequestShare = share }
+        });
+
+        foreach (var (expectedDay, actualDay) in expected.DailyPlans.Zip(actual.DailyPlans))
+        {
+            var members = actualDay.Requests.SelectMany(request => request.Members).ToArray();
+            members.Should().HaveCount(baseline ? 4400 : 3300);
+            members.Select(member => member.Id).Should().OnlyHaveUniqueItems();
+            actualDay.Requests.Should().OnlyContain(request => request.Eligibility.AllowsFrontStanding == (share == 1));
+            actualDay.Requests.Select(request => (request.SimulationRequestId, request.Sequence,
+                    request.RequestedAt, request.AssignedAt, request.Members.Length)).Should()
+                .Equal(expectedDay.Requests.Select(request => (request.SimulationRequestId, request.Sequence,
+                    request.RequestedAt, request.AssignedAt, request.Members.Length)));
+            members.Select(member => (member.Id, member.Code, member.Name)).Should().Equal(expectedDay.Requests
+                .SelectMany(request => request.Members.Select(member => (member.Id, member.Code, member.Name))));
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Materialize_SameAttendeeCanReproduciblyJoinRequestsWithDifferentEligibilityAcrossDays(bool baseline)
+    {
+        var materializer = new ScenarioMaterializer();
+        var first = materializer.Materialize(Definition(baseline));
+        var second = materializer.Materialize(Definition(baseline));
+
+        var occurrences = first.DailyPlans.SelectMany(day => day.Requests.SelectMany(request =>
+            request.Members.Select(member => (day.DayNumber, Member: member, request.Eligibility.AllowsFrontStanding))));
+        var changingAttendee = occurrences.GroupBy(value => value.Member.Id).First(group =>
+            group.Select(value => value.AllowsFrontStanding).Distinct().Count() == 2).ToArray();
+        changingAttendee.Select(value => value.DayNumber).Should().OnlyHaveUniqueItems();
+        changingAttendee.Should().OnlyContain(value => ReferenceEquals(value.Member, changingAttendee[0].Member),
+            "the same catalog attendee participates with eligibility held only by each daily request");
+        second.DailyPlans.SelectMany(day => day.Requests.Where(request =>
+                request.Members.Any(member => member.Id == changingAttendee[0].Member.Id))
+            .Select(request => (day.DayNumber, request.Eligibility.AllowsFrontStanding))).Should()
+            .Equal(changingAttendee.Select(value => (value.DayNumber, value.AllowsFrontStanding)));
+    }
+
+    [Fact]
+    public void Attendee_DoesNotExposeRequestEligibilityState()
+    {
+        typeof(Attendee).GetProperties().Should().NotContain(property =>
+            property.Name == nameof(RequestEligibility.AllowsFrontStanding)
+            || property.PropertyType == typeof(RequestEligibility));
     }
 
     [Fact]
