@@ -5,7 +5,8 @@ namespace Festival.Simulation;
 
 public static class S1BestPlausibleScenarioDefinition
 {
-    public static ScenarioDefinition Create(int seed, DateOnly firstDate, decimal allowsFrontStandingRequestShare) =>
+    public static ScenarioDefinition Create(int seed, DateOnly firstDate,
+        decimal allowsFrontStandingRequestShare = RepresentativeScenarioDefinitions.FrontStandingAllowedRequestShare) =>
         RepresentativeScenarioDefinitions.Create("s1-best-plausible", seed, firstDate,
             new RepresentativeWorkloadDefinition(3300, 0.90m,
                 [new(1, 1, .25m), new(2, 2, .35m), new(3, 3, .25m), new(4, 4, .10m), new(5, 10, .05m)],
@@ -18,7 +19,8 @@ public static class S1BestPlausibleScenarioDefinition
 
 public static class S2ExpectedBaselineScenarioDefinition
 {
-    public static ScenarioDefinition Create(int seed, DateOnly firstDate, decimal allowsFrontStandingRequestShare) =>
+    public static ScenarioDefinition Create(int seed, DateOnly firstDate,
+        decimal allowsFrontStandingRequestShare = RepresentativeScenarioDefinitions.FrontStandingAllowedRequestShare) =>
         RepresentativeScenarioDefinitions.Create("s2-expected-baseline", seed, firstDate,
             new RepresentativeWorkloadDefinition(4400, 0.90m,
                 [
@@ -35,6 +37,9 @@ public static class S2ExpectedBaselineScenarioDefinition
 
 internal static class RepresentativeScenarioDefinitions
 {
+    // Conservative Stage 5 simulation baseline, pending stakeholder validation.
+    internal const decimal FrontStandingAllowedRequestShare = .50m;
+
     private static readonly ImmutableArray<TopologyBlockDefinition> Topology =
     [
         new("front-standing", ZoneType.FrontStanding, 75, 10),

@@ -33,8 +33,13 @@ executable slice now exercises a deterministic two-day recovery scenario;
 the full simulation platform and evaluation remain pending.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
-grouping, arrivals and shared topology. Representative runs remain pending and
-require an explicitly supplied FrontStanding eligibility mix.
+grouping, arrivals and shared topology. Both use the initial Stage 5 baseline
+`FrontStandingAllowedRequestShare = 50%` of each day's requests, generated
+independently of attendee identity and previous days' eligibility. This is a
+conservative simulation input while stakeholder data is unavailable, not an
+observed festival value. The separate business hypothesis is approximately
+75–80% of requests allowing FrontStanding; it requires stakeholder validation.
+Representative runs remain pending.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 

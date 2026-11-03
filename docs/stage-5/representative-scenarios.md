@@ -5,9 +5,10 @@
 **Deterministic generation implemented; representative execution remains pending.**
 S1 and S2 define simulation intent and provisional inputs materialized through
 the existing ScenarioDefinition → ScenarioMaterializer → ScenarioManifest flow.
-They provide no measured results or scenario pass/fail expectations. The
-FrontStanding eligibility mix still requires explicit configuration before a
-representative run; no business default has been selected.
+They provide no measured results or scenario pass/fail expectations. Both use
+the conservative initial Stage 5 baseline `FrontStandingAllowedRequestShare = 50%`
+of requests. This simulation input is not an observed festival value and
+requires stakeholder validation.
 
 Keep four kinds of information distinct:
 
@@ -37,6 +38,7 @@ concurrent operational load.
 | ExecutionMode | Sequential |
 | ConcurrencyLevel | 1 |
 | DailyParticipationContinuity | 90% overlap of planned daily requesting populations between consecutive FestivalDays |
+| FrontStandingAllowedRequestShare | 50% of each FestivalDay's requests/groups |
 | RequestGenerationWindow | 07:00–23:00, simulated time |
 | Initial history | No prior persisted Assignments on Day 1 |
 
@@ -51,6 +53,29 @@ daily request workload, counting every group member. It is not a request count
 or a guarantee of successful Assignments. Actual RequestingAttendees and
 ParticipatingAttendees retain the
 [framework's reporting definitions](metrics-and-evaluation-criteria.md#32-reporting-populations).
+
+### FrontStanding Request Eligibility
+
+`FrontStandingAllowedRequestShare = 50%` is the shared request-level simulation
+parameter, stored as `RepresentativeWorkloadDefinition.AllowsFrontStandingRequestShare`
+(decimal ratio `0.50`). Each daily request receives its own
+`RequestEligibility.AllowsFrontStanding`: approximately/exactly half are true
+and half false, using the deterministic integer allocation described below.
+Each request/group counts once, regardless of its number of Attendees.
+
+Eligibility is generated independently for each FestivalDay's requests; it is
+not a persistent property of an Attendee. The same Attendee can therefore join
+an allowed request on Day 1, an excluded request on Day 2 and an allowed request
+on Day 3. No attendee preference-transition logic or forced cross-day changes
+are needed. Eligibility allocation does not change DailyRequesterCount, group
+membership or group-size distribution, arrivals or participation continuity.
+
+| Item | Provisional value / rationale |
+| --- | --- |
+| Current business hypothesis | Approximately 75–80% of requests may allow FrontStanding. |
+| Initial Stage 5 simulation baseline | 50% of requests for both S1 and S2. |
+| Reason | Conservative initial baseline while stakeholder data is unavailable. |
+| Status | Requires stakeholder validation. Neither percentage is an observed festival value. |
 
 ## S1 — Best Plausible
 
@@ -248,8 +273,8 @@ S1 and S2 use the same authoritative behavior and versions:
 
 No rule, formula, quality classification, recovery definition or metric
 denominator is redefined by the scenario parameters. Request-wide FrontStanding
-eligibility remains the implemented behavior. The workload's eligibility mix is
-still an open input decision, distinct from the existing eligibility policy.
+eligibility remains the implemented behavior. The shared 50% workload parameter
+materializes that existing input without changing the eligibility policy.
 
 ## Simulated Arrival Order and Reproducibility
 
@@ -274,9 +299,11 @@ separate from simulated business time.
 ### Implemented Generation Contract — v2
 
 `S1BestPlausibleScenarioDefinition.Create` and
-`S2ExpectedBaselineScenarioDefinition.Create` require an explicit Seed, FirstDate
-and `allowsFrontStandingRequestShare` (a decimal ratio of requests). They share
-the same registered catalog, topology, five-day plan and generation algorithms.
+`S2ExpectedBaselineScenarioDefinition.Create` require an explicit Seed and FirstDate.
+Both default `allowsFrontStandingRequestShare` to `0.50`, the shared initial
+Stage 5 request-level baseline; the existing explicit-share input remains available.
+They share the same registered catalog, topology, five-day plan and generation
+algorithms.
 The small proof scenario retains generator v1 and its existing identifiers,
 timestamps and supporting setup.
 
@@ -330,12 +357,16 @@ Existing SHA-256 identity derivation is preserved for v1. V2 shares the
 Zone namespace across S1/S2 and Seeds; day/request identities remain scenario
 specific. Identical catalogs preserve identical Zone tie-break inputs.
 
-The caller-supplied FrontStanding share is allocated by largest remainder into
-allowed/excluded requests, then shuffled using its independent stream. Existing
-request-wide `AllowsFrontStanding` and production quality policies remain
-unchanged. **No representative eligibility mix exists yet:** tests use an
-explicitly labeled fixture value, not an operational estimate. A representative
-run must record an agreed shared eligibility mix, Seed and FirstDate. Any
+Each FestivalDay's FrontStanding share is allocated by `PercentageAllocation`
+using largest remainder into allowed/excluded requests, then shuffled using its
+independent daily eligibility stream. Equal remainders favor the declared bucket
+order (allowed first): the 50% baseline produces 667 allowed / 666 excluded for
+S1's 1,333 daily requests and 732 / 732 for S2's 1,464. There is no special
+eligibility rounding rule and no adjustment to groups or attendee counts.
+The stream depends on ScenarioId, Seed, GeneratorVersion and DayNumber, not
+previous eligibility or attendee preferences. Existing request-wide
+`AllowsFrontStanding` and production quality policies remain unchanged.
+A representative run must record the shared eligibility mix, Seed and FirstDate. Any
 future local-time mapping or additional replacement eligibility rules require
 an explicit contract revision.
 
@@ -349,10 +380,11 @@ contains all concrete input; the runner does not regenerate workload details.
 ## Comparison Intent and Later Scenarios
 
 S1 and S2 intentionally hold venue topology, quality capacity distribution,
-fairness policy, five-day duration, participation continuity and execution mode
-constant. They primarily differ in daily demand, group-size distribution and
-arrival concentration. The remaining eligibility/generation choices must be
-resolved consistently to preserve that comparison.
+fairness policy, five-day duration, participation continuity, 50% request-level
+FrontStanding eligibility baseline and execution mode constant. They primarily
+differ in daily demand, group-size distribution and
+arrival concentration. Eligibility is held constant as a workload parameter
+rather than adding another differing variable.
 
 This enables meaningful comparison of the combined workload conditions. Because
 several workload dimensions change together, an outcome difference cannot be
@@ -382,6 +414,7 @@ Every row below is **Simulation hypothesis — Requires stakeholder validation**
 | 5,500 registered Attendees | Confirm the relevance of this growth / oversubscription population. |
 | S1 60% / approximately 3,300 and S2 80% / approximately 4,400 daily requesters | Validate demand assumptions and their applicability across five days. |
 | 90% daily participation continuity | Validate the overlap assumption for planned daily requesters and replacement eligibility; selection precedes Assignment outcomes and returning participants are permitted. |
+| FrontStanding request eligibility: 75–80% business hypothesis; 50% initial Stage 5 baseline | Validate the request-level business hypothesis and calibrate the conservative shared simulation input when stakeholder data becomes available. Neither value is observed festival evidence. |
 | S1 and S2 group-size distributions | Validate the proposed shares of requests/groups and composition of combined-size buckets. |
 | S1 and S2 arrival distributions and 07:00–23:00 window | Validate the smoother S1 profile and S2 peaks/tail against operational understanding. |
 | Good 35% / Medium 45% / Bad 20% capacity | Validate approximate quality-capacity proportions. |
