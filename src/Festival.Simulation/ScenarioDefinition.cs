@@ -9,8 +9,8 @@ public enum SimulationExecutionMode
     Sequential
 }
 
-// Compact intent: attendee numbers refer to the evaluated population, not setup occupants.
-// v1 uses one contiguous row per block and starts evaluated attendees without history.
+// AttendeeCount is the registered catalog, excluding setup occupants. v1 uses
+// explicit requests; v2 materializes the optional representative workload.
 public sealed record ScenarioDefinition(
     string ScenarioId,
     int Seed,
@@ -20,9 +20,12 @@ public sealed record ScenarioDefinition(
     ImmutableArray<TopologyBlockDefinition> Topology,
     ImmutableArray<DayDefinition> Days,
     SimulationExecutionMode ExecutionMode,
-    int ConcurrencyLevel);
+    int ConcurrencyLevel,
+    RepresentativeWorkloadDefinition? Workload = null);
 
-public sealed record TopologyBlockDefinition(string Key, ZoneType ZoneType, int SpotCount);
+// SpotCount is the starting row's capacity; defaults preserve the v1 single row.
+public sealed record TopologyBlockDefinition(
+    string Key, ZoneType ZoneType, int SpotCount, int RowCount = 1, int GrowthPerRow = 0);
 
 public sealed record DayDefinition(
     int DayNumber,

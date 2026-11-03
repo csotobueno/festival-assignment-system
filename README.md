@@ -31,6 +31,10 @@ for evaluating `v0.3.0 — Fair Assignment Engine`. The
 planned PostgreSQL execution, reproducibility and evidence flow. The first
 executable slice now exercises a deterministic two-day recovery scenario;
 the full simulation platform and evaluation remain pending.
+The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
+deterministic manifest generation for exact daily populations, continuity,
+grouping, arrivals and shared topology. Representative runs remain pending and
+require an explicitly supplied FrontStanding eligibility mix.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 
