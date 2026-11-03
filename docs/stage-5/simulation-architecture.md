@@ -22,9 +22,10 @@ The official fairness-rule count remains **19**.
 
 The [S1/S2 representative scenario contracts](representative-scenarios.md)
 document shared venue inputs, demand, participation continuity and simulated
-arrival profiles, with explicit provisional hypotheses and unresolved input
-decisions. Their generation and execution remain pending; the minimal proof
-scenario's supporting setup is not part of these representative scenarios.
+arrival profiles, with explicit provisional hypotheses. Their deterministic
+generation is implemented through ScenarioMaterializer v2; representative
+execution remains pending. The minimal proof scenario's supporting setup is
+not part of these representative scenarios.
 
 The architecture must exercise real assignment behavior, preserve reproducible
 inputs and explain aggregate results through individual observations. Small
@@ -151,6 +152,18 @@ physical topology/capacity parameters, FestivalDays/evaluated period, daily
 request-participation assumptions, group-size and eligibility distributions,
 initial-history distribution, arrival-order strategy, Seed, ExecutionMode and
 numeric ConcurrencyLevel. It also identifies relevant scenario assumptions.
+
+The existing definition now also supports a declarative
+RepresentativeWorkloadDefinition with GroupSizeBand and ArrivalTimeBand profiles.
+S1/S2 factories require Seed, FirstDate and an explicit FrontStanding request
+eligibility share; there is no invented business default. Generator v2 uses
+GroupDistributionGenerator to preserve exact daily attendee totals while
+targeting group percentages, and ArrivalDistributionGenerator to allocate
+request-level arrival shares and deterministic simulated timestamps. Both feed
+the same immutable manifest/catalog and existing runner input types. See the
+[implemented v2 contract](representative-scenarios.md#implemented-generation-contract--v2)
+for rounding, continuity, identity scopes, PRNG and UTC time conventions.
+The v1 minimal proof's existing behavior remains unchanged.
 
 Do not hand-author thousands of Attendees or requests. Population, participation,
 quality capacity and fragmentation are separate controls. Approximately 5,000

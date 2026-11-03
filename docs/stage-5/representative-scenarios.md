@@ -2,9 +2,12 @@
 
 ## Status and Authority
 
-**Documentation contract only; representative generation and execution are pending.**
-S1 and S2 define simulation intent and provisional inputs for later deterministic
-materialization. They provide no measured results or scenario pass/fail expectations.
+**Deterministic generation implemented; representative execution remains pending.**
+S1 and S2 define simulation intent and provisional inputs materialized through
+the existing ScenarioDefinition → ScenarioMaterializer → ScenarioManifest flow.
+They provide no measured results or scenario pass/fail expectations. The
+FrontStanding eligibility mix still requires explicit configuration before a
+representative run; no business default has been selected.
 
 Keep four kinds of information distinct:
 
@@ -215,7 +218,7 @@ not a claim that the same 90% attend all five days.
 At the nominal daily totals, each S1 transition retains 2,970 planned requesters
 and replaces 330; each S2 transition retains 3,960 and replaces 440.
 The deterministic retention/replacement procedure must be documented and
-versioned before implementation; no selection algorithm is defined here.
+versioned. The implemented v2 procedure is specified below.
 
 Both independent scenarios begin from a clean festival baseline:
 
@@ -250,10 +253,11 @@ still an open input decision, distinct from the existing eligibility policy.
 
 ## Simulated Arrival Order and Reproducibility
 
-Later implementation will allocate deterministic integer request counts per time
-band, generate pseudo-random timestamps within each band from the scenario
-`Seed`, order requests by simulated `RequestedAt`, and process them immediately
-in simulation time with one request in flight. Time affects ordering, not
+Generator v2 allocates deterministic integer request counts per time
+band, generates pseudo-random timestamps within each band from the scenario
+`Seed`, and orders requests by simulated `RequestedAt`, then SimulationRequestId.
+It records that order as increasing Sequence values for the existing runner to
+process immediately in simulation time with one request in flight. Time affects ordering, not
 execution duration: tests and simulations must not use real delays, timers or
 wall-clock waiting to reproduce these arrival profiles.
 
@@ -261,21 +265,86 @@ Reproducibility requires the same definition, Seed, GeneratorVersion and initial
 state, with exact input retained in the manifest, as defined by the
 [architecture contract](simulation-architecture.md#deterministic-generation-and-replay-limits)
 and [framework requirements](metrics-and-evaluation-criteria.md#27-reproducibility-requirements).
-The later generator must record exact daily membership, groups, eligibility,
-band counts, timestamps, stable identities and request order. A Seed alone
+The generated manifest records exact daily membership, groups, eligibility,
+timestamps, stable identities and request order; band counts can be calculated
+directly from those timestamps. A Seed alone
 does not specify the generation algorithm. Observed processing time remains
 separate from simulated business time.
 
-These inputs need explicit decisions before materialization; no undocumented
-defaults should be embedded in code:
+### Implemented Generation Contract — v2
 
-| Unresolved input | Required decision |
-| --- | --- |
-| Integer group allocation | Choose deterministic rounding that reconciles the approximate distributions with daily attendee totals; specify individual sizes within combined buckets. |
-| Participation selection | Define deterministic Day 1 selection and later retention/replacement within the planned requesting population, including any additional replacement-eligibility criteria. |
-| Eligibility workload | Specify a shared distribution of unrestricted and FrontStanding-excluded requests and how eligibility is assigned to groups. Do not invent a percentage. |
-| Arrival materialization | Specify deterministic band-count rounding, time-band boundary treatment, timestamp precision and tie ordering. |
-| Reproduction configuration | Record the concrete Seed, dates, time-zone/UTC conversion, assignment windows, identity procedure and GeneratorVersion before executing representative runs. |
+`S1BestPlausibleScenarioDefinition.Create` and
+`S2ExpectedBaselineScenarioDefinition.Create` require an explicit Seed, FirstDate
+and `allowsFrontStandingRequestShare` (a decimal ratio of requests). They share
+the same registered catalog, topology, five-day plan and generation algorithms.
+The small proof scenario retains generator v1 and its existing identifiers,
+timestamps and supporting setup.
+
+`GroupDistributionGenerator` treats daily attendee count as a **hard invariant**:
+exactly 3,300 for S1 or 4,400 for S2, every day. Group percentages are targets
+over requests. The generator estimates the request count from the weighted
+midpoint group size and rounds to the nearest integer, with midpoint ties away
+from zero. It allocates band counts by largest remainder, breaking equal
+remainders by declared band order. Concrete sizes inside ranges are seeded
+pseudo-random integers. This adds no fixed subrange percentage distribution.
+
+After shuffling groups, membership totals are reconciled inside their existing
+bands first, preserving the allocated band counts whenever feasible. If those
+counts cannot fit the exact attendee total (for example, tiny or fixed-size
+inputs), sizes change one member at a time within 1–10, choosing the smallest
+incremental absolute band-count deviation, with shuffled group order breaking
+ties. Sizes outside declared bands count as a separate deviation bucket.
+The correction is bounded by the original membership difference; no sampling
+retry loop is used. A final seeded shuffle determines concrete grouping order.
+Representative tests allow less than one request of deviation from each ideal
+band quota after reconciliation; they do not demand impossible exact percentages.
+
+Day 1 requesters are selected from a seeded shuffle of all 5,500 registered
+Attendees. On later days, the prior requesting cohort and its registered
+complement are shuffled separately: retain exactly 2,970 / 3,960 and add exactly
+330 / 440 replacements for S1 / S2. The shared procedure uses the floor of
+`DailyRequesterCount × DailyParticipationContinuity` for retention; the supplied
+representative values are already integers. A separate membership shuffle
+assigns every daily requester to exactly one group, without duplication. All
+registered Attendees outside the immediately prior cohort are candidate
+replacements; no extra business-eligibility filters have been invented.
+
+`ArrivalDistributionGenerator` allocates the exact daily request count across
+bands by largest remainder with declared-order ties. It shuffles groups before
+assigning them to bands and samples timestamps at DateTime tick precision
+inside each `[Start, End)` interval. Profile clock times are interpreted as
+**UTC simulated business time** for the supplied FestivalDate, with a
+07:00–23:00 assignment window. This is a technical time representation, not a
+claim about confirmed venue local operating hours. AssignedAt equals RequestedAt
+as an input convention; real processing duration remains separately observed.
+Final ordering is RequestedAt ascending, then SimulationRequestId ascending,
+with scenario-wide Sequence values matching that exact order.
+
+Independent daily streams for participation, membership, group sizes,
+eligibility and arrivals derive from SHA-256 of a length-prefixed ScenarioId,
+GeneratorVersion, Seed, DayNumber and stream name. Generator v2 specifies
+SplitMix64, multiply-high bounded integer sampling and Fisher–Yates shuffling;
+it uses neither runtime Random/hash behavior nor current wall-clock time.
+Existing SHA-256 identity derivation is preserved for v1. V2 shares the
+`representative-population-v1` attendee namespace and `representative-venue-v1`
+Zone namespace across S1/S2 and Seeds; day/request identities remain scenario
+specific. Identical catalogs preserve identical Zone tie-break inputs.
+
+The caller-supplied FrontStanding share is allocated by largest remainder into
+allowed/excluded requests, then shuffled using its independent stream. Existing
+request-wide `AllowsFrontStanding` and production quality policies remain
+unchanged. **No representative eligibility mix exists yet:** tests use an
+explicitly labeled fixture value, not an operational estimate. A representative
+run must record an agreed shared eligibility mix, Seed and FirstDate. Any
+future local-time mapping or additional replacement eligibility rules require
+an explicit contract revision.
+
+Validation rejects invalid percentages/totals, invalid or overlapping group
+ranges, unordered/overlapping/invalid arrival bands, nonpositive requester
+counts, infeasible replacement pools, invalid continuity/eligibility ratios,
+nonconsecutive days and supporting setup or explicit requests combined with a
+generated workload. All validation stays in Simulation. The immutable manifest
+contains all concrete input; the runner does not regenerate workload details.
 
 ## Comparison Intent and Later Scenarios
 
@@ -323,8 +392,8 @@ Every row below is **Simulation hypothesis — Requires stakeholder validation**
 
 ## Scope Boundary
 
-This task adds documentation only. It adds no ScenarioDefinition code changes,
-scenario materialization or execution, timestamp generator, 5,500-Attendee run,
-artifact run, S3–S8 detailed design, Decision Gate logic/thresholds or performance
-optimization. Representative implementation remains deferred until the explicit
-input decisions above are resolved and documented.
+Implementation produces deterministic representative manifests only. It adds no
+official S1/S2 execution or evidence packages, S3–S8 implementation/detailed
+design, Decision Gate logic/thresholds, concurrency, replay loading, comparison
+engine or performance optimization. Stakeholder hypotheses remain provisional;
+materialization tests are not empirical festival evidence.
