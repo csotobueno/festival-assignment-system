@@ -1,0 +1,1538 @@
+{
+  "executionDate": "2026-11-03",
+  "simulatedFirstDate": "2026-08-15",
+  "sourceIndex": "artifacts/simulations/representative-20261103-8bb35534638b466d884ab35ed9aea61b/index.json",
+  "officialRuns": [
+    {
+      "role": "official",
+      "scenario": "s1",
+      "seed": 1001,
+      "runId": "official-s1-1001-c57af02f2d8449889958e2857dfecdaf",
+      "evidencePath": "artifacts/simulations/s1-best-plausible/official-s1-1001-c57af02f2d8449889958e2857dfecdaf",
+      "metadata": {
+        "runId": "official-s1-1001-c57af02f2d8449889958e2857dfecdaf",
+        "scenarioId": "s1-best-plausible",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 1001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-03T23:00:18.8531280Z",
+        "completedAt": "2026-11-03T23:04:19.6832430Z"
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 16500,
+        "persistedRequestCount": 6665,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "868d0ba5af92d69d036f4e3ec5f60704a5b99745d2a3150fbf3388c8185184f7",
+          "definition.json": "2602e7bfb176adeca7ecd14ea49be2ee2079c58ed2f81833d2094a393c0960f8",
+          "manifest.json": "554b490de2b1f652945e673337e439cbdf975180df0c2047b84471f3c13cbee3",
+          "attempts.json": "62ed645ded82428beaa1853bc5f8996a6932a6ddada688f7b933b46aea951663",
+          "checkpoints.json": "5ba89628b234a1e029ed73b0470b326e8938fd252b2d26fc746d9b6b9276bdc1",
+          "attendee-paths.json": "10ba833c849c909224db20fe8c6c65297fe57697df1f346e755bbf1726313d40",
+          "recovery-observations.json": "4baefa07355033018327389ae59a3cc084b3d8dde103ef213fb18170a075b843",
+          "metrics.json": "aaf4c20c531f804354e2d47045579c697edc617a340e00415d8c5ecf331efccd"
+        }
+      },
+      "requestOutcomes": {
+        "attemptedRequests": 6665,
+        "normallyProcessedRequests": 6665,
+        "successfulRequests": 6665,
+        "domainRejectedRequests": 0,
+        "knownConcurrencyConflictRequests": 0,
+        "unexpectedTechnicalFailureRequests": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "concurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 4353,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 476,
+        "classifiablePathCount": 3877,
+        "balancedPathCount": 2547,
+        "acceptablePathCount": 1330,
+        "notBalancedPathCount": 0,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.10934987365035607,
+        "classifiablePathRate": 0.8906501263496439,
+        "balancedPathRate": 0.6569512509672427,
+        "acceptablePathRate": 0.3430487490327573,
+        "notBalancedPathRate": 0,
+        "persistedOutcomeCount": 16500,
+        "goodOutcomeCount": 7004,
+        "mediumOutcomeCount": 9496,
+        "badOutcomeCount": 0,
+        "goodOutcomeRate": 0.42448484848484846,
+        "mediumOutcomeRate": 0.5755151515151515,
+        "badOutcomeRate": 0
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 0,
+        "recoveredEpisodeCount": 0,
+        "unresolvedEpisodeCount": 0,
+        "recoveryEligibleEpisodeCount": 0,
+        "recoveryIneligibleEpisodeCount": 0,
+        "recoveryRate": null,
+        "recoveredToMediumCount": 0,
+        "recoveredToGoodCount": 0,
+        "averageOpportunitiesToRecovery": null,
+        "medianOpportunitiesToRecovery": null,
+        "opportunityDistribution": []
+      },
+      "eligibleUnresolvedEpisodeCount": 0,
+      "dailyCheckpoints": [
+        {
+          "dayNumber": 1,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "cc5832a4-1020-7b6d-987a-8890260baea1"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 2,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "174cc810-598d-fa88-3fcc-45d057b41033"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 3,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "6993f7cf-59a6-23fa-78a5-81d44335b54b"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 4,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "c91f5d2d-9613-225e-f1e7-f61e3e0bd412"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 352,
+          "mediumAvailableSpotCount": 350,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 5,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "da47433d-7ba4-a386-867a-e279c81592c7"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        }
+      ],
+      "rejectionAnalysis": {
+        "reasons": {},
+        "noBlockWithSufficientEligibleCapacity": 0,
+        "noBlockWithInsufficientEligibleCapacity": 0,
+        "noBlockWithUnavailableDiagnosis": 0
+      },
+      "exploratoryTiming": {
+        "sampleCount": 6665,
+        "percentileMethod": "nearest-rank",
+        "p50Ms": 29.816599999999998,
+        "p95Ms": 46.0582,
+        "meanMs": 31.43325714928732,
+        "maxMs": 526.847
+      }
+    },
+    {
+      "role": "official",
+      "scenario": "s1",
+      "seed": 2001,
+      "runId": "official-s1-2001-7242d2fa08af4ea2aab8fb65970b379d",
+      "evidencePath": "artifacts/simulations/s1-best-plausible/official-s1-2001-7242d2fa08af4ea2aab8fb65970b379d",
+      "metadata": {
+        "runId": "official-s1-2001-7242d2fa08af4ea2aab8fb65970b379d",
+        "scenarioId": "s1-best-plausible",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 2001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-03T23:04:20.6465360Z",
+        "completedAt": "2026-11-03T23:08:21.4899870Z"
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 16500,
+        "persistedRequestCount": 6665,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "02e60e70d08a011e19c60c54850f84a93154830d1ff7c838a8ba2e28074767e0",
+          "definition.json": "e8a4761ff544932c3e1d75f43d1ad120d579d59a687c0cf92a3c760f4e3f746c",
+          "manifest.json": "fb4ed6718d903a6683d71dd667d4d539b34ff6bffdd1ec6fb88b3706131e3970",
+          "attempts.json": "c69ad8a6575afa8cba241a7472854aae0089fca24bb7385a18e45704ac4585c5",
+          "checkpoints.json": "7ff603059ea9da30f5e1a86a9764d6c976bb4a5dc05ea07cfd956fd40173db95",
+          "attendee-paths.json": "3f95656f3943db9b6d39c46ebf401238078f0669c7f2422cd796f5b4e28aebf2",
+          "recovery-observations.json": "c961cc565bf73377a291bed7cfdb678225c25b5a8b84593a4b5df3ce4d7d1a98",
+          "metrics.json": "37e495cc8298edcc17b7a912472e7f58e281f71af868a69890675f26f6dbde3c"
+        }
+      },
+      "requestOutcomes": {
+        "attemptedRequests": 6665,
+        "normallyProcessedRequests": 6665,
+        "successfulRequests": 6665,
+        "domainRejectedRequests": 0,
+        "knownConcurrencyConflictRequests": 0,
+        "unexpectedTechnicalFailureRequests": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "concurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 4346,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 493,
+        "classifiablePathCount": 3853,
+        "balancedPathCount": 2529,
+        "acceptablePathCount": 1324,
+        "notBalancedPathCount": 0,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.11343764381040036,
+        "classifiablePathRate": 0.8865623561895997,
+        "balancedPathRate": 0.6563716584479626,
+        "acceptablePathRate": 0.34362834155203736,
+        "notBalancedPathRate": 0,
+        "persistedOutcomeCount": 16500,
+        "goodOutcomeCount": 7003,
+        "mediumOutcomeCount": 9497,
+        "badOutcomeCount": 0,
+        "goodOutcomeRate": 0.4244242424242424,
+        "mediumOutcomeRate": 0.5755757575757576,
+        "badOutcomeRate": 0
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 0,
+        "recoveredEpisodeCount": 0,
+        "unresolvedEpisodeCount": 0,
+        "recoveryEligibleEpisodeCount": 0,
+        "recoveryIneligibleEpisodeCount": 0,
+        "recoveryRate": null,
+        "recoveredToMediumCount": 0,
+        "recoveredToGoodCount": 0,
+        "averageOpportunitiesToRecovery": null,
+        "medianOpportunitiesToRecovery": null,
+        "opportunityDistribution": []
+      },
+      "eligibleUnresolvedEpisodeCount": 0,
+      "dailyCheckpoints": [
+        {
+          "dayNumber": 1,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "cc5832a4-1020-7b6d-987a-8890260baea1"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 2,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "174cc810-598d-fa88-3fcc-45d057b41033"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 352,
+          "mediumAvailableSpotCount": 350,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 3,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "6993f7cf-59a6-23fa-78a5-81d44335b54b"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 350,
+          "mediumAvailableSpotCount": 352,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 4,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "c91f5d2d-9613-225e-f1e7-f61e3e0bd412"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 352,
+          "mediumAvailableSpotCount": 350,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 5,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "da47433d-7ba4-a386-867a-e279c81592c7"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 352,
+          "mediumAvailableSpotCount": 350,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        }
+      ],
+      "rejectionAnalysis": {
+        "reasons": {},
+        "noBlockWithSufficientEligibleCapacity": 0,
+        "noBlockWithInsufficientEligibleCapacity": 0,
+        "noBlockWithUnavailableDiagnosis": 0
+      },
+      "exploratoryTiming": {
+        "sampleCount": 6665,
+        "percentileMethod": "nearest-rank",
+        "p50Ms": 30.3797,
+        "p95Ms": 47.5336,
+        "meanMs": 32.112514538634656,
+        "maxMs": 209.1783
+      }
+    },
+    {
+      "role": "official",
+      "scenario": "s1",
+      "seed": 3001,
+      "runId": "official-s1-3001-4fba71856d294ac5abd4cbf15672b2a6",
+      "evidencePath": "artifacts/simulations/s1-best-plausible/official-s1-3001-4fba71856d294ac5abd4cbf15672b2a6",
+      "metadata": {
+        "runId": "official-s1-3001-4fba71856d294ac5abd4cbf15672b2a6",
+        "scenarioId": "s1-best-plausible",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 3001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-03T23:08:22.2596350Z",
+        "completedAt": "2026-11-03T23:12:14.0727000Z"
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 16500,
+        "persistedRequestCount": 6665,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "8d1792b745a3156ba00deb623925c82c9b8d3a8b2fbf836464a9a73391385e4b",
+          "definition.json": "cddfff1acf3ccc4b816bd76e20ac8fa73af2abefe66bfd071c678c3b5a333e51",
+          "manifest.json": "0731c50bba050198c9140fb3133691fe373e84636ee2122c9f4cde2b11fdcf0f",
+          "attempts.json": "fb7170b90d198f5d92a9db8761073077bde8cd44580601af504e690a6c82b50c",
+          "checkpoints.json": "f74a4b0f27a932159f10b6682bb5424e39ab87d0c0d800b96f025bdcfad08497",
+          "attendee-paths.json": "cb08d458b552a7e8f90e01f1a3cf42e35d9205aa25c495eee91d9d8ad1c79999",
+          "recovery-observations.json": "182dd13d10a3727a91d863928c9db964fb2d451974a07e77c2429fdae20f1ab5",
+          "metrics.json": "b48915401f723fc58a70e179c4a2e0daa074a35eab7b359c701a650000c735fd"
+        }
+      },
+      "requestOutcomes": {
+        "attemptedRequests": 6665,
+        "normallyProcessedRequests": 6665,
+        "successfulRequests": 6665,
+        "domainRejectedRequests": 0,
+        "knownConcurrencyConflictRequests": 0,
+        "unexpectedTechnicalFailureRequests": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "concurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 4328,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 457,
+        "classifiablePathCount": 3871,
+        "balancedPathCount": 2561,
+        "acceptablePathCount": 1310,
+        "notBalancedPathCount": 0,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.10559149722735675,
+        "classifiablePathRate": 0.8944085027726433,
+        "balancedPathRate": 0.6615861534487213,
+        "acceptablePathRate": 0.33841384655127876,
+        "notBalancedPathRate": 0,
+        "persistedOutcomeCount": 16500,
+        "goodOutcomeCount": 7004,
+        "mediumOutcomeCount": 9496,
+        "badOutcomeCount": 0,
+        "goodOutcomeRate": 0.42448484848484846,
+        "mediumOutcomeRate": 0.5755151515151515,
+        "badOutcomeRate": 0
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 0,
+        "recoveredEpisodeCount": 0,
+        "unresolvedEpisodeCount": 0,
+        "recoveryEligibleEpisodeCount": 0,
+        "recoveryIneligibleEpisodeCount": 0,
+        "recoveryRate": null,
+        "recoveredToMediumCount": 0,
+        "recoveredToGoodCount": 0,
+        "averageOpportunitiesToRecovery": null,
+        "medianOpportunitiesToRecovery": null,
+        "opportunityDistribution": []
+      },
+      "eligibleUnresolvedEpisodeCount": 0,
+      "dailyCheckpoints": [
+        {
+          "dayNumber": 1,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "cc5832a4-1020-7b6d-987a-8890260baea1"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 353,
+          "mediumAvailableSpotCount": 349,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 2,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "174cc810-598d-fa88-3fcc-45d057b41033"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 3,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "6993f7cf-59a6-23fa-78a5-81d44335b54b"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 350,
+          "mediumAvailableSpotCount": 352,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 4,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "c91f5d2d-9613-225e-f1e7-f61e3e0bd412"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 352,
+          "mediumAvailableSpotCount": 350,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 5,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "da47433d-7ba4-a386-867a-e279c81592c7"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 350,
+          "mediumAvailableSpotCount": 352,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        }
+      ],
+      "rejectionAnalysis": {
+        "reasons": {},
+        "noBlockWithSufficientEligibleCapacity": 0,
+        "noBlockWithInsufficientEligibleCapacity": 0,
+        "noBlockWithUnavailableDiagnosis": 0
+      },
+      "exploratoryTiming": {
+        "sampleCount": 6665,
+        "percentileMethod": "nearest-rank",
+        "p50Ms": 29.5373,
+        "p95Ms": 44.2762,
+        "meanMs": 30.89627339834959,
+        "maxMs": 150.211
+      }
+    },
+    {
+      "role": "official",
+      "scenario": "s2",
+      "seed": 1001,
+      "runId": "official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+      "evidencePath": "artifacts/simulations/s2-expected-baseline/official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+      "metadata": {
+        "runId": "official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+        "scenarioId": "s2-expected-baseline",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 1001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-03T23:12:14.5241810Z",
+        "completedAt": "2026-11-03T23:16:08.4615670Z"
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 22000,
+        "persistedRequestCount": 7320,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "b80e29cb0a783a5b25d1b87182af7efecf160c80d7f7aff347676d0942053d20",
+          "definition.json": "f2b5a7e15e241d9b9e1b6ffee5da44a1802e09b98c84abab1b183672e09e4b8d",
+          "manifest.json": "f106fe6a522b11f8906b74c2873666fff030c710cfe89608a77b04c7e7f53f72",
+          "attempts.json": "2a300b4248456ee4b515e16f168921afa2eb7949f9dd17d49f7ca8eccc672786",
+          "checkpoints.json": "0d2818b4b7a64f545c11de2b2b671076a54d242bfe99ca80dcd8ae2ebea3945f",
+          "attendee-paths.json": "9f0609a35419e4f5c8b1b0a0bf3272eeee1b9756deffb66628657b456677346f",
+          "recovery-observations.json": "442a4f3c67645d2898a0bb1cf1971feaa01d026f6b15b9f457f21513dcae54ca",
+          "metrics.json": "2062598afd081d050d8752130e46ca3b19380478106deb8a22ba90b88cf1c39a"
+        }
+      },
+      "requestOutcomes": {
+        "attemptedRequests": 7320,
+        "normallyProcessedRequests": 7320,
+        "successfulRequests": 7320,
+        "domainRejectedRequests": 0,
+        "knownConcurrencyConflictRequests": 0,
+        "unexpectedTechnicalFailureRequests": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "concurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 5354,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 232,
+        "classifiablePathCount": 5122,
+        "balancedPathCount": 2903,
+        "acceptablePathCount": 1649,
+        "notBalancedPathCount": 570,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.04333208815838625,
+        "classifiablePathRate": 0.9566679118416137,
+        "balancedPathRate": 0.5667707926591176,
+        "acceptablePathRate": 0.3219445529090199,
+        "notBalancedPathRate": 0.11128465443186256,
+        "persistedOutcomeCount": 22000,
+        "goodOutcomeCount": 8736,
+        "mediumOutcomeCount": 11231,
+        "badOutcomeCount": 2033,
+        "goodOutcomeRate": 0.3970909090909091,
+        "mediumOutcomeRate": 0.5105,
+        "badOutcomeRate": 0.09240909090909091
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 1908,
+        "recoveredEpisodeCount": 1407,
+        "unresolvedEpisodeCount": 501,
+        "recoveryEligibleEpisodeCount": 1447,
+        "recoveryIneligibleEpisodeCount": 461,
+        "recoveryRate": 0.972356599861783,
+        "recoveredToMediumCount": 687,
+        "recoveredToGoodCount": 720,
+        "averageOpportunitiesToRecovery": 1.0561478322672353,
+        "medianOpportunitiesToRecovery": 1,
+        "opportunityDistribution": [
+          {
+            "opportunities": 1,
+            "episodeCount": 1331,
+            "rateAmongRecovered": 0.9459843638948117
+          },
+          {
+            "opportunities": 2,
+            "episodeCount": 73,
+            "rateAmongRecovered": 0.051883439943141436
+          },
+          {
+            "opportunities": 3,
+            "episodeCount": 3,
+            "rateAmongRecovered": 0.0021321961620469083
+          }
+        ]
+      },
+      "eligibleUnresolvedEpisodeCount": 40,
+      "dailyCheckpoints": [
+        {
+          "dayNumber": 1,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "b1f96600-f1fb-d4b8-1e25-834c15af46db"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 7,
+          "mediumAvailableSpotCount": 7,
+          "badAvailableSpotCount": 584,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 2,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "12efcffb-a689-244f-6199-263b18e71717"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 4,
+          "mediumAvailableSpotCount": 0,
+          "badAvailableSpotCount": 594,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 3,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "852ad0c1-71aa-c1d5-f28a-f27677288de1"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 1,
+          "mediumAvailableSpotCount": 2,
+          "badAvailableSpotCount": 595,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 4,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "9a7bf52c-caac-fb44-5db3-8a5c8b52d5fb"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 8,
+          "mediumAvailableSpotCount": 7,
+          "badAvailableSpotCount": 583,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 5,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "500d8fb4-c2ec-d70a-dd07-56296effa1a3"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 4,
+          "mediumAvailableSpotCount": 3,
+          "badAvailableSpotCount": 591,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        }
+      ],
+      "rejectionAnalysis": {
+        "reasons": {},
+        "noBlockWithSufficientEligibleCapacity": 0,
+        "noBlockWithInsufficientEligibleCapacity": 0,
+        "noBlockWithUnavailableDiagnosis": 0
+      },
+      "exploratoryTiming": {
+        "sampleCount": 7320,
+        "percentileMethod": "nearest-rank",
+        "p50Ms": 26.7225,
+        "p95Ms": 44.736900000000006,
+        "meanMs": 28.29376774590164,
+        "maxMs": 99.3819
+      }
+    },
+    {
+      "role": "official",
+      "scenario": "s2",
+      "seed": 2001,
+      "runId": "official-s2-2001-38de76b7ac10424295d07ff3272f8333",
+      "evidencePath": "artifacts/simulations/s2-expected-baseline/official-s2-2001-38de76b7ac10424295d07ff3272f8333",
+      "metadata": {
+        "runId": "official-s2-2001-38de76b7ac10424295d07ff3272f8333",
+        "scenarioId": "s2-expected-baseline",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 2001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-03T23:16:09.0474970Z",
+        "completedAt": "2026-11-03T23:20:04.6584100Z"
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 22000,
+        "persistedRequestCount": 7320,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "2bf2cc07d339667a2ad72003c0fef76d3c4fa4b916ed1870579d55d9d493cb15",
+          "definition.json": "1897b11b6bf19e1bc2ad1c17580c3712343744620eb96267527a788af2a085c8",
+          "manifest.json": "efb8d9bc88883e842e27dddedb71d4ada76fcabbe49bc91e73b8137074a125e2",
+          "attempts.json": "4e60fed37dd0e9ffad07cd7d3fa5c4937b40153165ba65dfb7b31e167e2c0a53",
+          "checkpoints.json": "b83e22f4efb3525a30ef177dd5b7e8eebccee956343e5cd1e4621bdf8fe83b78",
+          "attendee-paths.json": "7f437d97e20a9d8c4dbcdc6a4e6e41f4460219a8f49f90cae814411d54b16e86",
+          "recovery-observations.json": "f95e54caac2ad3530f34ad46968d56f7ef4b4b928ad255970af58b809115109b",
+          "metrics.json": "277bf45af2059f9add2dc85469ef405043a95c6f3d518b46561b12383a5486cd"
+        }
+      },
+      "requestOutcomes": {
+        "attemptedRequests": 7320,
+        "normallyProcessedRequests": 7320,
+        "successfulRequests": 7320,
+        "domainRejectedRequests": 0,
+        "knownConcurrencyConflictRequests": 0,
+        "unexpectedTechnicalFailureRequests": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "concurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 5359,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 244,
+        "classifiablePathCount": 5115,
+        "balancedPathCount": 2880,
+        "acceptablePathCount": 1682,
+        "notBalancedPathCount": 553,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.04553088262735585,
+        "classifiablePathRate": 0.9544691173726442,
+        "balancedPathRate": 0.5630498533724341,
+        "acceptablePathRate": 0.3288367546432063,
+        "notBalancedPathRate": 0.10811339198435972,
+        "persistedOutcomeCount": 22000,
+        "goodOutcomeCount": 8738,
+        "mediumOutcomeCount": 11228,
+        "badOutcomeCount": 2034,
+        "goodOutcomeRate": 0.3971818181818182,
+        "mediumOutcomeRate": 0.5103636363636364,
+        "badOutcomeRate": 0.09245454545454546
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 1900,
+        "recoveredEpisodeCount": 1403,
+        "unresolvedEpisodeCount": 497,
+        "recoveryEligibleEpisodeCount": 1449,
+        "recoveryIneligibleEpisodeCount": 451,
+        "recoveryRate": 0.9682539682539683,
+        "recoveredToMediumCount": 714,
+        "recoveredToGoodCount": 689,
+        "averageOpportunitiesToRecovery": 1.0612972202423379,
+        "medianOpportunitiesToRecovery": 1,
+        "opportunityDistribution": [
+          {
+            "opportunities": 1,
+            "episodeCount": 1320,
+            "rateAmongRecovered": 0.9408410548823949
+          },
+          {
+            "opportunities": 2,
+            "episodeCount": 80,
+            "rateAmongRecovered": 0.05702066999287242
+          },
+          {
+            "opportunities": 3,
+            "episodeCount": 3,
+            "rateAmongRecovered": 0.0021382751247327157
+          }
+        ]
+      },
+      "eligibleUnresolvedEpisodeCount": 46,
+      "dailyCheckpoints": [
+        {
+          "dayNumber": 1,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "b1f96600-f1fb-d4b8-1e25-834c15af46db"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 5,
+          "mediumAvailableSpotCount": 4,
+          "badAvailableSpotCount": 589,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 2,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "12efcffb-a689-244f-6199-263b18e71717"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 2,
+          "mediumAvailableSpotCount": 0,
+          "badAvailableSpotCount": 596,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 3,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "852ad0c1-71aa-c1d5-f28a-f27677288de1"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 4,
+          "mediumAvailableSpotCount": 4,
+          "badAvailableSpotCount": 590,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 4,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "9a7bf52c-caac-fb44-5db3-8a5c8b52d5fb"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 6,
+          "mediumAvailableSpotCount": 6,
+          "badAvailableSpotCount": 586,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 5,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "500d8fb4-c2ec-d70a-dd07-56296effa1a3"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 5,
+          "mediumAvailableSpotCount": 8,
+          "badAvailableSpotCount": 585,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        }
+      ],
+      "rejectionAnalysis": {
+        "reasons": {},
+        "noBlockWithSufficientEligibleCapacity": 0,
+        "noBlockWithInsufficientEligibleCapacity": 0,
+        "noBlockWithUnavailableDiagnosis": 0
+      },
+      "exploratoryTiming": {
+        "sampleCount": 7320,
+        "percentileMethod": "nearest-rank",
+        "p50Ms": 27.1935,
+        "p95Ms": 44.6164,
+        "meanMs": 28.52356105191257,
+        "maxMs": 212.13139999999999
+      }
+    },
+    {
+      "role": "official",
+      "scenario": "s2",
+      "seed": 3001,
+      "runId": "official-s2-3001-50a58cfdae484c5d99139d63b0176545",
+      "evidencePath": "artifacts/simulations/s2-expected-baseline/official-s2-3001-50a58cfdae484c5d99139d63b0176545",
+      "metadata": {
+        "runId": "official-s2-3001-50a58cfdae484c5d99139d63b0176545",
+        "scenarioId": "s2-expected-baseline",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 3001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-03T23:20:05.2176580Z",
+        "completedAt": "2026-11-03T23:23:52.6508710Z"
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 22000,
+        "persistedRequestCount": 7320,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "d54ab1942430e2e3529134590037d944aa268f15b4d827cccff33b614b4b91cc",
+          "definition.json": "92e007715469ac770435bd79c2d073d8b533f80fb76fcc2f5af97c0fc7540480",
+          "manifest.json": "1e15fb193cbf86085f51b35f364a5d4fbc898d95ed76c428dc6b9053f66d4db7",
+          "attempts.json": "63501daf7983dd8cc4dd85ab55a9a86b267d2a06c7ae3b90c1c7e1ae560b3ada",
+          "checkpoints.json": "518d2b1c520b1909732f36aff32c3b9c94dcb9ba04801af0ac1fdf1b4b93c57f",
+          "attendee-paths.json": "d01084adfa5d9deb4e5d6718206b4b65456f9dc252aff658cbd7690adb0f021d",
+          "recovery-observations.json": "96173bf1f9a8764e174d1c65b533313f3ded10c800d4b8e6c3eeae77296947db",
+          "metrics.json": "3b0d45b2824eb58bf701d96476163ccb97658779322221ad57f0e24f893464d8"
+        }
+      },
+      "requestOutcomes": {
+        "attemptedRequests": 7320,
+        "normallyProcessedRequests": 7320,
+        "successfulRequests": 7320,
+        "domainRejectedRequests": 0,
+        "knownConcurrencyConflictRequests": 0,
+        "unexpectedTechnicalFailureRequests": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "concurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 5344,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 218,
+        "classifiablePathCount": 5126,
+        "balancedPathCount": 2890,
+        "acceptablePathCount": 1646,
+        "notBalancedPathCount": 590,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.0407934131736527,
+        "classifiablePathRate": 0.9592065868263473,
+        "balancedPathRate": 0.5637924307452205,
+        "acceptablePathRate": 0.32110807647288336,
+        "notBalancedPathRate": 0.11509949278189621,
+        "persistedOutcomeCount": 22000,
+        "goodOutcomeCount": 8732,
+        "mediumOutcomeCount": 11222,
+        "badOutcomeCount": 2046,
+        "goodOutcomeRate": 0.39690909090909093,
+        "mediumOutcomeRate": 0.510090909090909,
+        "badOutcomeRate": 0.093
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 1900,
+        "recoveredEpisodeCount": 1401,
+        "unresolvedEpisodeCount": 499,
+        "recoveryEligibleEpisodeCount": 1450,
+        "recoveryIneligibleEpisodeCount": 450,
+        "recoveryRate": 0.9662068965517241,
+        "recoveredToMediumCount": 685,
+        "recoveredToGoodCount": 716,
+        "averageOpportunitiesToRecovery": 1.0663811563169165,
+        "medianOpportunitiesToRecovery": 1,
+        "opportunityDistribution": [
+          {
+            "opportunities": 1,
+            "episodeCount": 1312,
+            "rateAmongRecovered": 0.9364739471805853
+          },
+          {
+            "opportunities": 2,
+            "episodeCount": 85,
+            "rateAmongRecovered": 0.06067094932191292
+          },
+          {
+            "opportunities": 3,
+            "episodeCount": 4,
+            "rateAmongRecovered": 0.0028551034975017845
+          }
+        ]
+      },
+      "eligibleUnresolvedEpisodeCount": 49,
+      "dailyCheckpoints": [
+        {
+          "dayNumber": 1,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "b1f96600-f1fb-d4b8-1e25-834c15af46db"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 1,
+          "mediumAvailableSpotCount": 1,
+          "badAvailableSpotCount": 596,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 2,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "12efcffb-a689-244f-6199-263b18e71717"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 8,
+          "mediumAvailableSpotCount": 8,
+          "badAvailableSpotCount": 582,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 3,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "852ad0c1-71aa-c1d5-f28a-f27677288de1"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 8,
+          "mediumAvailableSpotCount": 8,
+          "badAvailableSpotCount": 582,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 4,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "9a7bf52c-caac-fb44-5db3-8a5c8b52d5fb"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 7,
+          "mediumAvailableSpotCount": 7,
+          "badAvailableSpotCount": 584,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 5,
+          "dailyRequesterCount": 4400,
+          "scenarioId": "s2-expected-baseline",
+          "festivalDayId": {
+            "value": "500d8fb4-c2ec-d70a-dd07-56296effa1a3"
+          },
+          "evaluatedRequestCount": 1464,
+          "successfulAttemptCount": 1464,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 4,
+          "mediumAvailableSpotCount": 4,
+          "badAvailableSpotCount": 590,
+          "totalAvailableSpotCount": 598,
+          "rejectionReasons": {}
+        }
+      ],
+      "rejectionAnalysis": {
+        "reasons": {},
+        "noBlockWithSufficientEligibleCapacity": 0,
+        "noBlockWithInsufficientEligibleCapacity": 0,
+        "noBlockWithUnavailableDiagnosis": 0
+      },
+      "exploratoryTiming": {
+        "sampleCount": 7320,
+        "percentileMethod": "nearest-rank",
+        "p50Ms": 26.311500000000002,
+        "p95Ms": 42.759499999999996,
+        "meanMs": 27.492425409836066,
+        "maxMs": 148.4668
+      }
+    }
+  ],
+  "crossSeedStatistics": {
+    "s1": {
+      "successRate": {
+        "min": 1.0,
+        "mean": 1.0,
+        "max": 1.0,
+        "naRunCount": 0
+      },
+      "rejectionRate": {
+        "min": 0.0,
+        "mean": 0.0,
+        "max": 0.0,
+        "naRunCount": 0
+      },
+      "goodOutcomeRate": {
+        "min": 0.4244242424242424,
+        "mean": 0.42446464646464643,
+        "max": 0.42448484848484846,
+        "naRunCount": 0
+      },
+      "mediumOutcomeRate": {
+        "min": 0.5755151515151515,
+        "mean": 0.5755353535353536,
+        "max": 0.5755757575757576,
+        "naRunCount": 0
+      },
+      "badOutcomeRate": {
+        "min": 0,
+        "mean": 0,
+        "max": 0,
+        "naRunCount": 0
+      },
+      "balancedPathRate": {
+        "min": 0.6563716584479626,
+        "mean": 0.6583030209546422,
+        "max": 0.6615861534487213,
+        "naRunCount": 0
+      },
+      "acceptablePathRate": {
+        "min": 0.33841384655127876,
+        "mean": 0.3416969790453578,
+        "max": 0.34362834155203736,
+        "naRunCount": 0
+      },
+      "notBalancedPathRate": {
+        "min": 0,
+        "mean": 0,
+        "max": 0,
+        "naRunCount": 0
+      },
+      "recoveryRate": {
+        "min": null,
+        "mean": null,
+        "max": null,
+        "naRunCount": 3
+      },
+      "averageOpportunitiesToRecovery": {
+        "min": null,
+        "mean": null,
+        "max": null,
+        "naRunCount": 3
+      },
+      "medianOpportunitiesToRecovery": {
+        "min": null,
+        "mean": null,
+        "max": null,
+        "naRunCount": 3
+      }
+    },
+    "s2": {
+      "successRate": {
+        "min": 1.0,
+        "mean": 1.0,
+        "max": 1.0,
+        "naRunCount": 0
+      },
+      "rejectionRate": {
+        "min": 0.0,
+        "mean": 0.0,
+        "max": 0.0,
+        "naRunCount": 0
+      },
+      "goodOutcomeRate": {
+        "min": 0.39690909090909093,
+        "mean": 0.39706060606060606,
+        "max": 0.3971818181818182,
+        "naRunCount": 0
+      },
+      "mediumOutcomeRate": {
+        "min": 0.510090909090909,
+        "mean": 0.5103181818181818,
+        "max": 0.5105,
+        "naRunCount": 0
+      },
+      "badOutcomeRate": {
+        "min": 0.09240909090909091,
+        "mean": 0.09262121212121212,
+        "max": 0.093,
+        "naRunCount": 0
+      },
+      "balancedPathRate": {
+        "min": 0.5630498533724341,
+        "mean": 0.564537692258924,
+        "max": 0.5667707926591176,
+        "naRunCount": 0
+      },
+      "acceptablePathRate": {
+        "min": 0.32110807647288336,
+        "mean": 0.32396312800836985,
+        "max": 0.3288367546432063,
+        "naRunCount": 0
+      },
+      "notBalancedPathRate": {
+        "min": 0.10811339198435972,
+        "mean": 0.11149917973270616,
+        "max": 0.11509949278189621,
+        "naRunCount": 0
+      },
+      "recoveryRate": {
+        "min": 0.9662068965517241,
+        "mean": 0.9689391548891585,
+        "max": 0.972356599861783,
+        "naRunCount": 0
+      },
+      "averageOpportunitiesToRecovery": {
+        "min": 1.0561478322672353,
+        "mean": 1.0612754029421632,
+        "max": 1.0663811563169165,
+        "naRunCount": 0
+      },
+      "medianOpportunitiesToRecovery": {
+        "min": 1,
+        "mean": 1,
+        "max": 1,
+        "naRunCount": 0
+      }
+    }
+  },
+  "reproducibility": {
+    "referenceRunId": "official-s1-1001-c57af02f2d8449889958e2857dfecdaf",
+    "repeatedRun": {
+      "role": "reproduction",
+      "scenario": "s1",
+      "seed": 1001,
+      "runId": "reproduction-s1-1001-a85b41b384294ef79ff25eb3ab8014f3",
+      "evidencePath": "artifacts/simulations/s1-best-plausible/reproduction-s1-1001-a85b41b384294ef79ff25eb3ab8014f3",
+      "metadata": {
+        "runId": "reproduction-s1-1001-a85b41b384294ef79ff25eb3ab8014f3",
+        "scenarioId": "s1-best-plausible",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 1001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-03T23:23:53.1994530Z",
+        "completedAt": "2026-11-03T23:27:38.0876670Z"
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 16500,
+        "persistedRequestCount": 6665,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "14d9de4cb0ff0f612544452ac1f675ebf66afcf0037124fe33a96712a078c668",
+          "definition.json": "2602e7bfb176adeca7ecd14ea49be2ee2079c58ed2f81833d2094a393c0960f8",
+          "manifest.json": "554b490de2b1f652945e673337e439cbdf975180df0c2047b84471f3c13cbee3",
+          "attempts.json": "07e701b1ac7495c038b00dd680ba1c2adea352f4fb86cabed6b64b642c75f923",
+          "checkpoints.json": "5ba89628b234a1e029ed73b0470b326e8938fd252b2d26fc746d9b6b9276bdc1",
+          "attendee-paths.json": "eacf10e2d7b71e34ad9dad1ea361bad8946b7cfdb25af8fdba0ab1c04eb40169",
+          "recovery-observations.json": "4baefa07355033018327389ae59a3cc084b3d8dde103ef213fb18170a075b843",
+          "metrics.json": "aaf4c20c531f804354e2d47045579c697edc617a340e00415d8c5ecf331efccd"
+        }
+      },
+      "requestOutcomes": {
+        "attemptedRequests": 6665,
+        "normallyProcessedRequests": 6665,
+        "successfulRequests": 6665,
+        "domainRejectedRequests": 0,
+        "knownConcurrencyConflictRequests": 0,
+        "unexpectedTechnicalFailureRequests": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "concurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 4353,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 476,
+        "classifiablePathCount": 3877,
+        "balancedPathCount": 2547,
+        "acceptablePathCount": 1330,
+        "notBalancedPathCount": 0,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.10934987365035607,
+        "classifiablePathRate": 0.8906501263496439,
+        "balancedPathRate": 0.6569512509672427,
+        "acceptablePathRate": 0.3430487490327573,
+        "notBalancedPathRate": 0,
+        "persistedOutcomeCount": 16500,
+        "goodOutcomeCount": 7004,
+        "mediumOutcomeCount": 9496,
+        "badOutcomeCount": 0,
+        "goodOutcomeRate": 0.42448484848484846,
+        "mediumOutcomeRate": 0.5755151515151515,
+        "badOutcomeRate": 0
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 0,
+        "recoveredEpisodeCount": 0,
+        "unresolvedEpisodeCount": 0,
+        "recoveryEligibleEpisodeCount": 0,
+        "recoveryIneligibleEpisodeCount": 0,
+        "recoveryRate": null,
+        "recoveredToMediumCount": 0,
+        "recoveredToGoodCount": 0,
+        "averageOpportunitiesToRecovery": null,
+        "medianOpportunitiesToRecovery": null,
+        "opportunityDistribution": []
+      },
+      "eligibleUnresolvedEpisodeCount": 0,
+      "dailyCheckpoints": [
+        {
+          "dayNumber": 1,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "cc5832a4-1020-7b6d-987a-8890260baea1"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 2,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "174cc810-598d-fa88-3fcc-45d057b41033"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 3,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "6993f7cf-59a6-23fa-78a5-81d44335b54b"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 4,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "c91f5d2d-9613-225e-f1e7-f61e3e0bd412"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 352,
+          "mediumAvailableSpotCount": 350,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        },
+        {
+          "dayNumber": 5,
+          "dailyRequesterCount": 3300,
+          "scenarioId": "s1-best-plausible",
+          "festivalDayId": {
+            "value": "da47433d-7ba4-a386-867a-e279c81592c7"
+          },
+          "evaluatedRequestCount": 1333,
+          "successfulAttemptCount": 1333,
+          "rejectedAttemptCount": 0,
+          "goodAvailableSpotCount": 351,
+          "mediumAvailableSpotCount": 351,
+          "badAvailableSpotCount": 996,
+          "totalAvailableSpotCount": 1698,
+          "rejectionReasons": {}
+        }
+      ],
+      "rejectionAnalysis": {
+        "reasons": {},
+        "noBlockWithSufficientEligibleCapacity": 0,
+        "noBlockWithInsufficientEligibleCapacity": 0,
+        "noBlockWithUnavailableDiagnosis": 0
+      },
+      "exploratoryTiming": {
+        "sampleCount": 6665,
+        "percentileMethod": "nearest-rank",
+        "p50Ms": 29.0404,
+        "p95Ms": 43.2061,
+        "meanMs": 30.042672228057015,
+        "maxMs": 113.6572
+      }
+    },
+    "matches": {
+      "manifest": true,
+      "attempts": true,
+      "attendee-paths": true,
+      "recovery-observations": true,
+      "metrics": true
+    },
+    "ignoredFields": [
+      "runId",
+      "startedAt",
+      "completedAt",
+      "duration"
+    ],
+    "exactFileMatches": {
+      "definition.json": true,
+      "manifest.json": true,
+      "metrics.json": true
+    },
+    "generatedIds": "Matched by simulation request and attendee/FestivalDay identity.",
+    "logicalSha256": {
+      "manifest": "338097792fb75fe5ded49177410f554ae468db3f9cb6aa99079a390617c63dbe",
+      "attempts": "2be544468e180450ea82c390291187fd0e627952a09a5a330988001a644508e4",
+      "attendee-paths": "f180a348943effb4e134b587d9f47d1d0c403f4c01700ed5906ad35329972a47",
+      "recovery-observations": "277921a813efab205edc333bf48479c6450063e4dbffe4e54be0b50d3d5b3bf8",
+      "metrics": "9a60c1a8f70bbb8f6031550ccc25f46476d807db87b12f9754ad8f3bd4223fe5"
+    }
+  }
+}

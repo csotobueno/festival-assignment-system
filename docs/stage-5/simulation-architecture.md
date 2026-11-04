@@ -696,6 +696,23 @@ PostgreSQL deterministic recovery test also exports a complete package and check
 the consumed manifest, raw records, persisted Bad → Good paths, recovered episodes,
 aggregate result equality and supporting-attendee exclusion.
 
+## First Official Representative Execution Protocol
+
+The first official representative protocol is deliberately sequential: S1 and
+S2 each use Seeds 1001, 2001 and 3001 (six official runs), followed by a separate
+S1/1001 reproduction check. The task-specific
+[execution harness](../../scripts/stage-5-representative-runs/README.md) calls
+the existing materializer, real PostgreSQL runner and unchanged eight-file
+exporter. Its sidecar index records package paths, checksums and final-state
+integrity checks; it does not change the exporter contract. Cross-run request
+rates use the existing framework denominators, and fairness/recovery aggregates
+are consumed directly from exported metrics. Raw official packages are retained
+locally under ignored `artifacts/simulations/`; the selected summary documents
+their paths without introducing an artifact-promotion subsystem.
+The [first official results report](s1-s2-representative-results.md) records the
+execution date, supported versions, per-run observations, cross-seed summaries
+and reproduction result separately from interpretation.
+
 ## Future Concurrent Execution
 
 The same manifest, records and evaluators support a later execution strategy:
