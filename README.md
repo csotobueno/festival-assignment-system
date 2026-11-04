@@ -39,7 +39,11 @@ independently of attendee identity and previous days' eligibility. This is a
 conservative simulation input while stakeholder data is unavailable, not an
 observed festival value. The separate business hypothesis is approximately
 75–80% of requests allowing FrontStanding; it requires stakeholder validation.
-Representative runs remain pending.
+The first official representative set now contains six completed runs using
+Seeds 1001, 2001 and 3001 for both scenarios. The
+[S1/S2 results report](docs/stage-5/s1-s2-representative-results.md) separates
+observed metrics, cross-seed comparisons and interpretation, with exact locally
+retained evidence paths. Stage 5 evaluation and the Decision Gate remain pending.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 

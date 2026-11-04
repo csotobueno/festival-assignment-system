@@ -2,10 +2,14 @@
 
 ## Status and Authority
 
-**Deterministic generation implemented; representative execution remains pending.**
+**Deterministic generation and the first six official representative runs completed;
+the wider Stage 5 evaluation remains pending.**
 S1 and S2 define simulation intent and provisional inputs materialized through
 the existing ScenarioDefinition → ScenarioMaterializer → ScenarioManifest flow.
-They provide no measured results or scenario pass/fail expectations. Both use
+These definitions describe inputs and do not prescribe scenario pass/fail results.
+The [first official S1/S2 set](s1-s2-representative-results.md) records observations
+separately: Seeds 1001, 2001 and 3001 for each scenario, six official runs in total.
+Both use
 the conservative initial Stage 5 baseline `FrontStandingAllowedRequestShare = 50%`
 of requests. This simulation input is not an observed festival value and
 requires stakeholder validation.
@@ -425,8 +429,12 @@ Every row below is **Simulation hypothesis — Requires stakeholder validation**
 
 ## Scope Boundary
 
-Implementation produces deterministic representative manifests only. It adds no
-official S1/S2 execution or evidence packages, S3–S8 implementation/detailed
-design, Decision Gate logic/thresholds, concurrency, replay loading, comparison
-engine or performance optimization. Stakeholder hypotheses remain provisional;
-materialization tests are not empirical festival evidence.
+Generation materializes the unchanged representative inputs described above.
+The first official six-run execution protocol, separate reproduction check and
+retained evidence are documented in the
+[results report](s1-s2-representative-results.md) and
+[task harness](../../scripts/stage-5-representative-runs/README.md).
+This adds no S3–S8 implementation/detailed design, Decision Gate logic/thresholds,
+concurrency, replay loading, generic comparison engine or performance optimization.
+Stakeholder hypotheses remain provisional; simulation observations are not
+measured festival data and materialization tests are not empirical evidence.
