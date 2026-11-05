@@ -73,3 +73,24 @@ There is no mandatory evidence-promotion mechanism in the repository. The
 selected summary/results document records exact paths and checksums; raw
 packages remain local, are not committed, and require separate backup before
 deleting a checkout. No retention subsystem is introduced.
+
+## S2 path analysis
+
+Analyze the existing three official S2 packages without running a simulation:
+
+```bash
+python3 -B scripts/stage-5-representative-runs/analyze_s2_paths.py \
+  --output artifacts/analysis/s2-fairness-path-analysis-final.json
+```
+
+Choose a fresh output filename when repeating the command. The standard-library
+helper reads the official structured results and verifies all eight package
+checksums, target populations and attendee/day joins. It consumes stored rubric
+and recovery outputs. Its deterministic derived JSON includes aggregate tables,
+every NotBalanced path and every eligible unresolved episode with traceability
+to recorded daily requests. It refuses existing outputs and destinations within
+the raw S2 evidence directory. Raw packages are never modified.
+
+The [S2 analysis report](../../docs/stage-5/s2-fairness-path-analysis.md) defines
+denominators, observations, interpretation, scenario guidance and evidence gaps.
+The unittest discovery command above also runs ten focused S2 analysis tests.
