@@ -258,11 +258,15 @@ random-ID tie-break limitation rather than claiming deterministic history order.
 ## DailyRequestPlan and Sequential Execution
 
 Each FestivalDay has an ordered `DailyRequestPlan` from the manifest. Each entry
-identifies a stable simulation request/correlation ID, AttemptSequence, ordered
+identifies a stable simulation request/correlation ID, baseline Sequence,
+effective ExecutionSequence, ordered
 members/codes, request-wide eligibility and explicit RequestedAt/AssignedAt.
 Record arrival scheduling separately from business time; the sequential runner
 does not need real-time sleeping to represent another FestivalDay. Groups contain
 1..10 members and may change daily. No permanent group identity is required.
+The runner dispatches by ExecutionSequence; it defaults to baseline Sequence
+for existing scenarios. Attempts retain effective AttemptSequence and additive
+BaselineSequence. Neither dispatch field is derived from observed timing.
 
 Initially `ExecutionMode = Sequential` and `ConcurrencyLevel = 1`:
 
@@ -644,7 +648,8 @@ Metadata uses camelCase JSON properties for these explicit model fields:
 | Fields | Source / unavailable behavior |
 | --- | --- |
 | RunId | Explicit safe identifier; executable supplies a fresh GUID in N format. |
-| ScenarioId, GeneratorVersion, Seed, ExecutionMode, ConcurrencyLevel | Copied from the consumed manifest; provenance must agree with definition and metadata. |
+| ScenarioId, GeneratorVersion, Seed, ExecutionMode, ConcurrencyLevel | Copied from the consumed manifest; provenance must agree with run metadata and the source definition. S5 has its own ScenarioId while retaining the explicit S2 source below. |
+| WorkloadSourceScenarioId, OrderingTransformation | null for untransformed scenarios; S5 records `s2-expected-baseline` and `reverse-daily-execution-order`. Its definition.json remains the original S2 definition. |
 | ScenarioDefinitionVersion | null: no explicit definition version exists in code yet. |
 | EngineVersion | `v0.3.0`, the documented Stage 4 conceptual baseline; not a claim of source identity. |
 | RepositoryCommitSha | Optional explicit run input; executable reads `FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA`. No Git command/discovery is required; absence is null and never prevents export. |
@@ -713,18 +718,23 @@ The [first official results report](s1-s2-representative-results.md) records the
 execution date, supported versions, per-run observations, cross-seed summaries
 and reproduction result separately from interpretation.
 
-## S5 Processing-Order Counterfactual — Contract Only
+## S5 Processing-Order Counterfactual
 
 The [S5 Adverse Arrival Order contract](s5-adverse-arrival-order.md) requires
 the exact S2 materialized workload for each paired seed, with only daily request
 processing order reversed. RequestedAt and AssignedAt remain original simulated
 S2 timestamps; the effective ExecutionSequence is authoritative for S5 dispatch
 order. Original S2 sequence positions must remain available for comparison.
-Simply reversing a collection that the runner sorts back by its original
-Sequence would not satisfy the contract. Prior-day history accumulates naturally
+`S5ReversedProcessingOrder.Create(s2Manifest)` now preserves baseline Sequence
+and assigns ExecutionSequence by mirroring the original global slots per day.
+The runner sorts by ExecutionSequence and records it as AttemptSequence, alongside
+BaselineSequence. Prior-day history accumulates naturally
 within each independent run, without copying S2's resulting Assignments into S5.
-S5 implementation, sequence/evidence representation and execution remain pending;
-this contract changes no current runner, manifest or exporter behavior.
+S5 manifest/run metadata include WorkloadSourceScenarioId and OrderingTransformation;
+the original S2 definition is exported as the workload source under S5's evidence
+identity. GeneratorVersion remains unchanged. Tests cover all three official seeds'
+materialized inputs and a small real PostgreSQL dispatch/export slice. Official S5
+execution, source-run pairing and order-sensitivity analysis remain pending.
 
 ## Future Concurrent Execution
 

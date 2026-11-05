@@ -20,7 +20,11 @@ public sealed record ScenarioMetadata(
     int Seed,
     string GeneratorVersion,
     SimulationExecutionMode ExecutionMode,
-    int ConcurrencyLevel);
+    int ConcurrencyLevel)
+{
+    public string? WorkloadSourceScenarioId { get; init; }
+    public string? OrderingTransformation { get; init; }
+}
 
 // Physical topology is shared by every day. Attendees is the registered catalog;
 // evaluated population is the distinct membership of DailyPlans' workload.
@@ -50,10 +54,23 @@ public sealed record DailyPlan(
     FestivalDayId FestivalDayId,
     ImmutableArray<DailyRequestPlan> Requests);
 
+// Sequence retains the original, globally unique materialized baseline order.
+// ExecutionSequence controls dispatch; its default preserves all existing scenarios.
 public sealed record DailyRequestPlan(
     Guid SimulationRequestId,
     int Sequence,
     ImmutableArray<Attendee> Members,
     DateTimeOffset RequestedAt,
     DateTimeOffset AssignedAt,
-    RequestEligibility Eligibility);
+    RequestEligibility Eligibility)
+{
+    private int? executionSequence;
+
+    // The materializer assigns final baseline Sequence values with record copies.
+    // Follow that value until an experiment explicitly overrides execution order.
+    public int ExecutionSequence
+    {
+        get => executionSequence ?? Sequence;
+        init => executionSequence = value;
+    }
+}

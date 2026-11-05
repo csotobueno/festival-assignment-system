@@ -20,10 +20,23 @@ public sealed class SimulationEvidenceExporter
         ArgumentException.ThrowIfNullOrWhiteSpace(request.DestinationRoot);
         var metadata = request.RunMetadata;
         var input = request.Manifest.Metadata;
+        var definitionScenarioId = input.ScenarioId;
+        if (input.WorkloadSourceScenarioId is not null || input.OrderingTransformation is not null)
+        {
+            if (input.ScenarioId != S5ReversedProcessingOrder.ScenarioId
+                || input.WorkloadSourceScenarioId != S5ReversedProcessingOrder.WorkloadSourceScenarioId
+                || input.OrderingTransformation != S5ReversedProcessingOrder.Transformation)
+                throw new ArgumentException("Unsupported workload source or ordering transformation.", nameof(request));
+            // definition.json retains the S2 source, while manifest/run metadata
+            // identify S5. Never rename/rematerialize the source definition.
+            definitionScenarioId = input.WorkloadSourceScenarioId;
+        }
         if (metadata.ScenarioId != input.ScenarioId || metadata.Seed != input.Seed
             || metadata.GeneratorVersion != input.GeneratorVersion
             || metadata.ExecutionMode != input.ExecutionMode || metadata.ConcurrencyLevel != input.ConcurrencyLevel
-            || request.Definition.ScenarioId != input.ScenarioId || request.Definition.Seed != input.Seed
+            || metadata.WorkloadSourceScenarioId != input.WorkloadSourceScenarioId
+            || metadata.OrderingTransformation != input.OrderingTransformation
+            || request.Definition.ScenarioId != definitionScenarioId || request.Definition.Seed != input.Seed
             || request.Definition.GeneratorVersion != input.GeneratorVersion
             || request.Definition.ExecutionMode != input.ExecutionMode
             || request.Definition.ConcurrencyLevel != input.ConcurrencyLevel)

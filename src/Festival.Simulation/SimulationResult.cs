@@ -33,7 +33,11 @@ public sealed record SimulationAttemptRecord(
     int? EligibleAvailableSpotCount,
     bool? FeasibleContiguousBlockFound,
     ExperienceQuality? SelectedExperienceQuality,
-    string? Diagnostic);
+    string? Diagnostic)
+{
+    // AttemptSequence is the effective execution sequence, not simulated arrival.
+    public int BaselineSequence { get; init; } = AttemptSequence;
+}
 
 // Primitive read projection avoids exposing Infrastructure's internal EF request rows.
 public sealed record PersistedSimulationRequest(

@@ -95,7 +95,7 @@ public static class MinimalSimulationRunner
             }
 
             var dayAttemptStart = attempts.Count;
-            foreach (var request in day.Requests.OrderBy(request => request.Sequence))
+            foreach (var request in day.Requests.OrderBy(request => request.ExecutionSequence))
             {
                 attempts.Add(await ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
                     day.FestivalDayId, request, cancellationToken));
@@ -248,9 +248,9 @@ public static class MinimalSimulationRunner
         SimulationAttemptRecord Record(SimulationAttemptOutcome outcome,
             AssignmentRequestId? persistedId, string? diagnosticCode, string? diagnosticType,
             bool? feasibleBlockFound, ExperienceQuality? selectedQuality, string? diagnostic) =>
-            new(scenarioId, dayId, plan.SimulationRequestId, plan.Sequence, command.AttendeeCodes.Count,
+            new(scenarioId, dayId, plan.SimulationRequestId, plan.ExecutionSequence, command.AttendeeCodes.Count,
                 plan.Members.Select(member => member.Id).ToImmutableArray(), startedAt, completedAt, duration,
                 outcome, persistedId, diagnosticCode, diagnosticType, eligibleCount, feasibleBlockFound,
-                selectedQuality, diagnostic);
+                selectedQuality, diagnostic) { BaselineSequence = plan.Sequence };
     }
 }
