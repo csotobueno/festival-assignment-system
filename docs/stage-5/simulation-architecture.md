@@ -713,6 +713,19 @@ The [first official results report](s1-s2-representative-results.md) records the
 execution date, supported versions, per-run observations, cross-seed summaries
 and reproduction result separately from interpretation.
 
+## S5 Processing-Order Counterfactual — Contract Only
+
+The [S5 Adverse Arrival Order contract](s5-adverse-arrival-order.md) requires
+the exact S2 materialized workload for each paired seed, with only daily request
+processing order reversed. RequestedAt and AssignedAt remain original simulated
+S2 timestamps; the effective ExecutionSequence is authoritative for S5 dispatch
+order. Original S2 sequence positions must remain available for comparison.
+Simply reversing a collection that the runner sorts back by its original
+Sequence would not satisfy the contract. Prior-day history accumulates naturally
+within each independent run, without copying S2's resulting Assignments into S5.
+S5 implementation, sequence/evidence representation and execution remain pending;
+this contract changes no current runner, manifest or exporter behavior.
+
 ## Future Concurrent Execution
 
 The same manifest, records and evaluators support a later execution strategy:
