@@ -2,8 +2,9 @@
 
 ## Status, authority and question
 
-**Counterfactual analytical scenario — contract defined; implementation and
-execution pending.** S5 is an experiment under the exact S2 workload, not a
+**Counterfactual analytical scenario — order transformation, runner and evidence
+support implemented; official execution and paired analysis pending.**
+S5 is an experiment under the exact S2 workload, not a
 proposed production policy or a realistic chronological arrival simulation.
 
 Its question is: keeping the exact same daily workload, how much do Engine v1
@@ -97,11 +98,20 @@ Future execution and analysis must retain these distinct meanings:
 | ExecutionSequence / S5 execution position | The actual order requests are presented to Engine v1 in S5, with an explicit per-day rank. Authoritative for S5 processing order. |
 | AssignedAt | The original simulated S2 value, retaining AssignedAt = RequestedAt. |
 
-`ExecutionSequence` is a contract term for actual dispatch order, not a new
-implemented field in this task. Future evidence must preserve the baseline
-sequence and distinguish it from the effective S5 sequence. The current runner
-sorts requests by Sequence; merely reversing an array that it subsequently sorts
-back into baseline order would not implement this contract.
+The implemented sequence model preserves both meanings:
+
+- `DailyRequestPlan.Sequence` retains the exact original global S2 baseline
+  sequence; sorting by it recovers the original order after transformation.
+- `DailyRequestPlan.ExecutionSequence` controls runner dispatch. It defaults to
+  the final baseline Sequence for existing scenarios. S5 mirrors the existing
+  global sequence slots within each day, so daily rank follows `n + 1 - i`
+  without changing the baseline field. Request collections retain baseline order.
+- `SimulationAttemptRecord.AttemptSequence` records effective ExecutionSequence;
+  its additive `BaselineSequence` records the original Sequence. Both values are
+  equal for S1/S2. Attempts export in effective execution order.
+
+The runner sorts by ExecutionSequence, never RequestedAt. Merely reversing a
+collection while sorting by its original Sequence would not implement S5.
 
 For example, for a day whose first and last requests have these original times:
 
@@ -133,8 +143,8 @@ S5 is reproducible from the S2 ScenarioDefinition, Seed, GeneratorVersion and
 the full daily reversal transformation, with the same explicit FirstDate and
 initial-state controls as the baseline. A seed alone is insufficient.
 
-Future implementation must retain the exact baseline manifest and identify its
-paired source RunId/evidence and ordering transformation. Before treating a run
+Future official execution must retain the exact baseline manifest and identify
+its paired source RunId/evidence and ordering transformation. Before treating a run
 as S5 evidence, prove per FestivalDay:
 
 1. The request set is identical, with each SimulationRequestId appearing once.
@@ -148,8 +158,40 @@ Using the S2 definition to materialize input must reproduce the exact retained
 baseline; a changed workload must not silently replace the official control.
 Runtime-generated persisted AssignmentRequestIds/AssignmentIds, RunIds and
 observed durations can differ. They are outputs, not workload identity keys.
-Manifest-loading/replay support and the concrete sequence/evidence representation
-remain implementation work; this document does not claim they already exist.
+Manifest-loading/replay support and the official execution/analysis protocol remain
+deferred. The implemented transformation consumes an in-memory S2 manifest:
+
+```csharp
+var definition = S2ExpectedBaselineScenarioDefinition.Create(seed, firstDate);
+var s2 = new ScenarioMaterializer().Materialize(definition);
+var s5 = S5ReversedProcessingOrder.Create(s2);
+```
+
+`Create` performs no execution or I/O. It rejects non-S2/already transformed
+inputs, non-sequential settings and ambiguous or previously changed sequences.
+Catalog and setup objects are reused; request copies change only ExecutionSequence.
+The transformation is explicit, with no ordering strategy/plugin framework.
+
+Manifest and run metadata identify `ScenarioId = s5-adverse-arrival-order`,
+`WorkloadSourceScenarioId = s2-expected-baseline` and
+`OrderingTransformation = reverse-daily-execution-order`. Seed and GeneratorVersion
+are inherited unchanged (`v2` for the current S2 workload); ordering does not
+change workload generation, so no generator version bump is needed.
+
+The existing eight-file exporter accepts the original S2 definition with that
+explicit S5 provenance: `definition.json` remains the S2 source; `manifest.json`,
+`run-metadata.json` and observations identify S5. It checks agreement between
+source definition, manifest and run metadata. ExecutionSequence and BaselineSequence
+are additive JSON fields with equal baseline/execution values for S1/S2; optional
+source/transformation metadata are null for untransformed scenarios. Existing
+retained packages are untouched, and the S1/S2-specific analysis scripts are not
+extended to process S5.
+
+Structural tests cover Seeds 1001/2001/3001, including exact request contents,
+timestamps, arrival bands, eligibility, cohorts, topology, baseline recovery and
+repeatable serialized input. A six-request, two-day slice of real S2 materialization
+checks actual PostgreSQL dispatch, persisted timestamps and deterministic export
+of both sequences. This development test is not an official S5 run.
 
 ## Paired comparison protocol
 
@@ -214,9 +256,11 @@ hourly percentages, add fragmentation controls or introduce concurrency.
 
 ## Scope
 
-This contract adds no S5 implementation or execution, telemetry, new fairness
-formula, Engine tuning, Decision Gate logic or S6/S7/S8 implementation. No
-ScenarioMaterializer, runner, manifest, generator, S1/S2 definition, production
-layer, fairness policy, rubric, recovery semantics or aggregate implementation
-changes. Existing S2 evidence remains intact. Implementation and paired execution
-are deferred to a separately scoped task.
+Implementation is limited to Simulation's explicit S5 transformation, additive
+sequence/provenance evidence and execution-order dispatch, with focused tests.
+No official S5 runs, new telemetry, fairness formulas, Engine tuning, Decision
+Gate logic or S6/S7/S8 implementation are added. ScenarioMaterializer, arrival
+generation, S1/S2 definitions, production layers, fairness policies, rubric,
+recovery semantics and aggregate formulas remain unchanged. Existing S2 evidence
+remains intact. Official paired S2/S5 execution and order-sensitivity analysis are
+the next task; they have not begun here.

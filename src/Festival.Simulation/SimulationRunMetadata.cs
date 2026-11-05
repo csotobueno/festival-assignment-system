@@ -15,6 +15,9 @@ public sealed record SimulationRunMetadata(
     DateTimeOffset StartedAt,
     DateTimeOffset CompletedAt)
 {
+    public string? WorkloadSourceScenarioId { get; init; }
+    public string? OrderingTransformation { get; init; }
+
     // Definition/framework versions have no explicit code value yet. The engine
     // label identifies the documented Stage 4 baseline, not an exact source revision.
     public static SimulationRunMetadata Create(string runId, ScenarioManifest manifest,
@@ -22,7 +25,11 @@ public sealed record SimulationRunMetadata(
         new(runId, manifest.Metadata.ScenarioId, null, manifest.Metadata.GeneratorVersion,
             manifest.Metadata.Seed, "v0.3.0", repositoryCommitSha, PathClassificationRubric.Version,
             null, manifest.Metadata.ExecutionMode, manifest.Metadata.ConcurrencyLevel,
-            startedAt, completedAt);
+            startedAt, completedAt)
+        {
+            WorkloadSourceScenarioId = manifest.Metadata.WorkloadSourceScenarioId,
+            OrderingTransformation = manifest.Metadata.OrderingTransformation
+        };
 }
 
 // DestinationRoot is the simulations root (normally artifacts/simulations),

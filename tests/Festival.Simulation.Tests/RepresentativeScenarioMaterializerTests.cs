@@ -78,6 +78,7 @@ public sealed class RepresentativeScenarioMaterializerTests
         actual.Select(request => (request.SimulationRequestId, request.Sequence, request.RequestedAt,
                 request.AssignedAt, request.Eligibility)).Should().Equal(expected.Select(request =>
                 (request.SimulationRequestId, request.Sequence, request.RequestedAt, request.AssignedAt, request.Eligibility)));
+        actual.Select(request => request.ExecutionSequence).Should().Equal(expected.Select(request => request.Sequence));
         actual.Select(request => request.Members.Length).Should().Equal(expected.Select(request => request.Members.Length));
         actual.SelectMany(request => request.Members.Select(member => member.Id)).Should()
             .Equal(expected.SelectMany(request => request.Members.Select(member => member.Id)));
@@ -175,7 +176,8 @@ public sealed class RepresentativeScenarioMaterializerTests
                 .Select(request => request.SimulationRequestId));
             foreach (var request in requests)
             {
-                request.Sequence.Should().Be(++sequence, "the existing runner processes Sequence order");
+                request.Sequence.Should().Be(++sequence, "the materialized baseline order is global across days");
+                request.ExecutionSequence.Should().Be(request.Sequence, "S1/S2 execute in baseline order");
                 request.RequestedAt.Offset.Should().Be(TimeSpan.Zero);
                 DateOnly.FromDateTime(request.RequestedAt.UtcDateTime).Should().Be(festivalDay.Date);
                 festivalDay.AssignmentWindow.Contains(TimeOnly.FromDateTime(request.RequestedAt.UtcDateTime)).Should().BeTrue();

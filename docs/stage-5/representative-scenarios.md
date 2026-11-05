@@ -33,8 +33,9 @@ organization-validated forecast or that sequential execution represents normal
 concurrent operational load.
 
 The [S5 Adverse Arrival Order contract](s5-adverse-arrival-order.md) defines a
-counterfactual reversal of the exact S2 daily workload. Its implementation and
-execution remain pending; it does not change the S1/S2 inputs below.
+counterfactual reversal of the exact S2 daily workload. The explicit transformation,
+runner dispatch and evidence support are implemented; official S5 runs and paired
+analysis remain pending. S1/S2 inputs below are unchanged.
 
 ## Shared Baseline
 
@@ -398,7 +399,8 @@ This enables meaningful comparison of the combined workload conditions. Because
 several workload dimensions change together, an outcome difference cannot be
 attributed to one of them independently. The
 [S5 contract](s5-adverse-arrival-order.md) defines a controlled processing-order
-counterfactual over the exact S2 workload; its implementation remains pending.
+counterfactual over the exact S2 workload. Its transformation is implemented;
+official paired execution and analysis remain pending.
 
 The later-scenario matrix links S5's detailed contract; the other scenarios
 retain only their high-level purposes here:
@@ -407,7 +409,7 @@ retain only their high-level purposes here:
 | --- | --- |
 | S3 — Stress | Examine behavior under operating pressure. |
 | S4 — Worst Plausible | Examine the practical operating boundary. |
-| [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and request contents; contract only. |
+| [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; implemented, official runs pending. |
 | S6 — Large Groups | Examine sensitivity to larger groups. |
 | S7 — High Fragmentation | Examine sensitivity to fragmentation. |
 | S8 — Higher Concurrency | Examine sensitivity to concurrency. |
@@ -440,8 +442,9 @@ The first official six-run execution protocol, separate reproduction check and
 retained evidence are documented in the
 [results report](s1-s2-representative-results.md) and
 [task harness](../../scripts/stage-5-representative-runs/README.md).
-S5's separate counterfactual contract adds documentation only. No S3–S8
-implementation, detailed S3/S4/S6–S8 design, Decision Gate logic/thresholds,
+S5 adds only its explicit ordering transformation, sequence/provenance evidence
+and focused tests; no official S5 execution is included. No S3/S4/S6–S8
+implementation or detailed design, Decision Gate logic/thresholds,
 concurrency, replay loading, generic comparison engine or performance optimization
 is added.
 Stakeholder hypotheses remain provisional; simulation observations are not
