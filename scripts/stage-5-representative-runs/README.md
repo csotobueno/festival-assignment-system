@@ -94,3 +94,54 @@ the raw S2 evidence directory. Raw packages are never modified.
 The [S2 analysis report](../../docs/stage-5/s2-fairness-path-analysis.md) defines
 denominators, observations, interpretation, scenario guidance and evidence gaps.
 The unittest discovery command above also runs ten focused S2 analysis tests.
+
+## Official paired S5 order-sensitivity protocol
+
+Keep the retained official S2 packages in their recorded locations. With the
+current repository SHA explicitly supplied, run:
+
+```bash
+dotnet build scripts/stage-5-representative-runs/RepresentativeRuns.csproj
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- --s5
+```
+
+This option executes only S5/1001, S5/2001, S5/3001, then a separately labelled
+S5/1001 reproduction. It never executes an S2 control. Before any run, it parses
+and checks the retained S2 file hashes, then proves that each in-memory S2
+materialization and source definition equal the retained input. Comparison uses
+the existing exporter's UTC representation; only absent baseline-default
+sequence/provenance additions are omitted. A mismatch stops execution. The
+unchanged S5 transformation consumes those verified in-memory manifests.
+
+Every package retains both sequences and all eight normal files. The set index
+records the exact paired control, persisted-state audit and eight SHA-256 hashes
+per S5 package. Attempt dispatch is audited against ExecutionSequence, while
+BaselineSequence must equal the preserved source Sequence.
+
+Analyze the completed index without executing another simulation:
+
+```bash
+python3 -B scripts/stage-5-representative-runs/analyze_s5_order.py \
+  artifacts/simulations/<s5-set>/index.json \
+  --output artifacts/analysis/s2-s5-order-sensitivity-repeat.json
+python3 -B -m unittest discover -s scripts/stage-5-representative-runs -p 'test_*.py'
+```
+
+The analysis proves complete workload equality and exact daily reversal before
+joining outcomes through stable AttendeeId/FestivalDay and SimulationRequestId.
+It compares stored quality, classifications and recovery without replaying the
+rubric or episode detection. Missing Assignments retain separate counts and
+request statuses. InsufficientEvidence and NoPath remain unranked. Identity
+overlap uses intersection/union; churn uses symmetric difference/union, with
+both directional counts and denominators retained. Thirds and arrival bands
+reuse the S2 analysis helpers. RequestedAt/AssignedAt retain original simulated
+meaning and never stand for S5 dispatch chronology.
+
+All raw JSON/checksums are verified before and after analysis. Reproduction
+reuses the existing logical normalization of generated IDs and runtime timings;
+definition, manifest and metrics also require equal file hashes. Output must be
+fresh and outside raw simulations. The 15 S5 regression tests cover workload
+changes, missing outcomes, transition direction, unranked paths and corrupt or
+incomplete evidence. The selected concise derivative and human interpretation
+are in [the S2/S5 results](../../docs/stage-5/s2-s5-order-sensitivity-results.md).

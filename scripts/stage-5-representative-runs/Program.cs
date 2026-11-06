@@ -1,11 +1,54 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Festival.Domain.Assignments;
 using Festival.Simulation;
 
 // Task-specific protocol. Definitions, runner and eight-file exporter are unchanged.
 var firstDate = new DateOnly(2026, 8, 15);
-var setId = $"representative-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}";
+if (args.Length > 1 || (args.Length == 1 && args[0] != "--s5"))
+    throw new ArgumentException("Usage: RepresentativeRuns [--s5]");
+var s5Protocol = args.Length == 1;
+var controls = new Dictionary<int, (ScenarioDefinition Definition, ScenarioManifest Manifest, JsonObject Entry)>();
+if (s5Protocol)
+{
+    var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    options.Converters.Add(new JsonStringEnumConverter());
+    options.Converters.Add(new EvidenceTimestampConverter());
+    var official = JsonNode.Parse(await File.ReadAllTextAsync("docs/stage-5/s1-s2-representative-results.json"))!;
+    foreach (var seed in new[] { 1001, 2001, 3001 })
+    {
+        var entry = official["officialRuns"]!.AsArray().Single(r =>
+            r!["scenario"]!.GetValue<string>() == "s2" && r["seed"]!.GetValue<int>() == seed)!.AsObject();
+        var path = entry["evidencePath"]!.GetValue<string>();
+        foreach (var hash in entry["integrity"]!["sha256"]!.AsObject())
+        {
+            var bytes = await File.ReadAllBytesAsync(Path.Combine(path, hash.Key));
+            using var parsed = JsonDocument.Parse(bytes);
+            if (Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant() != hash.Value!.GetValue<string>())
+                throw new InvalidOperationException($"S2/{seed}: checksum mismatch in {hash.Key}");
+        }
+        var definition = S2ExpectedBaselineScenarioDefinition.Create(seed, firstDate);
+        var baseline = new ScenarioMaterializer().Materialize(definition);
+        var generated = JsonSerializer.SerializeToNode(baseline, options)!;
+        // Retained controls predate additive sequence/provenance fields. Remove
+        // only their baseline defaults before structural equality; never write controls.
+        generated["metadata"]!.AsObject().Remove("workloadSourceScenarioId");
+        generated["metadata"]!.AsObject().Remove("orderingTransformation");
+        foreach (var day in generated["dailyPlans"]!.AsArray())
+        foreach (var request in day!["requests"]!.AsArray())
+            request!.AsObject().Remove("executionSequence");
+        var retained = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(path, "manifest.json")));
+        var retainedDefinition = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(path, "definition.json")));
+        if (!JsonNode.DeepEquals(generated, retained)
+            || !JsonNode.DeepEquals(JsonSerializer.SerializeToNode(definition, options), retainedDefinition))
+            throw new InvalidOperationException($"S2/{seed}: materialized workload differs from retained control; stop.");
+        controls.Add(seed, (definition, baseline, entry));
+        Console.WriteLine($"PAIRED INPUT VERIFIED S2/{seed} {path}");
+    }
+}
+var setId = $"{(s5Protocol ? "s5-order-sensitivity" : "representative")}-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}";
 var root = Path.Combine("artifacts", "simulations");
 var setDirectory = Path.Combine(root, setId);
 Directory.CreateDirectory(setDirectory);
@@ -13,18 +56,19 @@ var json = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.C
 var index = new List<object>();
 Console.WriteLine($"SET {setDirectory}");
 
-foreach (var scenario in new[] { "s1", "s2" })
+foreach (var scenario in s5Protocol ? new[] { "s5" } : new[] { "s1", "s2" })
 foreach (var seed in new[] { 1001, 2001, 3001 })
     await Execute(scenario, seed, "official");
-await Execute("s1", 1001, "reproduction");
+await Execute(s5Protocol ? "s5" : "s1", 1001, "reproduction");
 Console.WriteLine($"COMPLETE {setDirectory}/index.json");
 
 async Task Execute(string scenario, int seed, string role)
 {
-    var definition = scenario == "s1"
+    var definition = scenario == "s5" ? controls[seed].Definition : scenario == "s1"
         ? S1BestPlausibleScenarioDefinition.Create(seed, firstDate)
         : S2ExpectedBaselineScenarioDefinition.Create(seed, firstDate);
-    var manifest = new ScenarioMaterializer().Materialize(definition);
+    var manifest = scenario == "s5" ? S5ReversedProcessingOrder.Create(controls[seed].Manifest)
+        : new ScenarioMaterializer().Materialize(definition);
     var runId = $"{role}-{scenario}-{seed}-{Guid.NewGuid():N}";
     Console.WriteLine($"START {scenario} seed={seed} role={role} run={runId} at={DateTimeOffset.UtcNow:O}");
     var startedAt = DateTimeOffset.UtcNow;
@@ -48,7 +92,8 @@ async Task Execute(string scenario, int seed, string role)
     index.Add(new
     {
         role, scenario, seed, runId, evidencePath = Path.GetRelativePath(Directory.GetCurrentDirectory(), destination),
-        metadata, status = violations.Count == 0 && failures == 0 && conflicts == 0 ? "Completed" : "CompletedWithFindings",
+        metadata, pairedControl = scenario == "s5" ? controls[seed].Entry.DeepClone() : null,
+        status = violations.Count == 0 && failures == 0 && conflicts == 0 ? "Completed" : "CompletedWithFindings",
         integrity = new
         {
             completedFestivalDays = result.DailyCheckpoints.Count,
@@ -92,8 +137,13 @@ static List<string> Audit(ScenarioManifest manifest, SimulationResult result, in
         Check(day.Requests.Count(r => r.Eligibility.AllowsFrontStanding) == (day.Requests.Length + 1) / 2,
             $"Day {day.DayNumber}: eligibility allocation differs from 50% largest-remainder convention.");
         var dailyAttempts = result.Attempts.Where(a => a.FestivalDayId == day.FestivalDayId).ToArray();
-        Check(dailyAttempts.Select(a => a.SimulationRequestId).SequenceEqual(day.Requests.Select(r => r.SimulationRequestId)),
+        Check(dailyAttempts.OrderBy(a => a.AttemptSequence).Select(a => a.SimulationRequestId)
+                .SequenceEqual(day.Requests.OrderBy(r => r.ExecutionSequence).Select(r => r.SimulationRequestId)),
             $"Day {day.DayNumber}: attempt sequence/membership differs from manifest.");
+        var plannedById = day.Requests.ToDictionary(r => r.SimulationRequestId);
+        Check(dailyAttempts.All(a => plannedById.TryGetValue(a.SimulationRequestId, out var plan)
+            && a.AttemptSequence == plan.ExecutionSequence && a.BaselineSequence == plan.Sequence),
+            $"Day {day.DayNumber}: baseline/execution sequence evidence differs from dispatch plan.");
         var checkpoint = result.DailyCheckpoints.SingleOrDefault(c => c.FestivalDayId == day.FestivalDayId);
         Check(checkpoint is not null && checkpoint.EvaluatedRequestCount == day.Requests.Length
             && checkpoint.TotalAvailableSpotCount == manifest.Catalog.Spots.Length
@@ -122,4 +172,13 @@ static List<string> Audit(ScenarioManifest manifest, SimulationResult result, in
             Check(request.Status == "Rejected" && rows.Length == 0, $"INV-08: rejected request {id.Value} has inconsistent state.");
     }
     return violations;
+}
+
+// Match the existing exporter's exact UTC representation for input comparison.
+sealed class EvidenceTimestampConverter : JsonConverter<DateTimeOffset>
+{
+    public override DateTimeOffset Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options) =>
+        reader.GetDateTimeOffset();
+    public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options) =>
+        writer.WriteStringValue(value.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture));
 }
