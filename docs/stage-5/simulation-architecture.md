@@ -736,6 +736,24 @@ identity. GeneratorVersion remains unchanged. Tests cover all three official see
 materialized inputs and a small real PostgreSQL dispatch/export slice. Official S5
 execution, source-run pairing and order-sensitivity analysis remain pending.
 
+## S6 Large-Group Prevalence Sensitivity
+
+The [S6 Large Groups contract](s6-large-groups.md) defines a future controlled
+experiment against S2, changing only the group-size distribution: requests of
+size 6–10 rise from 7% to 25%. It preserves exactly 4,400 daily requesters,
+the remaining S2 baseline parameters, generator v2 infrastructure, arrival
+semantics, request-level eligibility and the shared 4,998-Spot topology.
+Normal S2 order is retained (`BaselineSequence == ExecutionSequence`); the S5
+reversal does not apply.
+
+Seeds 1001, 2001 and 3001 define same-Seed scenario-level comparisons. S6 changes
+grouping, so request identities, membership and request counts are not exact
+pairs. Existing manifests, observations, checkpoints and metric semantics remain
+the evidence boundary. The contract defines future feasibility, quality,
+fairness and recovery comparisons without adding telemetry, implementation or
+execution. Fragmentation-related signals require supporting evidence; S7's
+later fragmentation experiment remains separate and undefined in detail.
+
 ## Future Concurrent Execution
 
 The same manifest, records and evaluators support a later execution strategy:

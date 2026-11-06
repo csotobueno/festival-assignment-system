@@ -69,6 +69,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 5 — Simulation Architecture and Reproducibility](docs/stage-5/simulation-architecture.md)
 * [Stage 5 — S1/S2 Representative Scenario Contracts](docs/stage-5/representative-scenarios.md)
 * [Stage 5 — S5 Adverse Arrival Order (implemented; official runs pending)](docs/stage-5/s5-adverse-arrival-order.md)
+* [Stage 5 — S6 Large Groups (contract defined; implementation/execution pending)](docs/stage-5/s6-large-groups.md)
 * [Stage 3 Technical Lead Learnings](docs/learning/stage-3-technical-lead-learnings.md)
 * [PostgreSQL Relational Model](docs/architecture/postgresql-relational-model.md)
 * [ADR 0001: Select the MVP Database Engine](docs/adr/0001-select-mvp-database-engine.md)
