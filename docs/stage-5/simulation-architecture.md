@@ -738,7 +738,7 @@ execution, source-run pairing and order-sensitivity analysis remain pending.
 
 ## S6 Large-Group Prevalence Sensitivity
 
-The [S6 Large Groups contract](s6-large-groups.md) defines a future controlled
+The [S6 Large Groups contract](s6-large-groups.md) defines a controlled
 experiment against S2, changing only the group-size distribution: requests of
 size 6–10 rise from 7% to 25%. It preserves exactly 4,400 daily requesters,
 the remaining S2 baseline parameters, generator v2 infrastructure, arrival
@@ -748,10 +748,14 @@ reversal does not apply.
 
 Seeds 1001, 2001 and 3001 define same-Seed scenario-level comparisons. S6 changes
 grouping, so request identities, membership and request counts are not exact
-pairs. Existing manifests, observations, checkpoints and metric semantics remain
-the evidence boundary. The contract defines future feasibility, quality,
-fairness and recovery comparisons without adding telemetry, implementation or
-execution. Fragmentation-related signals require supporting evidence; S7's
+pairs. `S6LargeGroupsScenarioDefinition.Create(seed, firstDate)` copies the S2
+definition and replaces only ScenarioId and Workload.GroupSizeProfile. The
+unchanged materializer and exporter consume it through their normal v2 path;
+focused tests cover all three Seeds, plus topology and export compatibility.
+Existing manifests, observations, checkpoints and metric semantics remain the
+evidence boundary. Official S6 execution and feasibility, quality, fairness and
+recovery comparisons remain pending; no telemetry is added.
+Fragmentation-related signals require supporting evidence; S7's
 later fragmentation experiment remains separate and undefined in detail.
 
 ## Future Concurrent Execution

@@ -2,7 +2,8 @@
 
 ## Status, authority and question
 
-**Analytical sensitivity contract only — S6 implementation and execution pending.**
+**Analytical sensitivity scenario — definition and deterministic materialization
+implemented; official execution and S2/S6 analysis pending.**
 S6 uses S2 — Expected Baseline as its control and changes only the target
 group-size distribution, increasing the prevalence of requests with 6–10 Attendees.
 
@@ -22,6 +23,22 @@ sensitivity experiment**, not a confirmed real festival distribution. Its
 percentages are analytical inputs and remain subject to stakeholder validation
 where applicable; the provisional status of the inherited S2 inputs is unchanged.
 
+## Implemented definition
+
+`S6LargeGroupsScenarioDefinition.Create(seed, firstDate)` takes an immutable copy
+of `S2ExpectedBaselineScenarioDefinition.Create(seed, firstDate)` and replaces
+only ScenarioId (`s6-large-groups`) and Workload.GroupSizeProfile. All controlled
+parameters come directly from S2, including the shared representative topology
+and arrival profile. No inheritance or separate generation pipeline is added.
+GeneratorVersion remains `v2`: the generation algorithm is unchanged.
+
+Focused tests materialize Seeds 1001, 2001 and 3001 across all five days, checking
+exact population, continuity, profile targets, arrival allocation, eligibility,
+normal execution order and full-manifest reproducibility. Topology tests compare
+S2/S6 catalog identities and capacities. A temporary serialization-only test
+checks the normal evidence exporter with synthetic empty observations, without
+executing S6. These tests are implementation evidence, not official scenario results.
+
 ## Motivation and experimental variable
 
 The [S2/S5 order-sensitivity analysis](s2-s5-order-sensitivity-results.md)
@@ -38,7 +55,7 @@ not independently tuned workload parameters.
 
 ## S2 control and preserved conditions
 
-| Parameter | S2 and future S6 |
+| Parameter | S2 and S6 |
 | --- | --- |
 | RegisteredPopulation | 5,500 Attendees |
 | DailyRequesterCount | Exactly 4,400 distinct planned requesters per FestivalDay |
@@ -89,7 +106,7 @@ seeded selection of concrete sizes inside each range.
 Large groups (6–10) increase from **7% to 25% of requests**: an 18 percentage-point
 increase in the target profile. No other workload distribution is changed.
 
-For later implementation, exactly **4,400 requesters per FestivalDay** remains a
+Exactly **4,400 requesters per FestivalDay** remains a
 hard invariant, not an approximate goal. Group-size percentages remain request-level
 targets. The existing deterministic group generator must preserve the exact
 attendee population, use valid sizes 1..10, and produce deterministic output while
@@ -248,11 +265,12 @@ Contract checks: S2 and S6 group shares each sum to 100%; their 6–10 shares ar
 7% and 25%; daily demand remains exactly 4,400; the arrival profile sums to 100%
 and matches S2; request-level eligibility remains 50%; normal baseline/execution
 order is retained; topology remains 4,998 Spots with unchanged quality capacity.
-These are documentation checks, not S6 execution results.
+Materialization tests enforce these checks; they are not S6 execution results.
 
-This task adds no S6 ScenarioDefinition, implementation or execution. It modifies
-no generation, materialization, manifest, runner, production layer, assignment
-policy, fairness formula, rubric, recovery semantics or metrics calculator.
+The implementation adds only the S6 definition, focused tests and status
+documentation. It modifies no generation algorithm, materializer, manifest,
+runner, production layer, assignment policy, fairness formula, rubric, recovery
+semantics or metrics calculator.
 S2/S5 behavior remains unchanged. S7/S8 implementation, concurrency, fairness
 tuning, new telemetry and Decision Gate logic/thresholds remain outside scope.
-Implementation, execution and evidence-based S2/S6 analysis are deferred.
+Official execution and evidence-based S2/S6 analysis are deferred.
