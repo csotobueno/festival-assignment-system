@@ -402,19 +402,26 @@ attributed to one of them independently. The
 counterfactual over the exact S2 workload. Its transformation is implemented;
 official paired execution and analysis remain pending.
 
-The later-scenario matrix links S5's detailed contract; the other scenarios
-retain only their high-level purposes here:
+The [S6 Large Groups contract](s6-large-groups.md) defines a separate controlled
+S2 sensitivity experiment: only the target group-size distribution changes,
+raising requests of size 6–10 from 7% to 25%. Normal S2 processing order and
+all other baseline parameters remain controlled. It is a documentation-only
+definition; S6 implementation and execution remain pending. Same-Seed S2/S6
+comparisons are at scenario level, not exact request-level pairs.
+
+The later-scenario matrix links the detailed S5 and S6 contracts; the other
+scenarios retain only their high-level purposes here:
 
 | Scenario | Purpose |
 | --- | --- |
 | S3 — Stress | Examine behavior under operating pressure. |
 | S4 — Worst Plausible | Examine the practical operating boundary. |
 | [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; implemented, official runs pending. |
-| S6 — Large Groups | Examine sensitivity to larger groups. |
+| [S6 — Large Groups](s6-large-groups.md) | Baseline: S2. Changed dimension: group-size distribution; requests of size 6–10 increase from 7% → 25%. Contract defined; implementation/execution pending. |
 | S7 — High Fragmentation | Examine sensitivity to fragmentation. |
 | S8 — Higher Concurrency | Examine sensitivity to concurrency. |
 
-S1/S2 evidence will inform later calibration. Detailed S3/S4/S6–S8 parameters,
+S1/S2 evidence will inform later calibration. Detailed S3/S4/S7/S8 parameters,
 Decision Gate thresholds and new acceptance criteria remain undefined here.
 
 ## Assumptions Requiring Stakeholder Validation
@@ -443,8 +450,9 @@ retained evidence are documented in the
 [results report](s1-s2-representative-results.md) and
 [task harness](../../scripts/stage-5-representative-runs/README.md).
 S5 adds only its explicit ordering transformation, sequence/provenance evidence
-and focused tests; no official S5 execution is included. No S3/S4/S6–S8
-implementation or detailed design, Decision Gate logic/thresholds,
+and focused tests; no official S5 execution is included.
+S6 adds only its linked experimental contract, with no implementation or execution.
+No S3/S4/S7/S8 implementation or detailed design, Decision Gate logic/thresholds,
 concurrency, replay loading, generic comparison engine or performance optimization
 is added.
 Stakeholder hypotheses remain provisional; simulation observations are not
