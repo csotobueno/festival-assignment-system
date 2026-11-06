@@ -1,0 +1,4298 @@
+{
+  "sourceIndex": "artifacts/simulations/s5-order-sensitivity-20261106-8ae89818c5d74a23b9756f324893d128/index.json",
+  "sourceIndexSha256": "cf9b3d41c461e2208cea3d0eb29102054dfc5afd403a37b783ef2d5ea9c01a4f",
+  "sourceS2Results": "docs/stage-5/s1-s2-representative-results.json",
+  "sourceS2ResultsSha256": "e54ec777abf20c8ac9b3981d2d47d50b1afb94f8c3797cfff3c33186ec9c3a87",
+  "pairs": [
+    {
+      "seed": 1001,
+      "pairIntegrity": {
+        "sameWorkload": true,
+        "sameRequests": true,
+        "sameFestivalDays": true,
+        "sameDailyCohorts": true,
+        "sameGroupMembershipAndSizes": true,
+        "sameTimestamps": true,
+        "sameEligibility": true,
+        "sameTopologyAndSpots": true,
+        "preservedBaselineSequence": true,
+        "exactDailyReversedExecution": true
+      },
+      "s2": {
+        "runId": "official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+        "evidencePath": "artifacts/simulations/s2-expected-baseline/official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+        "status": "Completed",
+        "integrity": {
+          "completedFestivalDays": 5,
+          "unexpectedTechnicalFailureCount": 0,
+          "knownConcurrencyConflictCount": 0,
+          "persistedAssignmentCount": 22000,
+          "persistedRequestCount": 7320,
+          "violations": [],
+          "invariantViolationCount": 0,
+          "finalStateOnly": true,
+          "sha256": {
+            "run-metadata.json": "b80e29cb0a783a5b25d1b87182af7efecf160c80d7f7aff347676d0942053d20",
+            "definition.json": "f2b5a7e15e241d9b9e1b6ffee5da44a1802e09b98c84abab1b183672e09e4b8d",
+            "manifest.json": "f106fe6a522b11f8906b74c2873666fff030c710cfe89608a77b04c7e7f53f72",
+            "attempts.json": "2a300b4248456ee4b515e16f168921afa2eb7949f9dd17d49f7ca8eccc672786",
+            "checkpoints.json": "0d2818b4b7a64f545c11de2b2b671076a54d242bfe99ca80dcd8ae2ebea3945f",
+            "attendee-paths.json": "9f0609a35419e4f5c8b1b0a0bf3272eeee1b9756deffb66628657b456677346f",
+            "recovery-observations.json": "442a4f3c67645d2898a0bb1cf1971feaa01d026f6b15b9f457f21513dcae54ca",
+            "metrics.json": "2062598afd081d050d8752130e46ca3b19380478106deb8a22ba90b88cf1c39a"
+          }
+        },
+        "requestOutcomes": {
+          "attemptedRequests": 7320,
+          "normallyProcessedRequests": 7320,
+          "successfulRequests": 7320,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "evaluatedAttendeeCount": 5354,
+          "noPersistedPathCount": 0,
+          "insufficientEvidenceCount": 232,
+          "classifiablePathCount": 5122,
+          "balancedPathCount": 2903,
+          "acceptablePathCount": 1649,
+          "notBalancedPathCount": 570,
+          "noPersistedPathRate": 0,
+          "insufficientEvidenceRate": 0.04333208815838625,
+          "classifiablePathRate": 0.9566679118416137,
+          "balancedPathRate": 0.5667707926591176,
+          "acceptablePathRate": 0.3219445529090199,
+          "notBalancedPathRate": 0.11128465443186256,
+          "persistedOutcomeCount": 22000,
+          "goodOutcomeCount": 8736,
+          "mediumOutcomeCount": 11231,
+          "badOutcomeCount": 2033,
+          "goodOutcomeRate": 0.3970909090909091,
+          "mediumOutcomeRate": 0.5105,
+          "badOutcomeRate": 0.09240909090909091
+        },
+        "recovery": {
+          "recoveryEpisodeCount": 1908,
+          "recoveredEpisodeCount": 1407,
+          "unresolvedEpisodeCount": 501,
+          "recoveryEligibleEpisodeCount": 1447,
+          "recoveryIneligibleEpisodeCount": 461,
+          "recoveryRate": 0.972356599861783,
+          "recoveredToMediumCount": 687,
+          "recoveredToGoodCount": 720,
+          "averageOpportunitiesToRecovery": 1.0561478322672353,
+          "medianOpportunitiesToRecovery": 1,
+          "opportunityDistribution": [
+            {
+              "opportunities": 1,
+              "episodeCount": 1331,
+              "rateAmongRecovered": 0.9459843638948117
+            },
+            {
+              "opportunities": 2,
+              "episodeCount": 73,
+              "rateAmongRecovered": 0.051883439943141436
+            },
+            {
+              "opportunities": 3,
+              "episodeCount": 3,
+              "rateAmongRecovered": 0.0021321961620469083
+            }
+          ]
+        },
+        "exploratoryP95Ms": 44.736900000000006
+      },
+      "s5": {
+        "runId": "official-s5-1001-c8d991b9e3e140f899cc06c70187aab7",
+        "evidencePath": "artifacts/simulations/s5-adverse-arrival-order/official-s5-1001-c8d991b9e3e140f899cc06c70187aab7",
+        "status": "Completed",
+        "integrity": {
+          "completedFestivalDays": 5,
+          "unexpectedTechnicalFailureCount": 0,
+          "knownConcurrencyConflictCount": 0,
+          "persistedAssignmentCount": 22000,
+          "persistedRequestCount": 7320,
+          "violations": [],
+          "invariantViolationCount": 0,
+          "finalStateOnly": true,
+          "sha256": {
+            "run-metadata.json": "7c85d446c765d32023eb88ee83543727ec0ced87749fa44297563ea0ea880240",
+            "definition.json": "f2b5a7e15e241d9b9e1b6ffee5da44a1802e09b98c84abab1b183672e09e4b8d",
+            "manifest.json": "f53a08c15848cbff894a30e5d8ec9e9dbe1959465fb9bfc9ea191d63830401d8",
+            "attempts.json": "2d9bf0edcd2c8cdcdd809bdd0d5449399cb4fbb1936ea9461cac5119bb4b9e4c",
+            "checkpoints.json": "1e700d6cd9cfa2943cd16567a856777ab6a06b7e8d5b9b7626c860f220c788f9",
+            "attendee-paths.json": "f32f6580759f300f9437de57ff5d30c420860891a3400db88f7a558bef6c7bb0",
+            "recovery-observations.json": "4af0be762f223525cf9809ebc63e83a02ad67c8f1aacc9bfdf94cef34f24ba5a",
+            "metrics.json": "113362c195c0fbe546d5f90b8c626ce0b01a382d9bda0556f0f95fbdfb978569"
+          }
+        },
+        "requestOutcomes": {
+          "attemptedRequests": 7320,
+          "normallyProcessedRequests": 7320,
+          "successfulRequests": 7320,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "evaluatedAttendeeCount": 5354,
+          "noPersistedPathCount": 0,
+          "insufficientEvidenceCount": 232,
+          "classifiablePathCount": 5122,
+          "balancedPathCount": 2896,
+          "acceptablePathCount": 1653,
+          "notBalancedPathCount": 573,
+          "noPersistedPathRate": 0,
+          "insufficientEvidenceRate": 0.04333208815838625,
+          "classifiablePathRate": 0.9566679118416137,
+          "balancedPathRate": 0.5654041390082,
+          "acceptablePathRate": 0.3227254978524014,
+          "notBalancedPathRate": 0.11187036313939867,
+          "persistedOutcomeCount": 22000,
+          "goodOutcomeCount": 8731,
+          "mediumOutcomeCount": 11223,
+          "badOutcomeCount": 2046,
+          "goodOutcomeRate": 0.39686363636363636,
+          "mediumOutcomeRate": 0.5101363636363636,
+          "badOutcomeRate": 0.093
+        },
+        "recovery": {
+          "recoveryEpisodeCount": 1888,
+          "recoveredEpisodeCount": 1386,
+          "unresolvedEpisodeCount": 502,
+          "recoveryEligibleEpisodeCount": 1440,
+          "recoveryIneligibleEpisodeCount": 448,
+          "recoveryRate": 0.9625,
+          "recoveredToMediumCount": 656,
+          "recoveredToGoodCount": 730,
+          "averageOpportunitiesToRecovery": 1.0707070707070707,
+          "medianOpportunitiesToRecovery": 1,
+          "opportunityDistribution": [
+            {
+              "opportunities": 1,
+              "episodeCount": 1297,
+              "rateAmongRecovered": 0.9357864357864358
+            },
+            {
+              "opportunities": 2,
+              "episodeCount": 80,
+              "rateAmongRecovered": 0.05772005772005772
+            },
+            {
+              "opportunities": 3,
+              "episodeCount": 9,
+              "rateAmongRecovered": 0.006493506493506494
+            }
+          ]
+        },
+        "exploratoryP95Ms": 53.6374
+      },
+      "deltas": {
+        "requestOutcomes": {
+          "attemptedRequests": 0,
+          "successfulRequests": 0,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "successRate": 0.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "goodOutcomeRate": -0.00022727272727274261,
+          "mediumOutcomeRate": -0.0003636363636363438,
+          "badOutcomeRate": 0.0005909090909090864,
+          "balancedPathRate": -0.001366653650917593,
+          "acceptablePathRate": 0.0007809449433814897,
+          "notBalancedPathRate": 0.0005857087075361173,
+          "classifiablePathRate": 0.0
+        },
+        "recovery": {
+          "recoveryEpisodeCount": -20,
+          "recoveredEpisodeCount": -21,
+          "unresolvedEpisodeCount": 1,
+          "recoveryEligibleEpisodeCount": -7,
+          "recoveryRate": -0.009856599861783,
+          "averageOpportunitiesToRecovery": 0.01455923843983542,
+          "medianOpportunitiesToRecovery": 0
+        }
+      },
+      "quality": {
+        "matrix": {
+          "Good": {
+            "Good": 4151,
+            "Medium": 4513,
+            "Bad": 72
+          },
+          "Medium": {
+            "Good": 4494,
+            "Medium": 4763,
+            "Bad": 1974
+          },
+          "Bad": {
+            "Good": 86,
+            "Medium": 1947,
+            "Bad": 0
+          }
+        },
+        "pairedCount": 22000,
+        "rankedCount": 22000,
+        "unrankedCount": 0,
+        "changes": {
+          "unchanged": {
+            "count": 8914,
+            "rate": 0.4051818181818182
+          },
+          "improved": {
+            "count": 6527,
+            "rate": 0.29668181818181816
+          },
+          "worsened": {
+            "count": 6559,
+            "rate": 0.29813636363636364
+          }
+        },
+        "assignmentCoverage": {
+          "assignedBoth": 22000,
+          "assignedOnlyS2": 0,
+          "assignedOnlyS5": 0,
+          "assignedNeither": 0
+        },
+        "missingCases": {
+          "assignedOnlyS2": [],
+          "assignedOnlyS5": [],
+          "assignedNeither": []
+        }
+      },
+      "badRecipients": {
+        "s2Count": 1730,
+        "s5Count": 1722,
+        "intersectionCount": 451,
+        "s2OnlyCount": 1279,
+        "s5OnlyCount": 1271,
+        "unionCount": 3001,
+        "overlapRate": 0.15028323892035989,
+        "churnRate": 0.8497167610796401,
+        "s2RetentionRate": 0.2606936416184971,
+        "s5NewRecipientRate": 0.7380952380952381
+      },
+      "badAttendeeDays": {
+        "s2Count": 2033,
+        "s5Count": 2046,
+        "intersectionCount": 0,
+        "s2OnlyCount": 2033,
+        "s5OnlyCount": 2046,
+        "unionCount": 4079,
+        "overlapRate": 0.0,
+        "churnRate": 1.0,
+        "s2RetentionRate": 0.0,
+        "s5NewRecipientRate": 1.0
+      },
+      "pathTransitions": {
+        "matrix": {
+          "Balanced": {
+            "Balanced": 1844,
+            "Acceptable": 841,
+            "NotBalanced": 218,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "Acceptable": {
+            "Balanced": 836,
+            "Acceptable": 523,
+            "NotBalanced": 290,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "NotBalanced": {
+            "Balanced": 216,
+            "Acceptable": 289,
+            "NotBalanced": 65,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "InsufficientEvidence": {
+            "Balanced": 0,
+            "Acceptable": 0,
+            "NotBalanced": 0,
+            "InsufficientEvidence": 232,
+            "NoPath": 0
+          },
+          "NoPath": {
+            "Balanced": 0,
+            "Acceptable": 0,
+            "NotBalanced": 0,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          }
+        },
+        "pairedCount": 5354,
+        "rankedCount": 5122,
+        "unrankedCount": 232,
+        "changes": {
+          "unchanged": {
+            "count": 2432,
+            "rate": 0.4748145255759469
+          },
+          "improved": {
+            "count": 1341,
+            "rate": 0.26181179226864504
+          },
+          "worsened": {
+            "count": 1349,
+            "rate": 0.263373682155408
+          }
+        }
+      },
+      "pathCoverageTransitions": [
+        {
+          "s2Length": 1,
+          "s5Length": 1,
+          "count": 232
+        },
+        {
+          "s2Length": 2,
+          "s5Length": 2,
+          "count": 453
+        },
+        {
+          "s2Length": 3,
+          "s5Length": 3,
+          "count": 712
+        },
+        {
+          "s2Length": 4,
+          "s5Length": 4,
+          "count": 1059
+        },
+        {
+          "s2Length": 5,
+          "s5Length": 5,
+          "count": 2898
+        }
+      ],
+      "notBalancedRecipients": {
+        "s2Count": 570,
+        "s5Count": 573,
+        "intersectionCount": 65,
+        "s2OnlyCount": 505,
+        "s5OnlyCount": 508,
+        "unionCount": 1078,
+        "overlapRate": 0.06029684601113173,
+        "churnRate": 0.9397031539888683,
+        "s2RetentionRate": 0.11403508771929824,
+        "s5NewRecipientRate": 0.8865619546247818
+      },
+      "recoverySensitivity": {
+        "episodeRecipients": {
+          "s2Count": 1730,
+          "s5Count": 1722,
+          "intersectionCount": 451,
+          "s2OnlyCount": 1279,
+          "s5OnlyCount": 1271,
+          "unionCount": 3001,
+          "overlapRate": 0.15028323892035989,
+          "churnRate": 0.8497167610796401,
+          "s2RetentionRate": 0.2606936416184971,
+          "s5NewRecipientRate": 0.7380952380952381
+        },
+        "episodeOpeningAttendeeDays": {
+          "s2Count": 1908,
+          "s5Count": 1888,
+          "intersectionCount": 0,
+          "s2OnlyCount": 1908,
+          "s5OnlyCount": 1888,
+          "unionCount": 3796,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        },
+        "eligibleUnresolvedRecipients": {
+          "s2Count": 40,
+          "s5Count": 54,
+          "intersectionCount": 0,
+          "s2OnlyCount": 40,
+          "s5OnlyCount": 54,
+          "unionCount": 94,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        },
+        "eligibleUnresolvedOpeningAttendeeDays": {
+          "s2Count": 40,
+          "s5Count": 54,
+          "intersectionCount": 0,
+          "s2OnlyCount": 40,
+          "s5OnlyCount": 54,
+          "unionCount": 94,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        }
+      },
+      "associations": {
+        "baselineThird": {
+          "s2": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7384,
+              "notBalancedParticipationCount": 621,
+              "notBalancedParticipationRate": 0.08410075839653304,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4201,
+              "classifiableDistinctAttendeeCount": 4126,
+              "notBalancedDistinctAttendeeCount": 407,
+              "notBalancedDistinctAttendeeRate": 0.0968816948345632,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09864275327193407
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7327,
+              "notBalancedParticipationCount": 1170,
+              "notBalancedParticipationRate": 0.15968336290432647,
+              "badParticipationCount": 2033,
+              "badParticipationRate": 0.2774669032346117,
+              "notBalancedBadParticipationCount": 791,
+              "notBalancedBadParticipationRate": 0.10795687184386515,
+              "distinctAttendeeCount": 4203,
+              "classifiableDistinctAttendeeCount": 4122,
+              "notBalancedDistinctAttendeeCount": 570,
+              "notBalancedDistinctAttendeeRate": 0.13561741613133477,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13828238719068414
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7289,
+              "notBalancedParticipationCount": 568,
+              "notBalancedParticipationRate": 0.07792564137741803,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4186,
+              "classifiableDistinctAttendeeCount": 4110,
+              "notBalancedDistinctAttendeeCount": 392,
+              "notBalancedDistinctAttendeeRate": 0.09364548494983277,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09537712895377129
+            }
+          ],
+          "s5": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7384,
+              "notBalancedParticipationCount": 1240,
+              "notBalancedParticipationRate": 0.16793066088840736,
+              "badParticipationCount": 2046,
+              "badParticipationRate": 0.27708559046587217,
+              "notBalancedBadParticipationCount": 811,
+              "notBalancedBadParticipationRate": 0.10983206933911159,
+              "distinctAttendeeCount": 4201,
+              "classifiableDistinctAttendeeCount": 4126,
+              "notBalancedDistinctAttendeeCount": 573,
+              "notBalancedDistinctAttendeeRate": 0.13639609616757914,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13887542413960252
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7327,
+              "notBalancedParticipationCount": 625,
+              "notBalancedParticipationRate": 0.08530094172239662,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4203,
+              "classifiableDistinctAttendeeCount": 4122,
+              "notBalancedDistinctAttendeeCount": 410,
+              "notBalancedDistinctAttendeeRate": 0.09754936949797763,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09946627850557982
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7289,
+              "notBalancedParticipationCount": 549,
+              "notBalancedParticipationRate": 0.07531897379613116,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4186,
+              "classifiableDistinctAttendeeCount": 4110,
+              "notBalancedDistinctAttendeeCount": 384,
+              "notBalancedDistinctAttendeeRate": 0.09173435260391782,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09343065693430656
+            }
+          ]
+        },
+        "executionThird": {
+          "s2": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7384,
+              "notBalancedParticipationCount": 621,
+              "notBalancedParticipationRate": 0.08410075839653304,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4201,
+              "classifiableDistinctAttendeeCount": 4126,
+              "notBalancedDistinctAttendeeCount": 407,
+              "notBalancedDistinctAttendeeRate": 0.0968816948345632,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09864275327193407
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7327,
+              "notBalancedParticipationCount": 1170,
+              "notBalancedParticipationRate": 0.15968336290432647,
+              "badParticipationCount": 2033,
+              "badParticipationRate": 0.2774669032346117,
+              "notBalancedBadParticipationCount": 791,
+              "notBalancedBadParticipationRate": 0.10795687184386515,
+              "distinctAttendeeCount": 4203,
+              "classifiableDistinctAttendeeCount": 4122,
+              "notBalancedDistinctAttendeeCount": 570,
+              "notBalancedDistinctAttendeeRate": 0.13561741613133477,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13828238719068414
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7289,
+              "notBalancedParticipationCount": 568,
+              "notBalancedParticipationRate": 0.07792564137741803,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4186,
+              "classifiableDistinctAttendeeCount": 4110,
+              "notBalancedDistinctAttendeeCount": 392,
+              "notBalancedDistinctAttendeeRate": 0.09364548494983277,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09537712895377129
+            }
+          ],
+          "s5": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7327,
+              "notBalancedParticipationCount": 625,
+              "notBalancedParticipationRate": 0.08530094172239662,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4203,
+              "classifiableDistinctAttendeeCount": 4122,
+              "notBalancedDistinctAttendeeCount": 410,
+              "notBalancedDistinctAttendeeRate": 0.09754936949797763,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09946627850557982
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7384,
+              "notBalancedParticipationCount": 1240,
+              "notBalancedParticipationRate": 0.16793066088840736,
+              "badParticipationCount": 2046,
+              "badParticipationRate": 0.27708559046587217,
+              "notBalancedBadParticipationCount": 811,
+              "notBalancedBadParticipationRate": 0.10983206933911159,
+              "distinctAttendeeCount": 4201,
+              "classifiableDistinctAttendeeCount": 4126,
+              "notBalancedDistinctAttendeeCount": 573,
+              "notBalancedDistinctAttendeeRate": 0.13639609616757914,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13887542413960252
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7289,
+              "notBalancedParticipationCount": 549,
+              "notBalancedParticipationRate": 0.07531897379613116,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4186,
+              "classifiableDistinctAttendeeCount": 4110,
+              "notBalancedDistinctAttendeeCount": 384,
+              "notBalancedDistinctAttendeeRate": 0.09173435260391782,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09343065693430656
+            }
+          ]
+        },
+        "originalArrivalBand": {
+          "s2": [
+            {
+              "category": "07:00–09:00",
+              "requestCount": 730,
+              "participationCount": 2240,
+              "notBalancedParticipationCount": 209,
+              "notBalancedParticipationRate": 0.09330357142857143,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1867,
+              "classifiableDistinctAttendeeCount": 1844,
+              "notBalancedDistinctAttendeeCount": 169,
+              "notBalancedDistinctAttendeeRate": 0.09051955008034279,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09164859002169197
+            },
+            {
+              "category": "09:00–12:00",
+              "requestCount": 2930,
+              "participationCount": 8814,
+              "notBalancedParticipationCount": 706,
+              "notBalancedParticipationRate": 0.08009984116178806,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4519,
+              "classifiableDistinctAttendeeCount": 4432,
+              "notBalancedDistinctAttendeeCount": 454,
+              "notBalancedDistinctAttendeeRate": 0.10046470458065944,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10243682310469314
+            },
+            {
+              "category": "12:00–15:00",
+              "requestCount": 1100,
+              "participationCount": 3231,
+              "notBalancedParticipationCount": 249,
+              "notBalancedParticipationRate": 0.07706592386258125,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 2496,
+              "classifiableDistinctAttendeeCount": 2459,
+              "notBalancedDistinctAttendeeCount": 214,
+              "notBalancedDistinctAttendeeRate": 0.08573717948717949,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08702724684831233
+            },
+            {
+              "category": "15:00–16:00",
+              "requestCount": 1465,
+              "participationCount": 4365,
+              "notBalancedParticipationCount": 312,
+              "notBalancedParticipationRate": 0.07147766323024055,
+              "badParticipationCount": 33,
+              "badParticipationRate": 0.007560137457044674,
+              "notBalancedBadParticipationCount": 12,
+              "notBalancedBadParticipationRate": 0.0027491408934707906,
+              "distinctAttendeeCount": 3106,
+              "classifiableDistinctAttendeeCount": 3062,
+              "notBalancedDistinctAttendeeCount": 265,
+              "notBalancedDistinctAttendeeRate": 0.0853187379265937,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08654474199869366
+            },
+            {
+              "category": "16:00–18:00",
+              "requestCount": 510,
+              "participationCount": 1580,
+              "notBalancedParticipationCount": 271,
+              "notBalancedParticipationRate": 0.17151898734177215,
+              "badParticipationCount": 447,
+              "badParticipationRate": 0.2829113924050633,
+              "notBalancedBadParticipationCount": 180,
+              "notBalancedBadParticipationRate": 0.11392405063291139,
+              "distinctAttendeeCount": 1382,
+              "classifiableDistinctAttendeeCount": 1362,
+              "notBalancedDistinctAttendeeCount": 225,
+              "notBalancedDistinctAttendeeRate": 0.16280752532561504,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.16519823788546256
+            },
+            {
+              "category": "18:00–21:00",
+              "requestCount": 365,
+              "participationCount": 1108,
+              "notBalancedParticipationCount": 391,
+              "notBalancedParticipationRate": 0.3528880866425993,
+              "badParticipationCount": 930,
+              "badParticipationRate": 0.8393501805054152,
+              "notBalancedBadParticipationCount": 380,
+              "notBalancedBadParticipationRate": 0.34296028880866425,
+              "distinctAttendeeCount": 1014,
+              "classifiableDistinctAttendeeCount": 998,
+              "notBalancedDistinctAttendeeCount": 338,
+              "notBalancedDistinctAttendeeRate": 0.3333333333333333,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.33867735470941884
+            },
+            {
+              "category": "21:00–23:00",
+              "requestCount": 220,
+              "participationCount": 662,
+              "notBalancedParticipationCount": 221,
+              "notBalancedParticipationRate": 0.3338368580060423,
+              "badParticipationCount": 623,
+              "badParticipationRate": 0.9410876132930514,
+              "notBalancedBadParticipationCount": 219,
+              "notBalancedBadParticipationRate": 0.33081570996978854,
+              "distinctAttendeeCount": 623,
+              "classifiableDistinctAttendeeCount": 618,
+              "notBalancedDistinctAttendeeCount": 198,
+              "notBalancedDistinctAttendeeRate": 0.31781701444622795,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.32038834951456313
+            }
+          ],
+          "s5": [
+            {
+              "category": "07:00–09:00",
+              "requestCount": 730,
+              "participationCount": 2240,
+              "notBalancedParticipationCount": 768,
+              "notBalancedParticipationRate": 0.34285714285714286,
+              "badParticipationCount": 1832,
+              "badParticipationRate": 0.8178571428571428,
+              "notBalancedBadParticipationCount": 729,
+              "notBalancedBadParticipationRate": 0.3254464285714286,
+              "distinctAttendeeCount": 1867,
+              "classifiableDistinctAttendeeCount": 1844,
+              "notBalancedDistinctAttendeeCount": 542,
+              "notBalancedDistinctAttendeeRate": 0.29030530262453136,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.29392624728850325
+            },
+            {
+              "category": "09:00–12:00",
+              "requestCount": 2930,
+              "participationCount": 8814,
+              "notBalancedParticipationCount": 754,
+              "notBalancedParticipationRate": 0.0855457227138643,
+              "badParticipationCount": 214,
+              "badParticipationRate": 0.02427955525300658,
+              "notBalancedBadParticipationCount": 82,
+              "notBalancedBadParticipationRate": 0.009303380984796914,
+              "distinctAttendeeCount": 4519,
+              "classifiableDistinctAttendeeCount": 4432,
+              "notBalancedDistinctAttendeeCount": 463,
+              "notBalancedDistinctAttendeeRate": 0.10245629564062846,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10446750902527076
+            },
+            {
+              "category": "12:00–15:00",
+              "requestCount": 1100,
+              "participationCount": 3231,
+              "notBalancedParticipationCount": 238,
+              "notBalancedParticipationRate": 0.07366140513772826,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 2496,
+              "classifiableDistinctAttendeeCount": 2459,
+              "notBalancedDistinctAttendeeCount": 196,
+              "notBalancedDistinctAttendeeRate": 0.07852564102564102,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.07970719804798698
+            },
+            {
+              "category": "15:00–16:00",
+              "requestCount": 1465,
+              "participationCount": 4365,
+              "notBalancedParticipationCount": 331,
+              "notBalancedParticipationRate": 0.07583046964490263,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 3106,
+              "classifiableDistinctAttendeeCount": 3062,
+              "notBalancedDistinctAttendeeCount": 268,
+              "notBalancedDistinctAttendeeRate": 0.08628461043142305,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08752449379490529
+            },
+            {
+              "category": "16:00–18:00",
+              "requestCount": 510,
+              "participationCount": 1580,
+              "notBalancedParticipationCount": 148,
+              "notBalancedParticipationRate": 0.09367088607594937,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1382,
+              "classifiableDistinctAttendeeCount": 1362,
+              "notBalancedDistinctAttendeeCount": 127,
+              "notBalancedDistinctAttendeeRate": 0.0918958031837916,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09324522760646109
+            },
+            {
+              "category": "18:00–21:00",
+              "requestCount": 365,
+              "participationCount": 1108,
+              "notBalancedParticipationCount": 110,
+              "notBalancedParticipationRate": 0.09927797833935018,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1014,
+              "classifiableDistinctAttendeeCount": 998,
+              "notBalancedDistinctAttendeeCount": 98,
+              "notBalancedDistinctAttendeeRate": 0.09664694280078895,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09819639278557114
+            },
+            {
+              "category": "21:00–23:00",
+              "requestCount": 220,
+              "participationCount": 662,
+              "notBalancedParticipationCount": 65,
+              "notBalancedParticipationRate": 0.09818731117824774,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 623,
+              "classifiableDistinctAttendeeCount": 618,
+              "notBalancedDistinctAttendeeCount": 60,
+              "notBalancedDistinctAttendeeRate": 0.09630818619582665,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0970873786407767
+            }
+          ]
+        },
+        "groupSize": {
+          "s2": [
+            {
+              "category": "1",
+              "requestCount": 1100,
+              "participationCount": 1100,
+              "notBalancedParticipationCount": 57,
+              "notBalancedParticipationRate": 0.05181818181818182,
+              "badParticipationCount": 2,
+              "badParticipationRate": 0.0018181818181818182,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 998,
+              "classifiableDistinctAttendeeCount": 983,
+              "notBalancedDistinctAttendeeCount": 53,
+              "notBalancedDistinctAttendeeRate": 0.0531062124248497,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.05391658189216684
+            },
+            {
+              "category": "2",
+              "requestCount": 2195,
+              "participationCount": 4390,
+              "notBalancedParticipationCount": 448,
+              "notBalancedParticipationRate": 0.1020501138952164,
+              "badParticipationCount": 222,
+              "badParticipationRate": 0.05056947608200456,
+              "notBalancedBadParticipationCount": 90,
+              "notBalancedBadParticipationRate": 0.02050113895216401,
+              "distinctAttendeeCount": 3108,
+              "classifiableDistinctAttendeeCount": 3055,
+              "notBalancedDistinctAttendeeCount": 325,
+              "notBalancedDistinctAttendeeRate": 0.10456885456885456,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10638297872340426
+            },
+            {
+              "category": "3",
+              "requestCount": 1830,
+              "participationCount": 5490,
+              "notBalancedParticipationCount": 562,
+              "notBalancedParticipationRate": 0.10236794171220401,
+              "badParticipationCount": 444,
+              "badParticipationRate": 0.08087431693989071,
+              "notBalancedBadParticipationCount": 177,
+              "notBalancedBadParticipationRate": 0.03224043715846994,
+              "distinctAttendeeCount": 3606,
+              "classifiableDistinctAttendeeCount": 3545,
+              "notBalancedDistinctAttendeeCount": 387,
+              "notBalancedDistinctAttendeeRate": 0.10732113144758736,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10916784203102962
+            },
+            {
+              "category": "4",
+              "requestCount": 1100,
+              "participationCount": 4400,
+              "notBalancedParticipationCount": 483,
+              "notBalancedParticipationRate": 0.10977272727272727,
+              "badParticipationCount": 420,
+              "badParticipationRate": 0.09545454545454546,
+              "notBalancedBadParticipationCount": 170,
+              "notBalancedBadParticipationRate": 0.038636363636363635,
+              "distinctAttendeeCount": 3100,
+              "classifiableDistinctAttendeeCount": 3065,
+              "notBalancedDistinctAttendeeCount": 336,
+              "notBalancedDistinctAttendeeRate": 0.10838709677419354,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10962479608482871
+            },
+            {
+              "category": "5",
+              "requestCount": 585,
+              "participationCount": 2925,
+              "notBalancedParticipationCount": 349,
+              "notBalancedParticipationRate": 0.11931623931623932,
+              "badParticipationCount": 365,
+              "badParticipationRate": 0.12478632478632479,
+              "notBalancedBadParticipationCount": 148,
+              "notBalancedBadParticipationRate": 0.0505982905982906,
+              "distinctAttendeeCount": 2332,
+              "classifiableDistinctAttendeeCount": 2296,
+              "notBalancedDistinctAttendeeCount": 275,
+              "notBalancedDistinctAttendeeRate": 0.1179245283018868,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11977351916376307
+            },
+            {
+              "category": "6–7",
+              "requestCount": 365,
+              "participationCount": 2379,
+              "notBalancedParticipationCount": 294,
+              "notBalancedParticipationRate": 0.1235813366960908,
+              "badParticipationCount": 372,
+              "badParticipationRate": 0.15636822194199243,
+              "notBalancedBadParticipationCount": 130,
+              "notBalancedBadParticipationRate": 0.0546448087431694,
+              "distinctAttendeeCount": 1987,
+              "classifiableDistinctAttendeeCount": 1967,
+              "notBalancedDistinctAttendeeCount": 246,
+              "notBalancedDistinctAttendeeRate": 0.12380473074987418,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.12506354855109303
+            },
+            {
+              "category": "8–10",
+              "requestCount": 145,
+              "participationCount": 1316,
+              "notBalancedParticipationCount": 166,
+              "notBalancedParticipationRate": 0.12613981762917933,
+              "badParticipationCount": 208,
+              "badParticipationRate": 0.1580547112462006,
+              "notBalancedBadParticipationCount": 76,
+              "notBalancedBadParticipationRate": 0.057750759878419454,
+              "distinctAttendeeCount": 1191,
+              "classifiableDistinctAttendeeCount": 1179,
+              "notBalancedDistinctAttendeeCount": 151,
+              "notBalancedDistinctAttendeeRate": 0.12678421494542402,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1280746395250212
+            }
+          ],
+          "s5": [
+            {
+              "category": "1",
+              "requestCount": 1100,
+              "participationCount": 1100,
+              "notBalancedParticipationCount": 78,
+              "notBalancedParticipationRate": 0.07090909090909091,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 998,
+              "classifiableDistinctAttendeeCount": 983,
+              "notBalancedDistinctAttendeeCount": 72,
+              "notBalancedDistinctAttendeeRate": 0.07214428857715431,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.07324516785350967
+            },
+            {
+              "category": "2",
+              "requestCount": 2195,
+              "participationCount": 4390,
+              "notBalancedParticipationCount": 462,
+              "notBalancedParticipationRate": 0.10523917995444192,
+              "badParticipationCount": 274,
+              "badParticipationRate": 0.06241457858769932,
+              "notBalancedBadParticipationCount": 122,
+              "notBalancedBadParticipationRate": 0.027790432801822324,
+              "distinctAttendeeCount": 3108,
+              "classifiableDistinctAttendeeCount": 3055,
+              "notBalancedDistinctAttendeeCount": 342,
+              "notBalancedDistinctAttendeeRate": 0.11003861003861004,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11194762684124386
+            },
+            {
+              "category": "3",
+              "requestCount": 1830,
+              "participationCount": 5490,
+              "notBalancedParticipationCount": 615,
+              "notBalancedParticipationRate": 0.11202185792349727,
+              "badParticipationCount": 522,
+              "badParticipationRate": 0.09508196721311475,
+              "notBalancedBadParticipationCount": 195,
+              "notBalancedBadParticipationRate": 0.03551912568306011,
+              "distinctAttendeeCount": 3606,
+              "classifiableDistinctAttendeeCount": 3545,
+              "notBalancedDistinctAttendeeCount": 389,
+              "notBalancedDistinctAttendeeRate": 0.10787576261785913,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10973201692524683
+            },
+            {
+              "category": "4",
+              "requestCount": 1100,
+              "participationCount": 4400,
+              "notBalancedParticipationCount": 475,
+              "notBalancedParticipationRate": 0.10795454545454546,
+              "badParticipationCount": 392,
+              "badParticipationRate": 0.0890909090909091,
+              "notBalancedBadParticipationCount": 150,
+              "notBalancedBadParticipationRate": 0.03409090909090909,
+              "distinctAttendeeCount": 3100,
+              "classifiableDistinctAttendeeCount": 3065,
+              "notBalancedDistinctAttendeeCount": 337,
+              "notBalancedDistinctAttendeeRate": 0.10870967741935483,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1099510603588907
+            },
+            {
+              "category": "5",
+              "requestCount": 585,
+              "participationCount": 2925,
+              "notBalancedParticipationCount": 309,
+              "notBalancedParticipationRate": 0.10564102564102563,
+              "badParticipationCount": 280,
+              "badParticipationRate": 0.09572649572649573,
+              "notBalancedBadParticipationCount": 108,
+              "notBalancedBadParticipationRate": 0.036923076923076927,
+              "distinctAttendeeCount": 2332,
+              "classifiableDistinctAttendeeCount": 2296,
+              "notBalancedDistinctAttendeeCount": 252,
+              "notBalancedDistinctAttendeeRate": 0.10806174957118353,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10975609756097561
+            },
+            {
+              "category": "6–7",
+              "requestCount": 365,
+              "participationCount": 2379,
+              "notBalancedParticipationCount": 279,
+              "notBalancedParticipationRate": 0.11727616645649433,
+              "badParticipationCount": 306,
+              "badParticipationRate": 0.12862547288776796,
+              "notBalancedBadParticipationCount": 122,
+              "notBalancedBadParticipationRate": 0.05128205128205128,
+              "distinctAttendeeCount": 1987,
+              "classifiableDistinctAttendeeCount": 1967,
+              "notBalancedDistinctAttendeeCount": 232,
+              "notBalancedDistinctAttendeeRate": 0.116758933064922,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11794611082867311
+            },
+            {
+              "category": "8–10",
+              "requestCount": 145,
+              "participationCount": 1316,
+              "notBalancedParticipationCount": 196,
+              "notBalancedParticipationRate": 0.14893617021276595,
+              "badParticipationCount": 272,
+              "badParticipationRate": 0.2066869300911854,
+              "notBalancedBadParticipationCount": 114,
+              "notBalancedBadParticipationRate": 0.08662613981762918,
+              "distinctAttendeeCount": 1191,
+              "classifiableDistinctAttendeeCount": 1179,
+              "notBalancedDistinctAttendeeCount": 174,
+              "notBalancedDistinctAttendeeRate": 0.14609571788413098,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1475826972010178
+            }
+          ]
+        },
+        "allowsFrontStanding": {
+          "s2": [
+            {
+              "category": "false",
+              "requestCount": 3660,
+              "participationCount": 10888,
+              "notBalancedParticipationCount": 1177,
+              "notBalancedParticipationRate": 0.10810066127847172,
+              "badParticipationCount": 1084,
+              "badParticipationRate": 0.09955914768552535,
+              "notBalancedBadParticipationCount": 431,
+              "notBalancedBadParticipationRate": 0.03958486407053637,
+              "distinctAttendeeCount": 4854,
+              "classifiableDistinctAttendeeCount": 4739,
+              "notBalancedDistinctAttendeeCount": 524,
+              "notBalancedDistinctAttendeeRate": 0.10795220436753193,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1105718506013927
+            },
+            {
+              "category": "true",
+              "requestCount": 3660,
+              "participationCount": 11112,
+              "notBalancedParticipationCount": 1182,
+              "notBalancedParticipationRate": 0.10637149028077754,
+              "badParticipationCount": 949,
+              "badParticipationRate": 0.08540316774658027,
+              "notBalancedBadParticipationCount": 360,
+              "notBalancedBadParticipationRate": 0.032397408207343416,
+              "distinctAttendeeCount": 4910,
+              "classifiableDistinctAttendeeCount": 4793,
+              "notBalancedDistinctAttendeeCount": 523,
+              "notBalancedDistinctAttendeeRate": 0.1065173116089613,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10911746296682662
+            }
+          ],
+          "s5": [
+            {
+              "category": "false",
+              "requestCount": 3660,
+              "participationCount": 10888,
+              "notBalancedParticipationCount": 1243,
+              "notBalancedParticipationRate": 0.11416238060249816,
+              "badParticipationCount": 1100,
+              "badParticipationRate": 0.10102865540044086,
+              "notBalancedBadParticipationCount": 446,
+              "notBalancedBadParticipationRate": 0.04096252755326966,
+              "distinctAttendeeCount": 4854,
+              "classifiableDistinctAttendeeCount": 4739,
+              "notBalancedDistinctAttendeeCount": 540,
+              "notBalancedDistinctAttendeeRate": 0.11124845488257108,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11394809031441232
+            },
+            {
+              "category": "true",
+              "requestCount": 3660,
+              "participationCount": 11112,
+              "notBalancedParticipationCount": 1171,
+              "notBalancedParticipationRate": 0.10538156947444205,
+              "badParticipationCount": 946,
+              "badParticipationRate": 0.08513318934485241,
+              "notBalancedBadParticipationCount": 365,
+              "notBalancedBadParticipationRate": 0.03284737221022318,
+              "distinctAttendeeCount": 4910,
+              "classifiableDistinctAttendeeCount": 4793,
+              "notBalancedDistinctAttendeeCount": 537,
+              "notBalancedDistinctAttendeeRate": 0.10936863543788188,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11203838931775506
+            }
+          ]
+        }
+      },
+      "dailyCapacity": [
+        {
+          "dayNumber": 1,
+          "s2": {
+            "goodAvailableSpotCount": 7,
+            "mediumAvailableSpotCount": 7,
+            "badAvailableSpotCount": 584,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 8,
+            "mediumAvailableSpotCount": 8,
+            "badAvailableSpotCount": 582,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": 1,
+            "mediumAvailableSpotCount": 1,
+            "badAvailableSpotCount": -2,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 2,
+          "s2": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 594,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 590,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": 0,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": -4,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 3,
+          "s2": {
+            "goodAvailableSpotCount": 1,
+            "mediumAvailableSpotCount": 2,
+            "badAvailableSpotCount": 595,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 5,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 589,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 2,
+            "badAvailableSpotCount": -6,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 4,
+          "s2": {
+            "goodAvailableSpotCount": 8,
+            "mediumAvailableSpotCount": 7,
+            "badAvailableSpotCount": 583,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 7,
+            "mediumAvailableSpotCount": 7,
+            "badAvailableSpotCount": 584,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -1,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 1,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 5,
+          "s2": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 3,
+            "badAvailableSpotCount": 591,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 5,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 589,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": 1,
+            "mediumAvailableSpotCount": 1,
+            "badAvailableSpotCount": -2,
+            "totalAvailableSpotCount": 0
+          }
+        }
+      ]
+    },
+    {
+      "seed": 2001,
+      "pairIntegrity": {
+        "sameWorkload": true,
+        "sameRequests": true,
+        "sameFestivalDays": true,
+        "sameDailyCohorts": true,
+        "sameGroupMembershipAndSizes": true,
+        "sameTimestamps": true,
+        "sameEligibility": true,
+        "sameTopologyAndSpots": true,
+        "preservedBaselineSequence": true,
+        "exactDailyReversedExecution": true
+      },
+      "s2": {
+        "runId": "official-s2-2001-38de76b7ac10424295d07ff3272f8333",
+        "evidencePath": "artifacts/simulations/s2-expected-baseline/official-s2-2001-38de76b7ac10424295d07ff3272f8333",
+        "status": "Completed",
+        "integrity": {
+          "completedFestivalDays": 5,
+          "unexpectedTechnicalFailureCount": 0,
+          "knownConcurrencyConflictCount": 0,
+          "persistedAssignmentCount": 22000,
+          "persistedRequestCount": 7320,
+          "violations": [],
+          "invariantViolationCount": 0,
+          "finalStateOnly": true,
+          "sha256": {
+            "run-metadata.json": "2bf2cc07d339667a2ad72003c0fef76d3c4fa4b916ed1870579d55d9d493cb15",
+            "definition.json": "1897b11b6bf19e1bc2ad1c17580c3712343744620eb96267527a788af2a085c8",
+            "manifest.json": "efb8d9bc88883e842e27dddedb71d4ada76fcabbe49bc91e73b8137074a125e2",
+            "attempts.json": "4e60fed37dd0e9ffad07cd7d3fa5c4937b40153165ba65dfb7b31e167e2c0a53",
+            "checkpoints.json": "b83e22f4efb3525a30ef177dd5b7e8eebccee956343e5cd1e4621bdf8fe83b78",
+            "attendee-paths.json": "7f437d97e20a9d8c4dbcdc6a4e6e41f4460219a8f49f90cae814411d54b16e86",
+            "recovery-observations.json": "f95e54caac2ad3530f34ad46968d56f7ef4b4b928ad255970af58b809115109b",
+            "metrics.json": "277bf45af2059f9add2dc85469ef405043a95c6f3d518b46561b12383a5486cd"
+          }
+        },
+        "requestOutcomes": {
+          "attemptedRequests": 7320,
+          "normallyProcessedRequests": 7320,
+          "successfulRequests": 7320,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "evaluatedAttendeeCount": 5359,
+          "noPersistedPathCount": 0,
+          "insufficientEvidenceCount": 244,
+          "classifiablePathCount": 5115,
+          "balancedPathCount": 2880,
+          "acceptablePathCount": 1682,
+          "notBalancedPathCount": 553,
+          "noPersistedPathRate": 0,
+          "insufficientEvidenceRate": 0.04553088262735585,
+          "classifiablePathRate": 0.9544691173726442,
+          "balancedPathRate": 0.5630498533724341,
+          "acceptablePathRate": 0.3288367546432063,
+          "notBalancedPathRate": 0.10811339198435972,
+          "persistedOutcomeCount": 22000,
+          "goodOutcomeCount": 8738,
+          "mediumOutcomeCount": 11228,
+          "badOutcomeCount": 2034,
+          "goodOutcomeRate": 0.3971818181818182,
+          "mediumOutcomeRate": 0.5103636363636364,
+          "badOutcomeRate": 0.09245454545454546
+        },
+        "recovery": {
+          "recoveryEpisodeCount": 1900,
+          "recoveredEpisodeCount": 1403,
+          "unresolvedEpisodeCount": 497,
+          "recoveryEligibleEpisodeCount": 1449,
+          "recoveryIneligibleEpisodeCount": 451,
+          "recoveryRate": 0.9682539682539683,
+          "recoveredToMediumCount": 714,
+          "recoveredToGoodCount": 689,
+          "averageOpportunitiesToRecovery": 1.0612972202423379,
+          "medianOpportunitiesToRecovery": 1,
+          "opportunityDistribution": [
+            {
+              "opportunities": 1,
+              "episodeCount": 1320,
+              "rateAmongRecovered": 0.9408410548823949
+            },
+            {
+              "opportunities": 2,
+              "episodeCount": 80,
+              "rateAmongRecovered": 0.05702066999287242
+            },
+            {
+              "opportunities": 3,
+              "episodeCount": 3,
+              "rateAmongRecovered": 0.0021382751247327157
+            }
+          ]
+        },
+        "exploratoryP95Ms": 44.6164
+      },
+      "s5": {
+        "runId": "official-s5-2001-59f9c801e6284185a2832a2cb47fce60",
+        "evidencePath": "artifacts/simulations/s5-adverse-arrival-order/official-s5-2001-59f9c801e6284185a2832a2cb47fce60",
+        "status": "Completed",
+        "integrity": {
+          "completedFestivalDays": 5,
+          "unexpectedTechnicalFailureCount": 0,
+          "knownConcurrencyConflictCount": 0,
+          "persistedAssignmentCount": 22000,
+          "persistedRequestCount": 7320,
+          "violations": [],
+          "invariantViolationCount": 0,
+          "finalStateOnly": true,
+          "sha256": {
+            "run-metadata.json": "d189d54ba38400aec3dfab17e3bc2445c5a52535251e41056af1e9e35ea6067a",
+            "definition.json": "1897b11b6bf19e1bc2ad1c17580c3712343744620eb96267527a788af2a085c8",
+            "manifest.json": "68907dd860f0ddbcb4bcc43bf52104b94e9bcd7906574e8f994f471ad36e612b",
+            "attempts.json": "9601d79a7adf70573160d1c33502185d62606ce334af0b7df226a9283def01d0",
+            "checkpoints.json": "d6320af55e99b86a699c5b3ca36c848366e95009910c7b353b11abae1b465fa5",
+            "attendee-paths.json": "1ddd618e8db1b2640dfa1cab7e22f869011759f22be127fe88696848cc73a28b",
+            "recovery-observations.json": "40ba859a33453d9f0ea4312b8d1461c6240f7ff699228ad0c4b8082735625beb",
+            "metrics.json": "4e13a43134f4bb85ffcd76945dff4f34619f6c9b72c8d15512cadfe538005c9b"
+          }
+        },
+        "requestOutcomes": {
+          "attemptedRequests": 7320,
+          "normallyProcessedRequests": 7320,
+          "successfulRequests": 7320,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "evaluatedAttendeeCount": 5359,
+          "noPersistedPathCount": 0,
+          "insufficientEvidenceCount": 244,
+          "classifiablePathCount": 5115,
+          "balancedPathCount": 2920,
+          "acceptablePathCount": 1666,
+          "notBalancedPathCount": 529,
+          "noPersistedPathRate": 0,
+          "insufficientEvidenceRate": 0.04553088262735585,
+          "classifiablePathRate": 0.9544691173726442,
+          "balancedPathRate": 0.570869990224829,
+          "acceptablePathRate": 0.32570869990224827,
+          "notBalancedPathRate": 0.10342130987292278,
+          "persistedOutcomeCount": 22000,
+          "goodOutcomeCount": 8751,
+          "mediumOutcomeCount": 11245,
+          "badOutcomeCount": 2004,
+          "goodOutcomeRate": 0.3977727272727273,
+          "mediumOutcomeRate": 0.5111363636363636,
+          "badOutcomeRate": 0.0910909090909091
+        },
+        "recovery": {
+          "recoveryEpisodeCount": 1852,
+          "recoveredEpisodeCount": 1374,
+          "unresolvedEpisodeCount": 478,
+          "recoveryEligibleEpisodeCount": 1415,
+          "recoveryIneligibleEpisodeCount": 437,
+          "recoveryRate": 0.9710247349823321,
+          "recoveredToMediumCount": 681,
+          "recoveredToGoodCount": 693,
+          "averageOpportunitiesToRecovery": 1.0786026200873362,
+          "medianOpportunitiesToRecovery": 1,
+          "opportunityDistribution": [
+            {
+              "opportunities": 1,
+              "episodeCount": 1274,
+              "rateAmongRecovered": 0.9272197962154294
+            },
+            {
+              "opportunities": 2,
+              "episodeCount": 93,
+              "rateAmongRecovered": 0.06768558951965066
+            },
+            {
+              "opportunities": 3,
+              "episodeCount": 6,
+              "rateAmongRecovered": 0.004366812227074236
+            },
+            {
+              "opportunities": 4,
+              "episodeCount": 1,
+              "rateAmongRecovered": 0.000727802037845706
+            }
+          ]
+        },
+        "exploratoryP95Ms": 47.633700000000005
+      },
+      "deltas": {
+        "requestOutcomes": {
+          "attemptedRequests": 0,
+          "successfulRequests": 0,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "successRate": 0.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "goodOutcomeRate": 0.0005909090909090864,
+          "mediumOutcomeRate": 0.0007727272727272583,
+          "badOutcomeRate": -0.0013636363636363585,
+          "balancedPathRate": 0.00782013685239491,
+          "acceptablePathRate": -0.0031280547409580084,
+          "notBalancedPathRate": -0.004692082111436943,
+          "classifiablePathRate": 0.0
+        },
+        "recovery": {
+          "recoveryEpisodeCount": -48,
+          "recoveredEpisodeCount": -29,
+          "unresolvedEpisodeCount": -19,
+          "recoveryEligibleEpisodeCount": -34,
+          "recoveryRate": 0.0027707667283638493,
+          "averageOpportunitiesToRecovery": 0.017305399844998348,
+          "medianOpportunitiesToRecovery": 0
+        }
+      },
+      "quality": {
+        "matrix": {
+          "Good": {
+            "Good": 4234,
+            "Medium": 4438,
+            "Bad": 66
+          },
+          "Medium": {
+            "Good": 4446,
+            "Medium": 4844,
+            "Bad": 1938
+          },
+          "Bad": {
+            "Good": 71,
+            "Medium": 1963,
+            "Bad": 0
+          }
+        },
+        "pairedCount": 22000,
+        "rankedCount": 22000,
+        "unrankedCount": 0,
+        "changes": {
+          "unchanged": {
+            "count": 9078,
+            "rate": 0.41263636363636363
+          },
+          "improved": {
+            "count": 6480,
+            "rate": 0.29454545454545455
+          },
+          "worsened": {
+            "count": 6442,
+            "rate": 0.2928181818181818
+          }
+        },
+        "assignmentCoverage": {
+          "assignedBoth": 22000,
+          "assignedOnlyS2": 0,
+          "assignedOnlyS5": 0,
+          "assignedNeither": 0
+        },
+        "missingCases": {
+          "assignedOnlyS2": [],
+          "assignedOnlyS5": [],
+          "assignedNeither": []
+        }
+      },
+      "badRecipients": {
+        "s2Count": 1747,
+        "s5Count": 1710,
+        "intersectionCount": 503,
+        "s2OnlyCount": 1244,
+        "s5OnlyCount": 1207,
+        "unionCount": 2954,
+        "overlapRate": 0.17027758970886933,
+        "churnRate": 0.8297224102911307,
+        "s2RetentionRate": 0.2879221522610189,
+        "s5NewRecipientRate": 0.7058479532163743
+      },
+      "badAttendeeDays": {
+        "s2Count": 2034,
+        "s5Count": 2004,
+        "intersectionCount": 0,
+        "s2OnlyCount": 2034,
+        "s5OnlyCount": 2004,
+        "unionCount": 4038,
+        "overlapRate": 0.0,
+        "churnRate": 1.0,
+        "s2RetentionRate": 0.0,
+        "s5NewRecipientRate": 1.0
+      },
+      "pathTransitions": {
+        "matrix": {
+          "Balanced": {
+            "Balanced": 1818,
+            "Acceptable": 885,
+            "NotBalanced": 177,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "Acceptable": {
+            "Balanced": 896,
+            "Acceptable": 509,
+            "NotBalanced": 277,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "NotBalanced": {
+            "Balanced": 206,
+            "Acceptable": 272,
+            "NotBalanced": 75,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "InsufficientEvidence": {
+            "Balanced": 0,
+            "Acceptable": 0,
+            "NotBalanced": 0,
+            "InsufficientEvidence": 244,
+            "NoPath": 0
+          },
+          "NoPath": {
+            "Balanced": 0,
+            "Acceptable": 0,
+            "NotBalanced": 0,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          }
+        },
+        "pairedCount": 5359,
+        "rankedCount": 5115,
+        "unrankedCount": 244,
+        "changes": {
+          "unchanged": {
+            "count": 2402,
+            "rate": 0.46959921798631477
+          },
+          "improved": {
+            "count": 1374,
+            "rate": 0.2686217008797654
+          },
+          "worsened": {
+            "count": 1339,
+            "rate": 0.26177908113391984
+          }
+        }
+      },
+      "pathCoverageTransitions": [
+        {
+          "s2Length": 1,
+          "s5Length": 1,
+          "count": 244
+        },
+        {
+          "s2Length": 2,
+          "s5Length": 2,
+          "count": 435
+        },
+        {
+          "s2Length": 3,
+          "s5Length": 3,
+          "count": 743
+        },
+        {
+          "s2Length": 4,
+          "s5Length": 4,
+          "count": 1028
+        },
+        {
+          "s2Length": 5,
+          "s5Length": 5,
+          "count": 2909
+        }
+      ],
+      "notBalancedRecipients": {
+        "s2Count": 553,
+        "s5Count": 529,
+        "intersectionCount": 75,
+        "s2OnlyCount": 478,
+        "s5OnlyCount": 454,
+        "unionCount": 1007,
+        "overlapRate": 0.07447864945382324,
+        "churnRate": 0.9255213505461768,
+        "s2RetentionRate": 0.13562386980108498,
+        "s5NewRecipientRate": 0.8582230623818525
+      },
+      "recoverySensitivity": {
+        "episodeRecipients": {
+          "s2Count": 1747,
+          "s5Count": 1710,
+          "intersectionCount": 503,
+          "s2OnlyCount": 1244,
+          "s5OnlyCount": 1207,
+          "unionCount": 2954,
+          "overlapRate": 0.17027758970886933,
+          "churnRate": 0.8297224102911307,
+          "s2RetentionRate": 0.2879221522610189,
+          "s5NewRecipientRate": 0.7058479532163743
+        },
+        "episodeOpeningAttendeeDays": {
+          "s2Count": 1900,
+          "s5Count": 1852,
+          "intersectionCount": 0,
+          "s2OnlyCount": 1900,
+          "s5OnlyCount": 1852,
+          "unionCount": 3752,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        },
+        "eligibleUnresolvedRecipients": {
+          "s2Count": 46,
+          "s5Count": 41,
+          "intersectionCount": 0,
+          "s2OnlyCount": 46,
+          "s5OnlyCount": 41,
+          "unionCount": 87,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        },
+        "eligibleUnresolvedOpeningAttendeeDays": {
+          "s2Count": 46,
+          "s5Count": 41,
+          "intersectionCount": 0,
+          "s2OnlyCount": 46,
+          "s5OnlyCount": 41,
+          "unionCount": 87,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        }
+      },
+      "associations": {
+        "baselineThird": {
+          "s2": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7257,
+              "notBalancedParticipationCount": 594,
+              "notBalancedParticipationRate": 0.08185200496072757,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4160,
+              "classifiableDistinctAttendeeCount": 4083,
+              "notBalancedDistinctAttendeeCount": 383,
+              "notBalancedDistinctAttendeeRate": 0.0920673076923077,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0938035758021063
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7372,
+              "notBalancedParticipationCount": 1150,
+              "notBalancedParticipationRate": 0.15599565925122083,
+              "badParticipationCount": 2034,
+              "badParticipationRate": 0.27590884427563755,
+              "notBalancedBadParticipationCount": 761,
+              "notBalancedBadParticipationRate": 0.10322843190450352,
+              "distinctAttendeeCount": 4216,
+              "classifiableDistinctAttendeeCount": 4132,
+              "notBalancedDistinctAttendeeCount": 553,
+              "notBalancedDistinctAttendeeRate": 0.13116698292220114,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13383349467570185
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7371,
+              "notBalancedParticipationCount": 557,
+              "notBalancedParticipationRate": 0.07556640889974223,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4195,
+              "classifiableDistinctAttendeeCount": 4112,
+              "notBalancedDistinctAttendeeCount": 388,
+              "notBalancedDistinctAttendeeRate": 0.09249106078665077,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0943579766536965
+            }
+          ],
+          "s5": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7257,
+              "notBalancedParticipationCount": 1110,
+              "notBalancedParticipationRate": 0.15295576684580406,
+              "badParticipationCount": 2004,
+              "badParticipationRate": 0.27614716825134356,
+              "notBalancedBadParticipationCount": 730,
+              "notBalancedBadParticipationRate": 0.10059253134904231,
+              "distinctAttendeeCount": 4160,
+              "classifiableDistinctAttendeeCount": 4083,
+              "notBalancedDistinctAttendeeCount": 529,
+              "notBalancedDistinctAttendeeRate": 0.12716346153846153,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1295615968650502
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7372,
+              "notBalancedParticipationCount": 587,
+              "notBalancedParticipationRate": 0.07962561041779707,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4216,
+              "classifiableDistinctAttendeeCount": 4132,
+              "notBalancedDistinctAttendeeCount": 384,
+              "notBalancedDistinctAttendeeRate": 0.09108159392789374,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09293320425943853
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7371,
+              "notBalancedParticipationCount": 526,
+              "notBalancedParticipationRate": 0.0713607380274047,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4195,
+              "classifiableDistinctAttendeeCount": 4112,
+              "notBalancedDistinctAttendeeCount": 341,
+              "notBalancedDistinctAttendeeRate": 0.08128724672228844,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08292801556420233
+            }
+          ]
+        },
+        "executionThird": {
+          "s2": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7257,
+              "notBalancedParticipationCount": 594,
+              "notBalancedParticipationRate": 0.08185200496072757,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4160,
+              "classifiableDistinctAttendeeCount": 4083,
+              "notBalancedDistinctAttendeeCount": 383,
+              "notBalancedDistinctAttendeeRate": 0.0920673076923077,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0938035758021063
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7372,
+              "notBalancedParticipationCount": 1150,
+              "notBalancedParticipationRate": 0.15599565925122083,
+              "badParticipationCount": 2034,
+              "badParticipationRate": 0.27590884427563755,
+              "notBalancedBadParticipationCount": 761,
+              "notBalancedBadParticipationRate": 0.10322843190450352,
+              "distinctAttendeeCount": 4216,
+              "classifiableDistinctAttendeeCount": 4132,
+              "notBalancedDistinctAttendeeCount": 553,
+              "notBalancedDistinctAttendeeRate": 0.13116698292220114,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13383349467570185
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7371,
+              "notBalancedParticipationCount": 557,
+              "notBalancedParticipationRate": 0.07556640889974223,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4195,
+              "classifiableDistinctAttendeeCount": 4112,
+              "notBalancedDistinctAttendeeCount": 388,
+              "notBalancedDistinctAttendeeRate": 0.09249106078665077,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0943579766536965
+            }
+          ],
+          "s5": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7372,
+              "notBalancedParticipationCount": 587,
+              "notBalancedParticipationRate": 0.07962561041779707,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4216,
+              "classifiableDistinctAttendeeCount": 4132,
+              "notBalancedDistinctAttendeeCount": 384,
+              "notBalancedDistinctAttendeeRate": 0.09108159392789374,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09293320425943853
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7257,
+              "notBalancedParticipationCount": 1110,
+              "notBalancedParticipationRate": 0.15295576684580406,
+              "badParticipationCount": 2004,
+              "badParticipationRate": 0.27614716825134356,
+              "notBalancedBadParticipationCount": 730,
+              "notBalancedBadParticipationRate": 0.10059253134904231,
+              "distinctAttendeeCount": 4160,
+              "classifiableDistinctAttendeeCount": 4083,
+              "notBalancedDistinctAttendeeCount": 529,
+              "notBalancedDistinctAttendeeRate": 0.12716346153846153,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1295615968650502
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7371,
+              "notBalancedParticipationCount": 526,
+              "notBalancedParticipationRate": 0.0713607380274047,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4195,
+              "classifiableDistinctAttendeeCount": 4112,
+              "notBalancedDistinctAttendeeCount": 341,
+              "notBalancedDistinctAttendeeRate": 0.08128724672228844,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08292801556420233
+            }
+          ]
+        },
+        "originalArrivalBand": {
+          "s2": [
+            {
+              "category": "07:00–09:00",
+              "requestCount": 730,
+              "participationCount": 2132,
+              "notBalancedParticipationCount": 234,
+              "notBalancedParticipationRate": 0.10975609756097561,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1780,
+              "classifiableDistinctAttendeeCount": 1761,
+              "notBalancedDistinctAttendeeCount": 190,
+              "notBalancedDistinctAttendeeRate": 0.10674157303370786,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10789324247586599
+            },
+            {
+              "category": "09:00–12:00",
+              "requestCount": 2930,
+              "participationCount": 8829,
+              "notBalancedParticipationCount": 640,
+              "notBalancedParticipationRate": 0.07248839053120398,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4570,
+              "classifiableDistinctAttendeeCount": 4465,
+              "notBalancedDistinctAttendeeCount": 416,
+              "notBalancedDistinctAttendeeRate": 0.09102844638949671,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09316909294512878
+            },
+            {
+              "category": "12:00–15:00",
+              "requestCount": 1100,
+              "participationCount": 3328,
+              "notBalancedParticipationCount": 248,
+              "notBalancedParticipationRate": 0.07451923076923077,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 2537,
+              "classifiableDistinctAttendeeCount": 2503,
+              "notBalancedDistinctAttendeeCount": 212,
+              "notBalancedDistinctAttendeeRate": 0.08356326369728025,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08469836196564123
+            },
+            {
+              "category": "15:00–16:00",
+              "requestCount": 1465,
+              "participationCount": 4414,
+              "notBalancedParticipationCount": 335,
+              "notBalancedParticipationRate": 0.07589487992750339,
+              "badParticipationCount": 8,
+              "badParticipationRate": 0.0018124150430448573,
+              "notBalancedBadParticipationCount": 6,
+              "notBalancedBadParticipationRate": 0.001359311282283643,
+              "distinctAttendeeCount": 3153,
+              "classifiableDistinctAttendeeCount": 3101,
+              "notBalancedDistinctAttendeeCount": 267,
+              "notBalancedDistinctAttendeeRate": 0.08468125594671741,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08610125765881974
+            },
+            {
+              "category": "16:00–18:00",
+              "requestCount": 510,
+              "participationCount": 1511,
+              "notBalancedParticipationCount": 229,
+              "notBalancedParticipationRate": 0.15155526141628062,
+              "badParticipationCount": 395,
+              "badParticipationRate": 0.2614162806088683,
+              "notBalancedBadParticipationCount": 156,
+              "notBalancedBadParticipationRate": 0.10324288550628723,
+              "distinctAttendeeCount": 1339,
+              "classifiableDistinctAttendeeCount": 1327,
+              "notBalancedDistinctAttendeeCount": 197,
+              "notBalancedDistinctAttendeeRate": 0.14712471994025392,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.14845516201959308
+            },
+            {
+              "category": "18:00–21:00",
+              "requestCount": 365,
+              "participationCount": 1107,
+              "notBalancedParticipationCount": 363,
+              "notBalancedParticipationRate": 0.32791327913279134,
+              "badParticipationCount": 985,
+              "badParticipationRate": 0.8897922312556459,
+              "notBalancedBadParticipationCount": 350,
+              "notBalancedBadParticipationRate": 0.31616982836495033,
+              "distinctAttendeeCount": 1017,
+              "classifiableDistinctAttendeeCount": 1001,
+              "notBalancedDistinctAttendeeCount": 308,
+              "notBalancedDistinctAttendeeRate": 0.3028515240904621,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.3076923076923077
+            },
+            {
+              "category": "21:00–23:00",
+              "requestCount": 220,
+              "participationCount": 679,
+              "notBalancedParticipationCount": 252,
+              "notBalancedParticipationRate": 0.3711340206185567,
+              "badParticipationCount": 646,
+              "badParticipationRate": 0.9513991163475699,
+              "notBalancedBadParticipationCount": 249,
+              "notBalancedBadParticipationRate": 0.36671575846833576,
+              "distinctAttendeeCount": 640,
+              "classifiableDistinctAttendeeCount": 634,
+              "notBalancedDistinctAttendeeCount": 227,
+              "notBalancedDistinctAttendeeRate": 0.3546875,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.3580441640378549
+            }
+          ],
+          "s5": [
+            {
+              "category": "07:00–09:00",
+              "requestCount": 730,
+              "participationCount": 2132,
+              "notBalancedParticipationCount": 681,
+              "notBalancedParticipationRate": 0.31941838649155724,
+              "badParticipationCount": 1767,
+              "badParticipationRate": 0.8287992495309568,
+              "notBalancedBadParticipationCount": 653,
+              "notBalancedBadParticipationRate": 0.3062851782363977,
+              "distinctAttendeeCount": 1780,
+              "classifiableDistinctAttendeeCount": 1761,
+              "notBalancedDistinctAttendeeCount": 487,
+              "notBalancedDistinctAttendeeRate": 0.2735955056179775,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.2765474162407723
+            },
+            {
+              "category": "09:00–12:00",
+              "requestCount": 2930,
+              "participationCount": 8829,
+              "notBalancedParticipationCount": 708,
+              "notBalancedParticipationRate": 0.08019028202514442,
+              "badParticipationCount": 237,
+              "badParticipationRate": 0.026843357118586476,
+              "notBalancedBadParticipationCount": 77,
+              "notBalancedBadParticipationRate": 0.00872125948578548,
+              "distinctAttendeeCount": 4570,
+              "classifiableDistinctAttendeeCount": 4465,
+              "notBalancedDistinctAttendeeCount": 422,
+              "notBalancedDistinctAttendeeRate": 0.09234135667396061,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09451287793952967
+            },
+            {
+              "category": "12:00–15:00",
+              "requestCount": 1100,
+              "participationCount": 3328,
+              "notBalancedParticipationCount": 229,
+              "notBalancedParticipationRate": 0.06881009615384616,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 2537,
+              "classifiableDistinctAttendeeCount": 2503,
+              "notBalancedDistinctAttendeeCount": 196,
+              "notBalancedDistinctAttendeeRate": 0.07725660228616477,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.07830603276068718
+            },
+            {
+              "category": "15:00–16:00",
+              "requestCount": 1465,
+              "participationCount": 4414,
+              "notBalancedParticipationCount": 297,
+              "notBalancedParticipationRate": 0.06728590847304032,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 3153,
+              "classifiableDistinctAttendeeCount": 3101,
+              "notBalancedDistinctAttendeeCount": 241,
+              "notBalancedDistinctAttendeeRate": 0.07643514113542658,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.07771686552724927
+            },
+            {
+              "category": "16:00–18:00",
+              "requestCount": 510,
+              "participationCount": 1511,
+              "notBalancedParticipationCount": 135,
+              "notBalancedParticipationRate": 0.08934480476505625,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1339,
+              "classifiableDistinctAttendeeCount": 1327,
+              "notBalancedDistinctAttendeeCount": 122,
+              "notBalancedDistinctAttendeeRate": 0.09111277072442121,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09193669932177845
+            },
+            {
+              "category": "18:00–21:00",
+              "requestCount": 365,
+              "participationCount": 1107,
+              "notBalancedParticipationCount": 107,
+              "notBalancedParticipationRate": 0.0966576332429991,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1017,
+              "classifiableDistinctAttendeeCount": 1001,
+              "notBalancedDistinctAttendeeCount": 96,
+              "notBalancedDistinctAttendeeRate": 0.0943952802359882,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0959040959040959
+            },
+            {
+              "category": "21:00–23:00",
+              "requestCount": 220,
+              "participationCount": 679,
+              "notBalancedParticipationCount": 66,
+              "notBalancedParticipationRate": 0.09720176730486009,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 640,
+              "classifiableDistinctAttendeeCount": 634,
+              "notBalancedDistinctAttendeeCount": 63,
+              "notBalancedDistinctAttendeeRate": 0.0984375,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09936908517350158
+            }
+          ]
+        },
+        "groupSize": {
+          "s2": [
+            {
+              "category": "1",
+              "requestCount": 1100,
+              "participationCount": 1100,
+              "notBalancedParticipationCount": 72,
+              "notBalancedParticipationRate": 0.06545454545454546,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1009,
+              "classifiableDistinctAttendeeCount": 999,
+              "notBalancedDistinctAttendeeCount": 69,
+              "notBalancedDistinctAttendeeRate": 0.06838453914767097,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.06906906906906907
+            },
+            {
+              "category": "2",
+              "requestCount": 2195,
+              "participationCount": 4390,
+              "notBalancedParticipationCount": 406,
+              "notBalancedParticipationRate": 0.09248291571753986,
+              "badParticipationCount": 288,
+              "badParticipationRate": 0.06560364464692484,
+              "notBalancedBadParticipationCount": 106,
+              "notBalancedBadParticipationRate": 0.024145785876993165,
+              "distinctAttendeeCount": 3117,
+              "classifiableDistinctAttendeeCount": 3074,
+              "notBalancedDistinctAttendeeCount": 307,
+              "notBalancedDistinctAttendeeRate": 0.0984921398780879,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09986987638256344
+            },
+            {
+              "category": "3",
+              "requestCount": 1830,
+              "participationCount": 5490,
+              "notBalancedParticipationCount": 554,
+              "notBalancedParticipationRate": 0.10091074681238615,
+              "badParticipationCount": 483,
+              "badParticipationRate": 0.08797814207650273,
+              "notBalancedBadParticipationCount": 177,
+              "notBalancedBadParticipationRate": 0.03224043715846994,
+              "distinctAttendeeCount": 3572,
+              "classifiableDistinctAttendeeCount": 3512,
+              "notBalancedDistinctAttendeeCount": 374,
+              "notBalancedDistinctAttendeeRate": 0.10470324748040313,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10649202733485194
+            },
+            {
+              "category": "4",
+              "requestCount": 1100,
+              "participationCount": 4400,
+              "notBalancedParticipationCount": 490,
+              "notBalancedParticipationRate": 0.11136363636363636,
+              "badParticipationCount": 436,
+              "badParticipationRate": 0.09909090909090909,
+              "notBalancedBadParticipationCount": 160,
+              "notBalancedBadParticipationRate": 0.03636363636363636,
+              "distinctAttendeeCount": 3127,
+              "classifiableDistinctAttendeeCount": 3088,
+              "notBalancedDistinctAttendeeCount": 348,
+              "notBalancedDistinctAttendeeRate": 0.11128877518388232,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11269430051813471
+            },
+            {
+              "category": "5",
+              "requestCount": 585,
+              "participationCount": 2925,
+              "notBalancedParticipationCount": 326,
+              "notBalancedParticipationRate": 0.11145299145299145,
+              "badParticipationCount": 320,
+              "badParticipationRate": 0.1094017094017094,
+              "notBalancedBadParticipationCount": 116,
+              "notBalancedBadParticipationRate": 0.03965811965811966,
+              "distinctAttendeeCount": 2324,
+              "classifiableDistinctAttendeeCount": 2283,
+              "notBalancedDistinctAttendeeCount": 245,
+              "notBalancedDistinctAttendeeRate": 0.10542168674698796,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1073149364870784
+            },
+            {
+              "category": "6–7",
+              "requestCount": 365,
+              "participationCount": 2382,
+              "notBalancedParticipationCount": 245,
+              "notBalancedParticipationRate": 0.10285474391267842,
+              "badParticipationCount": 237,
+              "badParticipationRate": 0.09949622166246852,
+              "notBalancedBadParticipationCount": 86,
+              "notBalancedBadParticipationRate": 0.03610411418975651,
+              "distinctAttendeeCount": 1999,
+              "classifiableDistinctAttendeeCount": 1965,
+              "notBalancedDistinctAttendeeCount": 205,
+              "notBalancedDistinctAttendeeRate": 0.1025512756378189,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10432569974554708
+            },
+            {
+              "category": "8–10",
+              "requestCount": 145,
+              "participationCount": 1313,
+              "notBalancedParticipationCount": 208,
+              "notBalancedParticipationRate": 0.15841584158415842,
+              "badParticipationCount": 270,
+              "badParticipationRate": 0.20563594821020564,
+              "notBalancedBadParticipationCount": 116,
+              "notBalancedBadParticipationRate": 0.08834729626808835,
+              "distinctAttendeeCount": 1186,
+              "classifiableDistinctAttendeeCount": 1169,
+              "notBalancedDistinctAttendeeCount": 183,
+              "notBalancedDistinctAttendeeRate": 0.1543001686340641,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.15654405474764757
+            }
+          ],
+          "s5": [
+            {
+              "category": "1",
+              "requestCount": 1100,
+              "participationCount": 1100,
+              "notBalancedParticipationCount": 85,
+              "notBalancedParticipationRate": 0.07727272727272727,
+              "badParticipationCount": 5,
+              "badParticipationRate": 0.004545454545454545,
+              "notBalancedBadParticipationCount": 2,
+              "notBalancedBadParticipationRate": 0.0018181818181818182,
+              "distinctAttendeeCount": 1009,
+              "classifiableDistinctAttendeeCount": 999,
+              "notBalancedDistinctAttendeeCount": 81,
+              "notBalancedDistinctAttendeeRate": 0.0802775024777007,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08108108108108109
+            },
+            {
+              "category": "2",
+              "requestCount": 2195,
+              "participationCount": 4390,
+              "notBalancedParticipationCount": 403,
+              "notBalancedParticipationRate": 0.09179954441913439,
+              "badParticipationCount": 296,
+              "badParticipationRate": 0.0674259681093394,
+              "notBalancedBadParticipationCount": 111,
+              "notBalancedBadParticipationRate": 0.02528473804100228,
+              "distinctAttendeeCount": 3117,
+              "classifiableDistinctAttendeeCount": 3074,
+              "notBalancedDistinctAttendeeCount": 294,
+              "notBalancedDistinctAttendeeRate": 0.09432146294513956,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09564085881587508
+            },
+            {
+              "category": "3",
+              "requestCount": 1830,
+              "participationCount": 5490,
+              "notBalancedParticipationCount": 515,
+              "notBalancedParticipationRate": 0.09380692167577413,
+              "badParticipationCount": 405,
+              "badParticipationRate": 0.07377049180327869,
+              "notBalancedBadParticipationCount": 151,
+              "notBalancedBadParticipationRate": 0.02750455373406193,
+              "distinctAttendeeCount": 3572,
+              "classifiableDistinctAttendeeCount": 3512,
+              "notBalancedDistinctAttendeeCount": 339,
+              "notBalancedDistinctAttendeeRate": 0.09490481522956327,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09652619589977221
+            },
+            {
+              "category": "4",
+              "requestCount": 1100,
+              "participationCount": 4400,
+              "notBalancedParticipationCount": 458,
+              "notBalancedParticipationRate": 0.1040909090909091,
+              "badParticipationCount": 464,
+              "badParticipationRate": 0.10545454545454545,
+              "notBalancedBadParticipationCount": 167,
+              "notBalancedBadParticipationRate": 0.037954545454545456,
+              "distinctAttendeeCount": 3127,
+              "classifiableDistinctAttendeeCount": 3088,
+              "notBalancedDistinctAttendeeCount": 324,
+              "notBalancedDistinctAttendeeRate": 0.1036136872401663,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10492227979274611
+            },
+            {
+              "category": "5",
+              "requestCount": 585,
+              "participationCount": 2925,
+              "notBalancedParticipationCount": 350,
+              "notBalancedParticipationRate": 0.11965811965811966,
+              "badParticipationCount": 390,
+              "badParticipationRate": 0.13333333333333333,
+              "notBalancedBadParticipationCount": 135,
+              "notBalancedBadParticipationRate": 0.046153846153846156,
+              "distinctAttendeeCount": 2324,
+              "classifiableDistinctAttendeeCount": 2283,
+              "notBalancedDistinctAttendeeCount": 262,
+              "notBalancedDistinctAttendeeRate": 0.11273666092943202,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11476127901883487
+            },
+            {
+              "category": "6–7",
+              "requestCount": 365,
+              "participationCount": 2382,
+              "notBalancedParticipationCount": 282,
+              "notBalancedParticipationRate": 0.11838790931989925,
+              "badParticipationCount": 298,
+              "badParticipationRate": 0.12510495382031905,
+              "notBalancedBadParticipationCount": 117,
+              "notBalancedBadParticipationRate": 0.0491183879093199,
+              "distinctAttendeeCount": 1999,
+              "classifiableDistinctAttendeeCount": 1965,
+              "notBalancedDistinctAttendeeCount": 234,
+              "notBalancedDistinctAttendeeRate": 0.11705852926463231,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11908396946564885
+            },
+            {
+              "category": "8–10",
+              "requestCount": 145,
+              "participationCount": 1313,
+              "notBalancedParticipationCount": 130,
+              "notBalancedParticipationRate": 0.09900990099009901,
+              "badParticipationCount": 146,
+              "badParticipationRate": 0.11119573495811119,
+              "notBalancedBadParticipationCount": 47,
+              "notBalancedBadParticipationRate": 0.0357958872810358,
+              "distinctAttendeeCount": 1186,
+              "classifiableDistinctAttendeeCount": 1169,
+              "notBalancedDistinctAttendeeCount": 121,
+              "notBalancedDistinctAttendeeRate": 0.10202360876897133,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10350727117194183
+            }
+          ]
+        },
+        "allowsFrontStanding": {
+          "s2": [
+            {
+              "category": "false",
+              "requestCount": 3660,
+              "participationCount": 10939,
+              "notBalancedParticipationCount": 1181,
+              "notBalancedParticipationRate": 0.10796233659383855,
+              "badParticipationCount": 1127,
+              "badParticipationRate": 0.1030258707377274,
+              "notBalancedBadParticipationCount": 404,
+              "notBalancedBadParticipationRate": 0.03693207788646129,
+              "distinctAttendeeCount": 4874,
+              "classifiableDistinctAttendeeCount": 4748,
+              "notBalancedDistinctAttendeeCount": 519,
+              "notBalancedDistinctAttendeeRate": 0.10648338120640131,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10930918281381634
+            },
+            {
+              "category": "true",
+              "requestCount": 3660,
+              "participationCount": 11061,
+              "notBalancedParticipationCount": 1120,
+              "notBalancedParticipationRate": 0.10125666757074406,
+              "badParticipationCount": 907,
+              "badParticipationRate": 0.08199981918452219,
+              "notBalancedBadParticipationCount": 357,
+              "notBalancedBadParticipationRate": 0.032275562788174665,
+              "distinctAttendeeCount": 4903,
+              "classifiableDistinctAttendeeCount": 4785,
+              "notBalancedDistinctAttendeeCount": 513,
+              "notBalancedDistinctAttendeeRate": 0.10462981847848256,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10721003134796238
+            }
+          ],
+          "s5": [
+            {
+              "category": "false",
+              "requestCount": 3660,
+              "participationCount": 10939,
+              "notBalancedParticipationCount": 1140,
+              "notBalancedParticipationRate": 0.10421427918456898,
+              "badParticipationCount": 1131,
+              "badParticipationRate": 0.10339153487521711,
+              "notBalancedBadParticipationCount": 402,
+              "notBalancedBadParticipationRate": 0.03674924581771643,
+              "distinctAttendeeCount": 4874,
+              "classifiableDistinctAttendeeCount": 4748,
+              "notBalancedDistinctAttendeeCount": 498,
+              "notBalancedDistinctAttendeeRate": 0.10217480508822323,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10488626790227464
+            },
+            {
+              "category": "true",
+              "requestCount": 3660,
+              "participationCount": 11061,
+              "notBalancedParticipationCount": 1083,
+              "notBalancedParticipationRate": 0.0979115812313534,
+              "badParticipationCount": 873,
+              "badParticipationRate": 0.07892595606183889,
+              "notBalancedBadParticipationCount": 328,
+              "notBalancedBadParticipationRate": 0.029653738360003616,
+              "distinctAttendeeCount": 4903,
+              "classifiableDistinctAttendeeCount": 4785,
+              "notBalancedDistinctAttendeeCount": 487,
+              "notBalancedDistinctAttendeeRate": 0.09932694268815011,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10177638453500522
+            }
+          ]
+        }
+      },
+      "dailyCapacity": [
+        {
+          "dayNumber": 1,
+          "s2": {
+            "goodAvailableSpotCount": 5,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 589,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 2,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 596,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -3,
+            "mediumAvailableSpotCount": -4,
+            "badAvailableSpotCount": 7,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 2,
+          "s2": {
+            "goodAvailableSpotCount": 2,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 596,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 590,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": 2,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": -6,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 3,
+          "s2": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 590,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 2,
+            "mediumAvailableSpotCount": 1,
+            "badAvailableSpotCount": 595,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -2,
+            "mediumAvailableSpotCount": -3,
+            "badAvailableSpotCount": 5,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 4,
+          "s2": {
+            "goodAvailableSpotCount": 6,
+            "mediumAvailableSpotCount": 6,
+            "badAvailableSpotCount": 586,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 1,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 597,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -5,
+            "mediumAvailableSpotCount": -6,
+            "badAvailableSpotCount": 11,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 5,
+          "s2": {
+            "goodAvailableSpotCount": 5,
+            "mediumAvailableSpotCount": 8,
+            "badAvailableSpotCount": 585,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 0,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 598,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -5,
+            "mediumAvailableSpotCount": -8,
+            "badAvailableSpotCount": 13,
+            "totalAvailableSpotCount": 0
+          }
+        }
+      ]
+    },
+    {
+      "seed": 3001,
+      "pairIntegrity": {
+        "sameWorkload": true,
+        "sameRequests": true,
+        "sameFestivalDays": true,
+        "sameDailyCohorts": true,
+        "sameGroupMembershipAndSizes": true,
+        "sameTimestamps": true,
+        "sameEligibility": true,
+        "sameTopologyAndSpots": true,
+        "preservedBaselineSequence": true,
+        "exactDailyReversedExecution": true
+      },
+      "s2": {
+        "runId": "official-s2-3001-50a58cfdae484c5d99139d63b0176545",
+        "evidencePath": "artifacts/simulations/s2-expected-baseline/official-s2-3001-50a58cfdae484c5d99139d63b0176545",
+        "status": "Completed",
+        "integrity": {
+          "completedFestivalDays": 5,
+          "unexpectedTechnicalFailureCount": 0,
+          "knownConcurrencyConflictCount": 0,
+          "persistedAssignmentCount": 22000,
+          "persistedRequestCount": 7320,
+          "violations": [],
+          "invariantViolationCount": 0,
+          "finalStateOnly": true,
+          "sha256": {
+            "run-metadata.json": "d54ab1942430e2e3529134590037d944aa268f15b4d827cccff33b614b4b91cc",
+            "definition.json": "92e007715469ac770435bd79c2d073d8b533f80fb76fcc2f5af97c0fc7540480",
+            "manifest.json": "1e15fb193cbf86085f51b35f364a5d4fbc898d95ed76c428dc6b9053f66d4db7",
+            "attempts.json": "63501daf7983dd8cc4dd85ab55a9a86b267d2a06c7ae3b90c1c7e1ae560b3ada",
+            "checkpoints.json": "518d2b1c520b1909732f36aff32c3b9c94dcb9ba04801af0ac1fdf1b4b93c57f",
+            "attendee-paths.json": "d01084adfa5d9deb4e5d6718206b4b65456f9dc252aff658cbd7690adb0f021d",
+            "recovery-observations.json": "96173bf1f9a8764e174d1c65b533313f3ded10c800d4b8e6c3eeae77296947db",
+            "metrics.json": "3b0d45b2824eb58bf701d96476163ccb97658779322221ad57f0e24f893464d8"
+          }
+        },
+        "requestOutcomes": {
+          "attemptedRequests": 7320,
+          "normallyProcessedRequests": 7320,
+          "successfulRequests": 7320,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "evaluatedAttendeeCount": 5344,
+          "noPersistedPathCount": 0,
+          "insufficientEvidenceCount": 218,
+          "classifiablePathCount": 5126,
+          "balancedPathCount": 2890,
+          "acceptablePathCount": 1646,
+          "notBalancedPathCount": 590,
+          "noPersistedPathRate": 0,
+          "insufficientEvidenceRate": 0.0407934131736527,
+          "classifiablePathRate": 0.9592065868263473,
+          "balancedPathRate": 0.5637924307452205,
+          "acceptablePathRate": 0.32110807647288336,
+          "notBalancedPathRate": 0.11509949278189621,
+          "persistedOutcomeCount": 22000,
+          "goodOutcomeCount": 8732,
+          "mediumOutcomeCount": 11222,
+          "badOutcomeCount": 2046,
+          "goodOutcomeRate": 0.39690909090909093,
+          "mediumOutcomeRate": 0.510090909090909,
+          "badOutcomeRate": 0.093
+        },
+        "recovery": {
+          "recoveryEpisodeCount": 1900,
+          "recoveredEpisodeCount": 1401,
+          "unresolvedEpisodeCount": 499,
+          "recoveryEligibleEpisodeCount": 1450,
+          "recoveryIneligibleEpisodeCount": 450,
+          "recoveryRate": 0.9662068965517241,
+          "recoveredToMediumCount": 685,
+          "recoveredToGoodCount": 716,
+          "averageOpportunitiesToRecovery": 1.0663811563169165,
+          "medianOpportunitiesToRecovery": 1,
+          "opportunityDistribution": [
+            {
+              "opportunities": 1,
+              "episodeCount": 1312,
+              "rateAmongRecovered": 0.9364739471805853
+            },
+            {
+              "opportunities": 2,
+              "episodeCount": 85,
+              "rateAmongRecovered": 0.06067094932191292
+            },
+            {
+              "opportunities": 3,
+              "episodeCount": 4,
+              "rateAmongRecovered": 0.0028551034975017845
+            }
+          ]
+        },
+        "exploratoryP95Ms": 42.759499999999996
+      },
+      "s5": {
+        "runId": "official-s5-3001-a65fa7f58d1042728b9e0d219b7dd8b3",
+        "evidencePath": "artifacts/simulations/s5-adverse-arrival-order/official-s5-3001-a65fa7f58d1042728b9e0d219b7dd8b3",
+        "status": "Completed",
+        "integrity": {
+          "completedFestivalDays": 5,
+          "unexpectedTechnicalFailureCount": 0,
+          "knownConcurrencyConflictCount": 0,
+          "persistedAssignmentCount": 22000,
+          "persistedRequestCount": 7320,
+          "violations": [],
+          "invariantViolationCount": 0,
+          "finalStateOnly": true,
+          "sha256": {
+            "run-metadata.json": "bde7969811804f701d150ff062491339e27218461ee2733ba501e472e819580b",
+            "definition.json": "92e007715469ac770435bd79c2d073d8b533f80fb76fcc2f5af97c0fc7540480",
+            "manifest.json": "1951561655540ee1f29321f534890c6c69192faeaa280c74671b5cf4789e9508",
+            "attempts.json": "906eeeec5597ea7710b9a99ea205e4dc6da971038da42fd4b84e0c3db558f48a",
+            "checkpoints.json": "84bc651d843198216877171b64fc26a493659541e519e582620a37d671f30a88",
+            "attendee-paths.json": "c9cc1fdcaad8ad40d690781d9a2921c785847fe621163fa0395bd3b1fd57693a",
+            "recovery-observations.json": "e1d346698b387207396224b2c6ec97bc818c60cf9f906b9b61706b8d59b05dd9",
+            "metrics.json": "34be73115c233df0b794deb2e88061f2124ed72e6462dbeae40e6ff4662bd507"
+          }
+        },
+        "requestOutcomes": {
+          "attemptedRequests": 7320,
+          "normallyProcessedRequests": 7320,
+          "successfulRequests": 7320,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "evaluatedAttendeeCount": 5344,
+          "noPersistedPathCount": 0,
+          "insufficientEvidenceCount": 218,
+          "classifiablePathCount": 5126,
+          "balancedPathCount": 2880,
+          "acceptablePathCount": 1672,
+          "notBalancedPathCount": 574,
+          "noPersistedPathRate": 0,
+          "insufficientEvidenceRate": 0.0407934131736527,
+          "classifiablePathRate": 0.9592065868263473,
+          "balancedPathRate": 0.5618415918845103,
+          "acceptablePathRate": 0.3261802575107296,
+          "notBalancedPathRate": 0.11197815060476005,
+          "persistedOutcomeCount": 22000,
+          "goodOutcomeCount": 8739,
+          "mediumOutcomeCount": 11232,
+          "badOutcomeCount": 2029,
+          "goodOutcomeRate": 0.3972272727272727,
+          "mediumOutcomeRate": 0.5105454545454545,
+          "badOutcomeRate": 0.09222727272727273
+        },
+        "recovery": {
+          "recoveryEpisodeCount": 1867,
+          "recoveredEpisodeCount": 1385,
+          "unresolvedEpisodeCount": 482,
+          "recoveryEligibleEpisodeCount": 1433,
+          "recoveryIneligibleEpisodeCount": 434,
+          "recoveryRate": 0.9665038381018841,
+          "recoveredToMediumCount": 708,
+          "recoveredToGoodCount": 677,
+          "averageOpportunitiesToRecovery": 1.08014440433213,
+          "medianOpportunitiesToRecovery": 1,
+          "opportunityDistribution": [
+            {
+              "opportunities": 1,
+              "episodeCount": 1282,
+              "rateAmongRecovered": 0.9256317689530686
+            },
+            {
+              "opportunities": 2,
+              "episodeCount": 95,
+              "rateAmongRecovered": 0.06859205776173286
+            },
+            {
+              "opportunities": 3,
+              "episodeCount": 8,
+              "rateAmongRecovered": 0.005776173285198556
+            }
+          ]
+        },
+        "exploratoryP95Ms": 45.9591
+      },
+      "deltas": {
+        "requestOutcomes": {
+          "attemptedRequests": 0,
+          "successfulRequests": 0,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "successRate": 0.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "goodOutcomeRate": 0.00031818181818177305,
+          "mediumOutcomeRate": 0.00045454545454548523,
+          "badOutcomeRate": -0.0007727272727272722,
+          "balancedPathRate": -0.0019508388607101246,
+          "acceptablePathRate": 0.005072181037846235,
+          "notBalancedPathRate": -0.003121342177136166,
+          "classifiablePathRate": 0.0
+        },
+        "recovery": {
+          "recoveryEpisodeCount": -33,
+          "recoveredEpisodeCount": -16,
+          "unresolvedEpisodeCount": -17,
+          "recoveryEligibleEpisodeCount": -17,
+          "recoveryRate": 0.00029694155016002366,
+          "averageOpportunitiesToRecovery": 0.013763248015213447,
+          "medianOpportunitiesToRecovery": 0
+        }
+      },
+      "quality": {
+        "matrix": {
+          "Good": {
+            "Good": 4234,
+            "Medium": 4421,
+            "Bad": 77
+          },
+          "Medium": {
+            "Good": 4430,
+            "Medium": 4840,
+            "Bad": 1952
+          },
+          "Bad": {
+            "Good": 75,
+            "Medium": 1971,
+            "Bad": 0
+          }
+        },
+        "pairedCount": 22000,
+        "rankedCount": 22000,
+        "unrankedCount": 0,
+        "changes": {
+          "unchanged": {
+            "count": 9074,
+            "rate": 0.41245454545454546
+          },
+          "improved": {
+            "count": 6476,
+            "rate": 0.2943636363636364
+          },
+          "worsened": {
+            "count": 6450,
+            "rate": 0.29318181818181815
+          }
+        },
+        "assignmentCoverage": {
+          "assignedBoth": 22000,
+          "assignedOnlyS2": 0,
+          "assignedOnlyS5": 0,
+          "assignedNeither": 0
+        },
+        "missingCases": {
+          "assignedOnlyS2": [],
+          "assignedOnlyS5": [],
+          "assignedNeither": []
+        }
+      },
+      "badRecipients": {
+        "s2Count": 1745,
+        "s5Count": 1738,
+        "intersectionCount": 512,
+        "s2OnlyCount": 1233,
+        "s5OnlyCount": 1226,
+        "unionCount": 2971,
+        "overlapRate": 0.1723325479636486,
+        "churnRate": 0.8276674520363514,
+        "s2RetentionRate": 0.2934097421203438,
+        "s5NewRecipientRate": 0.7054085155350979
+      },
+      "badAttendeeDays": {
+        "s2Count": 2046,
+        "s5Count": 2029,
+        "intersectionCount": 0,
+        "s2OnlyCount": 2046,
+        "s5OnlyCount": 2029,
+        "unionCount": 4075,
+        "overlapRate": 0.0,
+        "churnRate": 1.0,
+        "s2RetentionRate": 0.0,
+        "s5NewRecipientRate": 1.0
+      },
+      "pathTransitions": {
+        "matrix": {
+          "Balanced": {
+            "Balanced": 1821,
+            "Acceptable": 845,
+            "NotBalanced": 224,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "Acceptable": {
+            "Balanced": 849,
+            "Acceptable": 515,
+            "NotBalanced": 282,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "NotBalanced": {
+            "Balanced": 210,
+            "Acceptable": 312,
+            "NotBalanced": 68,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          },
+          "InsufficientEvidence": {
+            "Balanced": 0,
+            "Acceptable": 0,
+            "NotBalanced": 0,
+            "InsufficientEvidence": 218,
+            "NoPath": 0
+          },
+          "NoPath": {
+            "Balanced": 0,
+            "Acceptable": 0,
+            "NotBalanced": 0,
+            "InsufficientEvidence": 0,
+            "NoPath": 0
+          }
+        },
+        "pairedCount": 5344,
+        "rankedCount": 5126,
+        "unrankedCount": 218,
+        "changes": {
+          "unchanged": {
+            "count": 2404,
+            "rate": 0.4689816621147093
+          },
+          "improved": {
+            "count": 1371,
+            "rate": 0.26746000780335544
+          },
+          "worsened": {
+            "count": 1351,
+            "rate": 0.26355833008193524
+          }
+        }
+      },
+      "pathCoverageTransitions": [
+        {
+          "s2Length": 1,
+          "s5Length": 1,
+          "count": 218
+        },
+        {
+          "s2Length": 2,
+          "s5Length": 2,
+          "count": 436
+        },
+        {
+          "s2Length": 3,
+          "s5Length": 3,
+          "count": 743
+        },
+        {
+          "s2Length": 4,
+          "s5Length": 4,
+          "count": 1054
+        },
+        {
+          "s2Length": 5,
+          "s5Length": 5,
+          "count": 2893
+        }
+      ],
+      "notBalancedRecipients": {
+        "s2Count": 590,
+        "s5Count": 574,
+        "intersectionCount": 68,
+        "s2OnlyCount": 522,
+        "s5OnlyCount": 506,
+        "unionCount": 1096,
+        "overlapRate": 0.06204379562043796,
+        "churnRate": 0.9379562043795621,
+        "s2RetentionRate": 0.1152542372881356,
+        "s5NewRecipientRate": 0.8815331010452961
+      },
+      "recoverySensitivity": {
+        "episodeRecipients": {
+          "s2Count": 1745,
+          "s5Count": 1738,
+          "intersectionCount": 512,
+          "s2OnlyCount": 1233,
+          "s5OnlyCount": 1226,
+          "unionCount": 2971,
+          "overlapRate": 0.1723325479636486,
+          "churnRate": 0.8276674520363514,
+          "s2RetentionRate": 0.2934097421203438,
+          "s5NewRecipientRate": 0.7054085155350979
+        },
+        "episodeOpeningAttendeeDays": {
+          "s2Count": 1900,
+          "s5Count": 1867,
+          "intersectionCount": 0,
+          "s2OnlyCount": 1900,
+          "s5OnlyCount": 1867,
+          "unionCount": 3767,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        },
+        "eligibleUnresolvedRecipients": {
+          "s2Count": 49,
+          "s5Count": 48,
+          "intersectionCount": 0,
+          "s2OnlyCount": 49,
+          "s5OnlyCount": 48,
+          "unionCount": 97,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        },
+        "eligibleUnresolvedOpeningAttendeeDays": {
+          "s2Count": 49,
+          "s5Count": 48,
+          "intersectionCount": 0,
+          "s2OnlyCount": 49,
+          "s5OnlyCount": 48,
+          "unionCount": 97,
+          "overlapRate": 0.0,
+          "churnRate": 1.0,
+          "s2RetentionRate": 0.0,
+          "s5NewRecipientRate": 1.0
+        }
+      },
+      "associations": {
+        "baselineThird": {
+          "s2": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7243,
+              "notBalancedParticipationCount": 617,
+              "notBalancedParticipationRate": 0.08518569653458512,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4198,
+              "classifiableDistinctAttendeeCount": 4121,
+              "notBalancedDistinctAttendeeCount": 426,
+              "notBalancedDistinctAttendeeRate": 0.10147689375893283,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10337296772628003
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7321,
+              "notBalancedParticipationCount": 1236,
+              "notBalancedParticipationRate": 0.16882939489140827,
+              "badParticipationCount": 2046,
+              "badParticipationRate": 0.279470017757137,
+              "notBalancedBadParticipationCount": 801,
+              "notBalancedBadParticipationRate": 0.10941128261166508,
+              "distinctAttendeeCount": 4177,
+              "classifiableDistinctAttendeeCount": 4111,
+              "notBalancedDistinctAttendeeCount": 590,
+              "notBalancedDistinctAttendeeRate": 0.14124970074215945,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.14351739236195574
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7436,
+              "notBalancedParticipationCount": 598,
+              "notBalancedParticipationRate": 0.08041958041958042,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4208,
+              "classifiableDistinctAttendeeCount": 4133,
+              "notBalancedDistinctAttendeeCount": 413,
+              "notBalancedDistinctAttendeeRate": 0.09814638783269962,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0999274135010888
+            }
+          ],
+          "s5": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7243,
+              "notBalancedParticipationCount": 1192,
+              "notBalancedParticipationRate": 0.16457269087394727,
+              "badParticipationCount": 2029,
+              "badParticipationRate": 0.28013254176446223,
+              "notBalancedBadParticipationCount": 779,
+              "notBalancedBadParticipationRate": 0.10755211928758801,
+              "distinctAttendeeCount": 4198,
+              "classifiableDistinctAttendeeCount": 4121,
+              "notBalancedDistinctAttendeeCount": 574,
+              "notBalancedDistinctAttendeeRate": 0.13673177703668413,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13928658092695947
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7321,
+              "notBalancedParticipationCount": 624,
+              "notBalancedParticipationRate": 0.08523425761507991,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4177,
+              "classifiableDistinctAttendeeCount": 4111,
+              "notBalancedDistinctAttendeeCount": 411,
+              "notBalancedDistinctAttendeeRate": 0.09839597797462293,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09997567501824374
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7436,
+              "notBalancedParticipationCount": 579,
+              "notBalancedParticipationRate": 0.07786444324905864,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4208,
+              "classifiableDistinctAttendeeCount": 4133,
+              "notBalancedDistinctAttendeeCount": 392,
+              "notBalancedDistinctAttendeeRate": 0.09315589353612168,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09484635857730463
+            }
+          ]
+        },
+        "executionThird": {
+          "s2": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7243,
+              "notBalancedParticipationCount": 617,
+              "notBalancedParticipationRate": 0.08518569653458512,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4198,
+              "classifiableDistinctAttendeeCount": 4121,
+              "notBalancedDistinctAttendeeCount": 426,
+              "notBalancedDistinctAttendeeRate": 0.10147689375893283,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10337296772628003
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7321,
+              "notBalancedParticipationCount": 1236,
+              "notBalancedParticipationRate": 0.16882939489140827,
+              "badParticipationCount": 2046,
+              "badParticipationRate": 0.279470017757137,
+              "notBalancedBadParticipationCount": 801,
+              "notBalancedBadParticipationRate": 0.10941128261166508,
+              "distinctAttendeeCount": 4177,
+              "classifiableDistinctAttendeeCount": 4111,
+              "notBalancedDistinctAttendeeCount": 590,
+              "notBalancedDistinctAttendeeRate": 0.14124970074215945,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.14351739236195574
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7436,
+              "notBalancedParticipationCount": 598,
+              "notBalancedParticipationRate": 0.08041958041958042,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4208,
+              "classifiableDistinctAttendeeCount": 4133,
+              "notBalancedDistinctAttendeeCount": 413,
+              "notBalancedDistinctAttendeeRate": 0.09814638783269962,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0999274135010888
+            }
+          ],
+          "s5": [
+            {
+              "category": "first",
+              "requestCount": 2440,
+              "participationCount": 7321,
+              "notBalancedParticipationCount": 624,
+              "notBalancedParticipationRate": 0.08523425761507991,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4177,
+              "classifiableDistinctAttendeeCount": 4111,
+              "notBalancedDistinctAttendeeCount": 411,
+              "notBalancedDistinctAttendeeRate": 0.09839597797462293,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09997567501824374
+            },
+            {
+              "category": "last",
+              "requestCount": 2440,
+              "participationCount": 7243,
+              "notBalancedParticipationCount": 1192,
+              "notBalancedParticipationRate": 0.16457269087394727,
+              "badParticipationCount": 2029,
+              "badParticipationRate": 0.28013254176446223,
+              "notBalancedBadParticipationCount": 779,
+              "notBalancedBadParticipationRate": 0.10755211928758801,
+              "distinctAttendeeCount": 4198,
+              "classifiableDistinctAttendeeCount": 4121,
+              "notBalancedDistinctAttendeeCount": 574,
+              "notBalancedDistinctAttendeeRate": 0.13673177703668413,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.13928658092695947
+            },
+            {
+              "category": "middle",
+              "requestCount": 2440,
+              "participationCount": 7436,
+              "notBalancedParticipationCount": 579,
+              "notBalancedParticipationRate": 0.07786444324905864,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4208,
+              "classifiableDistinctAttendeeCount": 4133,
+              "notBalancedDistinctAttendeeCount": 392,
+              "notBalancedDistinctAttendeeRate": 0.09315589353612168,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09484635857730463
+            }
+          ]
+        },
+        "originalArrivalBand": {
+          "s2": [
+            {
+              "category": "07:00–09:00",
+              "requestCount": 730,
+              "participationCount": 2166,
+              "notBalancedParticipationCount": 219,
+              "notBalancedParticipationRate": 0.10110803324099724,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1832,
+              "classifiableDistinctAttendeeCount": 1817,
+              "notBalancedDistinctAttendeeCount": 194,
+              "notBalancedDistinctAttendeeRate": 0.10589519650655022,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10676940011007155
+            },
+            {
+              "category": "09:00–12:00",
+              "requestCount": 2930,
+              "participationCount": 8823,
+              "notBalancedParticipationCount": 697,
+              "notBalancedParticipationRate": 0.0789980732177264,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 4516,
+              "classifiableDistinctAttendeeCount": 4416,
+              "notBalancedDistinctAttendeeCount": 448,
+              "notBalancedDistinctAttendeeRate": 0.09920283436669619,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10144927536231885
+            },
+            {
+              "category": "12:00–15:00",
+              "requestCount": 1100,
+              "participationCount": 3342,
+              "notBalancedParticipationCount": 265,
+              "notBalancedParticipationRate": 0.07929383602633154,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 2567,
+              "classifiableDistinctAttendeeCount": 2533,
+              "notBalancedDistinctAttendeeCount": 215,
+              "notBalancedDistinctAttendeeRate": 0.08375535644721464,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08487958941966048
+            },
+            {
+              "category": "15:00–16:00",
+              "requestCount": 1465,
+              "participationCount": 4399,
+              "notBalancedParticipationCount": 364,
+              "notBalancedParticipationRate": 0.0827460786542396,
+              "badParticipationCount": 17,
+              "badParticipationRate": 0.003864514662423278,
+              "notBalancedBadParticipationCount": 3,
+              "notBalancedBadParticipationRate": 0.000681973175721755,
+              "distinctAttendeeCount": 3106,
+              "classifiableDistinctAttendeeCount": 3064,
+              "notBalancedDistinctAttendeeCount": 282,
+              "notBalancedDistinctAttendeeRate": 0.09079201545396008,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09203655352480418
+            },
+            {
+              "category": "16:00–18:00",
+              "requestCount": 510,
+              "participationCount": 1499,
+              "notBalancedParticipationCount": 276,
+              "notBalancedParticipationRate": 0.18412274849899934,
+              "badParticipationCount": 430,
+              "badParticipationRate": 0.2868579052701801,
+              "notBalancedBadParticipationCount": 179,
+              "notBalancedBadParticipationRate": 0.11941294196130754,
+              "distinctAttendeeCount": 1317,
+              "classifiableDistinctAttendeeCount": 1307,
+              "notBalancedDistinctAttendeeCount": 230,
+              "notBalancedDistinctAttendeeRate": 0.17463933181473046,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.17597551644988524
+            },
+            {
+              "category": "18:00–21:00",
+              "requestCount": 365,
+              "participationCount": 1114,
+              "notBalancedParticipationCount": 384,
+              "notBalancedParticipationRate": 0.34470377019748655,
+              "badParticipationCount": 973,
+              "badParticipationRate": 0.8734290843806104,
+              "notBalancedBadParticipationCount": 375,
+              "notBalancedBadParticipationRate": 0.33662477558348297,
+              "distinctAttendeeCount": 1030,
+              "classifiableDistinctAttendeeCount": 1019,
+              "notBalancedDistinctAttendeeCount": 332,
+              "notBalancedDistinctAttendeeRate": 0.32233009708737864,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.3258096172718351
+            },
+            {
+              "category": "21:00–23:00",
+              "requestCount": 220,
+              "participationCount": 657,
+              "notBalancedParticipationCount": 246,
+              "notBalancedParticipationRate": 0.3744292237442922,
+              "badParticipationCount": 626,
+              "badParticipationRate": 0.9528158295281582,
+              "notBalancedBadParticipationCount": 244,
+              "notBalancedBadParticipationRate": 0.3713850837138508,
+              "distinctAttendeeCount": 621,
+              "classifiableDistinctAttendeeCount": 615,
+              "notBalancedDistinctAttendeeCount": 221,
+              "notBalancedDistinctAttendeeRate": 0.355877616747182,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.359349593495935
+            }
+          ],
+          "s5": [
+            {
+              "category": "07:00–09:00",
+              "requestCount": 730,
+              "participationCount": 2166,
+              "notBalancedParticipationCount": 732,
+              "notBalancedParticipationRate": 0.3379501385041551,
+              "badParticipationCount": 1826,
+              "badParticipationRate": 0.8430286241920592,
+              "notBalancedBadParticipationCount": 700,
+              "notBalancedBadParticipationRate": 0.3231763619575254,
+              "distinctAttendeeCount": 1832,
+              "classifiableDistinctAttendeeCount": 1817,
+              "notBalancedDistinctAttendeeCount": 543,
+              "notBalancedDistinctAttendeeRate": 0.29639737991266374,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.2988442487616951
+            },
+            {
+              "category": "09:00–12:00",
+              "requestCount": 2930,
+              "participationCount": 8823,
+              "notBalancedParticipationCount": 729,
+              "notBalancedParticipationRate": 0.08262495749744984,
+              "badParticipationCount": 203,
+              "badParticipationRate": 0.023008047149495635,
+              "notBalancedBadParticipationCount": 79,
+              "notBalancedBadParticipationRate": 0.008953870565567268,
+              "distinctAttendeeCount": 4516,
+              "classifiableDistinctAttendeeCount": 4416,
+              "notBalancedDistinctAttendeeCount": 432,
+              "notBalancedDistinctAttendeeRate": 0.09565987599645705,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09782608695652174
+            },
+            {
+              "category": "12:00–15:00",
+              "requestCount": 1100,
+              "participationCount": 3342,
+              "notBalancedParticipationCount": 276,
+              "notBalancedParticipationRate": 0.08258527827648116,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 2567,
+              "classifiableDistinctAttendeeCount": 2533,
+              "notBalancedDistinctAttendeeCount": 223,
+              "notBalancedDistinctAttendeeRate": 0.08687183482664589,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.08803789972364785
+            },
+            {
+              "category": "15:00–16:00",
+              "requestCount": 1465,
+              "participationCount": 4399,
+              "notBalancedParticipationCount": 349,
+              "notBalancedParticipationRate": 0.07933621277563083,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 3106,
+              "classifiableDistinctAttendeeCount": 3064,
+              "notBalancedDistinctAttendeeCount": 287,
+              "notBalancedDistinctAttendeeRate": 0.09240180296200902,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09366840731070496
+            },
+            {
+              "category": "16:00–18:00",
+              "requestCount": 510,
+              "participationCount": 1499,
+              "notBalancedParticipationCount": 136,
+              "notBalancedParticipationRate": 0.09072715143428953,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1317,
+              "classifiableDistinctAttendeeCount": 1307,
+              "notBalancedDistinctAttendeeCount": 122,
+              "notBalancedDistinctAttendeeRate": 0.0926347760060744,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09334353481254781
+            },
+            {
+              "category": "18:00–21:00",
+              "requestCount": 365,
+              "participationCount": 1114,
+              "notBalancedParticipationCount": 102,
+              "notBalancedParticipationRate": 0.09156193895870736,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1030,
+              "classifiableDistinctAttendeeCount": 1019,
+              "notBalancedDistinctAttendeeCount": 96,
+              "notBalancedDistinctAttendeeRate": 0.09320388349514563,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.09421000981354269
+            },
+            {
+              "category": "21:00–23:00",
+              "requestCount": 220,
+              "participationCount": 657,
+              "notBalancedParticipationCount": 71,
+              "notBalancedParticipationRate": 0.1080669710806697,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 621,
+              "classifiableDistinctAttendeeCount": 615,
+              "notBalancedDistinctAttendeeCount": 68,
+              "notBalancedDistinctAttendeeRate": 0.10950080515297907,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11056910569105691
+            }
+          ]
+        },
+        "groupSize": {
+          "s2": [
+            {
+              "category": "1",
+              "requestCount": 1100,
+              "participationCount": 1100,
+              "notBalancedParticipationCount": 72,
+              "notBalancedParticipationRate": 0.06545454545454546,
+              "badParticipationCount": 0,
+              "badParticipationRate": 0.0,
+              "notBalancedBadParticipationCount": 0,
+              "notBalancedBadParticipationRate": 0.0,
+              "distinctAttendeeCount": 1020,
+              "classifiableDistinctAttendeeCount": 1007,
+              "notBalancedDistinctAttendeeCount": 69,
+              "notBalancedDistinctAttendeeRate": 0.06764705882352941,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.06852035749751738
+            },
+            {
+              "category": "2",
+              "requestCount": 2195,
+              "participationCount": 4390,
+              "notBalancedParticipationCount": 418,
+              "notBalancedParticipationRate": 0.09521640091116174,
+              "badParticipationCount": 248,
+              "badParticipationRate": 0.05649202733485194,
+              "notBalancedBadParticipationCount": 102,
+              "notBalancedBadParticipationRate": 0.023234624145785875,
+              "distinctAttendeeCount": 3092,
+              "classifiableDistinctAttendeeCount": 3046,
+              "notBalancedDistinctAttendeeCount": 315,
+              "notBalancedDistinctAttendeeRate": 0.101875808538163,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.10341431385423507
+            },
+            {
+              "category": "3",
+              "requestCount": 1830,
+              "participationCount": 5490,
+              "notBalancedParticipationCount": 604,
+              "notBalancedParticipationRate": 0.11001821493624772,
+              "badParticipationCount": 579,
+              "badParticipationRate": 0.10546448087431694,
+              "notBalancedBadParticipationCount": 214,
+              "notBalancedBadParticipationRate": 0.03897996357012751,
+              "distinctAttendeeCount": 3554,
+              "classifiableDistinctAttendeeCount": 3504,
+              "notBalancedDistinctAttendeeCount": 401,
+              "notBalancedDistinctAttendeeRate": 0.11283061339335959,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1144406392694064
+            },
+            {
+              "category": "4",
+              "requestCount": 1100,
+              "participationCount": 4400,
+              "notBalancedParticipationCount": 524,
+              "notBalancedParticipationRate": 0.1190909090909091,
+              "badParticipationCount": 440,
+              "badParticipationRate": 0.1,
+              "notBalancedBadParticipationCount": 175,
+              "notBalancedBadParticipationRate": 0.03977272727272727,
+              "distinctAttendeeCount": 3101,
+              "classifiableDistinctAttendeeCount": 3055,
+              "notBalancedDistinctAttendeeCount": 365,
+              "notBalancedDistinctAttendeeRate": 0.11770396646243148,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11947626841243862
+            },
+            {
+              "category": "5",
+              "requestCount": 585,
+              "participationCount": 2925,
+              "notBalancedParticipationCount": 357,
+              "notBalancedParticipationRate": 0.12205128205128205,
+              "badParticipationCount": 275,
+              "badParticipationRate": 0.09401709401709402,
+              "notBalancedBadParticipationCount": 116,
+              "notBalancedBadParticipationRate": 0.03965811965811966,
+              "distinctAttendeeCount": 2308,
+              "classifiableDistinctAttendeeCount": 2284,
+              "notBalancedDistinctAttendeeCount": 273,
+              "notBalancedDistinctAttendeeRate": 0.1182842287694974,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11952714535901926
+            },
+            {
+              "category": "6–7",
+              "requestCount": 365,
+              "participationCount": 2381,
+              "notBalancedParticipationCount": 314,
+              "notBalancedParticipationRate": 0.13187736245275095,
+              "badParticipationCount": 317,
+              "badParticipationRate": 0.13313733725325494,
+              "notBalancedBadParticipationCount": 124,
+              "notBalancedBadParticipationRate": 0.052078958420831586,
+              "distinctAttendeeCount": 1982,
+              "classifiableDistinctAttendeeCount": 1956,
+              "notBalancedDistinctAttendeeCount": 254,
+              "notBalancedDistinctAttendeeRate": 0.12815338042381433,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.12985685071574643
+            },
+            {
+              "category": "8–10",
+              "requestCount": 145,
+              "participationCount": 1314,
+              "notBalancedParticipationCount": 162,
+              "notBalancedParticipationRate": 0.1232876712328767,
+              "badParticipationCount": 187,
+              "badParticipationRate": 0.14231354642313546,
+              "notBalancedBadParticipationCount": 70,
+              "notBalancedBadParticipationRate": 0.0532724505327245,
+              "distinctAttendeeCount": 1192,
+              "classifiableDistinctAttendeeCount": 1179,
+              "notBalancedDistinctAttendeeCount": 147,
+              "notBalancedDistinctAttendeeRate": 0.12332214765100671,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.12468193384223919
+            }
+          ],
+          "s5": [
+            {
+              "category": "1",
+              "requestCount": 1100,
+              "participationCount": 1100,
+              "notBalancedParticipationCount": 78,
+              "notBalancedParticipationRate": 0.07090909090909091,
+              "badParticipationCount": 4,
+              "badParticipationRate": 0.0036363636363636364,
+              "notBalancedBadParticipationCount": 3,
+              "notBalancedBadParticipationRate": 0.0027272727272727275,
+              "distinctAttendeeCount": 1020,
+              "classifiableDistinctAttendeeCount": 1007,
+              "notBalancedDistinctAttendeeCount": 73,
+              "notBalancedDistinctAttendeeRate": 0.07156862745098039,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.07249255213505462
+            },
+            {
+              "category": "2",
+              "requestCount": 2195,
+              "participationCount": 4390,
+              "notBalancedParticipationCount": 427,
+              "notBalancedParticipationRate": 0.09726651480637813,
+              "badParticipationCount": 304,
+              "badParticipationRate": 0.06924829157175398,
+              "notBalancedBadParticipationCount": 110,
+              "notBalancedBadParticipationRate": 0.025056947608200455,
+              "distinctAttendeeCount": 3092,
+              "classifiableDistinctAttendeeCount": 3046,
+              "notBalancedDistinctAttendeeCount": 300,
+              "notBalancedDistinctAttendeeRate": 0.09702457956015524,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.0984898227183191
+            },
+            {
+              "category": "3",
+              "requestCount": 1830,
+              "participationCount": 5490,
+              "notBalancedParticipationCount": 609,
+              "notBalancedParticipationRate": 0.11092896174863388,
+              "badParticipationCount": 480,
+              "badParticipationRate": 0.08743169398907104,
+              "notBalancedBadParticipationCount": 189,
+              "notBalancedBadParticipationRate": 0.03442622950819672,
+              "distinctAttendeeCount": 3554,
+              "classifiableDistinctAttendeeCount": 3504,
+              "notBalancedDistinctAttendeeCount": 394,
+              "notBalancedDistinctAttendeeRate": 0.1108610016882386,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11244292237442922
+            },
+            {
+              "category": "4",
+              "requestCount": 1100,
+              "participationCount": 4400,
+              "notBalancedParticipationCount": 507,
+              "notBalancedParticipationRate": 0.11522727272727273,
+              "badParticipationCount": 448,
+              "badParticipationRate": 0.10181818181818182,
+              "notBalancedBadParticipationCount": 180,
+              "notBalancedBadParticipationRate": 0.04090909090909091,
+              "distinctAttendeeCount": 3101,
+              "classifiableDistinctAttendeeCount": 3055,
+              "notBalancedDistinctAttendeeCount": 351,
+              "notBalancedDistinctAttendeeRate": 0.11318929377620122,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.1148936170212766
+            },
+            {
+              "category": "5",
+              "requestCount": 585,
+              "participationCount": 2925,
+              "notBalancedParticipationCount": 326,
+              "notBalancedParticipationRate": 0.11145299145299145,
+              "badParticipationCount": 305,
+              "badParticipationRate": 0.10427350427350428,
+              "notBalancedBadParticipationCount": 113,
+              "notBalancedBadParticipationRate": 0.03863247863247863,
+              "distinctAttendeeCount": 2308,
+              "classifiableDistinctAttendeeCount": 2284,
+              "notBalancedDistinctAttendeeCount": 264,
+              "notBalancedDistinctAttendeeRate": 0.11438474870017332,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11558669001751314
+            },
+            {
+              "category": "6–7",
+              "requestCount": 365,
+              "participationCount": 2381,
+              "notBalancedParticipationCount": 303,
+              "notBalancedParticipationRate": 0.12725745485090298,
+              "badParticipationCount": 345,
+              "badParticipationRate": 0.14489710205795883,
+              "notBalancedBadParticipationCount": 135,
+              "notBalancedBadParticipationRate": 0.056698866022679546,
+              "distinctAttendeeCount": 1982,
+              "classifiableDistinctAttendeeCount": 1956,
+              "notBalancedDistinctAttendeeCount": 242,
+              "notBalancedDistinctAttendeeRate": 0.12209889001009082,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.12372188139059305
+            },
+            {
+              "category": "8–10",
+              "requestCount": 145,
+              "participationCount": 1314,
+              "notBalancedParticipationCount": 145,
+              "notBalancedParticipationRate": 0.11035007610350075,
+              "badParticipationCount": 143,
+              "badParticipationRate": 0.10882800608828005,
+              "notBalancedBadParticipationCount": 49,
+              "notBalancedBadParticipationRate": 0.03729071537290715,
+              "distinctAttendeeCount": 1192,
+              "classifiableDistinctAttendeeCount": 1179,
+              "notBalancedDistinctAttendeeCount": 132,
+              "notBalancedDistinctAttendeeRate": 0.11073825503355705,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11195928753180662
+            }
+          ]
+        },
+        "allowsFrontStanding": {
+          "s2": [
+            {
+              "category": "false",
+              "requestCount": 3660,
+              "participationCount": 10868,
+              "notBalancedParticipationCount": 1201,
+              "notBalancedParticipationRate": 0.11050791313949208,
+              "badParticipationCount": 1007,
+              "badParticipationRate": 0.09265734265734266,
+              "notBalancedBadParticipationCount": 404,
+              "notBalancedBadParticipationRate": 0.037173352962826645,
+              "distinctAttendeeCount": 4881,
+              "classifiableDistinctAttendeeCount": 4777,
+              "notBalancedDistinctAttendeeCount": 540,
+              "notBalancedDistinctAttendeeRate": 0.11063306699446834,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11304165794431652
+            },
+            {
+              "category": "true",
+              "requestCount": 3660,
+              "participationCount": 11132,
+              "notBalancedParticipationCount": 1250,
+              "notBalancedParticipationRate": 0.11228889687387711,
+              "badParticipationCount": 1039,
+              "badParticipationRate": 0.09333453108156665,
+              "notBalancedBadParticipationCount": 397,
+              "notBalancedBadParticipationRate": 0.03566295364714337,
+              "distinctAttendeeCount": 4898,
+              "classifiableDistinctAttendeeCount": 4784,
+              "notBalancedDistinctAttendeeCount": 556,
+              "notBalancedDistinctAttendeeRate": 0.11351572070232747,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11622073578595318
+            }
+          ],
+          "s5": [
+            {
+              "category": "false",
+              "requestCount": 3660,
+              "participationCount": 10868,
+              "notBalancedParticipationCount": 1226,
+              "notBalancedParticipationRate": 0.11280824438719175,
+              "badParticipationCount": 1053,
+              "badParticipationRate": 0.09688995215311005,
+              "notBalancedBadParticipationCount": 411,
+              "notBalancedBadParticipationRate": 0.037817445712182554,
+              "distinctAttendeeCount": 4881,
+              "classifiableDistinctAttendeeCount": 4777,
+              "notBalancedDistinctAttendeeCount": 543,
+              "notBalancedDistinctAttendeeRate": 0.11124769514443761,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11366966715511828
+            },
+            {
+              "category": "true",
+              "requestCount": 3660,
+              "participationCount": 11132,
+              "notBalancedParticipationCount": 1169,
+              "notBalancedParticipationRate": 0.10501257635644988,
+              "badParticipationCount": 976,
+              "badParticipationRate": 0.08767517067912325,
+              "notBalancedBadParticipationCount": 368,
+              "notBalancedBadParticipationRate": 0.03305785123966942,
+              "distinctAttendeeCount": 4898,
+              "classifiableDistinctAttendeeCount": 4784,
+              "notBalancedDistinctAttendeeCount": 536,
+              "notBalancedDistinctAttendeeRate": 0.10943242139648836,
+              "notBalancedClassifiableDistinctAttendeeRate": 0.11204013377926421
+            }
+          ]
+        }
+      },
+      "dailyCapacity": [
+        {
+          "dayNumber": 1,
+          "s2": {
+            "goodAvailableSpotCount": 1,
+            "mediumAvailableSpotCount": 1,
+            "badAvailableSpotCount": 596,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 5,
+            "mediumAvailableSpotCount": 5,
+            "badAvailableSpotCount": 588,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": -8,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 2,
+          "s2": {
+            "goodAvailableSpotCount": 8,
+            "mediumAvailableSpotCount": 8,
+            "badAvailableSpotCount": 582,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 3,
+            "mediumAvailableSpotCount": 3,
+            "badAvailableSpotCount": 592,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -5,
+            "mediumAvailableSpotCount": -5,
+            "badAvailableSpotCount": 10,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 3,
+          "s2": {
+            "goodAvailableSpotCount": 8,
+            "mediumAvailableSpotCount": 8,
+            "badAvailableSpotCount": 582,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 6,
+            "mediumAvailableSpotCount": 6,
+            "badAvailableSpotCount": 586,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -2,
+            "mediumAvailableSpotCount": -2,
+            "badAvailableSpotCount": 4,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 4,
+          "s2": {
+            "goodAvailableSpotCount": 7,
+            "mediumAvailableSpotCount": 7,
+            "badAvailableSpotCount": 584,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 590,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -3,
+            "mediumAvailableSpotCount": -3,
+            "badAvailableSpotCount": 6,
+            "totalAvailableSpotCount": 0
+          }
+        },
+        {
+          "dayNumber": 5,
+          "s2": {
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 4,
+            "badAvailableSpotCount": 590,
+            "totalAvailableSpotCount": 598
+          },
+          "s5": {
+            "goodAvailableSpotCount": 3,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 595,
+            "totalAvailableSpotCount": 598
+          },
+          "delta": {
+            "goodAvailableSpotCount": -1,
+            "mediumAvailableSpotCount": -4,
+            "badAvailableSpotCount": 5,
+            "totalAvailableSpotCount": 0
+          }
+        }
+      ]
+    }
+  ],
+  "pooledQualityMatrix": {
+    "Good": {
+      "Good": 12619,
+      "Medium": 13372,
+      "Bad": 215
+    },
+    "Medium": {
+      "Good": 13370,
+      "Medium": 14447,
+      "Bad": 5864
+    },
+    "Bad": {
+      "Good": 232,
+      "Medium": 5881,
+      "Bad": 0
+    }
+  },
+  "crossSeedS5": {
+    "attemptedRequests": {
+      "min": 7320,
+      "mean": 7320,
+      "max": 7320,
+      "naRunCount": 0
+    },
+    "successfulRequests": {
+      "min": 7320,
+      "mean": 7320,
+      "max": 7320,
+      "naRunCount": 0
+    },
+    "domainRejectedRequests": {
+      "min": 0,
+      "mean": 0,
+      "max": 0,
+      "naRunCount": 0
+    },
+    "knownConcurrencyConflictRequests": {
+      "min": 0,
+      "mean": 0,
+      "max": 0,
+      "naRunCount": 0
+    },
+    "unexpectedTechnicalFailureRequests": {
+      "min": 0,
+      "mean": 0,
+      "max": 0,
+      "naRunCount": 0
+    },
+    "successRate": {
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "naRunCount": 0
+    },
+    "rejectionRate": {
+      "min": 0.0,
+      "mean": 0.0,
+      "max": 0.0,
+      "naRunCount": 0
+    },
+    "concurrencyConflictRate": {
+      "min": 0.0,
+      "mean": 0.0,
+      "max": 0.0,
+      "naRunCount": 0
+    },
+    "technicalErrorRate": {
+      "min": 0.0,
+      "mean": 0.0,
+      "max": 0.0,
+      "naRunCount": 0
+    },
+    "goodOutcomeRate": {
+      "min": 0.39686363636363636,
+      "mean": 0.3972878787878788,
+      "max": 0.3977727272727273,
+      "naRunCount": 0
+    },
+    "mediumOutcomeRate": {
+      "min": 0.5101363636363636,
+      "mean": 0.5106060606060606,
+      "max": 0.5111363636363636,
+      "naRunCount": 0
+    },
+    "badOutcomeRate": {
+      "min": 0.0910909090909091,
+      "mean": 0.09210606060606061,
+      "max": 0.093,
+      "naRunCount": 0
+    },
+    "balancedPathRate": {
+      "min": 0.5618415918845103,
+      "mean": 0.5660385737058464,
+      "max": 0.570869990224829,
+      "naRunCount": 0
+    },
+    "acceptablePathRate": {
+      "min": 0.3227254978524014,
+      "mean": 0.32487148508845975,
+      "max": 0.3261802575107296,
+      "naRunCount": 0
+    },
+    "notBalancedPathRate": {
+      "min": 0.10342130987292278,
+      "mean": 0.10908994120569383,
+      "max": 0.11197815060476005,
+      "naRunCount": 0
+    },
+    "classifiablePathRate": {
+      "min": 0.9544691173726442,
+      "mean": 0.9567812053468684,
+      "max": 0.9592065868263473,
+      "naRunCount": 0
+    },
+    "recoveryEpisodeCount": {
+      "min": 1852,
+      "mean": 1869,
+      "max": 1888,
+      "naRunCount": 0
+    },
+    "recoveredEpisodeCount": {
+      "min": 1374,
+      "mean": 1381.6666666666667,
+      "max": 1386,
+      "naRunCount": 0
+    },
+    "unresolvedEpisodeCount": {
+      "min": 478,
+      "mean": 487.3333333333333,
+      "max": 502,
+      "naRunCount": 0
+    },
+    "recoveryEligibleEpisodeCount": {
+      "min": 1415,
+      "mean": 1429.3333333333333,
+      "max": 1440,
+      "naRunCount": 0
+    },
+    "recoveryRate": {
+      "min": 0.9625,
+      "mean": 0.9666761910280721,
+      "max": 0.9710247349823321,
+      "naRunCount": 0
+    },
+    "averageOpportunitiesToRecovery": {
+      "min": 1.0707070707070707,
+      "mean": 1.0764846983755123,
+      "max": 1.08014440433213,
+      "naRunCount": 0
+    },
+    "medianOpportunitiesToRecovery": {
+      "min": 1,
+      "mean": 1,
+      "max": 1,
+      "naRunCount": 0
+    }
+  },
+  "reproducibility": {
+    "referenceRunId": "official-s5-1001-c8d991b9e3e140f899cc06c70187aab7",
+    "repeatedRun": {
+      "role": "reproduction",
+      "scenario": "s5",
+      "seed": 1001,
+      "runId": "reproduction-s5-1001-fccb5df0a34949f68145d640f49b1736",
+      "evidencePath": "artifacts/simulations/s5-adverse-arrival-order/reproduction-s5-1001-fccb5df0a34949f68145d640f49b1736",
+      "metadata": {
+        "runId": "reproduction-s5-1001-fccb5df0a34949f68145d640f49b1736",
+        "scenarioId": "s5-adverse-arrival-order",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 1001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "51a61f930ab972f903f619baaf9c64a13d5deec0",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": 0,
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-06T03:00:15.87935+00:00",
+        "completedAt": "2026-11-06T03:04:04.566573+00:00",
+        "workloadSourceScenarioId": "s2-expected-baseline",
+        "orderingTransformation": "reverse-daily-execution-order"
+      },
+      "pairedControl": {
+        "role": "official",
+        "scenario": "s2",
+        "seed": 1001,
+        "runId": "official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+        "evidencePath": "artifacts/simulations/s2-expected-baseline/official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+        "metadata": {
+          "runId": "official-s2-1001-b6c13b403b654deabc2a23302c2a7b5a",
+          "scenarioId": "s2-expected-baseline",
+          "scenarioDefinitionVersion": null,
+          "generatorVersion": "v2",
+          "seed": 1001,
+          "engineVersion": "v0.3.0",
+          "repositoryCommitSha": "ccc49c21230a315d9fd7544a10049bebdd6dec16",
+          "rubricVersion": "v1",
+          "metricsFrameworkVersion": null,
+          "executionMode": "Sequential",
+          "concurrencyLevel": 1,
+          "startedAt": "2026-11-03T23:12:14.5241810Z",
+          "completedAt": "2026-11-03T23:16:08.4615670Z"
+        },
+        "status": "Completed",
+        "integrity": {
+          "completedFestivalDays": 5,
+          "unexpectedTechnicalFailureCount": 0,
+          "knownConcurrencyConflictCount": 0,
+          "persistedAssignmentCount": 22000,
+          "persistedRequestCount": 7320,
+          "violations": [],
+          "invariantViolationCount": 0,
+          "finalStateOnly": true,
+          "sha256": {
+            "run-metadata.json": "b80e29cb0a783a5b25d1b87182af7efecf160c80d7f7aff347676d0942053d20",
+            "definition.json": "f2b5a7e15e241d9b9e1b6ffee5da44a1802e09b98c84abab1b183672e09e4b8d",
+            "manifest.json": "f106fe6a522b11f8906b74c2873666fff030c710cfe89608a77b04c7e7f53f72",
+            "attempts.json": "2a300b4248456ee4b515e16f168921afa2eb7949f9dd17d49f7ca8eccc672786",
+            "checkpoints.json": "0d2818b4b7a64f545c11de2b2b671076a54d242bfe99ca80dcd8ae2ebea3945f",
+            "attendee-paths.json": "9f0609a35419e4f5c8b1b0a0bf3272eeee1b9756deffb66628657b456677346f",
+            "recovery-observations.json": "442a4f3c67645d2898a0bb1cf1971feaa01d026f6b15b9f457f21513dcae54ca",
+            "metrics.json": "2062598afd081d050d8752130e46ca3b19380478106deb8a22ba90b88cf1c39a"
+          }
+        },
+        "requestOutcomes": {
+          "attemptedRequests": 7320,
+          "normallyProcessedRequests": 7320,
+          "successfulRequests": 7320,
+          "domainRejectedRequests": 0,
+          "knownConcurrencyConflictRequests": 0,
+          "unexpectedTechnicalFailureRequests": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "concurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        "fairness": {
+          "evaluatedAttendeeCount": 5354,
+          "noPersistedPathCount": 0,
+          "insufficientEvidenceCount": 232,
+          "classifiablePathCount": 5122,
+          "balancedPathCount": 2903,
+          "acceptablePathCount": 1649,
+          "notBalancedPathCount": 570,
+          "noPersistedPathRate": 0,
+          "insufficientEvidenceRate": 0.04333208815838625,
+          "classifiablePathRate": 0.9566679118416137,
+          "balancedPathRate": 0.5667707926591176,
+          "acceptablePathRate": 0.3219445529090199,
+          "notBalancedPathRate": 0.11128465443186256,
+          "persistedOutcomeCount": 22000,
+          "goodOutcomeCount": 8736,
+          "mediumOutcomeCount": 11231,
+          "badOutcomeCount": 2033,
+          "goodOutcomeRate": 0.3970909090909091,
+          "mediumOutcomeRate": 0.5105,
+          "badOutcomeRate": 0.09240909090909091
+        },
+        "recovery": {
+          "recoveryEpisodeCount": 1908,
+          "recoveredEpisodeCount": 1407,
+          "unresolvedEpisodeCount": 501,
+          "recoveryEligibleEpisodeCount": 1447,
+          "recoveryIneligibleEpisodeCount": 461,
+          "recoveryRate": 0.972356599861783,
+          "recoveredToMediumCount": 687,
+          "recoveredToGoodCount": 720,
+          "averageOpportunitiesToRecovery": 1.0561478322672353,
+          "medianOpportunitiesToRecovery": 1,
+          "opportunityDistribution": [
+            {
+              "opportunities": 1,
+              "episodeCount": 1331,
+              "rateAmongRecovered": 0.9459843638948117
+            },
+            {
+              "opportunities": 2,
+              "episodeCount": 73,
+              "rateAmongRecovered": 0.051883439943141436
+            },
+            {
+              "opportunities": 3,
+              "episodeCount": 3,
+              "rateAmongRecovered": 0.0021321961620469083
+            }
+          ]
+        },
+        "eligibleUnresolvedEpisodeCount": 40,
+        "dailyCheckpoints": [
+          {
+            "dayNumber": 1,
+            "dailyRequesterCount": 4400,
+            "scenarioId": "s2-expected-baseline",
+            "festivalDayId": {
+              "value": "b1f96600-f1fb-d4b8-1e25-834c15af46db"
+            },
+            "evaluatedRequestCount": 1464,
+            "successfulAttemptCount": 1464,
+            "rejectedAttemptCount": 0,
+            "goodAvailableSpotCount": 7,
+            "mediumAvailableSpotCount": 7,
+            "badAvailableSpotCount": 584,
+            "totalAvailableSpotCount": 598,
+            "rejectionReasons": {}
+          },
+          {
+            "dayNumber": 2,
+            "dailyRequesterCount": 4400,
+            "scenarioId": "s2-expected-baseline",
+            "festivalDayId": {
+              "value": "12efcffb-a689-244f-6199-263b18e71717"
+            },
+            "evaluatedRequestCount": 1464,
+            "successfulAttemptCount": 1464,
+            "rejectedAttemptCount": 0,
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 0,
+            "badAvailableSpotCount": 594,
+            "totalAvailableSpotCount": 598,
+            "rejectionReasons": {}
+          },
+          {
+            "dayNumber": 3,
+            "dailyRequesterCount": 4400,
+            "scenarioId": "s2-expected-baseline",
+            "festivalDayId": {
+              "value": "852ad0c1-71aa-c1d5-f28a-f27677288de1"
+            },
+            "evaluatedRequestCount": 1464,
+            "successfulAttemptCount": 1464,
+            "rejectedAttemptCount": 0,
+            "goodAvailableSpotCount": 1,
+            "mediumAvailableSpotCount": 2,
+            "badAvailableSpotCount": 595,
+            "totalAvailableSpotCount": 598,
+            "rejectionReasons": {}
+          },
+          {
+            "dayNumber": 4,
+            "dailyRequesterCount": 4400,
+            "scenarioId": "s2-expected-baseline",
+            "festivalDayId": {
+              "value": "9a7bf52c-caac-fb44-5db3-8a5c8b52d5fb"
+            },
+            "evaluatedRequestCount": 1464,
+            "successfulAttemptCount": 1464,
+            "rejectedAttemptCount": 0,
+            "goodAvailableSpotCount": 8,
+            "mediumAvailableSpotCount": 7,
+            "badAvailableSpotCount": 583,
+            "totalAvailableSpotCount": 598,
+            "rejectionReasons": {}
+          },
+          {
+            "dayNumber": 5,
+            "dailyRequesterCount": 4400,
+            "scenarioId": "s2-expected-baseline",
+            "festivalDayId": {
+              "value": "500d8fb4-c2ec-d70a-dd07-56296effa1a3"
+            },
+            "evaluatedRequestCount": 1464,
+            "successfulAttemptCount": 1464,
+            "rejectedAttemptCount": 0,
+            "goodAvailableSpotCount": 4,
+            "mediumAvailableSpotCount": 3,
+            "badAvailableSpotCount": 591,
+            "totalAvailableSpotCount": 598,
+            "rejectionReasons": {}
+          }
+        ],
+        "rejectionAnalysis": {
+          "reasons": {},
+          "noBlockWithSufficientEligibleCapacity": 0,
+          "noBlockWithInsufficientEligibleCapacity": 0,
+          "noBlockWithUnavailableDiagnosis": 0
+        },
+        "exploratoryTiming": {
+          "sampleCount": 7320,
+          "percentileMethod": "nearest-rank",
+          "p50Ms": 26.7225,
+          "p95Ms": 44.736900000000006,
+          "meanMs": 28.29376774590164,
+          "maxMs": 99.3819
+        }
+      },
+      "status": "Completed",
+      "integrity": {
+        "completedFestivalDays": 5,
+        "unexpectedTechnicalFailureCount": 0,
+        "knownConcurrencyConflictCount": 0,
+        "persistedAssignmentCount": 22000,
+        "persistedRequestCount": 7320,
+        "violations": [],
+        "invariantViolationCount": 0,
+        "finalStateOnly": true,
+        "sha256": {
+          "run-metadata.json": "7a196b7795ef9ea0aa4b60b33824e8a19c573db6be9d9c655318034ad86edb39",
+          "definition.json": "f2b5a7e15e241d9b9e1b6ffee5da44a1802e09b98c84abab1b183672e09e4b8d",
+          "manifest.json": "f53a08c15848cbff894a30e5d8ec9e9dbe1959465fb9bfc9ea191d63830401d8",
+          "attempts.json": "a68fda565e803c84c7cb12b207ed25aeaff6a7fb729e83b34d6cc860efe3b61e",
+          "checkpoints.json": "1e700d6cd9cfa2943cd16567a856777ab6a06b7e8d5b9b7626c860f220c788f9",
+          "attendee-paths.json": "31556e0f9e21eb3638c902c64b5149f6ab7e78e3a3fec665f2de7145b7183db5",
+          "recovery-observations.json": "8ad71de3046d57d48ca3958b031248801af8340c408c1fa98ecd7b38031436cc",
+          "metrics.json": "113362c195c0fbe546d5f90b8c626ce0b01a382d9bda0556f0f95fbdfb978569"
+        }
+      }
+    },
+    "logicalMatches": {
+      "manifest": true,
+      "attempts": true,
+      "attendee-paths": true,
+      "recovery-observations": true,
+      "metrics": true
+    },
+    "exactFileMatches": {
+      "definition.json": true,
+      "manifest.json": true,
+      "metrics.json": true
+    },
+    "ignored": "Observed start/end/duration and generated durable IDs normalized by stable identities.",
+    "logicalSha256": {
+      "manifest": "dc1bb598d64b7fdbdbc3068cabab45dc0ca8704b966bacaf1eca5b045aff545b",
+      "attempts": "87398cf8720eeeb70ff35fc25d35be7c572efa9826f14e69894186c18e66ef65",
+      "attendee-paths": "ff02857f31febcfded213d388bfb66e672c2f1e36774d9b26061b3ae5e24681f",
+      "recovery-observations": "fac81bc3bf2c39fb11563f83b229c00edbf300f19e0ef264dccc6b4121efd394",
+      "metrics": "cd34a92d25ab1499ea9a7de062118e7f683a6d187b8097288ecdb0e0354f37b5"
+    }
+  },
+  "checksumsUnchangedAfterAnalysis": true
+}
