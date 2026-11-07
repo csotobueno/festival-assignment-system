@@ -753,8 +753,11 @@ definition and replaces only ScenarioId and Workload.GroupSizeProfile. The
 unchanged materializer and exporter consume it through their normal v2 path;
 focused tests cover all three Seeds, plus topology and export compatibility.
 Existing manifests, observations, checkpoints and metric semantics remain the
-evidence boundary. Official S6 execution and feasibility, quality, fairness and
-recovery comparisons remain pending; no telemetry is added.
+evidence boundary. The [official S2/S6 report](s2-s6-large-group-sensitivity-results.md)
+records all three S6 runs, the S6/1001 reproduction and controlled feasibility,
+quality, fairness and recovery comparisons against retained S2 evidence. The
+task-specific harness and offline analysis reuse the existing execution/export
+path; no telemetry is added.
 Fragmentation-related signals require supporting evidence; S7's
 later fragmentation experiment remains separate and undefined in detail.
 

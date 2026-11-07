@@ -7,11 +7,12 @@ using Festival.Simulation;
 
 // Task-specific protocol. Definitions, runner and eight-file exporter are unchanged.
 var firstDate = new DateOnly(2026, 8, 15);
-if (args.Length > 1 || (args.Length == 1 && args[0] != "--s5"))
-    throw new ArgumentException("Usage: RepresentativeRuns [--s5]");
-var s5Protocol = args.Length == 1;
+if (args.Length > 1 || (args.Length == 1 && args[0] is not ("--s5" or "--s6")))
+    throw new ArgumentException("Usage: RepresentativeRuns [--s5|--s6]");
+var s5Protocol = args.Length == 1 && args[0] == "--s5";
+var s6Protocol = args.Length == 1 && args[0] == "--s6";
 var controls = new Dictionary<int, (ScenarioDefinition Definition, ScenarioManifest Manifest, JsonObject Entry)>();
-if (s5Protocol)
+if (s5Protocol || s6Protocol)
 {
     var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     options.Converters.Add(new JsonStringEnumConverter());
@@ -48,7 +49,7 @@ if (s5Protocol)
         Console.WriteLine($"PAIRED INPUT VERIFIED S2/{seed} {path}");
     }
 }
-var setId = $"{(s5Protocol ? "s5-order-sensitivity" : "representative")}-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}";
+var setId = $"{(s5Protocol ? "s5-order-sensitivity" : s6Protocol ? "s6-large-group-sensitivity" : "representative")}-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}";
 var root = Path.Combine("artifacts", "simulations");
 var setDirectory = Path.Combine(root, setId);
 Directory.CreateDirectory(setDirectory);
@@ -56,15 +57,16 @@ var json = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.C
 var index = new List<object>();
 Console.WriteLine($"SET {setDirectory}");
 
-foreach (var scenario in s5Protocol ? new[] { "s5" } : new[] { "s1", "s2" })
+foreach (var scenario in s5Protocol ? new[] { "s5" } : s6Protocol ? new[] { "s6" } : new[] { "s1", "s2" })
 foreach (var seed in new[] { 1001, 2001, 3001 })
     await Execute(scenario, seed, "official");
-await Execute(s5Protocol ? "s5" : "s1", 1001, "reproduction");
+await Execute(s5Protocol ? "s5" : s6Protocol ? "s6" : "s1", 1001, "reproduction");
 Console.WriteLine($"COMPLETE {setDirectory}/index.json");
 
 async Task Execute(string scenario, int seed, string role)
 {
-    var definition = scenario == "s5" ? controls[seed].Definition : scenario == "s1"
+    var definition = scenario == "s6" ? S6LargeGroupsScenarioDefinition.Create(seed, firstDate)
+        : scenario == "s5" ? controls[seed].Definition : scenario == "s1"
         ? S1BestPlausibleScenarioDefinition.Create(seed, firstDate)
         : S2ExpectedBaselineScenarioDefinition.Create(seed, firstDate);
     var manifest = scenario == "s5" ? S5ReversedProcessingOrder.Create(controls[seed].Manifest)
@@ -92,7 +94,7 @@ async Task Execute(string scenario, int seed, string role)
     index.Add(new
     {
         role, scenario, seed, runId, evidencePath = Path.GetRelativePath(Directory.GetCurrentDirectory(), destination),
-        metadata, pairedControl = scenario == "s5" ? controls[seed].Entry.DeepClone() : null,
+        metadata, pairedControl = scenario is "s5" or "s6" ? controls[seed].Entry.DeepClone() : null,
         status = violations.Count == 0 && failures == 0 && conflicts == 0 ? "Completed" : "CompletedWithFindings",
         integrity = new
         {

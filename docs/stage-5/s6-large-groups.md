@@ -3,7 +3,7 @@
 ## Status, authority and question
 
 **Analytical sensitivity scenario — definition and deterministic materialization
-implemented; official execution and S2/S6 analysis pending.**
+implemented; three official runs, S6/1001 reproduction and S2/S6 analysis completed.**
 S6 uses S2 — Expected Baseline as its control and changes only the target
 group-size distribution, increasing the prevalence of requests with 6–10 Attendees.
 
@@ -38,6 +38,11 @@ normal execution order and full-manifest reproducibility. Topology tests compare
 S2/S6 catalog identities and capacities. A temporary serialization-only test
 checks the normal evidence exporter with synthetic empty observations, without
 executing S6. These tests are implementation evidence, not official scenario results.
+
+The [official S2/S6 results](s2-s6-large-group-sensitivity-results.md) separately
+record the three same-Seed scenario comparisons, reproduced S6/1001 outputs,
+retained raw paths/checksums and interpretation limits. This execution does not
+change the experimental inputs or policies defined below.
 
 ## Motivation and experimental variable
 
@@ -273,4 +278,6 @@ runner, production layer, assignment policy, fairness formula, rubric, recovery
 semantics or metrics calculator.
 S2/S5 behavior remains unchanged. S7/S8 implementation, concurrency, fairness
 tuning, new telemetry and Decision Gate logic/thresholds remain outside scope.
-Official execution and evidence-based S2/S6 analysis are deferred.
+Official execution and the first evidence-based S2/S6 analysis are recorded in
+the linked results report. Further scenarios and the Stage 5 Decision Gate
+remain pending.
