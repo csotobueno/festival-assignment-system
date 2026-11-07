@@ -145,3 +145,50 @@ fresh and outside raw simulations. The 15 S5 regression tests cover workload
 changes, missing outcomes, transition direction, unranked paths and corrupt or
 incomplete evidence. The selected concise derivative and human interpretation
 are in [the S2/S5 results](../../docs/stage-5/s2-s5-order-sensitivity-results.md).
+
+## Official S6 large-group sensitivity protocol
+
+With the retained S2 controls intact, build the harness and supply the current
+source revision explicitly:
+
+```bash
+dotnet build scripts/stage-5-representative-runs/RepresentativeRuns.csproj
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- --s6
+```
+
+This option executes only S6/1001, S6/2001, S6/3001 and a distinct S6/1001
+reproduction. It reuses the S5 protocol's retained-S2 checksum and input
+verification, normal runner/exporter and final persisted-state audit. It does
+not execute S2 or apply the S5 transformation. Each S6 definition retains its
+own identity and changes only the configured group-size profile relative to S2.
+The index links each S6 run to its retained same-Seed control; comparison is at
+scenario level, without requiring equal requests or daily cohorts.
+
+Analyze a completed S6 set without executing another simulation:
+
+```bash
+python3 -B scripts/stage-5-representative-runs/analyze_s6_groups.py \
+  artifacts/simulations/<s6-set>/index.json \
+  --output artifacts/analysis/s2-s6-repeat.json \
+  --markdown artifacts/analysis/s2-s6-repeat.md
+python3 -B -m unittest discover -s scripts/stage-5-representative-runs -p 'test_*.py'
+```
+
+Use fresh output names outside raw simulations. Analysis reuses the existing
+checksum reader, normal request metrics, stable joins and reproduction
+normalization. Fairness classifications and recovery episodes/aggregates are
+consumed as stored. Size/third tables count the same request and Assignment
+populations with explicit denominators. Raw checksums are checked before/after;
+the reproduction includes checkpoints and requires byte-identical definition,
+manifest, checkpoints and metrics. Runtime times/durations and generated durable
+IDs are excluded only from logical comparison, using stable identity joins.
+
+The deterministic derived reports are
+[S2/S6 results](../../docs/stage-5/s2-s6-large-group-sensitivity-results.md) and
+its adjacent JSON. They record exact raw paths, per-Seed comparisons, exposure
+and episode-opening attribution, diagnostic limits and exploratory timing.
+The new tests cover controlled inputs, non-paired workloads, population/order
+failures, attendee-weighted quality, N/A segments, changing group exposure,
+opening-group attribution, rejection diagnosis, rendering and reproduction
+boundaries. The original S1/S2 and S5 execution options remain unchanged.
