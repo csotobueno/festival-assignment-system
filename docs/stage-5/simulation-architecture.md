@@ -758,8 +758,35 @@ records all three S6 runs, the S6/1001 reproduction and controlled feasibility,
 quality, fairness and recovery comparisons against retained S2 evidence. The
 task-specific harness and offline analysis reuse the existing execution/export
 path; no telemetry is added.
-Fragmentation-related signals require supporting evidence; S7's
-later fragmentation experiment remains separate and undefined in detail.
+Fragmentation-related signals require supporting evidence; the separate S7
+experiment below controls initial spatial availability rather than group mix.
+
+## S7 Paired Spatial Fragmentation Experiment
+
+The [S7 High Fragmentation contract](s7-high-fragmentation.md) defines
+S7-Control versus S7-Fragmented over one exact S2 materialization per Seed
+(1001, 2001 and 3001). Only the arrangement of 1,000 pre-occupied Spots changes;
+both variants open each day with 3,998 remaining and identical occupied counts
+per Row, Zone and quality. The 20% stress hypothesis requires stakeholder
+validation. Normal sequential order and concurrency level 1 remain.
+
+The contract specifies deterministic edge-concentrated and dispersed patterns
+under `s7-preoccupation-v1`, day-scoped supporting setup through the existing
+Assignment-based occupancy path, and exclusion of supporting data from evaluated
+history, populations and metrics. Evaluated history accumulates naturally within
+each variant; the initial spatial pattern repeats each day. Generator v2 streams
+include ScenarioId, so independently generating under the two S7 identities would
+not preserve the required request-level pairing.
+
+Existing attempt evidence distinguishes eligible capacity shortage from no
+feasible contiguous block despite sufficient eligible raw capacity. Remaining
+total capacity is reconstructible from validated opening setup and preceding
+confirmed sequential successes. No additional per-request telemetry is required;
+the minimal future evidence addition is setup/pair provenance and opening quota
+validation. Supporting setup and the S5-specific workload-source/export validation
+need a focused S7 extension later. These are requirements, not implemented
+capabilities. S7 definition adds no code, execution, metric changes, concurrency
+behavior or Decision Gate logic.
 
 ## Future Concurrent Execution
 

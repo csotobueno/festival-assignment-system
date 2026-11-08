@@ -412,7 +412,14 @@ generator v2 unchanged. Definition/materialization tests and the
 are completed, including S6/1001 reproduction. Same-Seed S2/S6
 comparisons are at scenario level, not exact request-level pairs.
 
-The later-scenario matrix links the detailed S5 and S6 contracts; the other
+The [S7 High Fragmentation contract](s7-high-fragmentation.md) defines a paired
+S2-workload experiment with 1,000 pre-occupied Spots and 3,998 remaining in each
+variant. S7-Control concentrates occupancy; S7-Fragmented disperses the same
+per-Row quotas. Opening capacity remains equal by Zone and quality every day.
+The 20% pre-occupation hypothesis requires stakeholder validation.
+Definition only; implementation, official runs and analysis remain pending.
+
+The later-scenario matrix links the detailed S5, S6 and S7 contracts; the other
 scenarios retain only their high-level purposes here:
 
 | Scenario | Purpose |
@@ -421,10 +428,10 @@ scenarios retain only their high-level purposes here:
 | S4 — Worst Plausible | Examine the practical operating boundary. |
 | [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; implemented, official runs pending. |
 | [S6 — Large Groups](s6-large-groups.md) | Baseline: S2. Changed dimension: group-size distribution; requests of size 6–10 increase from 7% → 25%. Definition/materialization and first official execution/analysis completed. |
-| S7 — High Fragmentation | Examine sensitivity to fragmentation. |
+| [S7 — High Fragmentation](s7-high-fragmentation.md) | Primary baseline: S7-Control. Experimental variant: S7-Fragmented. Changed dimension: spatial distribution of equivalent pre-occupied capacity. Workload: S2. Processing: normal sequential order. Definition only. |
 | S8 — Higher Concurrency | Examine sensitivity to concurrency. |
 
-S1/S2 evidence will inform later calibration. Detailed S3/S4/S7/S8 parameters,
+S1/S2 evidence will inform later calibration. Detailed S3/S4/S8 parameters,
 Decision Gate thresholds and new acceptance criteria remain undefined here.
 
 ## Assumptions Requiring Stakeholder Validation
@@ -457,7 +464,9 @@ and focused tests; no official S5 execution is included.
 S6 adds its declarative definition and focused generation/export-compatibility
 tests under the linked experimental contract; the separate official execution
 and analysis report retains observations without changing these inputs.
-No S3/S4/S7/S8 implementation or detailed design, Decision Gate logic/thresholds,
+S7 adds only its linked experimental definition, including setup/evidence
+requirements; implementation and execution remain deferred.
+No S3/S4/S8 implementation or detailed design, Decision Gate logic/thresholds,
 concurrency, replay loading, generic comparison engine or performance optimization
 is added.
 Stakeholder hypotheses remain provisional; simulation observations are not
