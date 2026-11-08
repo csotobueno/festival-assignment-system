@@ -801,6 +801,14 @@ is changed.
 
 ## Future Concurrent Execution
 
+The [S8 Concurrency / Operational Sensitivity contract](s8-concurrency-sensitivity.md)
+now defines the controlled experiment; no concurrent implementation or execution
+is added. It reuses exact S2 inputs with Sequential / 1 as control and Concurrent
+/ 4 or 16 as variants, RetryCount 0, Seeds 1001 / 2001 / 3001 and three independent
+five-day repetitions per Seed/level (27 runs). Preserve S2 baseline sequence,
+normal opening inventory and natural per-run history; do not regenerate business
+inputs under a new ScenarioId or import S6/S7 stress conditions.
+
 The same manifest, records and evaluators support a later execution strategy:
 
 ```text
@@ -811,12 +819,21 @@ ScenarioManifest → DailyRequestPlan
                          same observations/evaluation/artifacts
 ```
 
-`ExecutionMode = Concurrent` and numeric `ConcurrencyLevel = N` will control
-dispatch using the manifest's arrival schedule. AttemptSequence identifies planned
-order, not completion or commit order. Observe actual entry/completion timing;
-each request has an independent scope/context, and the runner drains the day
-before advancing. Future modes must not silently fall back to sequential while
-claiming concurrency evidence.
+For S8, future `ExecutionMode = Concurrent` and numeric `ConcurrencyLevel = 4`
+or `16` will partition each baseline daily list into consecutive deterministic
+windows of at most that size. Members may overlap; windows progress in baseline
+order only after the previous window drains, including request scope disposal
+and reconciliation. Never launch the whole day concurrently. The final partial
+window keeps its actual size. RequestedAt/AssignedAt and the S2 arrival profile
+remain simulated business inputs; do not introduce real-time arrival sleeps.
+
+BaselineSequence retains original S2 order; ExecutionSequence/AttemptSequence
+identify planned dispatch positions, not entry, completion or commit order.
+Observe actual entry/completion timing. **One independent DI scope and DbContext
+per request is a hard invariant**; concurrent requests never share a context.
+Drain the day before its checkpoint and the next day. Future modes must not
+silently fall back to sequential while claiming concurrency evidence. The current
+enum/runner supports only Sequential / 1; Concurrent remains future work.
 
 Known conflicts preserve complete rollback, no persisted Rejected request or
 losing Assignments, no retries and disposal of the failed context. Do not add
@@ -826,6 +843,18 @@ workload, configuration, arrival schedule and concurrency level. Seeds do not
 determine exact transaction winners, observed snapshots or final concurrent
 placements. Record actual outcomes and their limits; a sequential run is not
 evidence for the framework's normal/high concurrent-load scenarios.
+
+The S8 contract requires independent zero persisted-invariant findings per run,
+separate conflict/business-rejection/technical-failure counts, request p50/p95/p99,
+consistent scenario/window throughput intervals, repetition min/mean/max and
+fairness population coverage. Keep the existing metric formulas and eight-file
+evidence model. Repetition, environment context and minimal missing timing /
+validation evidence are future compatible extensions, not fields claimed to
+exist today. Local PostgreSQL/Testcontainers is sufficient; performance evidence
+is environment-specific and EC2 is optional. Preserve current transaction and
+cancellation behavior without new timeout policy; capture per-request failures
+when safe continuation and evidence integrity permit. Mitigation and Decision
+Gate decisions remain deferred.
 
 ## Accepted Trade-offs and Deferred Decisions
 
