@@ -23,6 +23,9 @@ public sealed record ScenarioMetadata(
     SimulationExecutionMode ExecutionMode,
     int ConcurrencyLevel)
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Repetition { get; init; }
+
     public string? WorkloadSourceScenarioId { get; init; }
     public string? OrderingTransformation { get; init; }
 

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using Festival.Domain.Assignments;
 using Festival.Domain.Attendees;
 using Festival.Domain.FestivalDays;
@@ -37,6 +38,16 @@ public sealed record SimulationAttemptRecord(
 {
     // AttemptSequence is the effective execution sequence, not simulated arrival.
     public int BaselineSequence { get; init; } = AttemptSequence;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? WindowNumber { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? WindowPosition { get; init; }
+    // Common run-relative monotonic clock; terminal offset = start + Duration.
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public TimeSpan? ProcessingStartedOffset { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? DatabaseSqlState { get; init; }
 }
 
 // Primitive read projection avoids exposing Infrastructure's internal EF request rows.

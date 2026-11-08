@@ -312,12 +312,14 @@ Outcome interpretation follows the framework unchanged:
 | --- | --- |
 | Successful | Completed request and complete Assignments durably persisted; reconcile returned results with persistence. |
 | DomainRejected | Persisted Rejected request and zero Assignments, including the real use case's attendee-resolution rejection. |
-| KnownConcurrencyConflict | Recognized Application persistence-conflict contract; losing graph rolls back, no persisted Rejected request/losing Assignments, no retry. Discard the failed scope. |
+| KnownConcurrencyConflict | Recognized Application persistence-conflict contract or explicit PostgreSQL processing deadlock (40P01); losing graph rolls back, no persisted Rejected request/losing Assignments, no retry. Discard the failed scope and retain SQLSTATE when available. |
 | UnexpectedTechnicalFailure | Other unexpected processing/persistence errors or timeouts; retain diagnostics and reconcile any uncertain durable state. |
 | ExcludedInvalidInput | Known basic input/precondition boundary prevents measured assignment evaluation; record separately, without hiding valid rejections or technical errors. |
 
-Recognize conflicts through the existing typed Application contract, not exception
-text or arbitrary database errors. Do not convert every ArgumentException into
+Recognize conflicts through the existing typed Application contract or the explicit
+PostgreSQL SQLSTATE 40P01 mapping at the processing boundary, not exception text
+or arbitrary database errors. Reconciliation errors remain technical failures
+because the request may already have committed. Do not convert every ArgumentException into
 excluded input. A failed attempt need not have a persisted request ID, and a
 staged/generated ID alone is not proof of persistence. Correlate structured
 runner logs with the same attempt ID, including rolled-back attempts. Logging
@@ -649,6 +651,7 @@ Metadata uses camelCase JSON properties for these explicit model fields:
 | --- | --- |
 | RunId | Explicit safe identifier; executable supplies a fresh GUID in N format. |
 | ScenarioId, GeneratorVersion, Seed, ExecutionMode, ConcurrencyLevel | Copied from the consumed manifest; provenance must agree with run metadata and the source definition. S5 has its own ScenarioId while retaining the explicit S2 source below. |
+| Repetition, ExecutionEnvironment | Optional S8 repetition (1–3) copied from the manifest and execution-process OS/runtime/.NET/CPU plus PostgreSQL image and Docker/Testcontainers context captured by RunMetadata.Create. Omitted for earlier scenarios. |
 | WorkloadSourceScenarioId, OrderingTransformation | null for untransformed scenarios; S5 records `s2-expected-baseline` and `reverse-daily-execution-order`. Its definition.json remains the original S2 definition. |
 | ScenarioDefinitionVersion | null: no explicit definition version exists in code yet. |
 | EngineVersion | `v0.3.0`, the documented Stage 4 conceptual baseline; not a claim of source identity. |
@@ -799,29 +802,41 @@ reuse existing helpers; fairness/recovery consume stored outputs. No scenario,
 metric formula, per-request telemetry, concurrency behavior or Decision Gate logic
 is changed.
 
-## Future Concurrent Execution
+## S8 Concurrent Execution
 
 The [S8 Concurrency / Operational Sensitivity contract](s8-concurrency-sensitivity.md)
-now defines the controlled experiment; no concurrent implementation or execution
-is added. It reuses exact S2 inputs with Sequential / 1 as control and Concurrent
-/ 4 or 16 as variants, RetryCount 0, Seeds 1001 / 2001 / 3001 and three independent
-five-day repetitions per Seed/level (27 runs). Preserve S2 baseline sequence,
+defines the controlled experiment; the concurrent runner is implemented and
+official execution/analysis remain pending. It reuses exact S2 inputs with
+Concurrent / 4 and 16 as the initial comparison, RetryCount 0 and Seeds
+1001 / 2001 / 3001 once per level: six initial official five-day runs.
+Sequential / 1 remains supported as an optional same-environment operational
+baseline for latency/throughput/wall-clock comparison (+3 runs, one per Seed).
+Repeat affected C4/C16 configurations only when initial variability, inconsistency
+or ambiguity requires distinguishing Seed/workload effects from scheduler /
+PostgreSQL interleavings. One run per Seed does not fully characterize scheduling
+nondeterminism. Each added run needs an explicit analytical reason; there is no
+mandatory final total or numerical variability threshold. Existing Repetition
+metadata/support remains; three repetitions are not required upfront.
+Preserve S2 baseline sequence,
 normal opening inventory and natural per-run history; do not regenerate business
 inputs under a new ScenarioId or import S6/S7 stress conditions.
 
-The same manifest, records and evaluators support a later execution strategy:
+The same manifest, records and evaluators support both execution paths:
 
 ```text
 ScenarioManifest → DailyRequestPlan
-                         ├── SequentialScenarioExecutor (first implementation)
-                         └── ConcurrentScenarioExecutor (future)
+                         ├── existing sequential loop
+                         └── ConcurrentSimulationExecutor
                                       ↓
                          same observations/evaluation/artifacts
 ```
 
-For S8, future `ExecutionMode = Concurrent` and numeric `ConcurrencyLevel = 4`
-or `16` will partition each baseline daily list into consecutive deterministic
-windows of at most that size. Members may overlap; windows progress in baseline
+For S8, `ExecutionMode = Concurrent` and numeric `ConcurrencyLevel = 4`
+or `16` partition each baseline daily list into consecutive deterministic
+windows of at most that size. A TaskCompletionSource gate waits for all actual
+window members to create scopes and resolve services, then releases them before
+Application ExecuteAsync and its inventory reads. No post-read/save barrier is
+used. Members may overlap; Task.WhenAll drains windows in baseline
 order only after the previous window drains, including request scope disposal
 and reconciliation. Never launch the whole day concurrently. The final partial
 window keeps its actual size. RequestedAt/AssignedAt and the S2 arrival profile
@@ -831,13 +846,14 @@ BaselineSequence retains original S2 order; ExecutionSequence/AttemptSequence
 identify planned dispatch positions, not entry, completion or commit order.
 Observe actual entry/completion timing. **One independent DI scope and DbContext
 per request is a hard invariant**; concurrent requests never share a context.
-Drain the day before its checkpoint and the next day. Future modes must not
-silently fall back to sequential while claiming concurrency evidence. The current
-enum/runner supports only Sequential / 1; Concurrent remains future work.
+Drain the day before its checkpoint and the next day. SimulationExecutionConfiguration
+rejects other mode/level pairs; the sequential loop remains unchanged and does
+not use the readiness gate. Preparation failure faults the gate and drains
+waiters; caller cancellation propagates without starting the next window.
 
 Known conflicts preserve complete rollback, no persisted Rejected request or
 losing Assignments, no retries and disposal of the failed context. Do not add
-artificial barriers/delays solely to force races, or change production isolation,
+post-read barriers/delays solely to force races, or change production isolation,
 locking or serialization. Concurrency reproducibility means reproducing scenario,
 workload, configuration, arrival schedule and concurrency level. Seeds do not
 determine exact transaction winners, observed snapshots or final concurrent
@@ -846,11 +862,22 @@ evidence for the framework's normal/high concurrent-load scenarios.
 
 The S8 contract requires independent zero persisted-invariant findings per run,
 separate conflict/business-rejection/technical-failure counts, request p50/p95/p99,
-consistent scenario/window throughput intervals, repetition min/mean/max and
+consistent scenario/window throughput intervals, min/mean/max when follow-up
+repetitions exist (otherwise the individual run and sample count), and
 fairness population coverage. Keep the existing metric formulas and eight-file
-evidence model. Repetition, environment context and minimal missing timing /
-validation evidence are future compatible extensions, not fields claimed to
-exist today. Local PostgreSQL/Testcontainers is sufficient; performance evidence
+evidence model. Optional Repetition and minimal OS/runtime/CPU/database context
+are now available in metadata. Attempts add WindowNumber, WindowPosition and a
+run-relative monotonic ProcessingStartedOffset; offset + Duration gives the
+terminal offset for consistent window/scenario timing reconstruction. Existing
+mode/level/Seed/RunId fields supply shared attempt context. Earlier scenarios
+omit the optional additions. S8 exports retain the S2 source definition and
+validate source/mode/level/repetition consistency. Small PostgreSQL tests audit
+final invariants; official audits and analysis remain separate execution work.
+Optional DatabaseSqlState exposes nested PostgreSQL diagnostics. Processing
+deadlocks (40P01) are explicitly mapped to KnownConcurrencyConflict after failed
+scope disposal; other unrecognized database errors remain UnexpectedTechnicalFailure.
+Existing transaction rollback and no-retry semantics remain unchanged.
+Local PostgreSQL/Testcontainers is sufficient; performance evidence
 is environment-specific and EC2 is optional. Preserve current transaction and
 cancellation behavior without new timeout policy; capture per-request failures
 when safe continuation and evidence integrity permit. Mitigation and Decision

@@ -15,20 +15,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
+using Npgsql;
 
 namespace Festival.Simulation;
 
 public static class MinimalSimulationRunner
 {
+    internal const string PostgreSqlImage = "postgres:16.3-alpine";
+
     public static async Task<SimulationResult> RunAsync(
         ScenarioManifest manifest, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(manifest);
-        if (manifest.Metadata.ExecutionMode != SimulationExecutionMode.Sequential
-            || manifest.Metadata.ConcurrencyLevel != 1)
-            throw new NotSupportedException("Only sequential execution with concurrency level 1 is supported.");
+        var execution = new SimulationExecutionConfiguration(manifest.Metadata.ExecutionMode,
+            manifest.Metadata.ConcurrencyLevel, manifest.Metadata.Repetition);
 
-        await using var container = new PostgreSqlBuilder("postgres:16.3-alpine")
+        await using var container = new PostgreSqlBuilder(PostgreSqlImage)
             .WithDatabase("festival_simulation")
             .WithUsername("festival_simulation")
             .WithPassword("festival_simulation_password")
@@ -77,6 +79,8 @@ public static class MinimalSimulationRunner
         var attempts = new List<SimulationAttemptRecord>();
         var openingStates = new List<SimulationDayOpeningState>();
         var checkpoints = new List<DailySimulationCheckpoint>();
+        long? timingOrigin = execution.ExecutionMode == SimulationExecutionMode.Concurrent || execution.Repetition.HasValue
+            ? Stopwatch.GetTimestamp() : null;
         foreach (var day in manifest.DailyPlans.OrderBy(day => day.DayNumber))
         {
             // Read persisted topology and real day-specific availability before execution.
@@ -95,10 +99,20 @@ public static class MinimalSimulationRunner
             }
 
             var dayAttemptStart = attempts.Count;
-            foreach (var request in day.Requests.OrderBy(request => request.ExecutionSequence))
+            if (execution.ExecutionMode == SimulationExecutionMode.Concurrent)
             {
-                attempts.Add(await ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
-                    day.FestivalDayId, request, cancellationToken));
+                attempts.AddRange(await ConcurrentSimulationExecutor.ExecuteDayAsync(day, execution,
+                    (request, position, ready, token) => ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
+                        day.FestivalDayId, request, token, ready, position, timingOrigin), cancellationToken));
+            }
+            else
+            {
+                // Retain the existing sequential path, including S5 dispatch order.
+                foreach (var request in day.Requests.OrderBy(request => request.ExecutionSequence))
+                {
+                    attempts.Add(await ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
+                        day.FestivalDayId, request, cancellationToken, timingOrigin: timingOrigin));
+                }
             }
 
             checkpoints.Add(await CaptureDailyCheckpointAsync(services, manifest.Metadata.ScenarioId,
@@ -148,7 +162,9 @@ public static class MinimalSimulationRunner
 
     internal static async Task<SimulationAttemptRecord> ExecuteAttemptAsync(
         ServiceProvider services, string scenarioId, FestivalDayId dayId,
-        DailyRequestPlan plan, CancellationToken cancellationToken = default)
+        DailyRequestPlan plan, CancellationToken cancellationToken = default,
+        Func<Task>? waitForRelease = null, SimulationWindowPosition? windowPosition = null,
+        long? timingOrigin = null)
     {
         var command = new ProcessAssignmentRequestCommand(dayId,
             plan.Members.Select(attendee => attendee.Code), plan.RequestedAt, plan.AssignedAt, plan.Eligibility);
@@ -158,13 +174,21 @@ public static class MinimalSimulationRunner
         DateTimeOffset completedAt;
         TimeSpan duration;
         int? eligibleCount;
+        TimeSpan? processingStartedOffset = null;
+        string? databaseSqlState = null;
         // Scope preparation and disposal are outside the measured use-case boundary.
         await using (var requestScope = services.CreateAsyncScope())
         {
             var useCase = requestScope.ServiceProvider.GetRequiredService<ProcessAssignmentRequestUseCase>();
             var evaluation = requestScope.ServiceProvider.GetRequiredService<RequestEvaluationObservation>();
+            // All request services are scoped/resolved, but no business read has
+            // occurred. The window releases only when every member reaches here.
+            if (waitForRelease is not null) await waitForRelease();
+            cancellationToken.ThrowIfCancellationRequested();
             startedAt = DateTimeOffset.UtcNow;
             var timestamp = Stopwatch.GetTimestamp();
+            if (timingOrigin.HasValue)
+                processingStartedOffset = Stopwatch.GetElapsedTime(timingOrigin.Value, timestamp);
             try
             {
                 result = await useCase.ExecuteAsync(command, cancellationToken);
@@ -176,6 +200,7 @@ public static class MinimalSimulationRunner
             catch (Exception exception)
             {
                 failure = exception;
+                databaseSqlState = FindDatabaseSqlState(exception);
             }
             duration = Stopwatch.GetElapsedTime(timestamp);
             completedAt = DateTimeOffset.UtcNow;
@@ -189,9 +214,14 @@ public static class MinimalSimulationRunner
         }
         if (failure is not null)
         {
-            // Arbitrary validation/processing exceptions are not excluded input.
-            return Record(SimulationAttemptOutcome.UnexpectedTechnicalFailure, null,
-                null, failure.GetType().FullName, null, null, failure.Message);
+            // PostgreSQL aborts a deadlock victim's transaction. The failed scope
+            // is already disposed; retain the explicit provider code without retry.
+            // Other provider/processing failures remain unexpected.
+            var deadlock = databaseSqlState == PostgresErrorCodes.DeadlockDetected;
+            return Record(deadlock ? SimulationAttemptOutcome.KnownConcurrencyConflict
+                    : SimulationAttemptOutcome.UnexpectedTechnicalFailure, null,
+                deadlock ? nameof(PostgresErrorCodes.DeadlockDetected) : null,
+                failure.GetType().FullName, null, null, failure.Message);
         }
 
         // The real selection result supplies block evidence; other rejections are unknown.
@@ -241,6 +271,7 @@ public static class MinimalSimulationRunner
         }
         catch (Exception exception)
         {
+            databaseSqlState = FindDatabaseSqlState(exception);
             return Record(SimulationAttemptOutcome.UnexpectedTechnicalFailure, confirmedRequestId,
                 "RECONCILIATION_FAILED", exception.GetType().FullName, blockFound, null, exception.Message);
         }
@@ -251,6 +282,20 @@ public static class MinimalSimulationRunner
             new(scenarioId, dayId, plan.SimulationRequestId, plan.ExecutionSequence, command.AttendeeCodes.Count,
                 plan.Members.Select(member => member.Id).ToImmutableArray(), startedAt, completedAt, duration,
                 outcome, persistedId, diagnosticCode, diagnosticType, eligibleCount, feasibleBlockFound,
-                selectedQuality, diagnostic) { BaselineSequence = plan.Sequence };
+                selectedQuality, diagnostic)
+            {
+                BaselineSequence = plan.Sequence,
+                WindowNumber = windowPosition?.Number,
+                WindowPosition = windowPosition?.Position,
+                ProcessingStartedOffset = processingStartedOffset,
+                DatabaseSqlState = databaseSqlState
+            };
+    }
+
+    private static string? FindDatabaseSqlState(Exception exception)
+    {
+        for (Exception? current = exception; current is not null; current = current.InnerException)
+            if (current is PostgresException postgres) return postgres.SqlState;
+        return null;
     }
 }

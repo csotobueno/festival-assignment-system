@@ -6,7 +6,8 @@ namespace Festival.Simulation;
 
 public enum SimulationExecutionMode
 {
-    Sequential
+    Sequential,
+    Concurrent
 }
 
 // AttendeeCount is the registered catalog, excluding setup occupants. v1 uses

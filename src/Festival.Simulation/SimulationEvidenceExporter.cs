@@ -21,8 +21,23 @@ public sealed class SimulationEvidenceExporter
         var metadata = request.RunMetadata;
         var input = request.Manifest.Metadata;
         var definitionScenarioId = input.ScenarioId;
+        _ = new SimulationExecutionConfiguration(input.ExecutionMode, input.ConcurrencyLevel, input.Repetition);
+        var isS8 = input.ScenarioId is S8ConcurrentExecution.LowScenarioId or S8ConcurrentExecution.ModerateScenarioId;
         var isS7 = input.ScenarioId is S7ScenarioPair.ControlScenarioId or S7ScenarioPair.FragmentedScenarioId;
-        if (isS7)
+        if (isS8)
+        {
+            var expectedLevel = input.ScenarioId == S8ConcurrentExecution.LowScenarioId ? 4 : 16;
+            if (input.WorkloadSourceScenarioId != S8ConcurrentExecution.WorkloadSourceScenarioId
+                || input.OrderingTransformation is not null || input.GeneratorVersion != "v2"
+                || input.ExecutionMode != SimulationExecutionMode.Concurrent || input.ConcurrencyLevel != expectedLevel
+                || input.Repetition is null || input.FragmentationPatternVersion is not null
+                || input.OpeningOccupiedSpotCount is not null || input.WorkloadSourceManifestSha256 is not null
+                || !request.Manifest.Setup.SupportingAttendees.IsEmpty || !request.Manifest.Setup.CompletedRequests.IsEmpty
+                || !request.Manifest.Setup.Assignments.IsEmpty)
+                throw new ArgumentException("Unsupported S8 execution or workload provenance.", nameof(request));
+            definitionScenarioId = input.WorkloadSourceScenarioId;
+        }
+        else if (isS7)
         {
             if (input.WorkloadSourceScenarioId != S7ScenarioPair.WorkloadSourceScenarioId
                 || input.OrderingTransformation is not null
@@ -51,6 +66,7 @@ public sealed class SimulationEvidenceExporter
         if (metadata.ScenarioId != input.ScenarioId || metadata.Seed != input.Seed
             || metadata.GeneratorVersion != input.GeneratorVersion
             || metadata.ExecutionMode != input.ExecutionMode || metadata.ConcurrencyLevel != input.ConcurrencyLevel
+            || metadata.Repetition != input.Repetition
             || metadata.WorkloadSourceScenarioId != input.WorkloadSourceScenarioId
             || metadata.OrderingTransformation != input.OrderingTransformation
             || metadata.FragmentationPatternVersion != input.FragmentationPatternVersion
@@ -58,8 +74,8 @@ public sealed class SimulationEvidenceExporter
             || metadata.WorkloadSourceManifestSha256 != input.WorkloadSourceManifestSha256
             || request.Definition.ScenarioId != definitionScenarioId || request.Definition.Seed != input.Seed
             || request.Definition.GeneratorVersion != input.GeneratorVersion
-            || request.Definition.ExecutionMode != input.ExecutionMode
-            || request.Definition.ConcurrencyLevel != input.ConcurrencyLevel)
+            || request.Definition.ExecutionMode != (isS8 ? SimulationExecutionMode.Sequential : input.ExecutionMode)
+            || request.Definition.ConcurrencyLevel != (isS8 ? 1 : input.ConcurrencyLevel))
             throw new ArgumentException("Definition, manifest and run metadata must describe the same scenario.", nameof(request));
         if (metadata.CompletedAt < metadata.StartedAt)
             throw new ArgumentException("Run completion must not precede its start.", nameof(request));
