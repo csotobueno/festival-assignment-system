@@ -434,7 +434,7 @@ scenarios retain only their high-level purposes here:
 | [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; implemented, official runs pending. |
 | [S6 — Large Groups](s6-large-groups.md) | Baseline: S2. Changed dimension: group-size distribution; requests of size 6–10 increase from 7% → 25%. Definition/materialization and first official execution/analysis completed. |
 | [S7 — High Fragmentation](s7-high-fragmentation.md) | Primary baseline: S7-Control. Experimental variant: S7-Fragmented. Changed dimension: spatial distribution of equivalent pre-occupied capacity. Workload: exact paired S2. Processing: normal sequential order. Materialization, official runs, paired reproduction and analysis completed. |
-| [S8 — Concurrency / Operational Sensitivity](s8-concurrency-sensitivity.md) | Baseline: unchanged S2 sequential (1). Variants: concurrency 4 and 16. Changed dimension: concurrent execution in deterministic windows. Retries: none. Persistence: real PostgreSQL. Seeds 1001 / 2001 / 3001 × 3 levels × 3 repetitions = 27 future runs. Contract only; implementation/execution pending. |
+| [S8 — Concurrency / Operational Sensitivity](s8-concurrency-sensitivity.md) | Workload: exact S2. Initial comparison: concurrency 4 vs 16. Changed dimension: concurrent execution in deterministic windows with pre-use-case coordinated release. Retries: none. Persistence: real PostgreSQL. Initial matrix: Seeds 1001 / 2001 / 3001 × 2 levels × 1 repetition = 6 five-day runs. C1 remains a supported optional same-environment operational baseline (+3 runs); targeted C4/C16 repetitions follow only when variability/ambiguity requires them. Each extra run needs an analytical reason; no fixed final total. Concurrent runner implemented; official execution/analysis pending. |
 
 S8 preserves exact S2 business inputs and baseline sequence while allowing
 scheduler-dependent concurrent outcomes. Its separate contract defines request
@@ -478,9 +478,11 @@ S7 adds its explicit paired materialization, isolated supporting setup, minimal
 provenance/export support and focused tests under the linked contract. Its
 separate official execution/analysis report retains observations and reproducible
 offline derivations without modifying the experimental inputs or production rules.
-S8 adds only its linked concurrency/operational experiment definition; execution
-remains future work. No S3/S4 implementation or detailed design, S8 implementation,
-Decision Gate logic/thresholds, concurrent execution, replay loading, generic
-comparison engine or performance optimization is added.
+S8 adds exact S2 workload reuse, deterministic windows, a pre-use-case readiness
+gate, isolated concurrent PostgreSQL execution and minimal compatible evidence.
+Small tests protect scheduling, persistence and export; official execution and
+analysis remain future work. No S3/S4 implementation or detailed design,
+Decision Gate logic/thresholds, replay loading, generic comparison engine or
+performance optimization is added.
 Stakeholder hypotheses remain provisional; simulation observations are not
 measured festival data and materialization tests are not empirical evidence.

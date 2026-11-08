@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.Runtime.InteropServices;
 
 namespace Festival.Simulation;
 
@@ -17,6 +18,11 @@ public sealed record SimulationRunMetadata(
     DateTimeOffset StartedAt,
     DateTimeOffset CompletedAt)
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Repetition { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public SimulationEnvironmentMetadata? ExecutionEnvironment { get; init; }
+
     public string? WorkloadSourceScenarioId { get; init; }
     public string? OrderingTransformation { get; init; }
 
@@ -36,12 +42,24 @@ public sealed record SimulationRunMetadata(
             null, manifest.Metadata.ExecutionMode, manifest.Metadata.ConcurrencyLevel,
             startedAt, completedAt)
         {
+            Repetition = manifest.Metadata.Repetition,
+            ExecutionEnvironment = manifest.Metadata.Repetition.HasValue
+                || manifest.Metadata.ExecutionMode == SimulationExecutionMode.Concurrent
+                ? SimulationEnvironmentMetadata.Capture() : null,
             WorkloadSourceScenarioId = manifest.Metadata.WorkloadSourceScenarioId,
             OrderingTransformation = manifest.Metadata.OrderingTransformation,
             FragmentationPatternVersion = manifest.Metadata.FragmentationPatternVersion,
             OpeningOccupiedSpotCount = manifest.Metadata.OpeningOccupiedSpotCount,
             WorkloadSourceManifestSha256 = manifest.Metadata.WorkloadSourceManifestSha256
         };
+}
+
+public sealed record SimulationEnvironmentMetadata(string OperatingSystem, string Runtime,
+    string DotNetVersion, int ProcessorCount, string PostgreSqlImage, string DatabaseContext)
+{
+    internal static SimulationEnvironmentMetadata Capture() => new(RuntimeInformation.OSDescription,
+        RuntimeInformation.FrameworkDescription, Environment.Version.ToString(), Environment.ProcessorCount,
+        MinimalSimulationRunner.PostgreSqlImage, "Runner-owned PostgreSQL via Docker/Testcontainers");
 }
 
 // DestinationRoot is the simulations root (normally artifacts/simulations),

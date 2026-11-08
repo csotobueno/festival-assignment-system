@@ -9,12 +9,49 @@ using Festival.Infrastructure.Zones.InMemory;
 using Festival.Simulation;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Xunit;
 
 namespace Festival.Simulation.Tests;
 
 public sealed class SimulationAttemptRecordingTests
 {
+    [Theory]
+    [InlineData("40P01", false)]
+    [InlineData("40P01", true)]
+    [InlineData("XX000", true)]
+    [InlineData("23505", true)]
+    [InlineData("40001", true)]
+    public async Task ExecuteAttemptAsync_RecognizesOnlyExplicitDeadlockSqlStateAndNeverRetries(
+        string sqlState, bool wrapped)
+    {
+        var manifest = new ScenarioMaterializer().Materialize(MinimalRecoveryScenarioDefinition.Create());
+        var providerFailure = new PostgresException("Provider failure", "ERROR", "ERROR", sqlState);
+        Exception failure = wrapped
+            ? new InvalidOperationException("Provider wrapper", new DbUpdateException("Save failed", providerFailure))
+            : providerFailure;
+        var unitOfWork = new FailingUnitOfWork(failure);
+        var registrations = CreateRegistrations(manifest);
+        registrations.AddScoped<IUnitOfWork>(_ => unitOfWork);
+        await using var services = registrations.BuildServiceProvider(
+            new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
+        var day = manifest.DailyPlans[0];
+
+        var attempt = await MinimalSimulationRunner.ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
+            day.FestivalDayId, day.Requests[0]);
+
+        var deadlock = sqlState == "40P01";
+        attempt.Outcome.Should().Be(deadlock ? SimulationAttemptOutcome.KnownConcurrencyConflict
+            : SimulationAttemptOutcome.UnexpectedTechnicalFailure);
+        attempt.DatabaseSqlState.Should().Be(sqlState);
+        attempt.DiagnosticCode.Should().Be(deadlock ? "DeadlockDetected" : null);
+        attempt.DiagnosticType.Should().Be(failure.GetType().FullName);
+        attempt.PersistedRequestId.Should().BeNull();
+        attempt.SelectedExperienceQuality.Should().BeNull();
+        unitOfWork.CallCount.Should().Be(1, "a deadlock or other persistence failure must not trigger a retry");
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
