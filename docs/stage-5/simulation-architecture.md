@@ -770,23 +770,31 @@ both variants open each day with 3,998 remaining and identical occupied counts
 per Row, Zone and quality. The 20% stress hypothesis requires stakeholder
 validation. Normal sequential order and concurrency level 1 remain.
 
-The contract specifies deterministic edge-concentrated and dispersed patterns
-under `s7-preoccupation-v1`, day-scoped supporting setup through the existing
-Assignment-based occupancy path, and exclusion of supporting data from evaluated
-history, populations and metrics. Evaluated history accumulates naturally within
+`S7ScenarioPair.Create(seed, firstDate)` implements deterministic edge-concentrated
+and dispersed patterns under `s7-preoccupation-v1`, day-scoped supporting setup
+through the existing Assignment-based occupancy path, and exclusion of supporting
+data from evaluated history, populations and metrics. Evaluated history accumulates naturally within
 each variant; the initial spatial pattern repeats each day. Generator v2 streams
-include ScenarioId, so independently generating under the two S7 identities would
-not preserve the required request-level pairing.
+include ScenarioId, so the pair materializes S2 once and reuses its exact catalog
+and daily plans for both variants, retaining generator v2 unchanged.
 
 Existing attempt evidence distinguishes eligible capacity shortage from no
 feasible contiguous block despite sufficient eligible raw capacity. Remaining
 total capacity is reconstructible from validated opening setup and preceding
 confirmed sequential successes. No additional per-request telemetry is required;
-the minimal future evidence addition is setup/pair provenance and opening quota
-validation. Supporting setup and the S5-specific workload-source/export validation
-need a focused S7 extension later. These are requirements, not implemented
-capabilities. S7 definition adds no code, execution, metric changes, concurrency
-behavior or Decision Gate logic.
+the implemented evidence addition is setup/pair provenance and opening quota
+validation. Manifest/run metadata retain source scenario, pattern version,
+per-day opening occupied count and source-manifest SHA-256. Optional S7 fields
+are omitted from other scenarios. The same eight-file exporter accepts both S7
+variants with S2 source definitions and checks metadata consistency. Supporting
+singleton setup graphs are seeded up front for all days, outside evaluated paths
+and metrics; no runner or production persistence changes are needed.
+
+Tests cover all three Seeds and small PostgreSQL slices over five daily openings,
+including setup isolation, natural evaluated history and legitimate rejection.
+Definition/materialization is implemented; official execution and analysis remain
+pending. No metric changes, new per-request telemetry, concurrency behavior or
+Decision Gate logic is added.
 
 ## Future Concurrent Execution
 

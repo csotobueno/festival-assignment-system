@@ -2,7 +2,8 @@
 
 ## Status, authority and question
 
-**Experimental definition only — implementation, execution and analysis pending.**
+**Definition and deterministic materialization implemented; official execution
+and analysis pending.**
 S7 asks: with equivalent remaining capacity, does spatial fragmentation materially
 reduce contiguous-group feasibility? Future analysis must measure rejection
 increase, affected group sizes, failure onset and capacity remaining at rejection.
@@ -20,6 +21,42 @@ and zero DomainRejected across the observed Seeds. S6 increased requests of size
 6–10 from 7% to 25% without observed feasibility loss. Large-group prevalence
 alone did not cause placement failure in those runs; S7 deliberately changes
 spatial availability while retaining the S2 workload.
+
+## Implemented construction and validation
+
+`S7ScenarioPair.Create(seed, firstDate)` creates the unchanged S2 definition and
+materializes it once. The returned pair retains `SourceDefinition`,
+`SourceManifest`, `Control` and `Fragmented`. Both variants reuse the exact source
+catalog and daily plans; no workload regeneration or generator-version change is
+introduced. Pattern generation is confined to this explicit Simulation class.
+
+The pair creates 1,000 supporting singleton requests/Assignments per FestivalDay,
+with 5,000 day-scoped supporting attendees across the festival. Their identities,
+requests, qualities and timestamps match between variants; only assigned Spot
+positions differ. Setup is seeded before dispatch, with deterministic timestamps
+at each day's UTC assignment-window opening. These experimental records are never
+dispatched as evaluated attempts. The existing runner and production persistence
+path require no changes.
+
+Manifest and run metadata carry `WorkloadSourceScenarioId`,
+`FragmentationPatternVersion`, `OpeningOccupiedSpotCount` (per day) and
+`WorkloadSourceManifestSha256`. The checksum is lowercase SHA-256 over the original
+S2 manifest serialized as UTF-8 with the existing evidence JSON options, without
+the export file's trailing newline. GeneratorVersion stays `v2`. S7-only optional
+fields are omitted for other scenarios, preserving their existing JSON shape.
+The normal eight-file exporter retains the S2 source in `definition.json`, the
+consumed S7 input in `manifest.json`, and rejects unsupported/mismatched provenance.
+
+Focused tests cover Seeds 1001, 2001 and 3001: exact workload pairing, daily/Zone/
+Row/quality counts, explicit rounding ties, changed occupied sets, shorter and
+balanced available runs, setup isolation, reproducibility and export compatibility.
+Small PostgreSQL slices exercise both variants over five opening states, real
+history across two days and legitimate no-block rejection with sufficient eligible
+capacity. Separate persisted-setup checks verify empty evaluated histories, zero
+RotationScore, empty paths/recovery episodes and no evaluated request outcomes
+before any attempt. These are test fixtures, not official scenario results.
+No official S7 run, aggregate fragmentation analysis or Decision Gate verdict
+is included.
 
 ## Paired experiment and capacity equivalence
 
@@ -93,8 +130,8 @@ diagnosis below.
 ## Deterministic pre-occupation patterns
 
 Define **FragmentationPatternVersion = `s7-preoccupation-v1`**, covering rounding,
-quotas, tie-breaks and both patterns. This is a future provenance identifier,
-not an implemented metadata field or generic fragmentation framework.
+quotas, tie-breaks and both patterns. It is recorded in existing manifest/run
+metadata without a generic fragmentation framework.
 
 Order each Row's Spots by ascending SpotNumber. The S2 topology has consecutive
 positions; validate that precondition rather than treating gaps as contiguous.
@@ -120,8 +157,8 @@ Fragmented: OOOXOOOXOOOXOOO   (largest available run: 3)
 No manual Spot-ID list or random placement is needed. Both patterns preserve
 exact counts at every level. Current Row quotas satisfy `0 < k < n`, and
 Fragmented shortens the opening largest run in every Row. Changed topology or
-pattern requires an explicit contract/version revision. Later implementation
-needs only a small explicit Stage 5 transformation/helper.
+pattern requires an explicit contract/version revision. The implemented helper
+rejects a changed total capacity or nonconsecutive Row positions.
 
 ## Preserved S2 workload and processing
 
@@ -161,7 +198,7 @@ begins**, not evaluated attendee participation or prior quality/rotation history
 
 The current PostgreSQL available-Spot provider excludes Spots through persisted
 Assignments for the specified FestivalDay; there is no independent occupancy
-flag. With production behavior unchanged, later S7 setup therefore requires
+flag. With production behavior unchanged, S7 setup therefore requires
 supporting persisted Assignments and valid completed setup requests, using the
 existing `ScenarioSetup` separation. These are **supporting/setup data**, never
 evaluated requests. Required persisted ExperienceQuality belongs only to that
@@ -193,7 +230,7 @@ Use **1001, 2001 and 3001** for both variants. For each Seed and the same FirstD
 materialize the underlying S2 workload once with generator v2 and derive both
 variants from that exact source. Do not generate independently under S7 IDs:
 generator streams include ScenarioId, so equal Seeds alone would not pair them.
-Future variant identities are `s7-control` and `s7-fragmented`; workload source
+Variant identities are `s7-control` and `s7-fragmented`; workload source
 remains `s2-expected-baseline`.
 
 Before execution compare exact request identities, FestivalDays/dates, daily
@@ -282,12 +319,11 @@ commits; otherwise report N/A rather than assuming a technical failure consumed
 zero capacity. Do not reuse S6 analysis's empty-inventory opening value of 4,998.
 
 **No additional per-request telemetry is required for this sequential experiment.**
-The minimal future evidence addition is S7 setup/pair provenance: pattern version,
+The implemented evidence addition is S7 setup/pair provenance: pattern version,
 workload-source checksum and explicit opening quota validation, with occupied
-Spots retained in the consumed setup manifest. Current workload-source/export
-validation supports S5 specifically; a focused S7 extension is deferred. S7 setup
-and provenance are requirements, not already executable capabilities. No broad
-telemetry, second block search or fresh post-rejection snapshot is requested.
+Spots retained in the consumed setup manifest. Workload-source/export validation
+now explicitly supports both S7 variants alongside the existing S5 path. No broad
+telemetry, second block search or fresh post-rejection snapshot was added.
 
 Missing evidence follows existing framework N/A/missing-observation rules,
 including RawCapacityButNoFeasibleBlockRate. The baseline's independent pre-save
@@ -352,14 +388,15 @@ natural inventory/history consequences.
 Evidence may inform whether fragmentation materially threatens group feasibility.
 This task adds no mitigation recommendation, Engine change, block-preservation
 strategy, allocation heuristic, reservation window, reordering or Decision Gate
-logic/threshold. Implementation, focused tests, official paired runs and analysis
-remain deferred. No S7ScenarioDefinition, transformation, setup code, telemetry,
-analysis tooling or execution is included.
+logic/threshold. Definition, materialization, supporting setup, provenance and
+focused tests are implemented. Official paired runs and analysis remain deferred;
+the next task is **Execute S7 and Analyze Fragmentation Impact**. No new per-request
+telemetry, analysis tooling or official execution is included.
 
 ## Documentation contract validation
 
-The definition requires these input checks before later execution; they are not
-already observed S7 results:
+The implemented tests verify these input checks before official execution; they
+are not official S7 results:
 
 - Both variants open each day with 1,000 occupied and 3,998 remaining Spots.
 - Equal per-Row quotas reconcile to equal per-Zone counts and remaining quality
