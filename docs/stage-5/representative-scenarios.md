@@ -417,7 +417,10 @@ S2-workload experiment with 1,000 pre-occupied Spots and 3,998 remaining in each
 variant. S7-Control concentrates occupancy; S7-Fragmented disperses the same
 per-Row quotas. Opening capacity remains equal by Zone and quality every day.
 The 20% pre-occupation hypothesis requires stakeholder validation.
-Definition only; implementation, official runs and analysis remain pending.
+`S7ScenarioPair.Create(seed, firstDate)` materializes S2 once and derives both
+variants with isolated day-scoped setup and versioned provenance. Definition/
+materialization and focused tests are implemented; official runs and analysis
+remain pending.
 
 The later-scenario matrix links the detailed S5, S6 and S7 contracts; the other
 scenarios retain only their high-level purposes here:
@@ -428,7 +431,7 @@ scenarios retain only their high-level purposes here:
 | S4 — Worst Plausible | Examine the practical operating boundary. |
 | [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; implemented, official runs pending. |
 | [S6 — Large Groups](s6-large-groups.md) | Baseline: S2. Changed dimension: group-size distribution; requests of size 6–10 increase from 7% → 25%. Definition/materialization and first official execution/analysis completed. |
-| [S7 — High Fragmentation](s7-high-fragmentation.md) | Primary baseline: S7-Control. Experimental variant: S7-Fragmented. Changed dimension: spatial distribution of equivalent pre-occupied capacity. Workload: S2. Processing: normal sequential order. Definition only. |
+| [S7 — High Fragmentation](s7-high-fragmentation.md) | Primary baseline: S7-Control. Experimental variant: S7-Fragmented. Changed dimension: spatial distribution of equivalent pre-occupied capacity. Workload: exact paired S2. Processing: normal sequential order. Definition/materialization implemented; official runs and analysis pending. |
 | S8 — Higher Concurrency | Examine sensitivity to concurrency. |
 
 S1/S2 evidence will inform later calibration. Detailed S3/S4/S8 parameters,
@@ -464,8 +467,9 @@ and focused tests; no official S5 execution is included.
 S6 adds its declarative definition and focused generation/export-compatibility
 tests under the linked experimental contract; the separate official execution
 and analysis report retains observations without changing these inputs.
-S7 adds only its linked experimental definition, including setup/evidence
-requirements; implementation and execution remain deferred.
+S7 adds its explicit paired materialization, isolated supporting setup, minimal
+provenance/export support and focused tests under the linked contract; official
+execution and analysis remain deferred.
 No S3/S4/S8 implementation or detailed design, Decision Gate logic/thresholds,
 concurrency, replay loading, generic comparison engine or performance optimization
 is added.

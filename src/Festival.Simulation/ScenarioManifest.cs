@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 using Festival.Domain.Assignments;
 using Festival.Domain.Attendees;
 using Festival.Domain.FestivalDays;
@@ -24,6 +25,13 @@ public sealed record ScenarioMetadata(
 {
     public string? WorkloadSourceScenarioId { get; init; }
     public string? OrderingTransformation { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? FragmentationPatternVersion { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? OpeningOccupiedSpotCount { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? WorkloadSourceManifestSha256 { get; init; }
 }
 
 // Physical topology is shared by every day. Attendees is the registered catalog;

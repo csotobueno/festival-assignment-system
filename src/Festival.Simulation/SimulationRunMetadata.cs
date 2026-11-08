@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Festival.Simulation;
 
 public sealed record SimulationRunMetadata(
@@ -18,6 +20,13 @@ public sealed record SimulationRunMetadata(
     public string? WorkloadSourceScenarioId { get; init; }
     public string? OrderingTransformation { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? FragmentationPatternVersion { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? OpeningOccupiedSpotCount { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? WorkloadSourceManifestSha256 { get; init; }
+
     // Definition/framework versions have no explicit code value yet. The engine
     // label identifies the documented Stage 4 baseline, not an exact source revision.
     public static SimulationRunMetadata Create(string runId, ScenarioManifest manifest,
@@ -28,7 +37,10 @@ public sealed record SimulationRunMetadata(
             startedAt, completedAt)
         {
             WorkloadSourceScenarioId = manifest.Metadata.WorkloadSourceScenarioId,
-            OrderingTransformation = manifest.Metadata.OrderingTransformation
+            OrderingTransformation = manifest.Metadata.OrderingTransformation,
+            FragmentationPatternVersion = manifest.Metadata.FragmentationPatternVersion,
+            OpeningOccupiedSpotCount = manifest.Metadata.OpeningOccupiedSpotCount,
+            WorkloadSourceManifestSha256 = manifest.Metadata.WorkloadSourceManifestSha256
         };
 }
 

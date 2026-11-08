@@ -21,7 +21,24 @@ public sealed class SimulationEvidenceExporter
         var metadata = request.RunMetadata;
         var input = request.Manifest.Metadata;
         var definitionScenarioId = input.ScenarioId;
-        if (input.WorkloadSourceScenarioId is not null || input.OrderingTransformation is not null)
+        var isS7 = input.ScenarioId is S7ScenarioPair.ControlScenarioId or S7ScenarioPair.FragmentedScenarioId;
+        if (isS7)
+        {
+            if (input.WorkloadSourceScenarioId != S7ScenarioPair.WorkloadSourceScenarioId
+                || input.OrderingTransformation is not null
+                || input.FragmentationPatternVersion != S7ScenarioPair.PatternVersion
+                || input.OpeningOccupiedSpotCount != S7ScenarioPair.OpeningOccupiedSpotCount
+                || input.WorkloadSourceManifestSha256 is not { Length: 64 } hash
+                || !hash.All(char.IsAsciiHexDigit)
+                || input.GeneratorVersion != "v2"
+                || input.ExecutionMode != SimulationExecutionMode.Sequential || input.ConcurrencyLevel != 1)
+                throw new ArgumentException("Unsupported S7 setup or workload provenance.", nameof(request));
+            definitionScenarioId = input.WorkloadSourceScenarioId;
+        }
+        else if (input.FragmentationPatternVersion is not null || input.OpeningOccupiedSpotCount is not null
+            || input.WorkloadSourceManifestSha256 is not null)
+            throw new ArgumentException("Pre-occupation provenance requires an S7 variant.", nameof(request));
+        else if (input.WorkloadSourceScenarioId is not null || input.OrderingTransformation is not null)
         {
             if (input.ScenarioId != S5ReversedProcessingOrder.ScenarioId
                 || input.WorkloadSourceScenarioId != S5ReversedProcessingOrder.WorkloadSourceScenarioId
@@ -36,6 +53,9 @@ public sealed class SimulationEvidenceExporter
             || metadata.ExecutionMode != input.ExecutionMode || metadata.ConcurrencyLevel != input.ConcurrencyLevel
             || metadata.WorkloadSourceScenarioId != input.WorkloadSourceScenarioId
             || metadata.OrderingTransformation != input.OrderingTransformation
+            || metadata.FragmentationPatternVersion != input.FragmentationPatternVersion
+            || metadata.OpeningOccupiedSpotCount != input.OpeningOccupiedSpotCount
+            || metadata.WorkloadSourceManifestSha256 != input.WorkloadSourceManifestSha256
             || request.Definition.ScenarioId != definitionScenarioId || request.Definition.Seed != input.Seed
             || request.Definition.GeneratorVersion != input.GeneratorVersion
             || request.Definition.ExecutionMode != input.ExecutionMode
