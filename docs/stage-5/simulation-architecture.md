@@ -792,9 +792,12 @@ and metrics; no runner or production persistence changes are needed.
 
 Tests cover all three Seeds and small PostgreSQL slices over five daily openings,
 including setup isolation, natural evaluated history and legitimate rejection.
-Definition/materialization is implemented; official execution and analysis remain
-pending. No metric changes, new per-request telemetry, concurrency behavior or
-Decision Gate logic is added.
+The [official S7 report](s7-fragmentation-impact-results.md) now records six runs,
+a separate 1001 reproduction pair, pre-execution pair proofs, persisted opening
+audits, eight-file checksums and deterministic offline comparison. Request metrics
+reuse existing helpers; fairness/recovery consume stored outputs. No scenario,
+metric formula, per-request telemetry, concurrency behavior or Decision Gate logic
+is changed.
 
 ## Future Concurrent Execution
 

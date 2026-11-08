@@ -3,14 +3,27 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Festival.Domain.Assignments;
+using Festival.Domain.Zones;
 using Festival.Simulation;
 
 // Task-specific protocol. Definitions, runner and eight-file exporter are unchanged.
 var firstDate = new DateOnly(2026, 8, 15);
-if (args.Length > 1 || (args.Length == 1 && args[0] is not ("--s5" or "--s6")))
-    throw new ArgumentException("Usage: RepresentativeRuns [--s5|--s6]");
+if (args.Length > 1 || (args.Length == 1 && args[0] is not ("--s5" or "--s6" or "--s7")))
+    throw new ArgumentException("Usage: RepresentativeRuns [--s5|--s6|--s7]");
 var s5Protocol = args.Length == 1 && args[0] == "--s5";
 var s6Protocol = args.Length == 1 && args[0] == "--s6";
+var s7Protocol = args.Length == 1 && args[0] == "--s7";
+var s7Pairs = new Dictionary<int, S7ScenarioPair>();
+var s7Proofs = new Dictionary<int, object>();
+var s7Controls = new Dictionary<(string Role, int Seed), JsonNode>();
+if (s7Protocol)
+    foreach (var seed in new[] { 1001, 2001, 3001 })
+    {
+        var pair = S7ScenarioPair.Create(seed, firstDate);
+        s7Proofs.Add(seed, VerifyS7Pair(pair));
+        s7Pairs.Add(seed, pair);
+        Console.WriteLine($"PAIRED INPUT VERIFIED S7/{seed}: exact S2 workload; equal daily/Row/Zone/quality opening capacity.");
+    }
 var controls = new Dictionary<int, (ScenarioDefinition Definition, ScenarioManifest Manifest, JsonObject Entry)>();
 if (s5Protocol || s6Protocol)
 {
@@ -49,7 +62,7 @@ if (s5Protocol || s6Protocol)
         Console.WriteLine($"PAIRED INPUT VERIFIED S2/{seed} {path}");
     }
 }
-var setId = $"{(s5Protocol ? "s5-order-sensitivity" : s6Protocol ? "s6-large-group-sensitivity" : "representative")}-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}";
+var setId = $"{(s7Protocol ? "s7-fragmentation-impact" : s5Protocol ? "s5-order-sensitivity" : s6Protocol ? "s6-large-group-sensitivity" : "representative")}-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}";
 var root = Path.Combine("artifacts", "simulations");
 var setDirectory = Path.Combine(root, setId);
 Directory.CreateDirectory(setDirectory);
@@ -57,19 +70,35 @@ var json = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.C
 var index = new List<object>();
 Console.WriteLine($"SET {setDirectory}");
 
-foreach (var scenario in s5Protocol ? new[] { "s5" } : s6Protocol ? new[] { "s6" } : new[] { "s1", "s2" })
-foreach (var seed in new[] { 1001, 2001, 3001 })
-    await Execute(scenario, seed, "official");
-await Execute(s5Protocol ? "s5" : s6Protocol ? "s6" : "s1", 1001, "reproduction");
+if (s7Protocol)
+{
+    foreach (var seed in new[] { 1001, 2001, 3001 })
+    {
+        await Execute("s7-control", seed, "official", s7Pairs[seed]);
+        await Execute("s7-fragmented", seed, "official", s7Pairs[seed]);
+    }
+    var repeat = S7ScenarioPair.Create(1001, firstDate);
+    VerifyS7Pair(repeat);
+    await Execute("s7-control", 1001, "reproduction", repeat);
+    await Execute("s7-fragmented", 1001, "reproduction", repeat);
+}
+else
+{
+    foreach (var scenario in s5Protocol ? new[] { "s5" } : s6Protocol ? new[] { "s6" } : new[] { "s1", "s2" })
+    foreach (var seed in new[] { 1001, 2001, 3001 })
+        await Execute(scenario, seed, "official");
+    await Execute(s5Protocol ? "s5" : s6Protocol ? "s6" : "s1", 1001, "reproduction");
+}
 Console.WriteLine($"COMPLETE {setDirectory}/index.json");
 
-async Task Execute(string scenario, int seed, string role)
+async Task Execute(string scenario, int seed, string role, S7ScenarioPair? s7Pair = null)
 {
-    var definition = scenario == "s6" ? S6LargeGroupsScenarioDefinition.Create(seed, firstDate)
+    var definition = s7Pair?.SourceDefinition ?? (scenario == "s6" ? S6LargeGroupsScenarioDefinition.Create(seed, firstDate)
         : scenario == "s5" ? controls[seed].Definition : scenario == "s1"
         ? S1BestPlausibleScenarioDefinition.Create(seed, firstDate)
-        : S2ExpectedBaselineScenarioDefinition.Create(seed, firstDate);
-    var manifest = scenario == "s5" ? S5ReversedProcessingOrder.Create(controls[seed].Manifest)
+        : S2ExpectedBaselineScenarioDefinition.Create(seed, firstDate));
+    var manifest = s7Pair is not null ? (scenario == "s7-control" ? s7Pair.Control : s7Pair.Fragmented)
+        : scenario == "s5" ? S5ReversedProcessingOrder.Create(controls[seed].Manifest)
         : new ScenarioMaterializer().Materialize(definition);
     var runId = $"{role}-{scenario}-{seed}-{Guid.NewGuid():N}";
     Console.WriteLine($"START {scenario} seed={seed} role={role} run={runId} at={DateTimeOffset.UtcNow:O}");
@@ -91,10 +120,14 @@ async Task Execute(string scenario, int seed, string role)
     }
     var failures = result.Attempts.Count(a => a.Outcome == SimulationAttemptOutcome.UnexpectedTechnicalFailure);
     var conflicts = result.Attempts.Count(a => a.Outcome == SimulationAttemptOutcome.KnownConcurrencyConflict);
-    index.Add(new
+    var entry = new
     {
         role, scenario, seed, runId, evidencePath = Path.GetRelativePath(Directory.GetCurrentDirectory(), destination),
-        metadata, pairedControl = scenario is "s5" or "s6" ? controls[seed].Entry.DeepClone() : null,
+        metadata, pairedControl = scenario is "s5" or "s6" ? controls[seed].Entry.DeepClone()
+            : scenario == "s7-fragmented" ? s7Controls[(role, seed)].DeepClone() : null,
+        pairIntegrity = s7Pair is not null ? s7Proofs[seed] : null,
+        executionHarnessSha256 = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(
+            "scripts/stage-5-representative-runs/Program.cs"))).ToLowerInvariant(),
         status = violations.Count == 0 && failures == 0 && conflicts == 0 ? "Completed" : "CompletedWithFindings",
         integrity = new
         {
@@ -105,10 +138,12 @@ async Task Execute(string scenario, int seed, string role)
             violations, invariantViolationCount = violations.Count,
             finalStateOnly = true, sha256 = hashes
         }
-    });
+    };
+    index.Add(entry);
+    if (scenario == "s7-control") s7Controls.Add((role, seed), JsonSerializer.SerializeToNode(entry, json)!);
     await File.WriteAllTextAsync(Path.Combine(setDirectory, "index.json"), JsonSerializer.Serialize(index, json) + "\n");
     Console.WriteLine($"EXPORTED {destination} attempts={result.Attempts.Count} failures={failures} conflicts={conflicts} violations={violations.Count} elapsed={metadata.CompletedAt - startedAt}");
-    if (violations.Count != 0)
+    if (violations.Count != 0 || (s7Protocol && (failures != 0 || conflicts != 0)))
         throw new InvalidOperationException("Run integrity findings preserved in index.json; execution stopped.");
 }
 
@@ -122,7 +157,7 @@ static List<string> Audit(ScenarioManifest manifest, SimulationResult result, in
     Check(result.Assignments.GroupBy(a => (a.FestivalDayId, a.SpotCode)).All(g => g.Count() == 1), "INV-01: duplicate Spot/day.");
     Check(result.Assignments.GroupBy(a => (a.FestivalDayId, a.AttendeeId)).All(g => g.Count() == 1), "INV-02/06: duplicate Attendee/day in final state.");
     var spots = manifest.Catalog.Spots.ToDictionary(s => s.Code);
-    var attendees = manifest.Catalog.Attendees.Select(a => a.Id).ToHashSet();
+    var attendees = manifest.Catalog.Attendees.Concat(manifest.Setup.SupportingAttendees).Select(a => a.Id).ToHashSet();
     var days = manifest.Catalog.FestivalDays.Select(d => d.Id).ToHashSet();
     var requests = result.Requests.ToDictionary(r => r.AssignmentRequestId);
     var assignments = result.Assignments.ToLookup(a => a.AssignmentRequestId.Value);
@@ -130,7 +165,16 @@ static List<string> Audit(ScenarioManifest manifest, SimulationResult result, in
         && attendees.Contains(a.AttendeeId) && days.Contains(a.FestivalDayId)
         && spots.TryGetValue(a.SpotCode, out var spot) && spot.ZoneId == a.ZoneId
         && spot.RowCode == a.RowCode && spot.Number == a.SpotNumber), "INV-07: incomplete or inconsistent catalog identity.");
-    Check(result.Requests.Count == result.Attempts.Count, "Persisted request count differs from attempts (inspect failures/conflicts).");
+    Check(result.Requests.Count == result.Attempts.Count + manifest.Setup.CompletedRequests.Length,
+        "Persisted request count differs from evaluated attempts plus supporting setup.");
+    var assignmentsById = result.Assignments.ToDictionary(a => a.Id);
+    foreach (var setup in manifest.Setup.Assignments)
+        Check(assignmentsById.TryGetValue(setup.Id, out var a) && a.AttendeeId == setup.AttendeeId
+            && a.FestivalDayId == setup.FestivalDayId && a.SpotCode == setup.SpotCode
+            && a.ExperienceQuality == setup.ExperienceQuality, "Supporting Assignment was lost or changed.");
+    foreach (var setup in manifest.Setup.CompletedRequests)
+        Check(requests.TryGetValue(setup.Id.Value, out var stored) && stored.Status == "Completed"
+            && stored.FestivalDayId == setup.FestivalDayId.Value, "Supporting request missing or not Completed.");
     foreach (var day in manifest.DailyPlans)
     {
         var members = day.Requests.SelectMany(r => r.Members).ToArray();
@@ -139,6 +183,18 @@ static List<string> Audit(ScenarioManifest manifest, SimulationResult result, in
         Check(day.Requests.Count(r => r.Eligibility.AllowsFrontStanding) == (day.Requests.Length + 1) / 2,
             $"Day {day.DayNumber}: eligibility allocation differs from 50% largest-remainder convention.");
         var dailyAttempts = result.Attempts.Where(a => a.FestivalDayId == day.FestivalDayId).ToArray();
+        if (manifest.Metadata.FragmentationPatternVersion is not null)
+        {
+            var opening = result.OpeningStates.Single(state => state.FestivalDayId == day.FestivalDayId);
+            var occupied = manifest.Setup.Assignments.Where(a => a.FestivalDayId == day.FestivalDayId)
+                .Select(a => a.SpotCode).ToHashSet();
+            var available = opening.AvailableSpots.Select(s => s.Code).ToHashSet();
+            var inventory = RemainingInventoryCalculator.Calculate(opening.Zones, opening.AvailableSpots);
+            Check(opening.Spots.Count == 4998 && occupied.Count == 1000 && available.Count == 3998
+                && opening.Spots.Where(s => !occupied.Contains(s.Code)).All(s => available.Contains(s.Code))
+                && inventory.GoodRemaining == 1402 && inventory.MediumRemaining == 1800 && inventory.BadRemaining == 796,
+                $"Day {day.DayNumber}: S7 persisted opening differs from exact setup/capacity.");
+        }
         Check(dailyAttempts.OrderBy(a => a.AttemptSequence).Select(a => a.SimulationRequestId)
                 .SequenceEqual(day.Requests.OrderBy(r => r.ExecutionSequence).Select(r => r.SimulationRequestId)),
             $"Day {day.DayNumber}: attempt sequence/membership differs from manifest.");
@@ -174,6 +230,41 @@ static List<string> Audit(ScenarioManifest manifest, SimulationResult result, in
             Check(request.Status == "Rejected" && rows.Length == 0, $"INV-08: rejected request {id.Value} has inconsistent state.");
     }
     return violations;
+}
+
+static object VerifyS7Pair(S7ScenarioPair pair)
+{
+    var control = pair.Control;
+    var fragmented = pair.Fragmented;
+    if (!ReferenceEquals(control.Catalog, fragmented.Catalog) || !control.DailyPlans.Equals(fragmented.DailyPlans)
+        || control.Metadata.FragmentationPatternVersion != S7ScenarioPair.PatternVersion
+        || fragmented.Metadata.FragmentationPatternVersion != S7ScenarioPair.PatternVersion
+        || control.Metadata.WorkloadSourceManifestSha256 != fragmented.Metadata.WorkloadSourceManifestSha256
+        || control.DailyPlans.SelectMany(d => d.Requests).Any(r => r.Sequence != r.ExecutionSequence))
+        throw new InvalidOperationException("S7 pair workload/provenance integrity failed before execution.");
+    foreach (var day in control.DailyPlans)
+    {
+        var left = control.Setup.Assignments.Where(a => a.FestivalDayId == day.FestivalDayId).ToArray();
+        var right = fragmented.Setup.Assignments.Where(a => a.FestivalDayId == day.FestivalDayId).ToArray();
+        if (left.Length != 1000 || right.Length != 1000
+            || left.Select(a => a.SpotCode).ToHashSet().SetEquals(right.Select(a => a.SpotCode)))
+            throw new InvalidOperationException("S7 pair occupied count/spatial difference failed.");
+        foreach (var row in control.Catalog.Spots.GroupBy(s => (s.ZoneId, s.RowCode)))
+            if (left.Count(a => (a.ZoneId, a.RowCode) == row.Key) != right.Count(a => (a.ZoneId, a.RowCode) == row.Key))
+                throw new InvalidOperationException("S7 per-Row quota mismatch.");
+        foreach (var assignments in new[] { left, right })
+        {
+            var occupied = assignments.Select(a => a.SpotCode).ToHashSet();
+            var available = control.Catalog.Spots.Where(s => !occupied.Contains(s.Code)).ToArray();
+            var inventory = RemainingInventoryCalculator.Calculate(control.Catalog.Zones, available);
+            if (available.Length != 3998 || inventory.GoodRemaining != 1402
+                || inventory.MediumRemaining != 1800 || inventory.BadRemaining != 796)
+                throw new InvalidOperationException("S7 opening quality capacity mismatch.");
+        }
+    }
+    return new { exactWorkload = true, exactCatalog = true, equalRowZoneQualityOpeningCapacity = true,
+        onlyOccupiedArrangementDiffers = true, occupiedPerDay = 1000, availablePerDay = 3998,
+        pattern = S7ScenarioPair.PatternVersion, sourceManifestSha256 = control.Metadata.WorkloadSourceManifestSha256 };
 }
 
 // Match the existing exporter's exact UTC representation for input comparison.

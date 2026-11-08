@@ -2,8 +2,10 @@
 
 ## Status, authority and question
 
-**Definition and deterministic materialization implemented; official execution
-and analysis pending.**
+**Definition/materialization, six official runs, paired 1001 reproduction and
+fragmentation-impact analysis completed.** The
+[official results](s7-fragmentation-impact-results.md) record observations and
+limits separately from the unchanged experimental inputs below.
 S7 asks: with equivalent remaining capacity, does spatial fragmentation materially
 reduce contiguous-group feasibility? Future analysis must measure rejection
 increase, affected group sizes, failure onset and capacity remaining at rejection.
@@ -54,9 +56,11 @@ Small PostgreSQL slices exercise both variants over five opening states, real
 history across two days and legitimate no-block rejection with sufficient eligible
 capacity. Separate persisted-setup checks verify empty evaluated histories, zero
 RotationScore, empty paths/recovery episodes and no evaluated request outcomes
-before any attempt. These are test fixtures, not official scenario results.
-No official S7 run, aggregate fragmentation analysis or Decision Gate verdict
-is included.
+before any attempt. These test fixtures remain separate from the
+[official execution and analysis](s7-fragmentation-impact-results.md), which
+retains three same-Seed pairs and a distinct 1001 reproduction pair. Neither
+the tests nor the results change these input hypotheses or issue a Decision Gate
+verdict.
 
 ## Paired experiment and capacity equivalence
 
@@ -389,9 +393,12 @@ Evidence may inform whether fragmentation materially threatens group feasibility
 This task adds no mitigation recommendation, Engine change, block-preservation
 strategy, allocation heuristic, reservation window, reordering or Decision Gate
 logic/threshold. Definition, materialization, supporting setup, provenance and
-focused tests are implemented. Official paired runs and analysis remain deferred;
-the next task is **Execute S7 and Analyze Fragmentation Impact**. No new per-request
-telemetry, analysis tooling or official execution is included.
+focused tests are implemented. The separate
+[official results](s7-fragmentation-impact-results.md) complete execution,
+reproduction and analysis with task-specific harness/offline tooling, without
+changing S7 configuration or adding per-request telemetry. The evidence-supported
+next task is to define the separate S8 concurrency/operational-sensitivity
+contract; S8 execution and the final Decision Gate remain pending.
 
 ## Documentation contract validation
 

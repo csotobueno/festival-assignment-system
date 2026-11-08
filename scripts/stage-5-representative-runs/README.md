@@ -192,3 +192,55 @@ The new tests cover controlled inputs, non-paired workloads, population/order
 failures, attendee-weighted quality, N/A segments, changing group exposure,
 opening-group attribution, rejection diagnosis, rendering and reproduction
 boundaries. The original S1/S2 and S5 execution options remain unchanged.
+
+## Official S7 paired fragmentation protocol
+
+Build the existing harness and supply the protected source revision explicitly:
+
+```bash
+dotnet build scripts/stage-5-representative-runs/RepresentativeRuns.csproj
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- --s7
+```
+
+This option runs Control then Fragmented for Seeds 1001, 2001 and 3001, followed
+by a freshly constructed 1001 reproduction pair with distinct RunIds. It does
+not execute S2. All three pairs are verified before dispatch: exact shared S2
+workload/catalog, normal sequences, equal Row/Zone/quality opening quotas and
+the fixed `s7-preoccupation-v1` setup. Each run uses the unchanged real runner
+and eight-file exporter. The index links Fragmented to its exact paired Control,
+records source/setup provenance, harness hash and all package checksums, and
+audits persisted opening availability and supporting/evaluated graphs separately.
+Technical failures, conflicts or invariant findings stop the S7 protocol.
+
+Analyze a completed eight-run set offline:
+
+```bash
+python3 -B scripts/stage-5-representative-runs/analyze_s7_fragmentation.py \
+  artifacts/simulations/<s7-set>/index.json \
+  --output artifacts/analysis/s7-repeat.json \
+  --markdown artifacts/analysis/s7-repeat.md
+python3 -B -m unittest discover -s scripts/stage-5-representative-runs -p 'test_*.py'
+```
+
+Choose fresh outputs outside raw evidence. The analyzer checks pair integrity
+before outcome interpretation, joins stable request identities and reuses existing
+request metric helpers and stored fairness/recovery outputs. It diagnoses each
+rejection from captured eligible capacity and block-found evidence, reconstructs
+total capacity from the verified 3,998 opening, and reconciles closing inventory.
+Forward/reverse request transitions, normalized size/third/cause tables, population
+coverage and exploratory existing timing percentiles remain separate.
+
+Reproduction requires byte-identical definition, manifest/setup, checkpoints and
+metrics plus logical equality of attempts, paths and recovery using the existing
+stable-ID normalization. The repeated pair's request transition/harm analysis
+must also match. RunIds and observed timing are excluded only where documented.
+Raw checksums are checked before/after analysis; derived JSON and Markdown are
+replayed twice for byte equality without analysis wall-clock timestamps.
+
+The [S7 results report](../../docs/stage-5/s7-fragmentation-impact-results.md)
+and adjacent JSON retain the selected official set, exact paths/checksums,
+per-Seed findings, pair-level harm/reverse transitions, population effects and
+interpretation boundaries. Raw evidence remains ignored under
+`artifacts/simulations/`; source and analytical changes are not production policy
+changes or a final Decision Gate.
