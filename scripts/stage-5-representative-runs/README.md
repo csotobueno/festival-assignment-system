@@ -244,3 +244,76 @@ per-Seed findings, pair-level harm/reverse transitions, population effects and
 interpretation boundaries. Raw evidence remains ignored under
 `artifacts/simulations/`; source and analytical changes are not production policy
 changes or a final Decision Gate.
+
+## S8 initial concurrency protocol
+
+Build the harness, then run the mandatory non-official smoke with the current
+repository revision supplied explicitly:
+
+```bash
+dotnet build scripts/stage-5-representative-runs/RepresentativeRuns.csproj
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- --s8-smoke
+```
+
+Smoke uses 48 registered / 40 requesting Attendees, twenty groups of two, four
+Spots and one FestivalDay at both C4 and C16. C16 includes a partial final window.
+The last request has an explicitly invalid resolution timestamp to exercise
+UnexpectedTechnicalFailure through the real use case; contention is natural.
+This is a negative control in non-official input, never an official S2 input or
+an injected persistence exception. The smoke requires conflict capture, exactly
+that one technical failure, normal export and zero audit findings before passing.
+
+Use the successful smoke index printed by COMPLETE:
+
+```bash
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- \
+  --s8 artifacts/simulations/<successful-s8-smoke>/index.json
+```
+
+This option executes exactly C4/1001, C4/2001, C4/3001, C16/1001, C16/2001 and
+C16/3001, Repetition 1. It materializes S2 once per Seed and reuses that exact
+catalog, empty setup and daily plans at both levels through S8ConcurrentExecution.
+Each run owns a clean PostgreSQL container and retains real history across five
+days. The runner, readiness gate, windows, transactions and no-retry behavior
+remain unchanged. No C1 or follow-up repetitions are dispatched automatically.
+
+The task-specific S8Runs harness checks the smoke packages and identical
+execution-source hashes before official execution. The set index records source
+and harness hashes, normal package checksums, outcome counts and final durable
+state audits: Spot/day and Attendee/day uniqueness, complete contiguous groups,
+request/catalog identity, no orphan/fake requests or losing partial graphs,
+checkpoint reconciliation, exact window membership and non-overlap. Findings
+stop the protocol after preserving evidence. This is final-state validation,
+not a full temporal mutation audit. Unfavorable outcomes are preserved.
+
+No warm-up is performed. First calls remain in latency samples; configurations
+run serially in the same process, with fresh containers. Local performance is
+environment-specific, and process warmness/host activity are limitations.
+RunId is fresh per execution; the harness refuses to treat smoke as official.
+
+Analyze only a completed six-run index:
+
+```bash
+python3 -B scripts/stage-5-representative-runs/analyze_s8_concurrency.py \
+  artifacts/simulations/<s8-initial-concurrency-set>/index.json \
+  --output artifacts/analysis/s8-initial-results.json
+python3 -B -m unittest discover -s scripts/stage-5-representative-runs -p 'test_*.py'
+```
+
+The read-only analyzer verifies all package hashes, exact C4/C16 input pairing
+and equality with retained official S2 inputs (normalizing only additive baseline
+metadata/sequence defaults). It reuses the framework's denominators, stored
+fairness/recovery and daily baseline thirds. Throughput uses terminal Attempts
+over max(ProcessingStartedOffset + Duration) minus min(ProcessingStartedOffset),
+with exact 100 ns parsing; request p50/p95/p99 use nearest rank. Window timing
+and observed overlap are reconstructed from attempts. Cross-Seed min/mean/max
+describe Seed-level observations, not repetition-level scheduler variability.
+It never executes a simulation or chooses/executes adaptive follow-up runs.
+
+The [initial S8 analysis](../../docs/stage-5/s8-concurrency-analysis.md) and adjacent
+JSON retain the completed six-run set, separate smoke results, exact paths/hashes,
+normalized comparisons and interpretation. The selected adaptive decision is to
+add C1 as a same-environment operational baseline in a separate task; none of
+those follow-up runs was executed here.

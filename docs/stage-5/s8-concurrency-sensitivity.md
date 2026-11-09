@@ -2,8 +2,8 @@
 
 ## Status, authority and experimental question
 
-**Contract defined; concurrent runner implemented; official execution and analysis
-pending.**
+**Contract defined; concurrent runner implemented; initial six-run official
+execution and analysis completed. Optional C1 baseline recommended, not executed.**
 S8 asks: when equivalent assignment requests compete concurrently for shared
 inventory, does the current system preserve correctness, and how much operational
 degradation or conflict appears? Evaluate correctness, known concurrency
@@ -19,6 +19,9 @@ v1 nor fairness or business rules.
 
 The runner supports Sequential / 1 and Concurrent / 4 or 16. Small PostgreSQL
 tests exercise execution and rollback; they are not official S8 observations.
+The [initial concurrency analysis](s8-concurrency-analysis.md) records the six
+official runs, separate smoke validation, zero persisted findings and the
+adaptive recommendation to add a same-environment C1 operational baseline.
 
 ## Implemented execution and evidence
 
@@ -81,8 +84,9 @@ validate observed deadlocks as KnownConcurrencyConflict with SQLSTATE retained
 and no persisted losing graph; they require consistent persisted state without
 prescribing a conflict percentage. Focused exception-boundary tests cover direct
 and wrapped 40P01, conservative fallback for other SQLSTATEs and no retries.
-Final audits and aggregate performance/fairness analysis for official runs remain
-the next execution task's responsibility.
+The initial official harness now adds final persisted-state audits and eight-file
+checksums; its [analysis](s8-concurrency-analysis.md) retains performance,
+contention and fairness-population evidence separately from this input contract.
 
 ## Controlled workload and experimental matrix
 
@@ -462,6 +466,7 @@ Domain, Application and Infrastructure
 production behavior, AssignmentEngine, AssignmentSelectionPolicy,
 BlockSelectionPolicy, RotationScore, GroupRotationScore, TargetQuality,
 PathClassificationRubric, recovery semantics, SimulationMetricsCalculator and
-S2/S5/S6/S7 policies remain unchanged. Official execution/analysis starts with six
-concurrent runs and adds only justified follow-up evidence; it remains separate
-work: **Execute S8 and Analyze Concurrency Sensitivity**.
+S2/S5/S6/S7 policies remain unchanged. Initial execution/analysis completed with
+six concurrent runs; only justified follow-up evidence may be added. The chosen
+next task is **Execute S8 Optional Sequential Baseline and Compare Operational
+Results**, three C1 runs recommended but not executed by the initial task.

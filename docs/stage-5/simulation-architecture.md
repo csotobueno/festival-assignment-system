@@ -806,7 +806,8 @@ is changed.
 
 The [S8 Concurrency / Operational Sensitivity contract](s8-concurrency-sensitivity.md)
 defines the controlled experiment; the concurrent runner is implemented and
-official execution/analysis remain pending. It reuses exact S2 inputs with
+the initial six-run [execution/analysis](s8-concurrency-analysis.md) is completed.
+The report recommends a C1 follow-up baseline, not executed. S8 reuses exact S2 inputs with
 Concurrent / 4 and 16 as the initial comparison, RetryCount 0 and Seeds
 1001 / 2001 / 3001 once per level: six initial official five-day runs.
 Sequential / 1 remains supported as an optional same-environment operational
@@ -872,7 +873,9 @@ terminal offset for consistent window/scenario timing reconstruction. Existing
 mode/level/Seed/RunId fields supply shared attempt context. Earlier scenarios
 omit the optional additions. S8 exports retain the S2 source definition and
 validate source/mode/level/repetition consistency. Small PostgreSQL tests audit
-final invariants; official audits and analysis remain separate execution work.
+final invariants. The task-specific initial execution harness now audits final
+persisted state and retains source/input proofs and package checksums; its offline
+analysis verifies them without changing the runner/exporter or metric framework.
 Optional DatabaseSqlState exposes nested PostgreSQL diagnostics. Processing
 deadlocks (40P01) are explicitly mapped to KnownConcurrencyConflict after failed
 scope disposal; other unrecognized database errors remain UnexpectedTechnicalFailure.
