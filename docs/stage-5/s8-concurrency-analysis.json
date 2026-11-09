@@ -279,8 +279,524 @@
       }
     ]
   },
+  "sequentialIndexPath": "artifacts/simulations/s8-sequential-baseline-20261109-caade8775ecc480a90c089ebf128c705/index.json",
+  "sequentialIndexSha256": "07be60bdefbabe4cebac89afe6f5979f54f337a4b0ccce3f5f26f2483e5b57d9",
+  "sequentialRepositoryCommitSha": "3f45b4efe32c8b4b03d6aadb5434e22a3c35ca09",
+  "sequentialSourceSha256": {
+    "scripts/stage-5-representative-runs/Program.cs": "bda85393c4ee93d9725bac52728dc099da604c4990a7fc9019c64385cbfd500b",
+    "scripts/stage-5-representative-runs/RepresentativeRuns.csproj": "08163ac5005168c4a3e72c9f14bdb7a32565cb97fda4300aae781f77f6f84a67",
+    "scripts/stage-5-representative-runs/S8Runs.cs": "641bb6556e19788994d34d9810453fc037efa5fbe128f9ad24909cd6ecc6da20",
+    "src/Festival.Api/Festival.Api.csproj": "86f911d721c610ba64fcae662f29b2b78d884bf8bbe698e3157b546544dcd8ad",
+    "src/Festival.Api/Program.cs": "b918689bd8d6355926beadcb292d0b995083d23734a6b03faaf80ff3bdc15859",
+    "src/Festival.Application/Assignments/Persistence/AssignmentPersistenceConflict.cs": "56925e97d38cb686505b92575690d5270f1b3b97537b3addb436dbe22c9c562d",
+    "src/Festival.Application/Assignments/Persistence/AssignmentPersistenceConflictException.cs": "049ffa58aca2fb684720fdf5e14582a48949d289322a3455bd81018b39e70f40",
+    "src/Festival.Application/Assignments/Ports/IAssignmentRepository.cs": "e10f41e3645cea738a7f051965ce78e510c96712ad8dce6163f01e48ed7e63c4",
+    "src/Festival.Application/Assignments/Ports/IAssignmentRequestRepository.cs": "584f612eb14df76fc4cde0172de19fecaeef4e874add063b318a2db03e700f41",
+    "src/Festival.Application/Assignments/Ports/IAttendeeCodeResolver.cs": "e74367fa9d83da76633fb84ddf8bc25adc3d6b0b8ea77f5b481615d3ee48b00c",
+    "src/Festival.Application/Assignments/Ports/IAvailableSpotProvider.cs": "15b7e0ad3a51bbb4466bef1c0142ca36852eaebc0448f3dfa1dbd3f2beddac5b",
+    "src/Festival.Application/Assignments/Ports/IFairnessHistoryProvider.cs": "c57a37909771927dabe4744c42a393e0b6a24ff59cf7598dfd3764dea781cce7",
+    "src/Festival.Application/Assignments/Ports/IUnitOfWork.cs": "40f6be642efe30b94cd4b983d169ca34803c1618979f69cb40d3c8991b3ee45b",
+    "src/Festival.Application/Assignments/ProcessAssignmentRequest/ProcessAssignmentRequestCommand.cs": "7c37de15db4f6dffc0ff83d2e13dd0561382c3f76f13865b70375d260190545a",
+    "src/Festival.Application/Assignments/ProcessAssignmentRequest/ProcessAssignmentRequestResult.cs": "a5d5f1638a585f94ee6f3dce4c2238c1f5dab0fdeec6ea953707bfddfde55556",
+    "src/Festival.Application/Assignments/ProcessAssignmentRequest/ProcessAssignmentRequestUseCase.cs": "92d3bff03a64fa1cc9138654ae0227b8a766d0ea4d3aad4daf8bc123f04bae53",
+    "src/Festival.Application/DependencyInjection.cs": "3f12f284211f2a5fae98a5bdc07e67451331dd0dc64bd3226faad3b219ed6609",
+    "src/Festival.Application/Festival.Application.csproj": "48f13a365861197cb2ed659be268edd7a8b70e4d0936e4356f62bc7bb043c553",
+    "src/Festival.Application/Zones/Ports/IZoneCatalogProvider.cs": "7fe2107956d874fd3ab9d677f5fe38c4196033f9e07911aafce590f3d3134641",
+    "src/Festival.Domain/Assignments/Assignment.cs": "743dc73271553247cc451f736e901fc0b952b54fa85c61475930b9c3cf9d718d",
+    "src/Festival.Domain/Assignments/AssignmentEngine.cs": "1a0710fe2b1a7bc0f54565f2c943a998084362c140a58e8c210affb12f536858",
+    "src/Festival.Domain/Assignments/AssignmentEngineResult.cs": "f9286cf984321eeea3362c2906560805bc924b79ba8b3d65465f5936e0be7c11",
+    "src/Festival.Domain/Assignments/AssignmentGroup.cs": "0e0b3e20944ecb65ab1710b297d3e3ad02444234260a140e40d27bff64cbd1f5",
+    "src/Festival.Domain/Assignments/AssignmentId.cs": "0e3a05dd61e1e3a2bbfd4ead37c3a1c75900a393fb05cc9a665e0c60602f472e",
+    "src/Festival.Domain/Assignments/AssignmentRequest.cs": "bf1f38dd57e7aeaddfc5e30c823aed3294d4445ef292846d2dd67c71268d4a45",
+    "src/Festival.Domain/Assignments/AssignmentRequestFailure.cs": "2a8e031fac3d4894075fc220d04fac67cd3c9ad4cd8d4bc0c1e8e18ff77d6783",
+    "src/Festival.Domain/Assignments/AssignmentRequestId.cs": "5727e7bac2fc963860b0fa7de91bef636940c3ef43ffdcc5413a2a0f2dedaeb2",
+    "src/Festival.Domain/Assignments/AssignmentRequestRejection.cs": "93a7c594ac89b4112c9119e56699faccbbc38f70a7a9c7118ba7b0b848377cdf",
+    "src/Festival.Domain/Assignments/AssignmentRequestStatus.cs": "f7d610812d0eee685e81fe70a03dd849d8bed318e0998669ae6f73ecefe68413",
+    "src/Festival.Domain/Assignments/AssignmentSelection.cs": "1367d55d90c8d111b582e50faa5cede06d3c99e2300fcbb03d9fd31be400fa6b",
+    "src/Festival.Domain/Assignments/AssignmentSelectionPolicy.cs": "2d7e4f117daca0ddd22f1e1e7de2c811f16a4728e406205cfed40b4b1d985d04",
+    "src/Festival.Domain/Assignments/ExperienceQuality.cs": "56559d1eb11c14287bef1ab9ba75c3197a24e9555b5ff0d5f33027929e48c4e3",
+    "src/Festival.Domain/Assignments/ExperienceQualityExtensions.cs": "9b3d0a77d4ccf8e0c908931fbd74d6d4cb7b72212d5e09c2b7cbebd044226006",
+    "src/Festival.Domain/Assignments/FairnessHistory.cs": "942fc9f90fdf61d015fb7cd1bf3d28117ac14d793f15a9b4519f06ce1ad4a133",
+    "src/Festival.Domain/Assignments/GoodExperienceDeficit.cs": "336559b48eeac6e9f2861a024e7e9d1838dfabb5956a9d19e9b59445bde386fd",
+    "src/Festival.Domain/Assignments/GroupRotationScore.cs": "1ff152845e865cb697c25160f9de5558a7572004957fd34b83b63b35451fe315",
+    "src/Festival.Domain/Assignments/GroupSize.cs": "ab1fbd18597efefff710fe495be651bbfdab89ca001d6ee58baa50bbe3780c15",
+    "src/Festival.Domain/Assignments/HistoricalDeficit.cs": "67d77b5e958ddc23acb0a48c9b9032fb74bf429116e1f9482e05a3eebf3ceba1",
+    "src/Festival.Domain/Assignments/RecentRecoveryNeed.cs": "38c173c2b36ec7ffeb1c843c7d2102c21ef718fba90ee5ede845eb5d0a9449b3",
+    "src/Festival.Domain/Assignments/RemainingInventoryCalculator.cs": "ee418c9c5e1636153fd7e1a5f3b750f9e20462eaf040a6c88e0e7f4ea7ec4f94",
+    "src/Festival.Domain/Assignments/RemainingInventoryState.cs": "9adb157cae224452a375c5ee4aadb6543520f6438dc6d6c0a3d62a6537744306",
+    "src/Festival.Domain/Assignments/RequestEligibility.cs": "22a01c0b8d35c053e54b53f4e3409ccd50b72c7bfbb70ca9b0137cf5752dece5",
+    "src/Festival.Domain/Assignments/RotationScore.cs": "36bd1a6d4a8a4872e293178d5f3477272cba6452be6ab0ef74210d261a7e01bb",
+    "src/Festival.Domain/Assignments/TargetQuality.cs": "defbf93f300bd9466f5c69b7363f48e09fcae154646e770c72da7f7346f28bb1",
+    "src/Festival.Domain/Assignments/TargetQualityPolicy.cs": "2c2097be87e8b2f3afdac18f71c96017e337a172010dc5a81c5f85392627f08d",
+    "src/Festival.Domain/Attendees/Attendee.cs": "9ec6d593f02ca6362e206d5f360c81b6738cbb33ee457b5521ad370f48965f26",
+    "src/Festival.Domain/Attendees/AttendeeCode.cs": "3afa3273fdcb67d91f1ec8d672c3e16520389884cfc3bd91caa419f8cb5c20e3",
+    "src/Festival.Domain/Attendees/AttendeeId.cs": "0577e50a735717e6662ba24e1db813c591f5e1f3c1d1f241ca5b4af69f646568",
+    "src/Festival.Domain/Festival.Domain.csproj": "e151f959964eb450a5b86b72765e3f9c505645fa9516eae485743d2b43911c8e",
+    "src/Festival.Domain/FestivalDays/AssignmentWindow.cs": "87f39ec0f6415e8c574763f09b3f22ec0d241863c9cc01cbd7f04493a37a3465",
+    "src/Festival.Domain/FestivalDays/FestivalDay.cs": "e11d103a4901c71cbf8405575b208f8cc6d5f0179b98a6211a98342390578da3",
+    "src/Festival.Domain/FestivalDays/FestivalDayId.cs": "ee588d7261e60204b19105e8f3ea8540434362b1c5e324c7a857ed39b9b04055",
+    "src/Festival.Domain/Properties/AssemblyInfo.cs": "5e2b6a4497a92275eb31b68462e871b1f17082b18908b00a80e1f8096175cbbe",
+    "src/Festival.Domain/Spots/BlockSelectionPolicy.cs": "fd0fc281847c2b498eda85031062f91d299e22c75d4b2ba3413985ab43179e18",
+    "src/Festival.Domain/Spots/FeasibleSpotBlock.cs": "46ed585e8455e3ecd8a466b230e343f83975223e26b29bc75739d6be6c05d330",
+    "src/Festival.Domain/Spots/FeasibleSpotBlockFinder.cs": "902be572d95a9281125fa1ba21879429141a08cc418ecc75d4b6b6b36f67b748",
+    "src/Festival.Domain/Spots/RowCode.cs": "efc23664681a26ca135c361e318894ca7cadc3f79516e003665819fdb36d52e4",
+    "src/Festival.Domain/Spots/Spot.cs": "7a2d397b2f5e8774e0e61c0f6ae9d477f7aa480e23ca2f8bda8eb6d65c415804",
+    "src/Festival.Domain/Spots/SpotCode.cs": "fcc03bbae2917e8aed90023de0cc8483e3f16648ed983233c50655ebd050a615",
+    "src/Festival.Domain/Spots/SpotNumber.cs": "d8d07fc77bfcd7589b98c8b31c1b482a1c4e6a75110b58ec7f82cc26d4076436",
+    "src/Festival.Domain/Zones/FeasibleZoneCandidate.cs": "eac3b0c4746f77f0213fdb0a6f3689e3170773fc88661744eb81c236772a52fe",
+    "src/Festival.Domain/Zones/FeasibleZoneCandidateFinder.cs": "5291c5378d3f0ad1060b959b5f5990ed5757a4717140e9ee40e84e134f7a077b",
+    "src/Festival.Domain/Zones/Zone.cs": "b9443ff9f3ad3bfb760a9e0d719060423dfa84f20c71b57f79e28c41454b3a96",
+    "src/Festival.Domain/Zones/ZoneAvailabilityState.cs": "54ad3646b9fa93dc3410cf1776f3e6a7d68087c4be054d2ad7c07c6404b53b05",
+    "src/Festival.Domain/Zones/ZoneEligibilityPolicy.cs": "338515f943a589028e5984e1823c65e0cd7e7a54676ee49aff290d36dd6c75ca",
+    "src/Festival.Domain/Zones/ZoneEvaluationPolicy.cs": "2d6385575089955df06c25220b9bf3247ab4d74821d756c854083ae2e7cab346",
+    "src/Festival.Domain/Zones/ZoneExperienceQualityPolicy.cs": "ccafe8e3be0957756333ab139fe1ce87bb60156a8bdb748ebe92949f237c7941",
+    "src/Festival.Domain/Zones/ZoneId.cs": "a1985c136203ac4cd875a35e144aeae0244b911633ecc3879af4f22a476faa48",
+    "src/Festival.Domain/Zones/ZoneType.cs": "0739bfc35459ac58e935a4c5d1d7e6136583833b1fb771aa6d1785f011fe229b",
+    "src/Festival.Infrastructure/Assignments/InMemory/InMemoryAssignmentRepository.cs": "77045984e0f1d9b3cef540064743d7ba365b0ad60501e644631090411791e6fd",
+    "src/Festival.Infrastructure/Assignments/InMemory/InMemoryAssignmentRequestRepository.cs": "ee9a85c732d4ed23bd1606c2e8215c2dd91fbf6084d0e52b75c0272f84fbdd13",
+    "src/Festival.Infrastructure/Assignments/InMemory/InMemoryAttendeeCodeResolver.cs": "3dfba19f388e32efbc93110e06e6b84120e1b2c6275d2eb4f20a521d9df37450",
+    "src/Festival.Infrastructure/Assignments/InMemory/InMemoryAvailableSpotProvider.cs": "edcdd2b7468ac03eda867222984643c4b5e81bcecca18b7bb0a343fc591afa01",
+    "src/Festival.Infrastructure/Assignments/InMemory/InMemoryFairnessHistoryProvider.cs": "1c17560999b2560beb9a22c9999984ec10a0811c2621a2a5f01d1767af28fe81",
+    "src/Festival.Infrastructure/Assignments/InMemory/InMemoryUnitOfWork.cs": "314e5a404e7736ee4cc0a0ddacba8d3d6f2b799ea88e3f620472195f9b310ada",
+    "src/Festival.Infrastructure/Assignments/InMemory/Seed/InMemoryAssignmentSeedData.cs": "06930cc81fc84d5c889049a11ffc2847755d609c7bee040523f7f9631daaad25",
+    "src/Festival.Infrastructure/Assignments/PostgreSql/PostgreSqlAssignmentRepository.cs": "5caf9d7d82b8b65850195853f3ab926955838163b9ad28f1f526f7eb22efda75",
+    "src/Festival.Infrastructure/Assignments/PostgreSql/PostgreSqlAssignmentRequestRepository.cs": "5ad4a03b1ff3550a9e781077889bea979b336cb1186e6cd4c7200879ea7713f1",
+    "src/Festival.Infrastructure/Assignments/PostgreSql/PostgreSqlAttendeeCodeResolver.cs": "ba2f9265d6ae9528185e1692f54de848a88d1ab00f7734aff45471e70726e899",
+    "src/Festival.Infrastructure/Assignments/PostgreSql/PostgreSqlAvailableSpotProvider.cs": "56263261554d82ef054d91fb11aa8e064a512e620bac90d85f749be26d5445af",
+    "src/Festival.Infrastructure/Assignments/PostgreSql/PostgreSqlFairnessHistoryProvider.cs": "b8475e5be990c5954a3afbe5d7fc4e6b813eaab078a1ff8659ab31b319b13cd6",
+    "src/Festival.Infrastructure/DependencyInjection.cs": "f2bb3383ec32da25cf895489e0b9c76599e4a59cae347526f4b7721be51b3f20",
+    "src/Festival.Infrastructure/Festival.Infrastructure.csproj": "d33ddc65a88493b6e5b70c7c27044c6b94b8bf6f57020e1653769b8729d59426",
+    "src/Festival.Infrastructure/Persistence/Configurations/AssignmentConfiguration.cs": "d12e7230808d56d4db43b2f5a92ffc3ee25db433c5882b74e2680cd563c25a44",
+    "src/Festival.Infrastructure/Persistence/Configurations/AssignmentRequestAttendeeRowConfiguration.cs": "73c1778300f12b701ee9d5abf77c8d171b09da0eae43b247f95bff816112c91c",
+    "src/Festival.Infrastructure/Persistence/Configurations/AssignmentRequestRowConfiguration.cs": "56fd2c2d5574d79e34889bffe4d7147f5e6818944283416af0e4a9f837e8bd05",
+    "src/Festival.Infrastructure/Persistence/Configurations/AttendeeConfiguration.cs": "a2ecb709f3d43b5a8760e35d4ee20605742ce910d98825349b1eb6a49ee6191e",
+    "src/Festival.Infrastructure/Persistence/Configurations/FestivalDayConfiguration.cs": "79220683d0857c533875db6b1963bfa523187e815b2b0c4abc52e36834c4b00d",
+    "src/Festival.Infrastructure/Persistence/Configurations/PersistenceLengths.cs": "c6056d97dc8d3085875e3fa68dba58f1baaf06f34abfe1efdbf29ee8ed20fccf",
+    "src/Festival.Infrastructure/Persistence/Configurations/SpotConfiguration.cs": "f2cdf127c1f41f0e60665d751d01616b4d75045be1a955c0e2c8f925f3585329",
+    "src/Festival.Infrastructure/Persistence/Configurations/ZoneConfiguration.cs": "384bb4cc4129412d156779c7c9b76d11e6af9086a54f8c553f905de19217fc28",
+    "src/Festival.Infrastructure/Persistence/EfCoreUnitOfWork.cs": "e018d9f37bbfb950eee8acc60f5f43a7264fe713368c92756e88ffad56f6fb7f",
+    "src/Festival.Infrastructure/Persistence/FestivalDbContext.cs": "e31cd1b45d16b3a1209009475986cce3aeef2c148b1e65e31f571c21bfffad78",
+    "src/Festival.Infrastructure/Persistence/FestivalDbContextDesignTimeFactory.cs": "c9e13fc94665b5fde2800433f051b079512f5b7ce05ba89a9dd03ca0e420f4be",
+    "src/Festival.Infrastructure/Persistence/Mappers/AssignmentRequestMapper.cs": "fe91c46381af114a440724674f470b88e0f6c16111767409be99b3aba8bdadbc",
+    "src/Festival.Infrastructure/Persistence/Migrations/20260722174748_InitialCreate.Designer.cs": "4cf715807be9492b6705952c6b955f70ab612d054c9b79f740ffbf0d57af96f9",
+    "src/Festival.Infrastructure/Persistence/Migrations/20260722174748_InitialCreate.cs": "b1017281aa65fe2a1ee06d5bdddbf33cd47501c567bc44ee198f54422aefbe79",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261003222327_AddRequestEligibility.Designer.cs": "de82c09a075c384a190845592d1e289900aa354e1c7e4c98f18528afa6d64bf0",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261003222327_AddRequestEligibility.cs": "ac52c4abc0f6bcfcc1c30b071b08abc907bfe2be9876779d58ec9e473730d299",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261003225947_AddZoneFrontStanding.Designer.cs": "1f9acfcd4572293c9c0797f54c678b768b0c3975b073faa1aa2c13edd4fa6555",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261003225947_AddZoneFrontStanding.cs": "9e23155e816e77a98ea8225c6a3978a23f856af7e9b0d16fc98f0bf377ab6c37",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261006224301_IntroduceZoneType.Designer.cs": "348f63ec7ad2e83c4c2d6ab3f351606ba425dbe35da5fe551b553d534fdb4d98",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261006224301_IntroduceZoneType.cs": "19405e6b12297ba72a31a0ebba989bf13c0e1e717205b6a3b3e0914ebe2c8add",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261019233345_RecordAssignmentExperienceQuality.Designer.cs": "20419918c730c7eac59321237e30af565046a778b2445618d9faae6c6be9bd1a",
+    "src/Festival.Infrastructure/Persistence/Migrations/20261019233345_RecordAssignmentExperienceQuality.cs": "3cd0ea7c99dbb6195bcb13756fe81af161d0a309a6119c6d00ee44c3b2b5466d",
+    "src/Festival.Infrastructure/Persistence/Migrations/FestivalDbContextModelSnapshot.cs": "f047ed7659360a10743cf091286e1ad705759113d1e131b5b9ba95d1e9af24f7",
+    "src/Festival.Infrastructure/Persistence/Models/AssignmentRequestAttendeeRow.cs": "398ef4899b509ff0934356f7a8b4b389462e04d3486b57ca3f2476ec8c6960ee",
+    "src/Festival.Infrastructure/Persistence/Models/AssignmentRequestRow.cs": "d3b0a9e3ed4491339f220e6162b41aacca1b2c8aa4c504c025a1b277188dc3f5",
+    "src/Festival.Infrastructure/Persistence/PostgreSqlAssignmentConflictTranslator.cs": "7ea260a8c4cf14a7e819bea1b6c8d8f892a9fa3e674da677f6060354758810ce",
+    "src/Festival.Infrastructure/Properties/AssemblyInfo.cs": "05ab9bf3f1ab94dc5c9c36324a99433ad6390e58cc7bbe206eb59bbaab3dd6c0",
+    "src/Festival.Infrastructure/Zones/InMemory/InMemoryZoneCatalogProvider.cs": "5519e0cb39d059062051cbe1d5cac846cae87a218bec844e008663c632e1e006",
+    "src/Festival.Infrastructure/Zones/PostgreSql/PostgreSqlZoneCatalogProvider.cs": "68abde5bf4e440fd881fd051ed0e2c0b3f058ad0c71c4a731e92d1e19fbc4085",
+    "src/Festival.Simulation/ArrivalDistributionGenerator.cs": "3204cf95f45b5b468e42e64f53f09355000b29ec0297ce50fb9feb8ca3f032f6",
+    "src/Festival.Simulation/AttendeePathReconstructor.cs": "5fb5114e796ed4e92342dc6b2170dbfd46c2a7a8b4cd5375f50e3a5ac26f82f7",
+    "src/Festival.Simulation/AttendeePathRecord.cs": "e195b600bc161617db226ecfea55ca78ba6f6046f4f0bed8059d4215f69a2788",
+    "src/Festival.Simulation/AttendeeRecoveryAnalyzer.cs": "3f47306a47d58d4eb3b139943e4fb9ab501c6d134333c267f75028827e86c947",
+    "src/Festival.Simulation/AttendeeRecoveryRecord.cs": "31c832a8b87ae7a890ff16047ef889fa12e5e9524ac0fd197e8a68cacddd3573",
+    "src/Festival.Simulation/ConcurrentSimulationExecutor.cs": "c5bab9fc4111517db3761d9ab58c21a14daf189a6e871a7d39b0e106f30e5b21",
+    "src/Festival.Simulation/DailySimulationCheckpoint.cs": "7e218151ad36c3330a64c3d8d3ea5b3fb124b1effbca91a9fcff9fd9a9ffa2b3",
+    "src/Festival.Simulation/DeterministicRandom.cs": "d84448af938d847e4fb806124b6dbfa4346a2bb733713bd2443acd1a816c63fe",
+    "src/Festival.Simulation/Festival.Simulation.csproj": "e19f487f2ba0f47ecb3c7419c7019402b34cc22805c1a0ca7e8ce36522d1c493",
+    "src/Festival.Simulation/GroupDistributionGenerator.cs": "5fa992a9bb974bf2deec58ee7cf02b6755f162fdb3807cc24ae214af3683df71",
+    "src/Festival.Simulation/MinimalRecoveryScenarioDefinition.cs": "f55b1357542406058b7fb5f5eda516a1645cd2092ade789a8aeb0bf93abd2806",
+    "src/Festival.Simulation/MinimalSimulationRunner.cs": "44de06c82f1a9d0583c578c8ec946fd88599d8db9a83fef9d22bd114d9827310",
+    "src/Festival.Simulation/PathClassificationRubric.cs": "9d848237a9b70a2b43f650c52bdea7f595f2e4637a4a7f89ed4a36b700338db6",
+    "src/Festival.Simulation/PercentageAllocation.cs": "6e4c5bff7dd20c0b3f9dd9ba0f7afc83d367e8382a4e18ad1647fdde0ade24a2",
+    "src/Festival.Simulation/Program.cs": "2e4e00bee671a1bdb25aa48a3ffc8d8f79a222dcbe042d2ddaf02068ec2dc54e",
+    "src/Festival.Simulation/RepresentativeScenarioDefinitions.cs": "3cdceae857e2ae32ce6270b09401fa5b9da1d82935abc65a82f00f35e2332a48",
+    "src/Festival.Simulation/RepresentativeWorkloadDefinition.cs": "6219a9e7a02bdc57de3adbd07d77fcb29ed82110284700dc9789b469655433dd",
+    "src/Festival.Simulation/RequestEvaluationObservation.cs": "173fe28c86debfcb7dd65482fd728992f59ad8cd2b637e11dc14bef4896182c4",
+    "src/Festival.Simulation/S5ReversedProcessingOrder.cs": "d7e23d0aad99550fe23c5d3cfc9fc11ff29a36490c5b86537d333a57d39ee75c",
+    "src/Festival.Simulation/S6LargeGroupsScenarioDefinition.cs": "752cf16917c5bffe554df60c678a905e1d85af3a02221f552dcdd321660809f5",
+    "src/Festival.Simulation/S7ScenarioPair.cs": "2dc52bf6e0f63abeee10e1d8673a3f4cb7e960b135c8ef804a5c803f68a4b88d",
+    "src/Festival.Simulation/S8ConcurrentExecution.cs": "3f736014e23da7b435ab09bb5930e870c62e763291f59b1fc250748b30afeb7b",
+    "src/Festival.Simulation/ScenarioDefinition.cs": "d6098413cd1f2f104a2bc09134356379531cddaa9dd32bd7766bfe209220af44",
+    "src/Festival.Simulation/ScenarioManifest.cs": "12df46620010e321fb03fdeae3787b8bbac9f9ab5f0f02e0808748f546468961",
+    "src/Festival.Simulation/ScenarioMaterializer.cs": "83ad84fd2a9f2a3bc2a105f4866813b1a3c9efd066fe3b4194747da32db6e365",
+    "src/Festival.Simulation/SimulationEvidenceExporter.cs": "38d9f766eed4e388e71eb62253d2e0287cfda0105b65f4e2019c2bf66f9a46ce",
+    "src/Festival.Simulation/SimulationExecutionConfiguration.cs": "3d4da523d1a85b03a0c9ad102f5c017fe2f1b809c89e4850acee0c1f703e3bbd",
+    "src/Festival.Simulation/SimulationMetrics.cs": "1f8093d30bde46b0ffe6c6b203319151ab0a1a86b8ce0c4e6fc37d9c310dbf13",
+    "src/Festival.Simulation/SimulationMetricsCalculator.cs": "8b50f47c6a442235d29a550075a324d343077a2376c868bfb1f8837ccf6f7043",
+    "src/Festival.Simulation/SimulationResult.cs": "bb453386e6f513c29c3a8cac7180d98a0d7a167d8f4acae2c62eadf1b5d201f4",
+    "src/Festival.Simulation/SimulationRunMetadata.cs": "d3cd86c31c7ae3206a7e01bcc320de9064349593a1eed8ac9e4d48a4a37ce9bc"
+  },
+  "perSeedComparison": [
+    {
+      "seed": 1001,
+      "configurations": {
+        "1": {
+          "runId": "official-s8-c1-1001-c86637ca425a462db8eb9c192e373b4c",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 7320,
+            "successful": 7320,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 0,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.0,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 27.0951,
+            "p95Ms": 46.3818,
+            "p99Ms": 67.7312,
+            "executionSeconds": 237.112157,
+            "throughput": 30.871466451211948,
+            "firstEntryOffset": 0.3103617,
+            "lastTerminalOffset": 237.4225187,
+            "successfulRequestThroughput": 30.871466451211948,
+            "successfulAssignmentThroughput": 92.7830958916206
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5354,
+            "participatingAttendees": 5354,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 0,
+            "noPersistedPath": 0,
+            "insufficientEvidence": 232,
+            "classifiable": 5122
+          },
+          "persistedAssignmentCount": 22000,
+          "persistedInvariantViolationCount": 0
+        },
+        "4": {
+          "runId": "official-s8-c4-1001-74493949e6ac4c6fb3223f415842ea67",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 1830,
+            "successful": 1830,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 5490,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.75,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 74.0519,
+            "p95Ms": 2068.1561,
+            "p99Ms": 3065.9741,
+            "executionSeconds": 935.4962965,
+            "throughput": 7.824723654584773,
+            "firstEntryOffset": 0.3008349,
+            "lastTerminalOffset": 935.7971314,
+            "successfulRequestThroughput": 1.9561809136461932,
+            "successfulAssignmentThroughput": 4.0235327644613506
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5354,
+            "participatingAttendees": 2764,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 2590,
+            "noPersistedPath": 2590,
+            "insufficientEvidence": 1930,
+            "classifiable": 834
+          },
+          "persistedAssignmentCount": 3764,
+          "persistedInvariantViolationCount": 0
+        },
+        "16": {
+          "runId": "official-s8-c16-1001-2a67b8be05b445da912caa77d8e1ecd2",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 461,
+            "successful": 461,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 6859,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.9370218579234972,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 265.399,
+            "p95Ms": 3262.2926,
+            "p99Ms": 8254.0788,
+            "executionSeconds": 445.7885513,
+            "throughput": 16.420340941133542,
+            "firstEntryOffset": 0.0407781,
+            "lastTerminalOffset": 445.8293294,
+            "successfulRequestThroughput": 1.0341225647353227,
+            "successfulAssignmentThroughput": 2.2005948720289625
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5354,
+            "participatingAttendees": 909,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 4445,
+            "noPersistedPath": 4445,
+            "insufficientEvidence": 842,
+            "classifiable": 67
+          },
+          "persistedAssignmentCount": 981,
+          "persistedInvariantViolationCount": 0
+        }
+      }
+    },
+    {
+      "seed": 2001,
+      "configurations": {
+        "1": {
+          "runId": "official-s8-c1-2001-1acf79ee5a7c4f459f16ce10f4a7686e",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 7320,
+            "successful": 7320,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 0,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.0,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 28.7259,
+            "p95Ms": 51.8213,
+            "p99Ms": 80.8158,
+            "executionSeconds": 256.7577017,
+            "throughput": 28.50936876103063,
+            "firstEntryOffset": 0.0471468,
+            "lastTerminalOffset": 256.8048485,
+            "successfulRequestThroughput": 28.50936876103063,
+            "successfulAssignmentThroughput": 85.68389518342538
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5359,
+            "participatingAttendees": 5359,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 0,
+            "noPersistedPath": 0,
+            "insufficientEvidence": 244,
+            "classifiable": 5115
+          },
+          "persistedAssignmentCount": 22000,
+          "persistedInvariantViolationCount": 0
+        },
+        "4": {
+          "runId": "official-s8-c4-2001-0d27719f69eb41e48c15e7326c66ab1a",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 1830,
+            "successful": 1830,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 5490,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.75,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 81.6736,
+            "p95Ms": 2072.6003,
+            "p99Ms": 3071.2585,
+            "executionSeconds": 1024.4704766,
+            "throughput": 7.145154660086961,
+            "firstEntryOffset": 0.0290659,
+            "lastTerminalOffset": 1024.4995425,
+            "successfulRequestThroughput": 1.7862886650217402,
+            "successfulAssignmentThroughput": 3.629191943470399
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5359,
+            "participatingAttendees": 2793,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 2566,
+            "noPersistedPath": 2566,
+            "insufficientEvidence": 2025,
+            "classifiable": 768
+          },
+          "persistedAssignmentCount": 3718,
+          "persistedInvariantViolationCount": 0
+        },
+        "16": {
+          "runId": "official-s8-c16-2001-a9541531d9ad47f3873dee98a8dd17e2",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 460,
+            "successful": 460,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 6860,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.9371584699453552,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 286.0524,
+            "p95Ms": 4212.878,
+            "p99Ms": 8298.0779,
+            "executionSeconds": 476.7181994,
+            "throughput": 15.354983319732685,
+            "firstEntryOffset": 0.0430061,
+            "lastTerminalOffset": 476.7612055,
+            "successfulRequestThroughput": 0.9649306457755512,
+            "successfulAssignmentThroughput": 2.0200613301779473
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5359,
+            "participatingAttendees": 899,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 4460,
+            "noPersistedPath": 4460,
+            "insufficientEvidence": 837,
+            "classifiable": 62
+          },
+          "persistedAssignmentCount": 963,
+          "persistedInvariantViolationCount": 0
+        }
+      }
+    },
+    {
+      "seed": 3001,
+      "configurations": {
+        "1": {
+          "runId": "official-s8-c1-3001-ae125d37d9264998a9af24c4a8bfb913",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 7320,
+            "successful": 7320,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 0,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.0,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 28.351,
+            "p95Ms": 48.6828,
+            "p99Ms": 75.0108,
+            "executionSeconds": 249.0028646,
+            "throughput": 29.397252163178525,
+            "firstEntryOffset": 0.0366858,
+            "lastTerminalOffset": 249.0395504,
+            "successfulRequestThroughput": 29.397252163178525,
+            "successfulAssignmentThroughput": 88.35239721173875
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5344,
+            "participatingAttendees": 5344,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 0,
+            "noPersistedPath": 0,
+            "insufficientEvidence": 218,
+            "classifiable": 5126
+          },
+          "persistedAssignmentCount": 22000,
+          "persistedInvariantViolationCount": 0
+        },
+        "4": {
+          "runId": "official-s8-c4-3001-e6208bd5f6344211ab7d87b77364ee41",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 1830,
+            "successful": 1830,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 5490,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.75,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 87.2477,
+            "p95Ms": 2096.9921,
+            "p99Ms": 3073.8688,
+            "executionSeconds": 1078.7237008,
+            "throughput": 6.785796951129712,
+            "firstEntryOffset": 0.0394623,
+            "lastTerminalOffset": 1078.7631631,
+            "successfulRequestThroughput": 1.696449237782428,
+            "successfulAssignmentThroughput": 3.4624250836706936
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5344,
+            "participatingAttendees": 2810,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 2534,
+            "noPersistedPath": 2534,
+            "insufficientEvidence": 2021,
+            "classifiable": 789
+          },
+          "persistedAssignmentCount": 3735,
+          "persistedInvariantViolationCount": 0
+        },
+        "16": {
+          "runId": "official-s8-c16-3001-8937f45b4f7b4cd99fcb34e856d61036",
+          "outcomes": {
+            "attemptedRequests": 7320,
+            "normallyProcessedRequests": 460,
+            "successful": 460,
+            "domainRejected": 0,
+            "knownConcurrencyConflict": 6860,
+            "unexpectedTechnicalFailure": 0,
+            "excludedInvalidInput": 0,
+            "successRate": 1.0,
+            "rejectionRate": 0.0,
+            "knownConcurrencyConflictRate": 0.9371584699453552,
+            "technicalErrorRate": 0.0
+          },
+          "performance": {
+            "sampleCount": 7320,
+            "p50Ms": 254.4637,
+            "p95Ms": 4176.7403,
+            "p99Ms": 7269.9115,
+            "executionSeconds": 461.9475443,
+            "throughput": 15.845955001432399,
+            "firstEntryOffset": 0.0384221,
+            "lastTerminalOffset": 461.9859664,
+            "successfulRequestThroughput": 0.9957840574670633,
+            "successfulAssignmentThroughput": 2.177736438721447
+          },
+          "population": {
+            "registeredAttendees": 5500,
+            "requestingAttendees": 5344,
+            "participatingAttendees": 933,
+            "attendeesWithOnlyRejectedOrFailedAttempts": 4411,
+            "noPersistedPath": 4411,
+            "insufficientEvidence": 862,
+            "classifiable": 71
+          },
+          "persistedAssignmentCount": 1006,
+          "persistedInvariantViolationCount": 0
+        }
+      }
+    }
+  ],
   "analysisSourceSha256": {
-    "analyze_s8_concurrency.py": "1e2e9779176e74ce21cafcfaa8542944b910497ac6b6f18e9a1b053a4ebbddb9",
+    "analyze_s8_concurrency.py": "8baadb4a0da4d33b057e8f35d0d24208aa1e80b9784ddc2340221004bddb60af",
     "analyze_s2_paths.py": "a22f739fc6abbc365aa7e106bf89a48654b6da4ae83fe933aa9e0985093f9dc5",
     "analyze_s6_groups.py": "86c85368d4a4a6f28feb714dae71d29f02fa03e033f667f58502ede09f259b73",
     "analyze_s5_order.py": "6c104668399836f834dae01bcdb36e5bdcd9045e84975aeaf38c1c068dead195",
@@ -544,7 +1060,9 @@
         "executionSeconds": 935.4962965,
         "throughput": 7.824723654584773,
         "firstEntryOffset": 0.3008349,
-        "lastTerminalOffset": 935.7971314
+        "lastTerminalOffset": 935.7971314,
+        "successfulRequestThroughput": 1.9561809136461932,
+        "successfulAssignmentThroughput": 4.0235327644613506
       },
       "population": {
         "registeredAttendees": 5500,
@@ -901,7 +1419,9 @@
         "executionSeconds": 1024.4704766,
         "throughput": 7.145154660086961,
         "firstEntryOffset": 0.0290659,
-        "lastTerminalOffset": 1024.4995425
+        "lastTerminalOffset": 1024.4995425,
+        "successfulRequestThroughput": 1.7862886650217402,
+        "successfulAssignmentThroughput": 3.629191943470399
       },
       "population": {
         "registeredAttendees": 5500,
@@ -1258,7 +1778,9 @@
         "executionSeconds": 1078.7237008,
         "throughput": 6.785796951129712,
         "firstEntryOffset": 0.0394623,
-        "lastTerminalOffset": 1078.7631631
+        "lastTerminalOffset": 1078.7631631,
+        "successfulRequestThroughput": 1.696449237782428,
+        "successfulAssignmentThroughput": 3.4624250836706936
       },
       "population": {
         "registeredAttendees": 5500,
@@ -1615,7 +2137,9 @@
         "executionSeconds": 445.7885513,
         "throughput": 16.420340941133542,
         "firstEntryOffset": 0.0407781,
-        "lastTerminalOffset": 445.8293294
+        "lastTerminalOffset": 445.8293294,
+        "successfulRequestThroughput": 1.0341225647353227,
+        "successfulAssignmentThroughput": 2.2005948720289625
       },
       "population": {
         "registeredAttendees": 5500,
@@ -1972,7 +2496,9 @@
         "executionSeconds": 476.7181994,
         "throughput": 15.354983319732685,
         "firstEntryOffset": 0.0430061,
-        "lastTerminalOffset": 476.7612055
+        "lastTerminalOffset": 476.7612055,
+        "successfulRequestThroughput": 0.9649306457755512,
+        "successfulAssignmentThroughput": 2.0200613301779473
       },
       "population": {
         "registeredAttendees": 5500,
@@ -2329,7 +2855,9 @@
         "executionSeconds": 461.9475443,
         "throughput": 15.845955001432399,
         "firstEntryOffset": 0.0384221,
-        "lastTerminalOffset": 461.9859664
+        "lastTerminalOffset": 461.9859664,
+        "successfulRequestThroughput": 0.9957840574670633,
+        "successfulAssignmentThroughput": 2.177736438721447
       },
       "population": {
         "registeredAttendees": 5500,
@@ -2615,9 +3143,1154 @@
         "maxDurationMs": 13185.5369
       },
       "failureDiagnostics": []
+    },
+    {
+      "seed": 1001,
+      "concurrencyLevel": 1,
+      "runId": "official-s8-c1-1001-c86637ca425a462db8eb9c192e373b4c",
+      "evidencePath": "/Users/christiansotobueno/Principal/Proyectos/software/festival-assignment-system/artifacts/simulations/s2-expected-baseline/official-s8-c1-1001-c86637ca425a462db8eb9c192e373b4c",
+      "metadata": {
+        "runId": "official-s8-c1-1001-c86637ca425a462db8eb9c192e373b4c",
+        "scenarioId": "s2-expected-baseline",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 1001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "3f45b4efe32c8b4b03d6aadb5434e22a3c35ca09",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-09T00:34:40.3278850Z",
+        "completedAt": "2026-11-09T00:38:45.5296610Z",
+        "repetition": 1,
+        "executionEnvironment": {
+          "operatingSystem": "Darwin 24.6.0 Darwin Kernel Version 24.6.0: Mon Jan 19 22:00:10 PST 2026; root:xnu-11417.140.69.708.3~1/RELEASE_X86_64",
+          "runtime": ".NET 8.0.3",
+          "dotNetVersion": "8.0.3",
+          "processorCount": 16,
+          "postgreSqlImage": "postgres:16.3-alpine",
+          "databaseContext": "Runner-owned PostgreSQL via Docker/Testcontainers"
+        },
+        "workloadSourceScenarioId": null,
+        "orderingTransformation": null
+      },
+      "integrity": {
+        "invariantViolationCount": 0,
+        "violations": [],
+        "finalStateOnly": true,
+        "persistedRequestCount": 7320,
+        "persistedAssignmentCount": 22000,
+        "completedFestivalDays": 5,
+        "sha256": {
+          "run-metadata.json": "f8d86b7b3cfa03497ce2f6eee7fa4ea8d570afe92b1e77f90cae851300110b47",
+          "definition.json": "f2b5a7e15e241d9b9e1b6ffee5da44a1802e09b98c84abab1b183672e09e4b8d",
+          "manifest.json": "8d5cfd8ad9a6d6de9173e36f011c3cccd47f709a600e2db771f9141ebd833a9c",
+          "attempts.json": "0fb1b199e0f05419a6f1ec46a5caeb93e7f9e95497494a7cfef6991933012f7c",
+          "checkpoints.json": "0d2818b4b7a64f545c11de2b2b671076a54d242bfe99ca80dcd8ae2ebea3945f",
+          "attendee-paths.json": "17829e2eeb97391de6b44b758e556fa5424b7674dafffc7ee6a478eebab94ae7",
+          "recovery-observations.json": "47b0950129309c77a54220385aa0fea804a58050d6950e3aac929ed1c2967884",
+          "metrics.json": "2062598afd081d050d8752130e46ca3b19380478106deb8a22ba90b88cf1c39a"
+        }
+      },
+      "outcomes": {
+        "attemptedRequests": 7320,
+        "normallyProcessedRequests": 7320,
+        "successful": 7320,
+        "domainRejected": 0,
+        "knownConcurrencyConflict": 0,
+        "unexpectedTechnicalFailure": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "knownConcurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "performance": {
+        "sampleCount": 7320,
+        "p50Ms": 27.0951,
+        "p95Ms": 46.3818,
+        "p99Ms": 67.7312,
+        "executionSeconds": 237.112157,
+        "throughput": 30.871466451211948,
+        "firstEntryOffset": 0.3103617,
+        "lastTerminalOffset": 237.4225187,
+        "successfulRequestThroughput": 30.871466451211948,
+        "successfulAssignmentThroughput": 92.7830958916206
+      },
+      "population": {
+        "registeredAttendees": 5500,
+        "requestingAttendees": 5354,
+        "participatingAttendees": 5354,
+        "attendeesWithOnlyRejectedOrFailedAttempts": 0,
+        "noPersistedPath": 0,
+        "insufficientEvidence": 232,
+        "classifiable": 5122
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 5354,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 232,
+        "classifiablePathCount": 5122,
+        "balancedPathCount": 2903,
+        "acceptablePathCount": 1649,
+        "notBalancedPathCount": 570,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.04333208815838625,
+        "classifiablePathRate": 0.9566679118416137,
+        "balancedPathRate": 0.5667707926591176,
+        "acceptablePathRate": 0.3219445529090199,
+        "notBalancedPathRate": 0.11128465443186256,
+        "persistedOutcomeCount": 22000,
+        "goodOutcomeCount": 8736,
+        "mediumOutcomeCount": 11231,
+        "badOutcomeCount": 2033,
+        "goodOutcomeRate": 0.3970909090909091,
+        "mediumOutcomeRate": 0.5105,
+        "badOutcomeRate": 0.09240909090909091
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 1908,
+        "recoveredEpisodeCount": 1407,
+        "unresolvedEpisodeCount": 501,
+        "recoveryEligibleEpisodeCount": 1447,
+        "recoveryIneligibleEpisodeCount": 461,
+        "recoveryRate": 0.972356599861783,
+        "recoveredToMediumCount": 687,
+        "recoveredToGoodCount": 720,
+        "averageOpportunitiesToRecovery": 1.0561478322672353,
+        "medianOpportunitiesToRecovery": 1,
+        "opportunityDistribution": [
+          {
+            "opportunities": 1,
+            "episodeCount": 1331,
+            "rateAmongRecovered": 0.9459843638948117
+          },
+          {
+            "opportunities": 2,
+            "episodeCount": 73,
+            "rateAmongRecovered": 0.051883439943141436
+          },
+          {
+            "opportunities": 3,
+            "episodeCount": 3,
+            "rateAmongRecovered": 0.0021321961620469083
+          }
+        ]
+      },
+      "conflictByDay": [
+        {
+          "category": 1,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 2,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 3,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 4,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 5,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictByBaselineThird": [
+        {
+          "category": "first",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "middle",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "last",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictByGroupSize": [
+        {
+          "category": "1",
+          "attemptedRequests": 1100,
+          "normallyProcessedRequests": 1100,
+          "successful": 1100,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "2",
+          "attemptedRequests": 2195,
+          "normallyProcessedRequests": 2195,
+          "successful": 2195,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "3",
+          "attemptedRequests": 1830,
+          "normallyProcessedRequests": 1830,
+          "successful": 1830,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "4",
+          "attemptedRequests": 1100,
+          "normallyProcessedRequests": 1100,
+          "successful": 1100,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "5",
+          "attemptedRequests": 585,
+          "normallyProcessedRequests": 585,
+          "successful": 585,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "6–7",
+          "attemptedRequests": 365,
+          "normallyProcessedRequests": 365,
+          "successful": 365,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "8–10",
+          "attemptedRequests": 145,
+          "normallyProcessedRequests": 145,
+          "successful": 145,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictDiagnostics": [],
+      "windowSummary": null,
+      "sequentialSummary": {
+        "requestCount": 7320,
+        "noConcurrentWindows": true,
+        "oneRequestCompletesBeforeNextStarts": true
+      },
+      "failureDiagnostics": []
+    },
+    {
+      "seed": 2001,
+      "concurrencyLevel": 1,
+      "runId": "official-s8-c1-2001-1acf79ee5a7c4f459f16ce10f4a7686e",
+      "evidencePath": "/Users/christiansotobueno/Principal/Proyectos/software/festival-assignment-system/artifacts/simulations/s2-expected-baseline/official-s8-c1-2001-1acf79ee5a7c4f459f16ce10f4a7686e",
+      "metadata": {
+        "runId": "official-s8-c1-2001-1acf79ee5a7c4f459f16ce10f4a7686e",
+        "scenarioId": "s2-expected-baseline",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 2001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "3f45b4efe32c8b4b03d6aadb5434e22a3c35ca09",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-09T00:38:46.2624880Z",
+        "completedAt": "2026-11-09T00:43:07.1940620Z",
+        "repetition": 1,
+        "executionEnvironment": {
+          "operatingSystem": "Darwin 24.6.0 Darwin Kernel Version 24.6.0: Mon Jan 19 22:00:10 PST 2026; root:xnu-11417.140.69.708.3~1/RELEASE_X86_64",
+          "runtime": ".NET 8.0.3",
+          "dotNetVersion": "8.0.3",
+          "processorCount": 16,
+          "postgreSqlImage": "postgres:16.3-alpine",
+          "databaseContext": "Runner-owned PostgreSQL via Docker/Testcontainers"
+        },
+        "workloadSourceScenarioId": null,
+        "orderingTransformation": null
+      },
+      "integrity": {
+        "invariantViolationCount": 0,
+        "violations": [],
+        "finalStateOnly": true,
+        "persistedRequestCount": 7320,
+        "persistedAssignmentCount": 22000,
+        "completedFestivalDays": 5,
+        "sha256": {
+          "run-metadata.json": "ff46382f15f3ac36980bd734bc070068842a71a6c9b900e8ee8708aa1a979c1d",
+          "definition.json": "1897b11b6bf19e1bc2ad1c17580c3712343744620eb96267527a788af2a085c8",
+          "manifest.json": "188d2e26c7da3685de9cf108edec2892392827f644ee1886ef6ff49696a0b593",
+          "attempts.json": "d11af205555850fa013590ceab5cfa2b885b4d27287992ff720ff4cc2a802496",
+          "checkpoints.json": "b83e22f4efb3525a30ef177dd5b7e8eebccee956343e5cd1e4621bdf8fe83b78",
+          "attendee-paths.json": "743b902616bf748e68febebd7c94b481d79fc9925e753c60c4f9c748ce53db19",
+          "recovery-observations.json": "70783c497e35540fbda8654ce1ee6b1d1c2b79596c8c0d91f298cf22c396e618",
+          "metrics.json": "277bf45af2059f9add2dc85469ef405043a95c6f3d518b46561b12383a5486cd"
+        }
+      },
+      "outcomes": {
+        "attemptedRequests": 7320,
+        "normallyProcessedRequests": 7320,
+        "successful": 7320,
+        "domainRejected": 0,
+        "knownConcurrencyConflict": 0,
+        "unexpectedTechnicalFailure": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "knownConcurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "performance": {
+        "sampleCount": 7320,
+        "p50Ms": 28.7259,
+        "p95Ms": 51.8213,
+        "p99Ms": 80.8158,
+        "executionSeconds": 256.7577017,
+        "throughput": 28.50936876103063,
+        "firstEntryOffset": 0.0471468,
+        "lastTerminalOffset": 256.8048485,
+        "successfulRequestThroughput": 28.50936876103063,
+        "successfulAssignmentThroughput": 85.68389518342538
+      },
+      "population": {
+        "registeredAttendees": 5500,
+        "requestingAttendees": 5359,
+        "participatingAttendees": 5359,
+        "attendeesWithOnlyRejectedOrFailedAttempts": 0,
+        "noPersistedPath": 0,
+        "insufficientEvidence": 244,
+        "classifiable": 5115
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 5359,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 244,
+        "classifiablePathCount": 5115,
+        "balancedPathCount": 2880,
+        "acceptablePathCount": 1682,
+        "notBalancedPathCount": 553,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.04553088262735585,
+        "classifiablePathRate": 0.9544691173726442,
+        "balancedPathRate": 0.5630498533724341,
+        "acceptablePathRate": 0.3288367546432063,
+        "notBalancedPathRate": 0.10811339198435972,
+        "persistedOutcomeCount": 22000,
+        "goodOutcomeCount": 8738,
+        "mediumOutcomeCount": 11228,
+        "badOutcomeCount": 2034,
+        "goodOutcomeRate": 0.3971818181818182,
+        "mediumOutcomeRate": 0.5103636363636364,
+        "badOutcomeRate": 0.09245454545454546
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 1900,
+        "recoveredEpisodeCount": 1403,
+        "unresolvedEpisodeCount": 497,
+        "recoveryEligibleEpisodeCount": 1449,
+        "recoveryIneligibleEpisodeCount": 451,
+        "recoveryRate": 0.9682539682539683,
+        "recoveredToMediumCount": 714,
+        "recoveredToGoodCount": 689,
+        "averageOpportunitiesToRecovery": 1.0612972202423379,
+        "medianOpportunitiesToRecovery": 1,
+        "opportunityDistribution": [
+          {
+            "opportunities": 1,
+            "episodeCount": 1320,
+            "rateAmongRecovered": 0.9408410548823949
+          },
+          {
+            "opportunities": 2,
+            "episodeCount": 80,
+            "rateAmongRecovered": 0.05702066999287242
+          },
+          {
+            "opportunities": 3,
+            "episodeCount": 3,
+            "rateAmongRecovered": 0.0021382751247327157
+          }
+        ]
+      },
+      "conflictByDay": [
+        {
+          "category": 1,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 2,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 3,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 4,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 5,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictByBaselineThird": [
+        {
+          "category": "first",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "middle",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "last",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictByGroupSize": [
+        {
+          "category": "1",
+          "attemptedRequests": 1100,
+          "normallyProcessedRequests": 1100,
+          "successful": 1100,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "2",
+          "attemptedRequests": 2195,
+          "normallyProcessedRequests": 2195,
+          "successful": 2195,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "3",
+          "attemptedRequests": 1830,
+          "normallyProcessedRequests": 1830,
+          "successful": 1830,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "4",
+          "attemptedRequests": 1100,
+          "normallyProcessedRequests": 1100,
+          "successful": 1100,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "5",
+          "attemptedRequests": 585,
+          "normallyProcessedRequests": 585,
+          "successful": 585,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "6–7",
+          "attemptedRequests": 365,
+          "normallyProcessedRequests": 365,
+          "successful": 365,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "8–10",
+          "attemptedRequests": 145,
+          "normallyProcessedRequests": 145,
+          "successful": 145,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictDiagnostics": [],
+      "windowSummary": null,
+      "sequentialSummary": {
+        "requestCount": 7320,
+        "noConcurrentWindows": true,
+        "oneRequestCompletesBeforeNextStarts": true
+      },
+      "failureDiagnostics": []
+    },
+    {
+      "seed": 3001,
+      "concurrencyLevel": 1,
+      "runId": "official-s8-c1-3001-ae125d37d9264998a9af24c4a8bfb913",
+      "evidencePath": "/Users/christiansotobueno/Principal/Proyectos/software/festival-assignment-system/artifacts/simulations/s2-expected-baseline/official-s8-c1-3001-ae125d37d9264998a9af24c4a8bfb913",
+      "metadata": {
+        "runId": "official-s8-c1-3001-ae125d37d9264998a9af24c4a8bfb913",
+        "scenarioId": "s2-expected-baseline",
+        "scenarioDefinitionVersion": null,
+        "generatorVersion": "v2",
+        "seed": 3001,
+        "engineVersion": "v0.3.0",
+        "repositoryCommitSha": "3f45b4efe32c8b4b03d6aadb5434e22a3c35ca09",
+        "rubricVersion": "v1",
+        "metricsFrameworkVersion": null,
+        "executionMode": "Sequential",
+        "concurrencyLevel": 1,
+        "startedAt": "2026-11-09T00:43:07.8446110Z",
+        "completedAt": "2026-11-09T00:47:20.8359900Z",
+        "repetition": 1,
+        "executionEnvironment": {
+          "operatingSystem": "Darwin 24.6.0 Darwin Kernel Version 24.6.0: Mon Jan 19 22:00:10 PST 2026; root:xnu-11417.140.69.708.3~1/RELEASE_X86_64",
+          "runtime": ".NET 8.0.3",
+          "dotNetVersion": "8.0.3",
+          "processorCount": 16,
+          "postgreSqlImage": "postgres:16.3-alpine",
+          "databaseContext": "Runner-owned PostgreSQL via Docker/Testcontainers"
+        },
+        "workloadSourceScenarioId": null,
+        "orderingTransformation": null
+      },
+      "integrity": {
+        "invariantViolationCount": 0,
+        "violations": [],
+        "finalStateOnly": true,
+        "persistedRequestCount": 7320,
+        "persistedAssignmentCount": 22000,
+        "completedFestivalDays": 5,
+        "sha256": {
+          "run-metadata.json": "4a2c7c1042556152ef1124250497014f9b9327629857ae0904bb2a17abb17120",
+          "definition.json": "92e007715469ac770435bd79c2d073d8b533f80fb76fcc2f5af97c0fc7540480",
+          "manifest.json": "85228f45c89eed868516e84799275e44e23aedb7789c0d71162f1e6bf9e054a5",
+          "attempts.json": "e06f5cc49a9fbb71d09e557dc0b596313aa9319eabdc90039502bd5a7b24525a",
+          "checkpoints.json": "518d2b1c520b1909732f36aff32c3b9c94dcb9ba04801af0ac1fdf1b4b93c57f",
+          "attendee-paths.json": "31200de6437241adaa8a1f6f449e255e512b64306c7d3d715f95f66fc512fead",
+          "recovery-observations.json": "f3ea926800b88b33056218e6585ab8bed9f4991a391119b80ff47629a54a4ed4",
+          "metrics.json": "3b0d45b2824eb58bf701d96476163ccb97658779322221ad57f0e24f893464d8"
+        }
+      },
+      "outcomes": {
+        "attemptedRequests": 7320,
+        "normallyProcessedRequests": 7320,
+        "successful": 7320,
+        "domainRejected": 0,
+        "knownConcurrencyConflict": 0,
+        "unexpectedTechnicalFailure": 0,
+        "excludedInvalidInput": 0,
+        "successRate": 1.0,
+        "rejectionRate": 0.0,
+        "knownConcurrencyConflictRate": 0.0,
+        "technicalErrorRate": 0.0
+      },
+      "performance": {
+        "sampleCount": 7320,
+        "p50Ms": 28.351,
+        "p95Ms": 48.6828,
+        "p99Ms": 75.0108,
+        "executionSeconds": 249.0028646,
+        "throughput": 29.397252163178525,
+        "firstEntryOffset": 0.0366858,
+        "lastTerminalOffset": 249.0395504,
+        "successfulRequestThroughput": 29.397252163178525,
+        "successfulAssignmentThroughput": 88.35239721173875
+      },
+      "population": {
+        "registeredAttendees": 5500,
+        "requestingAttendees": 5344,
+        "participatingAttendees": 5344,
+        "attendeesWithOnlyRejectedOrFailedAttempts": 0,
+        "noPersistedPath": 0,
+        "insufficientEvidence": 218,
+        "classifiable": 5126
+      },
+      "fairness": {
+        "evaluatedAttendeeCount": 5344,
+        "noPersistedPathCount": 0,
+        "insufficientEvidenceCount": 218,
+        "classifiablePathCount": 5126,
+        "balancedPathCount": 2890,
+        "acceptablePathCount": 1646,
+        "notBalancedPathCount": 590,
+        "noPersistedPathRate": 0,
+        "insufficientEvidenceRate": 0.0407934131736527,
+        "classifiablePathRate": 0.9592065868263473,
+        "balancedPathRate": 0.5637924307452205,
+        "acceptablePathRate": 0.32110807647288336,
+        "notBalancedPathRate": 0.11509949278189621,
+        "persistedOutcomeCount": 22000,
+        "goodOutcomeCount": 8732,
+        "mediumOutcomeCount": 11222,
+        "badOutcomeCount": 2046,
+        "goodOutcomeRate": 0.39690909090909093,
+        "mediumOutcomeRate": 0.510090909090909,
+        "badOutcomeRate": 0.093
+      },
+      "recovery": {
+        "recoveryEpisodeCount": 1900,
+        "recoveredEpisodeCount": 1401,
+        "unresolvedEpisodeCount": 499,
+        "recoveryEligibleEpisodeCount": 1450,
+        "recoveryIneligibleEpisodeCount": 450,
+        "recoveryRate": 0.9662068965517241,
+        "recoveredToMediumCount": 685,
+        "recoveredToGoodCount": 716,
+        "averageOpportunitiesToRecovery": 1.0663811563169165,
+        "medianOpportunitiesToRecovery": 1,
+        "opportunityDistribution": [
+          {
+            "opportunities": 1,
+            "episodeCount": 1312,
+            "rateAmongRecovered": 0.9364739471805853
+          },
+          {
+            "opportunities": 2,
+            "episodeCount": 85,
+            "rateAmongRecovered": 0.06067094932191292
+          },
+          {
+            "opportunities": 3,
+            "episodeCount": 4,
+            "rateAmongRecovered": 0.0028551034975017845
+          }
+        ]
+      },
+      "conflictByDay": [
+        {
+          "category": 1,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 2,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 3,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 4,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": 5,
+          "attemptedRequests": 1464,
+          "normallyProcessedRequests": 1464,
+          "successful": 1464,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictByBaselineThird": [
+        {
+          "category": "first",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "middle",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "last",
+          "attemptedRequests": 2440,
+          "normallyProcessedRequests": 2440,
+          "successful": 2440,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictByGroupSize": [
+        {
+          "category": "1",
+          "attemptedRequests": 1100,
+          "normallyProcessedRequests": 1100,
+          "successful": 1100,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "2",
+          "attemptedRequests": 2195,
+          "normallyProcessedRequests": 2195,
+          "successful": 2195,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "3",
+          "attemptedRequests": 1830,
+          "normallyProcessedRequests": 1830,
+          "successful": 1830,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "4",
+          "attemptedRequests": 1100,
+          "normallyProcessedRequests": 1100,
+          "successful": 1100,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "5",
+          "attemptedRequests": 585,
+          "normallyProcessedRequests": 585,
+          "successful": 585,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "6–7",
+          "attemptedRequests": 365,
+          "normallyProcessedRequests": 365,
+          "successful": 365,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        },
+        {
+          "category": "8–10",
+          "attemptedRequests": 145,
+          "normallyProcessedRequests": 145,
+          "successful": 145,
+          "domainRejected": 0,
+          "knownConcurrencyConflict": 0,
+          "unexpectedTechnicalFailure": 0,
+          "excludedInvalidInput": 0,
+          "successRate": 1.0,
+          "rejectionRate": 0.0,
+          "knownConcurrencyConflictRate": 0.0,
+          "technicalErrorRate": 0.0
+        }
+      ],
+      "conflictDiagnostics": [],
+      "windowSummary": null,
+      "sequentialSummary": {
+        "requestCount": 7320,
+        "noConcurrentWindows": true,
+        "oneRequestCompletesBeforeNextStarts": true
+      },
+      "failureDiagnostics": []
     }
   ],
   "crossSeed": {
+    "1": {
+      "knownConcurrencyConflictRate": {
+        "min": 0.0,
+        "mean": 0.0,
+        "max": 0.0,
+        "seeds": 3
+      },
+      "technicalErrorRate": {
+        "min": 0.0,
+        "mean": 0.0,
+        "max": 0.0,
+        "seeds": 3
+      },
+      "successRate": {
+        "min": 1.0,
+        "mean": 1.0,
+        "max": 1.0,
+        "seeds": 3
+      },
+      "rejectionRate": {
+        "min": 0.0,
+        "mean": 0.0,
+        "max": 0.0,
+        "seeds": 3
+      },
+      "p50Ms": {
+        "min": 27.0951,
+        "mean": 28.057333333333332,
+        "max": 28.7259,
+        "seeds": 3
+      },
+      "p95Ms": {
+        "min": 46.3818,
+        "mean": 48.96196666666667,
+        "max": 51.8213,
+        "seeds": 3
+      },
+      "p99Ms": {
+        "min": 67.7312,
+        "mean": 74.51926666666667,
+        "max": 80.8158,
+        "seeds": 3
+      },
+      "throughput": {
+        "min": 28.50936876103063,
+        "mean": 29.592695791807035,
+        "max": 30.871466451211948,
+        "seeds": 3
+      },
+      "executionSeconds": {
+        "min": 237.112157,
+        "mean": 247.6242411,
+        "max": 256.7577017,
+        "seeds": 3
+      },
+      "successfulRequestThroughput": {
+        "min": 28.50936876103063,
+        "mean": 29.592695791807035,
+        "max": 30.871466451211948,
+        "seeds": 3
+      },
+      "successfulAssignmentThroughput": {
+        "min": 85.68389518342538,
+        "mean": 88.93979609559491,
+        "max": 92.7830958916206,
+        "seeds": 3
+      }
+    },
     "4": {
       "knownConcurrencyConflictRate": {
         "min": 0.75,
@@ -2671,6 +4344,18 @@
         "min": 935.4962965,
         "mean": 1012.8968246333333,
         "max": 1078.7237008,
+        "seeds": 3
+      },
+      "successfulRequestThroughput": {
+        "min": 1.696449237782428,
+        "mean": 1.8129729388167872,
+        "max": 1.9561809136461932,
+        "seeds": 3
+      },
+      "successfulAssignmentThroughput": {
+        "min": 3.4624250836706936,
+        "mean": 3.7050499305341478,
+        "max": 4.0235327644613506,
         "seeds": 3
       }
     },
@@ -2727,6 +4412,18 @@
         "min": 445.7885513,
         "mean": 461.484765,
         "max": 476.7181994,
+        "seeds": 3
+      },
+      "successfulRequestThroughput": {
+        "min": 0.9649306457755512,
+        "mean": 0.9982790893259791,
+        "max": 1.0341225647353227,
+        "seeds": 3
+      },
+      "successfulAssignmentThroughput": {
+        "min": 2.0200613301779473,
+        "mean": 2.132797546976119,
+        "max": 2.2005948720289625,
         "seeds": 3
       }
     }
