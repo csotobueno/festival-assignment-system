@@ -2306,11 +2306,14 @@ intentionally retained as Decision Gate evidence. See the
 [architecture evidence contract](simulation-architecture.md#artifacts-and-evidence-versioning)
 for serialization, ordering and completion behavior.
 
-Other aggregate families, Decision Gate verdicts and representative
-empirical evaluation remain pending. No production behavior changes; the Stage 4
-fairness-rule count remains 19.
+Official isolated S1/S2/S5/S6/S7/S8 empirical evidence is now
+[consolidated for Decision Gate review](decision-gate-evidence.md), with measured
+results, populations, evidence strength and architectural implications kept
+separate. Decision Gate preparation is in progress; S3/S4, stakeholder acceptance
+and the final verdict remain pending. The consolidation introduces no formula,
+threshold or mitigation change; the Stage 4 fairness-rule count remains 19.
 
 The [simulation architecture and reproducibility strategy](simulation-architecture.md)
-defines the planned Application/PostgreSQL execution and evidence flow around
-this framework. The full evaluation platform and representative runs remain
-pending; this document remains the analytical authority.
+defines the implemented Application/PostgreSQL execution and evidence flow around
+this framework. The broader evaluation remains pending; this document remains
+the analytical authority.

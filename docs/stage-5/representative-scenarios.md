@@ -35,7 +35,10 @@ concurrent operational load.
 The [S5 Adverse Arrival Order contract](s5-adverse-arrival-order.md) defines a
 counterfactual reversal of the exact S2 daily workload. The explicit transformation,
 runner dispatch and evidence support are implemented; official S5 runs and paired
-analysis remain pending. S1/S2 inputs below are unchanged.
+analysis are [completed](s2-s5-order-sensitivity-results.md). S1/S2 inputs below
+are unchanged. Completed S1/S2/S5/S6/S7/S8 findings are
+[consolidated for Decision Gate review](decision-gate-evidence.md); preparation
+is in progress, with S3/S4 and the final Gate still pending.
 
 ## Shared Baseline
 
@@ -399,8 +402,10 @@ This enables meaningful comparison of the combined workload conditions. Because
 several workload dimensions change together, an outcome difference cannot be
 attributed to one of them independently. The
 [S5 contract](s5-adverse-arrival-order.md) defines a controlled processing-order
-counterfactual over the exact S2 workload. Its transformation is implemented;
-official paired execution and analysis remain pending.
+counterfactual over the exact S2 workload. Its transformation and
+[official paired execution/analysis](s2-s5-order-sensitivity-results.md) are
+completed; aggregate stability and individual distributive sensitivity remain
+distinct findings.
 
 The [S6 Large Groups contract](s6-large-groups.md) defines a separate controlled
 S2 sensitivity experiment: only the target group-size distribution changes,
@@ -431,10 +436,10 @@ scenarios retain only their high-level purposes here:
 | --- | --- |
 | S3 — Stress | Examine behavior under operating pressure. |
 | S4 — Worst Plausible | Examine the practical operating boundary. |
-| [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; implemented, official runs pending. |
+| [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; official execution, paired analysis and reproduction completed. |
 | [S6 — Large Groups](s6-large-groups.md) | Baseline: S2. Changed dimension: group-size distribution; requests of size 6–10 increase from 7% → 25%. Definition/materialization and first official execution/analysis completed. |
 | [S7 — High Fragmentation](s7-high-fragmentation.md) | Primary baseline: S7-Control. Experimental variant: S7-Fragmented. Changed dimension: spatial distribution of equivalent pre-occupied capacity. Workload: exact paired S2. Processing: normal sequential order. Materialization, official runs, paired reproduction and analysis completed. |
-| [S8 — Concurrency / Operational Sensitivity](s8-concurrency-sensitivity.md) | Workload: exact S2. Initial comparison: concurrency 4 vs 16. Changed dimension: concurrent execution in deterministic windows with pre-use-case coordinated release. Retries: none. Persistence: real PostgreSQL. Initial matrix: Seeds 1001 / 2001 / 3001 × 2 levels × 1 repetition = 6 five-day runs. C1 remains a supported optional same-environment operational baseline (+3 runs); targeted C4/C16 repetitions follow only when variability/ambiguity requires them. Each extra run needs an analytical reason; no fixed final total. Concurrent runner and [initial execution/analysis](s8-concurrency-analysis.md) completed; C1 follow-up recommended, not executed. |
+| [S8 — Concurrency / Operational Sensitivity](s8-concurrency-sensitivity.md) | Workload: exact S2. Initial comparison: concurrency 4 vs 16 in deterministic coordinated windows; six five-day runs. The authorized C1 follow-up added three direct sequential baseline runs, once per Seed, Repetition 1. Retries: none. Persistence: real PostgreSQL. [Final C1/C4/C16 analysis](s8-concurrency-analysis.md) completed; evidence sufficient for the scoped operational comparison. No C4/C16 repetition added; future repeats require a new analytical reason, with no blanket run requirement. |
 
 S8 preserves exact S2 business inputs and baseline sequence while allowing
 scheduler-dependent concurrent outcomes. Its separate contract defines request
