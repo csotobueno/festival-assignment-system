@@ -312,8 +312,48 @@ and observed overlap are reconstructed from attempts. Cross-Seed min/mean/max
 describe Seed-level observations, not repetition-level scheduler variability.
 It never executes a simulation or chooses/executes adaptive follow-up runs.
 
-The [initial S8 analysis](../../docs/stage-5/s8-concurrency-analysis.md) and adjacent
-JSON retain the completed six-run set, separate smoke results, exact paths/hashes,
-normalized comparisons and interpretation. The selected adaptive decision is to
-add C1 as a same-environment operational baseline in a separate task; none of
-those follow-up runs was executed here.
+The [S8 analysis](../../docs/stage-5/s8-concurrency-analysis.md) and adjacent JSON
+retain the initial six-run set and its separate smoke results. The initial
+adaptive decision selected the sequential baseline protocol below.
+
+## S8 sequential baseline and combined analysis
+
+The authorized C1 follow-up executes exactly Seeds 1001 / 2001 / 3001 once each,
+Repetition 1. It uses the existing direct sequential runner path, fresh owned
+PostgreSQL containers, and unchanged S2 inputs. No concurrent start gate is used.
+Do not rerun this command to reproduce an analysis: every invocation executes
+three new official runs. Offline analysis below reuses retained evidence.
+
+```bash
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- \
+  --s8-c1 artifacts/simulations/<completed-s8-initial-concurrency-set>/index.json
+```
+
+Build the harness first. The preflight verifies all retained initial-package
+checksums, unchanged production/Simulation source hashes, exact per-Seed source
+definitions/catalog/setup/daily plans and matching captured execution environment.
+The harness changes are fingerprinted separately; a new concurrent smoke or
+C4/C16 run is not part of this follow-up. The C1 ledger links the initial index
+by checksum and records all three packages, final-state audits and no-overlap
+checks. RetryCount remains zero. Unexpected outcomes are retained for analysis;
+invariant findings stop execution without an automatic repeat.
+
+```bash
+python3 -B scripts/stage-5-representative-runs/analyze_s8_concurrency.py \
+  artifacts/simulations/<completed-s8-initial-concurrency-set>/index.json \
+  --sequential-index artifacts/simulations/<completed-s8-sequential-baseline-set>/index.json \
+  --output artifacts/analysis/s8-combined-results.json
+```
+
+The analyzer checks exactly three C1 entries, paired with all six retained C4/C16
+entries, and compares all nine without running simulations. It preserves the
+original counts/timings and adds SuccessfulRequestThroughput = Successful /
+executionSeconds and SuccessfulAssignmentThroughput = durable Assignment count /
+executionSeconds, using the same monotonic interval as terminal Attempts/s.
+Counts reconcile to persisted paths and ledger audits before deriving delivery.
+It exports per-Seed comparisons including population and across-Seed min/mean/max
+for all three levels. Missing denominators remain null/N/A. Analysis replay is
+deterministic for unchanged inputs and analyzer sources; outputs refuse overwrite
+and remain outside raw evidence. Regenerate to a fresh path, compare bytes, then
+select the reviewed JSON/report for repository history. Do not add raw packages.

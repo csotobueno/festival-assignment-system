@@ -1,4 +1,4 @@
-"""Read-only S8 initial-matrix analysis; no runner, rubric or recovery replay."""
+"""Read-only S8 C1/C4/C16 analysis; no runner, rubric or recovery replay."""
 
 import argparse
 import copy
@@ -58,6 +58,42 @@ def group_bucket(size):
     return str(size) if size <= 5 else "6–7" if size <= 7 else "8–10"
 
 
+def useful_throughput(successful, persisted_assignments, elapsed):
+    """Use the terminal timing boundary and reconciled durable delivery counts."""
+    return dict(successfulRequestThroughput=rate(successful, elapsed) if elapsed is not None else None,
+                successfulAssignmentThroughput=rate(persisted_assignments, elapsed) if elapsed is not None else None)
+
+
+def aggregate_runs(runs):
+    aggregate = {}
+    for level in sorted({r["concurrencyLevel"] for r in runs}):
+        selected = [r for r in runs if r["concurrencyLevel"] == level]
+        fields = {**{k: [r["outcomes"][k] for r in selected] for k in ("knownConcurrencyConflictRate", "technicalErrorRate", "successRate", "rejectionRate")},
+                  **{k: [r["performance"][k] for r in selected] for k in ("p50Ms", "p95Ms", "p99Ms", "throughput", "executionSeconds", "successfulRequestThroughput", "successfulAssignmentThroughput")}}
+        aggregate[str(level)] = {k: dict(min=min(values), mean=mean(values), max=max(values), seeds=len(values))
+            for k, samples in fields.items() if (values := [v for v in samples if v is not None])}
+    return aggregate
+
+
+def compare_configurations(runs):
+    """Keep outcomes, performance and fairness populations together per Seed."""
+    require(len(runs) == 9 and {(r["seed"], r["concurrencyLevel"]) for r in runs}
+            == {(s, c) for s in SEEDS for c in (1, 4, 16)}, "Wrong nine-run comparison")
+    return [dict(seed=seed, configurations={str(r["concurrencyLevel"]):
+        dict(runId=r["runId"], outcomes=r["outcomes"], performance=r["performance"], population=r["population"],
+             persistedAssignmentCount=r["integrity"]["persistedAssignmentCount"],
+             persistedInvariantViolationCount=r["integrity"]["invariantViolationCount"])
+        for r in sorted(runs, key=lambda r: r["concurrencyLevel"]) if r["seed"] == seed}) for seed in SEEDS]
+
+
+def verify_sequential(attempts):
+    require(all(a.get("windowNumber") is None and a.get("windowPosition") is None for a in attempts), "C1 has concurrent window provenance")
+    for previous, current in zip(attempts, attempts[1:]):
+        require(ticks(current["processingStartedOffset"]) >= ticks(previous["processingStartedOffset"]) + ticks(previous["duration"]),
+                "Sequential requests overlap")
+    return dict(requestCount=len(attempts), noConcurrentWindows=True, oneRequestCompletesBeforeNextStarts=True)
+
+
 def read_package(entry):
     directory = Path(entry["evidencePath"])
     require(sorted(p.name for p in directory.iterdir()) == sorted(FILES), "Eight-file package incomplete")
@@ -92,12 +128,14 @@ def retained_s2_proof(seed, data):
 def summarize_run(entry, data):
     manifest, meta = data["manifest"], data["run-metadata"]
     level = entry["concurrencyLevel"]
-    require(level in (4, 16) and entry["seed"] in SEEDS and entry["repetition"] == 1, "Wrong initial configuration")
-    require(meta["executionMode"] == "Concurrent" and meta["concurrencyLevel"] == level and meta["repetition"] == 1, "Wrong execution metadata")
+    require(level in (1, 4, 16) and entry["seed"] in SEEDS and entry["repetition"] == 1, "Wrong S8 configuration")
+    require(meta["executionMode"] == ("Sequential" if level == 1 else "Concurrent") and meta["concurrencyLevel"] == level and meta["repetition"] == 1, "Wrong execution metadata")
     for field in ("scenarioId", "seed", "generatorVersion", "executionMode", "concurrencyLevel", "repetition", "workloadSourceScenarioId"):
         require(meta[field] == manifest["metadata"][field], f"Manifest metadata mismatch: {field}")
     require(meta["generatorVersion"] == "v2" and meta["engineVersion"] == "v0.3.0" and meta["rubricVersion"] == "v1", "Version mismatch")
-    require(meta["workloadSourceScenarioId"] == data["definition"]["scenarioId"] == "s2-expected-baseline", "Wrong S2 source")
+    require(data["definition"]["scenarioId"] == "s2-expected-baseline"
+            and (meta["scenarioId"] == "s2-expected-baseline" and meta["workloadSourceScenarioId"] is None
+                 if level == 1 else meta["workloadSourceScenarioId"] == "s2-expected-baseline"), "Wrong S2 source")
     require(data["definition"]["executionMode"] == "Sequential" and data["definition"]["concurrencyLevel"] == 1, "Source definition changed")
     require(len(manifest["catalog"]["attendees"]) == 5500 and len(manifest["catalog"]["spots"]) == 4998, "Population/topology changed")
     require(not any(manifest["setup"].values()), "S8 must have normal empty S2 setup")
@@ -116,7 +154,8 @@ def summarize_run(entry, data):
         require([a["simulationRequestId"] for a in observed] == [r["simulationRequestId"] for r in requests], "Request identity/order mismatch")
         for i, (a, r) in enumerate(zip(observed, requests)):
             require(a["baselineSequence"] == a["attemptSequence"] == r["sequence"] == r["executionSequence"], "Sequence semantics changed")
-            require(a["windowNumber"] == i // level + 1 and a["windowPosition"] == i % level + 1, "Wrong window provenance")
+            require(a.get("windowNumber") is None and a.get("windowPosition") is None if level == 1
+                    else a["windowNumber"] == i // level + 1 and a["windowPosition"] == i % level + 1, "Wrong window provenance")
             require(a["attendeeIds"] == [m["id"] for m in r["members"]] and a["groupSize"] == len(r["members"]), "Attempt membership changed")
             positions[a["simulationRequestId"]] = (day["dayNumber"], sequence_third(i + 1, len(requests)))
             if a.get("databaseSqlState") == "40P01":
@@ -155,7 +194,7 @@ def summarize_run(entry, data):
     def segments(categories, key):
         return [dict(category=value, **outcome_metrics([a for a in attempts if key(a) == value])) for value in categories]
     window_rows = []
-    for day in days:
+    for day in days if level != 1 else []:
         daily = [a for a in attempts if a["festivalDayId"] == day["festivalDayId"]]
         last_end = -1
         for window in sorted({a["windowNumber"] for a in daily}):
@@ -171,8 +210,10 @@ def summarize_run(entry, data):
                 peak = max(peak, active)
             window_rows.append(dict(day=day["dayNumber"], windowNumber=window, windowSize=len(group), observedPeak=peak,
                                     durationMs=(end - start) / 10_000, **outcome_metrics(group)))
+    timing = performance(attempts)
+    timing.update(useful_throughput(metrics["successful"], entry["integrity"]["persistedAssignmentCount"], timing["executionSeconds"]))
     return dict(seed=entry["seed"], concurrencyLevel=level, runId=entry["runId"], evidencePath=entry["evidencePath"],
-        metadata=meta, integrity=entry["integrity"], outcomes=metrics, performance=performance(attempts),
+        metadata=meta, integrity=entry["integrity"], outcomes=metrics, performance=timing,
         population=dict(registeredAttendees=5500, requestingAttendees=len(requesting), participatingAttendees=len(participating),
             attendeesWithOnlyRejectedOrFailedAttempts=len(requesting - participating), noPersistedPath=fair["noPersistedPathCount"],
             insufficientEvidence=fair["insufficientEvidenceCount"], classifiable=fair["classifiablePathCount"]),
@@ -185,7 +226,8 @@ def summarize_run(entry, data):
         windowSummary=dict(windowCount=len(window_rows), partialWindows=sum(w["windowSize"] < level for w in window_rows),
             maxObservedOverlap=max(w["observedPeak"] for w in window_rows), windowsWithoutOverlap=sum(w["observedPeak"] <= 1 for w in window_rows),
             minDurationMs=min(w["durationMs"] for w in window_rows), meanDurationMs=mean(w["durationMs"] for w in window_rows),
-            maxDurationMs=max(w["durationMs"] for w in window_rows)),
+            maxDurationMs=max(w["durationMs"] for w in window_rows)) if window_rows else None,
+        **(dict(sequentialSummary=verify_sequential(attempts)) if level == 1 else {}),
         # Existing raw attempts reconstruct every window; retain only aggregate
         # window facts in the selected report to avoid duplicating telemetry.
         failureDiagnostics=[dict(outcome=a["outcome"], simulationRequestId=a["simulationRequestId"], databaseSqlState=a.get("databaseSqlState"),
@@ -193,7 +235,7 @@ def summarize_run(entry, data):
             for a in attempts if a["outcome"] == "UnexpectedTechnicalFailure"])
 
 
-def analyze(index_path):
+def analyze(index_path, sequential_index=None):
     raw = Path(index_path).read_bytes()
     index = json.loads(raw)
     require(index["role"] == "official" and index["status"] == "Completed", "Official matrix not complete")
@@ -206,29 +248,42 @@ def analyze(index_path):
     require(smoke["role"] == "smoke" and smoke["status"] == "Passed" and smoke["sourceSha256"] == index["sourceSha256"], "Smoke source/status mismatch")
     for entry in smoke["runs"]:
         read_package(entry)
+    baseline = None
+    if sequential_index is not None:
+        baseline_raw = Path(sequential_index).read_bytes()
+        baseline = json.loads(baseline_raw)
+        require(baseline["role"] == "sequential-baseline" and baseline["status"] == "Completed"
+                and baseline["retryCount"] == 0, "Sequential baseline not complete or retries changed")
+        require(baseline["initialIndexSha256"] == hashlib.sha256(raw).hexdigest(), "C1 linked initial index changed")
+        require(baseline["buildConfiguration"] == index["buildConfiguration"] and baseline["dockerApiVersion"] == index["dockerApiVersion"]
+                and baseline["warmup"] == index["warmup"], "Execution conditions changed")
+        require({k: v for k, v in baseline["sourceSha256"].items() if k.startswith("src/")}
+                == {k: v for k, v in index["sourceSha256"].items() if k.startswith("src/")}, "Protected execution source changed")
+        require(len(baseline["runs"]) == 3 and {(e["concurrencyLevel"], e["seed"]) for e in baseline["runs"]}
+                == {(1, s) for s in SEEDS}, "Wrong three-run C1 baseline")
+        entries = entries + baseline["runs"]
     data = [read_package(entry) for entry in entries]
     pair_proofs = []
     retained_proofs = []
     for seed in SEEDS:
         pair = [(e, d) for e, d in zip(entries, data) if e["seed"] == seed]
-        (left, a), (right, b) = sorted(pair, key=lambda x: x[0]["concurrencyLevel"])
-        require(a["definition"] == b["definition"], "Paired source definition changed")
-        require(all(a["manifest"][key] == b["manifest"][key] for key in ("catalog", "setup", "dailyPlans")), "Exact S2 workload pair changed")
-        require(left["sourceManifestSha256"] == right["sourceManifestSha256"], "Source manifest proof mismatch")
+        left, a = sorted(pair, key=lambda x: x[0]["concurrencyLevel"])[0]
+        for right, b in pair:
+            require(a["definition"] == b["definition"], "Paired source definition changed")
+            require(all(a["manifest"][key] == b["manifest"][key] for key in ("catalog", "setup", "dailyPlans")), "Exact S2 workload pair changed")
+            require(left["sourceManifestSha256"] == right["sourceManifestSha256"], "Source manifest proof mismatch")
+            require(a["run-metadata"]["executionEnvironment"] == b["run-metadata"]["executionEnvironment"], "Execution environment differs")
         pair_proofs.append(dict(seed=seed, exactDefinitionCatalogSetupDailyPlans=True, sourceManifestSha256=left["sourceManifestSha256"]))
         retained_proofs.append(retained_s2_proof(seed, a))
     runs = [summarize_run(e, d) for e, d in zip(entries, data)]
-    aggregate = {}
-    for level in (4, 16):
-        selected = [r for r in runs if r["concurrencyLevel"] == level]
-        fields = {**{k: [r["outcomes"][k] for r in selected] for k in ("knownConcurrencyConflictRate", "technicalErrorRate", "successRate", "rejectionRate")},
-                  **{k: [r["performance"][k] for r in selected] for k in ("p50Ms", "p95Ms", "p99Ms", "throughput", "executionSeconds")}}
-        aggregate[str(level)] = {k: dict(min=min(values), mean=mean(values), max=max(values), seeds=len(values))
-            for k, samples in fields.items() if (values := [v for v in samples if v is not None])}
+    aggregate = aggregate_runs(runs)
     # Re-read hashes after analysis to prove the raw package boundary was read-only.
     for entry in entries:
         read_package(entry)
     return dict(indexPath=str(index_path), indexSha256=hashlib.sha256(raw).hexdigest(), smoke=smoke,
+        **(dict(sequentialIndexPath=str(sequential_index), sequentialIndexSha256=hashlib.sha256(baseline_raw).hexdigest(),
+            sequentialRepositoryCommitSha=baseline["repositoryCommitSha"], sequentialSourceSha256=baseline["sourceSha256"],
+            perSeedComparison=compare_configurations(runs)) if baseline is not None else {}),
         analysisSourceSha256={name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
             for name in ("analyze_s8_concurrency.py", "analyze_s2_paths.py", "analyze_s6_groups.py", "analyze_s5_order.py", "summarize.py")},
         repositoryCommitSha=index["repositoryCommitSha"], sourceSha256=index["sourceSha256"], pairIntegrity=pair_proofs,
@@ -242,12 +297,13 @@ def analyze(index_path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("index")
+    parser.add_argument("--sequential-index")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     output = Path(args.output)
     require(not output.exists(), "Refusing to overwrite existing analysis")
     require("simulations" not in output.parts, "Analysis must stay outside raw simulation evidence")
-    result = analyze(args.index)
+    result = analyze(args.index, args.sequential_index)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2, ensure_ascii=False, allow_nan=False) + "\n")
     print(output)

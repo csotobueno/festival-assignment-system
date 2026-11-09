@@ -17,13 +17,28 @@ internal static class S8Runs
     internal static async Task RunAsync(string[] args)
     {
         var smoke = args[0] == "--s8-smoke";
+        var sequential = args[0] == "--s8-c1";
         if (smoke ? args.Length != 1 : args.Length != 2)
-            throw new ArgumentException("Usage: --s8-smoke OR --s8 <successful-smoke-index.json>");
+            throw new ArgumentException("Usage: --s8-smoke OR --s8 <successful-smoke-index.json> OR --s8-c1 <completed-initial-index.json>");
         var revision = Environment.GetEnvironmentVariable("FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA");
         if (string.IsNullOrWhiteSpace(revision)) throw new ArgumentException("Supply the known repository SHA explicitly.");
         var sourceHashes = SourceHashes();
         JsonNode? smokeProof = null;
-        if (!smoke)
+        if (sequential)
+        {
+            smokeProof = JsonNode.Parse(await File.ReadAllTextAsync(args[1]))!;
+            var retained = smokeProof["runs"]!.AsArray();
+            if (smokeProof["role"]!.GetValue<string>() != "official" || smokeProof["status"]!.GetValue<string>() != "Completed"
+                || smokeProof["retryCount"]!.GetValue<int>() != 0 || retained.Count != 6
+                || !retained.Select(e => (e!["concurrencyLevel"]!.GetValue<int>(), e["seed"]!.GetValue<int>())).ToHashSet()
+                    .SetEquals(from c in new[] { 4, 16 } from s in new[] { 1001, 2001, 3001 } select (c, s)))
+                throw new InvalidOperationException("C1 requires the completed six-run initial matrix.");
+            foreach (var (path, hash) in sourceHashes.Where(p => p.Key.StartsWith("src/", StringComparison.Ordinal)))
+                if (smokeProof["sourceSha256"]![path]?.GetValue<string>() != hash)
+                    throw new InvalidOperationException("Execution source differs from retained C4/C16: " + path);
+            foreach (var entry in retained) VerifyFiles(entry!);
+        }
+        else if (!smoke)
         {
             smokeProof = JsonNode.Parse(await File.ReadAllTextAsync(args[1]))!;
             if (smokeProof["role"]!.GetValue<string>() != "smoke" || smokeProof["status"]!.GetValue<string>() != "Passed"
@@ -33,7 +48,7 @@ internal static class S8Runs
         }
 
         var root = Path.Combine("artifacts", "simulations");
-        var set = Path.Combine(root, $"s8-{(smoke ? "smoke" : "initial-concurrency")}-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}");
+        var set = Path.Combine(root, $"s8-{(smoke ? "smoke" : sequential ? "sequential-baseline" : "initial-concurrency")}-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid():N}");
         Directory.CreateDirectory(set);
         var entries = new List<object>();
         var sources = new Dictionary<int, (ScenarioDefinition Definition, ScenarioManifest Manifest)>();
@@ -59,21 +74,39 @@ internal static class S8Runs
                     last with { AssignedAt = last.RequestedAt.AddTicks(-1) }) }] };
             }
             sources.Add(seed, (definition, source));
+            if (sequential)
+            {
+                var prior = smokeProof!["runs"]!.AsArray().First(e => e!["seed"]!.GetValue<int>() == seed)!;
+                var priorRoot = prior["evidencePath"]!.GetValue<string>();
+                var priorManifest = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(priorRoot, "manifest.json")))!;
+                var currentManifest = JsonSerializer.SerializeToNode(source, Json)!;
+                if (prior["sourceManifestSha256"]!.GetValue<string>() != Hash(JsonSerializer.SerializeToUtf8Bytes(source, Json))
+                    || !JsonNode.DeepEquals(JsonSerializer.SerializeToNode(definition, Json),
+                        JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(priorRoot, "definition.json"))))
+                    || new[] { "catalog", "setup", "dailyPlans" }.Any(key => !JsonNode.DeepEquals(currentManifest[key], priorManifest[key])))
+                    throw new InvalidOperationException("C1 input differs from retained C4/C16.");
+                var baseline = S8ConcurrentExecution.Create(source, 1, 1);
+                var environment = SimulationRunMetadata.Create("preflight", baseline, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, revision).ExecutionEnvironment;
+                if (!JsonNode.DeepEquals(JsonSerializer.SerializeToNode(environment, Json), prior["metadata"]!["executionEnvironment"]))
+                    throw new InvalidOperationException("Environment differs from retained C4/C16; inspect before execution.");
+            }
         }
         var indexPath = Path.Combine(set, "index.json");
         async Task SaveAsync(string status) => await File.WriteAllTextAsync(indexPath,
             JsonSerializer.Serialize(new
             {
-                role = smoke ? "smoke" : "official", status, repositoryCommitSha = revision,
-                sourceSha256 = sourceHashes, smokeIndex = smoke ? null : args[1],
-                smokeIndexSha256 = smoke ? null : Hash(await File.ReadAllBytesAsync(args[1])),
+                role = smoke ? "smoke" : sequential ? "sequential-baseline" : "official", status, repositoryCommitSha = revision,
+                sourceSha256 = sourceHashes, smokeIndex = smoke || sequential ? null : args[1],
+                smokeIndexSha256 = smoke || sequential ? null : Hash(await File.ReadAllBytesAsync(args[1])),
+                initialIndex = sequential ? args[1] : null,
+                initialIndexSha256 = sequential ? Hash(await File.ReadAllBytesAsync(args[1])) : null,
                 retryCount = 0, warmup = "None; first use-case calls remain in measured samples",
                 buildConfiguration = "Debug", dockerApiVersion = Environment.GetEnvironmentVariable("DOCKER_API_VERSION"),
                 runs = entries
             }, Json) + "\n");
         await SaveAsync("Running");
         Console.WriteLine($"SET {indexPath}");
-        foreach (var level in new[] { 4, 16 })
+        foreach (var level in sequential ? new[] { 1 } : new[] { 4, 16 })
         foreach (var seed in sources.Keys)
         {
             var (definition, source) = sources[seed];
@@ -144,9 +177,14 @@ internal static class S8Runs
             {
                 var a = attempts[i];
                 var p = plans[i];
-                Check(a.BaselineSequence == p.Sequence && a.AttemptSequence == p.Sequence && a.WindowNumber == i / manifest.Metadata.ConcurrencyLevel + 1
-                    && a.WindowPosition == i % manifest.Metadata.ConcurrencyLevel + 1 && a.AttendeeIds.SequenceEqual(p.Members.Select(m => m.Id)), "Window/sequence/membership provenance");
+                var sequential = manifest.Metadata.ExecutionMode == SimulationExecutionMode.Sequential;
+                Check(a.BaselineSequence == p.Sequence && a.AttemptSequence == p.Sequence
+                    && (sequential ? a.WindowNumber is null && a.WindowPosition is null
+                        : a.WindowNumber == i / manifest.Metadata.ConcurrencyLevel + 1 && a.WindowPosition == i % manifest.Metadata.ConcurrencyLevel + 1)
+                    && a.AttendeeIds.SequenceEqual(p.Members.Select(m => m.Id)), "Window/sequence/membership provenance");
                 Check(a.ProcessingStartedOffset.HasValue && a.Duration >= TimeSpan.Zero, "Missing monotonic timing");
+                if (sequential && i > 0)
+                    Check(a.ProcessingStartedOffset >= attempts[i - 1].ProcessingStartedOffset + attempts[i - 1].Duration, "Sequential requests overlap");
                 if (a.DatabaseSqlState == "40P01") Check(a.Outcome == SimulationAttemptOutcome.KnownConcurrencyConflict
                     && a.DiagnosticCode == "DeadlockDetected", "40P01 classification");
                 if (a.Outcome is SimulationAttemptOutcome.KnownConcurrencyConflict or SimulationAttemptOutcome.UnexpectedTechnicalFailure)
@@ -185,7 +223,7 @@ internal static class S8Runs
     {
         foreach (var hash in entry["integrity"]!["sha256"]!.AsObject())
             if (Hash(File.ReadAllBytes(Path.Combine(entry["evidencePath"]!.GetValue<string>(), hash.Key))) != hash.Value!.GetValue<string>())
-                throw new InvalidOperationException("Smoke evidence checksum mismatch.");
+                throw new InvalidOperationException("Retained evidence checksum mismatch.");
     }
     private static SortedDictionary<string, string> SourceHashes() => new(Directory.EnumerateFiles("src", "*", SearchOption.AllDirectories)
         .Where(p => !p.Split(Path.DirectorySeparatorChar).Any(part => part is "bin" or "obj") && (p.EndsWith(".cs") || p.EndsWith(".csproj")))

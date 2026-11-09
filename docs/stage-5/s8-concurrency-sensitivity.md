@@ -2,8 +2,9 @@
 
 ## Status, authority and experimental question
 
-**Contract defined; concurrent runner implemented; initial six-run official
-execution and analysis completed. Optional C1 baseline recommended, not executed.**
+**Contract defined; concurrent runner implemented; six initial concurrent runs
+and three sequential baseline runs completed. C1/C4/C16 analysis completed;
+current S8 operational evidence sufficient. Stage 5 Decision Gate remains pending.**
 S8 asks: when equivalent assignment requests compete concurrently for shared
 inventory, does the current system preserve correctness, and how much operational
 degradation or conflict appears? Evaluate correctness, known concurrency
@@ -19,9 +20,10 @@ v1 nor fairness or business rules.
 
 The runner supports Sequential / 1 and Concurrent / 4 or 16. Small PostgreSQL
 tests exercise execution and rollback; they are not official S8 observations.
-The [initial concurrency analysis](s8-concurrency-analysis.md) records the six
-official runs, separate smoke validation, zero persisted findings and the
-adaptive recommendation to add a same-environment C1 operational baseline.
+The [concurrency and operational analysis](s8-concurrency-analysis.md) records all
+nine official runs, the separate initial smoke validation, zero persisted
+findings and the final S8 evidence decision. The authorized C1 follow-up used
+the direct sequential runner path and retained the original C4/C16 evidence.
 
 ## Implemented execution and evidence
 
@@ -84,7 +86,7 @@ validate observed deadlocks as KnownConcurrencyConflict with SQLSTATE retained
 and no persisted losing graph; they require consistent persisted state without
 prescribing a conflict percentage. Focused exception-boundary tests cover direct
 and wrapped 40P01, conservative fallback for other SQLSTATEs and no retries.
-The initial official harness now adds final persisted-state audits and eight-file
+The official harness adds final persisted-state audits and eight-file
 checksums; its [analysis](s8-concurrency-analysis.md) retains performance,
 contention and fairness-population evidence separately from this input contract.
 
@@ -460,13 +462,15 @@ Retry policy, serialization, locking strategy, queueing and batching may later
 be evaluated at the Decision Gate. This task recommends and implements none of
 them, introduces no Decision Gate logic and sets no conflict threshold.
 
-The implementation adds the window executor and minimal evidence support, with
-existing conflict handling and no retries, official runs or analysis tooling.
-Domain, Application and Infrastructure
+The runner implementation added the window executor and minimal evidence support
+with existing conflict handling and no retries. Separate execution tasks added
+the official harness and offline analysis. Domain, Application and Infrastructure
 production behavior, AssignmentEngine, AssignmentSelectionPolicy,
 BlockSelectionPolicy, RotationScore, GroupRotationScore, TargetQuality,
 PathClassificationRubric, recovery semantics, SimulationMetricsCalculator and
-S2/S5/S6/S7 policies remain unchanged. Initial execution/analysis completed with
-six concurrent runs; only justified follow-up evidence may be added. The chosen
-next task is **Execute S8 Optional Sequential Baseline and Compare Operational
-Results**, three C1 runs recommended but not executed by the initial task.
+S2/S5/S6/S7 policies remain unchanged. Initial execution completed six concurrent
+runs; its adaptive decision selected three C1 baseline runs, now completed once
+per Seed. No C4/C16 repetition was added. The final comparison selects **S8
+evidence sufficient** for the current operational question; scheduler variability
+remains unquantified. Next: consolidate isolated-scenario evidence for Stage 5
+Decision Gate review, without selecting or implementing mitigation here.
