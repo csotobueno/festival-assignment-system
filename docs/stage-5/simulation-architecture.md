@@ -2,8 +2,9 @@
 
 ## Status, Purpose and Authority
 
-**Architecture agreed; minimal sequential development slice implemented;
-full simulation platform and empirical evaluation remain pending.**
+**Sequential/concurrent execution and official S1/S2/S5/S6/S7/S8 isolated
+evaluation implemented; evidence consolidated. Decision Gate preparation is in
+progress; S3/S4 and the broader Stage 5 evaluation remain pending.**
 This document defines the minimum planned architecture for evaluating
 `v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
 attempts, daily checkpoints, individual attendee-path reconstruction and
@@ -23,9 +24,11 @@ The official fairness-rule count remains **19**.
 The [S1/S2 representative scenario contracts](representative-scenarios.md)
 document shared venue inputs, demand, participation continuity and simulated
 arrival profiles, with explicit provisional hypotheses. Their deterministic
-generation is implemented through ScenarioMaterializer v2; representative
-execution remains pending. The minimal proof scenario's supporting setup is
-not part of these representative scenarios.
+generation is implemented through ScenarioMaterializer v2; official isolated
+results are [consolidated for Decision Gate review](decision-gate-evidence.md).
+The minimal proof scenario's supporting setup is not part of these representative
+scenarios. The consolidation changes no execution or evidence contract and
+selects no mitigation architecture.
 
 The architecture must exercise real assignment behavior, preserve reproducible
 inputs and explain aggregate results through individual observations. Small
@@ -900,11 +903,11 @@ pre-save reads, provisional analytical judgments and runtime-generated business
 IDs. Stage 5 measures these limits. No simulation concept changes the 19 fairness
 rules, Domain policies, persistence statuses or Stage 4 acceptance evidence.
 
-Remaining implementation decisions are limited to exact JSON schemas and
-compatibility checks; deterministic ID/random-generator algorithms; concrete
-materialization and pass-through observation mechanics; minimal checkpoint
-fields/segment cadence and read projections; artifact retention/publication;
-future concurrent scheduling; and later multi-scenario comparison tooling.
+Earlier design deferrals for deterministic materialization, JSON export,
+checkpoint projections and concurrent windows are now implemented in the slices
+documented above. Remaining work includes S3/S4 evidence, artifact
+retention/publication and any separately justified evaluation refinements;
+consolidation does not authorize a generic comparison platform or new scheduling.
 Rubric thresholds and real organization distributions follow the metrics
 framework's stakeholder calibration process, not new architecture rules.
 

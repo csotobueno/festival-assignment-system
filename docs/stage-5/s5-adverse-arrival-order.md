@@ -2,8 +2,12 @@
 
 ## Status, authority and question
 
-**Counterfactual analytical scenario — order transformation, runner and evidence
-support implemented; official execution and paired analysis pending.**
+**Counterfactual analytical scenario — transformation, official execution, paired
+analysis and S5/1001 reproduction completed.** The
+[paired results](s2-s5-order-sensitivity-results.md) preserve relatively stable
+aggregates and material individual allocation sensitivity. The
+[consolidated evidence](decision-gate-evidence.md) carries both findings into
+Decision Gate preparation; the final Gate remains pending.
 S5 is an experiment under the exact S2 workload, not a
 proposed production policy or a realistic chronological arrival simulation.
 

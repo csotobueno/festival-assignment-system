@@ -28,9 +28,11 @@ The [Stage 5 evaluation framework](docs/stage-5/metrics-and-evaluation-criteria.
 defines the analytical rubric, populations, metrics and scenario requirements
 for evaluating `v0.3.0 — Fair Assignment Engine`. The
 [simulation architecture](docs/stage-5/simulation-architecture.md) defines the
-planned PostgreSQL execution, reproducibility and evidence flow. The first
-executable slice now exercises a deterministic two-day recovery scenario;
-the full simulation platform and evaluation remain pending.
+implemented PostgreSQL execution, reproducibility and evidence flow. Official
+S1/S2/S5/S6/S7/S8 isolated evidence is now
+[consolidated for Decision Gate review](docs/stage-5/decision-gate-evidence.md).
+Decision Gate preparation is in progress; S3/S4, stakeholder validation and the
+broader evaluation remain pending. No final verdict or mitigation is selected.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
 grouping, arrivals and shared topology. Both use the initial Stage 5 baseline
@@ -66,9 +68,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 — Assignment Engine and Fairness](docs/stage-4/README.md)
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
+* [Stage 5 — Consolidated Isolated Evidence for Decision Gate (preparation in progress)](docs/stage-5/decision-gate-evidence.md)
 * [Stage 5 — Simulation Architecture and Reproducibility](docs/stage-5/simulation-architecture.md)
 * [Stage 5 — S1/S2 Representative Scenario Contracts](docs/stage-5/representative-scenarios.md)
-* [Stage 5 — S5 Adverse Arrival Order (implemented; official runs pending)](docs/stage-5/s5-adverse-arrival-order.md)
+* [Stage 5 — S5 Processing-Order Sensitivity (official execution and analysis completed)](docs/stage-5/s5-adverse-arrival-order.md)
+* [Stage 5 — S2/S5 Processing-Order Sensitivity Results](docs/stage-5/s2-s5-order-sensitivity-results.md)
 * [Stage 5 — S6 Large Groups (official execution and analysis completed)](docs/stage-5/s6-large-groups.md)
 * [Stage 5 — S2/S6 Large-Group Sensitivity Results](docs/stage-5/s2-s6-large-group-sensitivity-results.md)
 * [Stage 5 — S7 High Fragmentation (materialization, official execution and analysis completed)](docs/stage-5/s7-high-fragmentation.md)
