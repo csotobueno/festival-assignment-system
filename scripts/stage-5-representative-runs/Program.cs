@@ -7,6 +7,11 @@ using Festival.Domain.Zones;
 using Festival.Simulation;
 
 // Task-specific protocol. Definitions, runner and eight-file exporter are unchanged.
+if (args.Length > 0 && args[0] is "--s8-smoke" or "--s8")
+{
+    await S8Runs.RunAsync(args);
+    return;
+}
 var firstDate = new DateOnly(2026, 8, 15);
 if (args.Length > 1 || (args.Length == 1 && args[0] is not ("--s5" or "--s6" or "--s7")))
     throw new ArgumentException("Usage: RepresentativeRuns [--s5|--s6|--s7]");
