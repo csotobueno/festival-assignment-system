@@ -3,7 +3,7 @@
 ## Status and Authority
 
 **Deterministic generation and the first six official representative runs completed;
-the wider Stage 5 evaluation remains pending.**
+Stage 5 = In Progress; Decision Gate = Pending.**
 S1 and S2 define simulation intent and provisional inputs materialized through
 the existing ScenarioDefinition → ScenarioMaterializer → ScenarioManifest flow.
 These definitions describe inputs and do not prescribe scenario pass/fail results.
@@ -39,6 +39,9 @@ analysis are [completed](s2-s5-order-sensitivity-results.md). S1/S2 inputs below
 are unchanged. Completed S1/S2/S5/S6/S7/S8 findings are
 [consolidated for Decision Gate review](decision-gate-evidence.md); preparation
 is in progress, with S3/S4 and the final Gate still pending.
+The [Decision Gate acceptance criteria and remaining evidence plan](decision-gate-criteria.md)
+define required decisions and S3/S4 evidence objectives. Criteria are defined;
+Stage 5 is not Evidence Complete.
 
 ## Shared Baseline
 
@@ -446,8 +449,10 @@ scheduler-dependent concurrent outcomes. Its separate contract defines request
 scope isolation, correctness, performance, reproducibility and population-coverage
 requirements; it adds no S6 group-size stress or S7 pre-occupation.
 
-S1/S2 evidence will inform later calibration. Detailed S3/S4 parameters,
-Decision Gate thresholds and new acceptance criteria remain undefined here.
+S1/S2 evidence informs later calibration. The
+[Decision Gate criteria](decision-gate-criteria.md) define acceptance questions and
+remaining evidence objectives without changing these scenario inputs. Detailed
+S3/S4 parameters and stakeholder acceptance thresholds remain undefined.
 
 ## Assumptions Requiring Stakeholder Validation
 

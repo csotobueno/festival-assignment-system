@@ -1,10 +1,14 @@
 # Stage 5 — Isolated Scenario Evidence for Decision Gate
 
-**Isolated evidence consolidated; Decision Gate preparation in progress. Stage 5
-and the Decision Gate remain pending.** This assessment consolidates S1, S2,
+**Isolated evidence consolidated; Decision Gate criteria defined. Stage 5 = In
+Progress; Decision Gate = Pending.** This assessment consolidates S1, S2,
 S5, S6, S7 and S8. It records architectural findings and review actions, without
 choosing Continue / Tune / Pivot / Stop or a mitigation architecture. S3/S4
 remain unresolved.
+
+The [Decision Gate acceptance criteria and remaining evidence plan](decision-gate-criteria.md)
+map these findings to requirements, stakeholder decisions and S3/S4 objectives.
+Stage 5 is not Evidence Complete; this evidence assessment remains unchanged.
 
 ## Authority, evidence and comparison conventions
 
@@ -425,10 +429,10 @@ inventory reservation/locking, queueing, different assignment-selection
 coordination or fragmentation-aware allocation. These are candidate areas only,
 with no preferred option, implementation or authorization to change policy.
 
-Next task: **Review Decision Gate evidence, capture stakeholder acceptance
-criteria and agree the remaining evidence plan.** Review the matrix's risks and
-assumptions; define the questions and credible inputs still needed for S3/S4 and
-any justified additional evidence. Keep business acceptance, evidence gaps and
-future mitigation evaluation explicit before the eventual Continue / Tune /
-Pivot / Stop decision. No scenario rerun or final architecture/go-no-go decision
-is made by this consolidation.
+The [criteria and ordered remaining evidence plan](decision-gate-criteria.md)
+now define the questions and required decisions. Next task: **Capture stakeholder
+acceptance decisions and validate operating assumptions before finalizing S3/S4
+contracts.** Keep business acceptance, evidence gaps and future mitigation
+evaluation explicit before the eventual Continue / Tune / Pivot / Stop decision.
+No scenario rerun or final architecture/go-no-go decision is made by this
+consolidation.

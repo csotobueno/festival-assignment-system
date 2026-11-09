@@ -19,9 +19,9 @@ records the verified exit criteria and validation evidence, including seven
 deterministic integrated acceptance scenarios. The former five-day presimulation
 requirement is explicitly deferred to Stage 5 to avoid duplicating its evaluation.
 
-**Stage 5 — Simulation + Decision Gate: Pending**
+**Stage 5 — Simulation + Decision Gate: In Progress. Decision Gate: Pending.**
 
-Stage 5 will evaluate the baseline through simulation and a technical decision
+Stage 5 is evaluating the baseline through simulation and a technical decision
 gate, producing evidence for a proposal to the festival organization. Operational
 and business considerations will then be refined with the organization.
 The [Stage 5 evaluation framework](docs/stage-5/metrics-and-evaluation-criteria.md)
@@ -31,8 +31,11 @@ for evaluating `v0.3.0 — Fair Assignment Engine`. The
 implemented PostgreSQL execution, reproducibility and evidence flow. Official
 S1/S2/S5/S6/S7/S8 isolated evidence is now
 [consolidated for Decision Gate review](docs/stage-5/decision-gate-evidence.md).
-Decision Gate preparation is in progress; S3/S4, stakeholder validation and the
-broader evaluation remain pending. No final verdict or mitigation is selected.
+The [Decision Gate acceptance criteria and remaining evidence plan](docs/stage-5/decision-gate-criteria.md)
+map findings to technical requirements, stakeholder decisions and S3/S4 evidence
+objectives. Decision Gate criteria are defined; S3/S4, stakeholder validation
+and the broader evaluation remain pending. Stage 5 is not Evidence Complete.
+No final verdict or mitigation is selected.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
 grouping, arrivals and shared topology. Both use the initial Stage 5 baseline
@@ -45,13 +48,14 @@ The first official representative set now contains six completed runs using
 Seeds 1001, 2001 and 3001 for both scenarios. The
 [S1/S2 results report](docs/stage-5/s1-s2-representative-results.md) separates
 observed metrics, cross-seed comparisons and interpretation, with exact locally
-retained evidence paths. Stage 5 evaluation and the Decision Gate remain pending.
+retained evidence paths. Stage 5 evaluation remains in progress; the Decision
+Gate remains pending.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 
 ## Project status
 
-**Stage 4 Completed. Stage 5 — Simulation + Decision Gate: Pending.**
+**Stage 4 Completed. Stage 5: In Progress. Decision Gate: Pending.**
 
 
 ## Documentation
@@ -69,6 +73,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
 * [Stage 5 — Consolidated Isolated Evidence for Decision Gate (preparation in progress)](docs/stage-5/decision-gate-evidence.md)
+* [Stage 5 — Decision Gate Acceptance Criteria and Remaining Evidence Plan](docs/stage-5/decision-gate-criteria.md)
 * [Stage 5 — Simulation Architecture and Reproducibility](docs/stage-5/simulation-architecture.md)
 * [Stage 5 — S1/S2 Representative Scenario Contracts](docs/stage-5/representative-scenarios.md)
 * [Stage 5 — S5 Processing-Order Sensitivity (official execution and analysis completed)](docs/stage-5/s5-adverse-arrival-order.md)
