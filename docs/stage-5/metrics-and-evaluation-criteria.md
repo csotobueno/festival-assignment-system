@@ -6,22 +6,31 @@ Stage 5 evaluates whether the `v0.3.0 — Fair Assignment Engine` baseline is su
 
 The immediate decision is the internal
 [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md), after
-Production-like Arrival Concurrency and Late Large Groups with Reconfiguration.
+definition/bounded Lean validation of Plausible Festival Arrival Concurrency
+and then Late Large Groups with Reconfiguration.
 Technical feasibility for proposal is distinct from production readiness and
 organizational approval. Stakeholder calibration, real operating-data validation,
 S3/S4 refinement/execution and the formal stakeholder Decision Gate remain in a
 later phase if the organization shows interest; they do not precede the initial
 proposal. This framework continues to own metric/rubric definitions in both phases.
 
-The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
-is Defined / Pending Execution and reuses these denominators and latency bounds.
+The original [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is retained; its evidence is **Open-loop High-rate Arrival Stress — Completed**
+and [analyzed](production-like-arrival-concurrency-analysis.md), reusing these
+denominators and latency bounds. Post-run analysis identified sustained overload:
+40 / ≈ 61.5 offered req/s exceed C1's retained mean of ≈ 29.6 successful req/s.
+Conflicts, technical failures, latencies and active concurrency are not production
+predictions. **Plausible Festival Arrival Concurrency = Pending**.
 KnownConcurrencyConflictRate aliases ConcurrencyConflictRate;
 UnexpectedTechnicalFailureRate aliases TechnicalErrorRate. It requires scheduled
 arrival offsets plus existing actual processing offsets/durations to reconstruct
 MaxActiveRequests; offered arrival rate is not realized concurrency or conflict
 rate. Its WallClockDuration uses the existing measured workload interval, separate
-from broad runner lifecycle time. These are future experiment requirements,
-not new implemented telemetry, production thresholds or metric-calculator changes.
+from broad runner lifecycle time. Optional schedule evidence and a derived overlap
+analyzer are implemented; fairness/recovery calculators and production thresholds
+are unchanged. Explicit post-commit observation failures keep their unexpected
+outcome while independently audited durable Assignments still count toward final
+delivery; the report separates these counts and retains the stopped audit findings.
 
 The objective is not to prove that the current algorithm is optimal.
 
@@ -2350,9 +2359,12 @@ Official isolated S1/S2/S5/S6/S7/S8 empirical evidence is now
 [consolidated for Decision Gate review](decision-gate-evidence.md), with measured
 results, populations, evidence strength and architectural implications kept
 separate. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending;
-formal stakeholder Decision Gate = Pending / future phase. Immediate work is
-Production-like Arrival Concurrency, then Late Large Groups with Reconfiguration,
-then the internal Gate and proposal if supported. Stakeholder calibration and
+formal stakeholder Decision Gate = Pending / future phase. Open-loop High-rate
+Arrival Stress is Completed; its operational findings and observer-audit limitations
+remain Gate inputs. Plausible Festival Arrival Concurrency is Pending. Immediate
+work is **Define Plausible Festival Arrival Concurrency Experiment**, then bounded
+Lean validation, late-group reconfiguration definition/execution, the internal Gate
+and proposal if supported. Stakeholder calibration and
 S3/S4 remain necessary in the later data-informed phase if the organization is
 interested. Measured evidence is unchanged; the internal fairness boundary is
 clarified in section 6.4. The Stage 4 fairness-rule count remains 19.

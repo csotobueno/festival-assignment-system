@@ -7,6 +7,11 @@ using Festival.Domain.Zones;
 using Festival.Simulation;
 
 // Task-specific protocol. Definitions, runner and eight-file exporter are unchanged.
+if (args.Length > 0 && args[0] is "--arrival" or "--arrival-add" or "--arrival-resume")
+{
+    await ArrivalRuns.RunAsync(args);
+    return;
+}
 if (args.Length > 0 && args[0] is "--s8-smoke" or "--s8" or "--s8-c1")
 {
     await S8Runs.RunAsync(args);

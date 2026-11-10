@@ -151,7 +151,8 @@ internal static class S8Runs
         Console.WriteLine($"COMPLETE {indexPath}");
     }
 
-    private static List<string> Audit(ScenarioManifest manifest, SimulationResult result)
+    internal static List<string> Audit(ScenarioManifest manifest, SimulationResult result,
+        IReadOnlyDictionary<Guid, AssignmentRequestId>? postCommitObservationRequests = null)
     {
         var findings = new List<string>();
         void Check(bool valid, string message) { if (!valid) findings.Add(message); }
@@ -163,6 +164,13 @@ internal static class S8Runs
         var requests = result.Requests.ToDictionary(r => r.AssignmentRequestId);
         var byPersistedId = result.Attempts.Where(a => a.PersistedRequestId.HasValue)
             .ToDictionary(a => a.PersistedRequestId!.Value.Value);
+        if (postCommitObservationRequests is not null)
+            foreach (var pair in postCommitObservationRequests)
+            {
+                var attempt = result.Attempts.Single(a => a.SimulationRequestId == pair.Key);
+                if (!byPersistedId.TryAdd(pair.Value.Value, attempt))
+                    Check(byPersistedId[pair.Value.Value].SimulationRequestId == pair.Key, "Duplicate final-state correlation");
+            }
         var spots = manifest.Catalog.Spots.ToDictionary(s => s.Code);
         Check(result.Assignments.All(a => spots.TryGetValue(a.SpotCode, out var s) && s.ZoneId == a.ZoneId
             && s.RowCode == a.RowCode && s.Number == a.SpotNumber && requests.ContainsKey(a.AssignmentRequestId.Value)), "INV-07 catalog/request identity");
@@ -177,29 +185,38 @@ internal static class S8Runs
             {
                 var a = attempts[i];
                 var p = plans[i];
+                AssignmentRequestId? finalObservedId = null;
+                if (postCommitObservationRequests is not null && postCommitObservationRequests.TryGetValue(a.SimulationRequestId, out var observedId))
+                    finalObservedId = observedId;
                 var sequential = manifest.Metadata.ExecutionMode == SimulationExecutionMode.Sequential;
                 Check(a.BaselineSequence == p.Sequence && a.AttemptSequence == p.Sequence
-                    && (sequential ? a.WindowNumber is null && a.WindowPosition is null
+                    && (manifest.Metadata.ExecutionMode != SimulationExecutionMode.Concurrent ? a.WindowNumber is null && a.WindowPosition is null
                         : a.WindowNumber == i / manifest.Metadata.ConcurrencyLevel + 1 && a.WindowPosition == i % manifest.Metadata.ConcurrencyLevel + 1)
                     && a.AttendeeIds.SequenceEqual(p.Members.Select(m => m.Id)), "Window/sequence/membership provenance");
                 Check(a.ProcessingStartedOffset.HasValue && a.Duration >= TimeSpan.Zero, "Missing monotonic timing");
+                if (manifest.Metadata.ArrivalSchedule is { } schedule)
+                    Check(a.ScheduledArrivalOffset.HasValue && a.ProcessingStartedOffset >= a.ScheduledArrivalOffset
+                        && a.ScheduledArrivalOffset - attempts[0].ScheduledArrivalOffset == schedule.OffsetAt(i),
+                        "Arrival schedule/actual-start provenance");
                 if (sequential && i > 0)
                     Check(a.ProcessingStartedOffset >= attempts[i - 1].ProcessingStartedOffset + attempts[i - 1].Duration, "Sequential requests overlap");
                 if (a.DatabaseSqlState == "40P01") Check(a.Outcome == SimulationAttemptOutcome.KnownConcurrencyConflict
                     && a.DiagnosticCode == "DeadlockDetected", "40P01 classification");
-                if (a.Outcome is SimulationAttemptOutcome.KnownConcurrencyConflict or SimulationAttemptOutcome.UnexpectedTechnicalFailure)
+                if (a.Outcome == SimulationAttemptOutcome.KnownConcurrencyConflict
+                    || a.Outcome == SimulationAttemptOutcome.UnexpectedTechnicalFailure && finalObservedId is null)
                 {
                     Check(a.PersistedRequestId is null && a.SelectedExperienceQuality is null, "Failed/conflict attempt claims persisted result");
                     Check(!result.Assignments.Any(row => row.FestivalDayId == day.FestivalDayId && a.AttendeeIds.Contains(row.AttendeeId)), "Conflict/failure loser partial graph");
                     continue;
                 }
-                if (a.PersistedRequestId is not { } id || !requests.TryGetValue(id.Value, out var request)) { findings.Add("INV-08 missing persisted result"); continue; }
+                if ((finalObservedId ?? a.PersistedRequestId) is not { } id || !requests.TryGetValue(id.Value, out var request)) { findings.Add("INV-08 missing persisted result"); continue; }
                 Check(request.FestivalDayId == day.FestivalDayId.Value && (request.RequestedAt - p.RequestedAt).Duration() < TimeSpan.FromMicroseconds(1), "Persisted request identity/time");
                 var rows = assignments[id.Value].ToArray();
                 if (a.Outcome == SimulationAttemptOutcome.DomainRejected) Check(request.Status == "Rejected" && rows.Length == 0, "INV-08 rejected graph");
                 else
                 {
-                    Check(a.Outcome == SimulationAttemptOutcome.Successful && request.Status == "Completed", "INV-08 completed status");
+                    Check((a.Outcome == SimulationAttemptOutcome.Successful || finalObservedId is not null)
+                        && request.Status == "Completed", "INV-08 completed status");
                     try { AssignmentGroup.Create(id, day.FestivalDayId, p.Members.Select(m => m.Id)).EnsureValidResult(rows); }
                     catch (ArgumentException error) { findings.Add("INV-03/04/05/07/08 " + error.Message); }
                     Check(rows.All(row => row.AssignedAt == p.AssignedAt || (row.AssignedAt - p.AssignedAt).Duration() < TimeSpan.FromMicroseconds(1)), "AssignedAt mismatch");

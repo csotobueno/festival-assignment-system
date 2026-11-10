@@ -47,6 +47,8 @@ public sealed record SimulationAttemptRecord(
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public TimeSpan? ProcessingStartedOffset { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public TimeSpan? ScheduledArrivalOffset { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? DatabaseSqlState { get; init; }
 }
 

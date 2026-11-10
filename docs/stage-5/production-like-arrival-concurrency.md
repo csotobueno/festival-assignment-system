@@ -1,20 +1,36 @@
 # Stage 5 — Production-like Arrival Concurrency Experiment
 
-**Experiment = Defined / Pending Execution. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending.** This contract defines future work
-only; neither implementation nor execution is included.
+**Original contract name retained for traceability. Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Pending. Stage 5 = In Progress.**
+**MVP Technical Feasibility Gate = Pending.** The
+[official analysis](production-like-arrival-concurrency-analysis.md) records four
+valid initial-matrix runs and five actual executions including a documented
+stopped collection. No Seed 3001 was needed. The timing/metric contract below
+remains unchanged; severe operational degradation persists without a start gate
+under the tested high-rate open-loop schedules, not established festival traffic.
+The stopped collection's three original audit findings remain explicit in the
+[remediation record](arrival-observer-audit-remediation.md), not overwritten.
 
 ## Purpose and authority
+
+**Original design intent (retained):**
 
 > Does concurrency remain materially problematic when requests arrive with
 > temporal dispersion and overlap naturally, rather than being released through
 > a synchronization barrier?
 
-This exploratory experiment supplies the concurrency-related input to the
-[internal MVP Gate](mvp-technical-feasibility-gate.md). **Moderate and Burst-like
-are exploratory traffic hypotheses**, not measured festival traffic, production
-workload forecasts or organization-approved operating assumptions. No production
-traffic data is available; actual calibration belongs to the post-proposal phase.
+The experiment was initially defined as Production-like Arrival Concurrency.
+**Post-run correction (2026-11-10):** its parameters produced sustained overload,
+so its completed evidence is now classified as **Open-loop High-rate Arrival Stress**.
+It supplies stress evidence to the [internal MVP Gate](mvp-technical-feasibility-gate.md),
+but does not yet establish whether concurrency is material under plausible festival
+arrival rates. Moderate and Burst-like remain original pattern names, not validated
+festival intensity categories. The [analysis](production-like-arrival-concurrency-analysis.md#post-run-interpretation-correction--2026-11-10)
+preserves the design → implementation → official runs → large active populations →
+overload recognition → corrected interpretation sequence without changing evidence.
+
+**Observed conflicts, technical failures, latencies and active-concurrency levels
+are not production predictions.** Plausible festival concurrency validation is
+still required before the internal Gate; organization calibration remains later.
 
 The [S2 contract](representative-scenarios.md#s2--expected-baseline) owns business
 inputs; the [metrics framework](metrics-and-evaluation-criteria.md) owns outcome
@@ -23,7 +39,7 @@ owns persistence/evidence boundaries. The [official S8 analysis](s8-concurrency-
 remains sufficient for its synchronized C1/C4/C16 comparison. This is a distinct
 arrival-model experiment, not a repetition or revision of that evidence.
 
-## Controlled workload and future execution
+## Controlled workload and execution
 
 Materialize S2 once per Seed and reuse its exact business input for both patterns.
 Preserve request/Attendee identities, membership, group-size distribution,
@@ -39,7 +55,7 @@ mix, S7 preoccupation or reconfiguration is imported. Fairness rules,
 AssignmentEngine, Application use-case path and PostgreSQL Infrastructure remain
 the baseline. Different transaction winners and subsequent histories are outputs.
 
-Future execution must use real Application/PostgreSQL processing, **one
+Execution uses real Application/PostgreSQL processing, **one
 independent DI scope and DbContext per request**, and **RetryCount = 0**. Each
 request becomes independently due at its planned elapsed offset; subsequent
 arrivals do not wait for preceding completions, scope readiness or reconciliation.
@@ -51,9 +67,11 @@ checkpoint and the next FestivalDay; persistence is not reset between days.
 release, barriers after reads or grouped completion windows. A burst is a set of
 distinct arrival offsets, not a simultaneous release or a required concurrency
 level. Preserve rollback, disposal, cancellation and reconciliation semantics.
-Current tooling supports Sequential/1 and synchronized Concurrent/4 or /16;
-arrival-driven execution and scheduled-offset evidence require later tooling
-implementation. This contract does not claim those capabilities already exist.
+Tooling now also supports ArrivalDriven/0 with ArrivalSchedule metadata; zero
+means no configured worker cap, not measured inactivity. Existing Sequential/1
+and synchronized Concurrent/4 or /16 behavior remains. ArrivalDrivenExecution
+preserves exact S2 business objects; ArrivalSimulationExecutor implements the
+deadline producer independently of S8's readiness gate.
 
 ## Deterministic arrival patterns
 
@@ -70,11 +88,23 @@ Examples: Moderate `0, 25, 50, 75, 100, …`; Burst-like
 `0, 5, 10, 15, 65, 70, 75, 80, 130, …`. A final partial cluster contains only
 remaining requests; no padding or extra requests are created.
 
+**Original parameter-selection rationale (retained, not a realism claim):**
 Moderate's 25 ms lies below C1's observed p50 of 27.095–28.726 ms and p95 of
 46.382–51.821 ms, making some overlap plausible without guaranteeing it.
 Burst-like's small four-request clusters and 5/50 ms gaps select a reproducible
 higher offered-pressure hypothesis within the exploratory range. They are design
 parameters, not measured arrival behavior or desired conflict/concurrency values.
+
+**Corrected interpretation:** Moderate offers `1 / 0.025 = 40 req/s`;
+Burst-like offers `4 / 0.065 ≈ 61.5 req/s` over its repeating cluster cycle.
+Both exceed the retained [S8 C1](s8-concurrency-analysis.md) three-seed mean
+successful service rate of **29.593 ≈ 29.6 req/s**. This local reference is not a
+proven capacity ceiling. Selecting intervals near API latency did not model S2's
+business temporal dispersion: S2 has 1,464 requests/day and approximately 293/hour
+(0.081 req/s) in its highest average hourly bucket, 15:00–16:00. Short bursts
+remain possible, but the sustained tested schedules are hundreds of times that
+average. The analysis documents the resulting accumulation interpretation, not a
+mathematically proven queueing model.
 
 No random timing draw is needed: for a given Seed, S2 defines the exact request
 order and these formulas define its schedule. The same timing rule applies to
@@ -101,7 +131,7 @@ or silently changing the schedule.
 | Per-attempt evidence | Contract / existing equivalent |
 | --- | --- |
 | Run/pattern/Seed, FestivalDayId and SimulationRequestId | Correlate the exact S2 request, configuration, timing and persisted result. |
-| ScheduledArrivalOffset | Required future elapsed due-offset evidence; not currently an exported attempt field. Use the same origin/units as ProcessingStartedOffset. |
+| ScheduledArrivalOffset | Optional arrival-specific exported elapsed due offset. Uses the same origin/units as ProcessingStartedOffset. |
 | Actual start | Reuse **ProcessingStartedOffset**, measured immediately before ExecuteAsync. |
 | Actual completion and Duration | Derive terminal offset as **ProcessingStartedOffset + Duration**; reuse StartedAt/CompletedAt for UTC correlation, not monotonic overlap calculations. No redundant completion-offset field is needed. |
 | AttemptSequence and BaselineSequence | Reuse existing planned sequence fields; preserve baseline dispatch order. They do not assert actual entry, completion or commit order. |
@@ -145,11 +175,17 @@ not a fake persisted Rejected request or losing Assignments.
 
 Retain the existing eight-file evidence separation, exact S2 input proofs,
 schedule provenance, environment/build/PostgreSQL and warm-up context, checksums
-and durable reconciliation. The future implementation must retain the required
-timing facts compatibly; this document does not add executable telemetry or a
-new production persistence model.
+and durable reconciliation. Optional schedule/timing additions preserve earlier
+package shapes. There is no new production persistence model. The
+[observer-audit remediation](arrival-observer-audit-remediation.md) separates
+post-commit observation failures from actual graph violations using independently
+loaded final state; original outcomes, diagnostics and timing are never rewritten.
 
 ## Official execution matrix and adaptive expansion
+
+The original execution plan below is retained as history. Collection is complete;
+no further Moderate/Burst-like, Seed 3001 or C1/C4/C16 runs are required for this
+correction. Another run cannot fix the interpretation of the offered arrival rates.
 
 | Pattern | Initial Seeds | Conditional additional Seed |
 | --- | --- | --- |
@@ -175,7 +211,7 @@ additional Seeds, levels, repetitions or replacement runs need separate scope.
 ## Reference comparisons and interpretation
 
 Use retained official **C1** as the sequential reference, **Moderate/Burst-like**
-as distributed-arrival hypotheses and **C4/C16** as the synchronized high-contention
+as open-loop high-rate stress patterns and **C4/C16** as the synchronized high-contention
 envelope. **Do not rerun C1/C4/C16** as part of this matrix. Their existing evidence
 is sufficient; any later rerun requires a new specific evidential reason.
 
@@ -185,31 +221,46 @@ alone cannot identify lost delivery without counts, participation, start lag and
 overlap. Existing S8 has no warm-up, fixed configuration ordering and local-host
 limits. Preserve these caveats rather than normalizing historical measurements.
 
-The analysis must answer whether meaningful contention persists under actual
-natural overlap; how strongly results suggest synchronized release contributed
+The original analysis questions were whether meaningful contention persists
+under actual natural overlap; how strongly results suggest synchronized release contributed
 to S8's observed severity; whether persisted correctness is protected; whether
 the distributed use-case flow is compatible with the **internal provisional
 p95 < 1 second hypothesis**; and whether useful delivery/participation deteriorates.
-This comparison cannot quantify a causal production synchronization effect or
-establish organization-approved service behavior.
+These questions remain historical intent; the executed rates do not answer the
+plausible festival arrival question. This comparison cannot quantify a causal
+production synchronization effect or establish organization-approved service behavior.
 
-Supported future interpretations may be that S8 synchronized stress substantially
-overstated contention **relative to these tested distributed hypotheses**, that
-concurrency remains a material technical concern, or that evidence is ambiguous
-and needs the conditional Seed 3001. None is selected now. No new production
-pass/fail threshold, mitigation, SLA or MVP feasibility verdict is introduced.
+The corrected conclusion is: severe degradation remains observable without a
+synchronized start barrier under the tested high-rate open-loop arrival patterns.
+Neither pattern needs Seed 3001 for that stress conclusion. S8 C4/C16 deliberately
+synchronize release and cap active work by window size; these arrivals continue
+while earlier work is active and accumulate without a small fixed bound. Neither
+experiment independently represents production, and synchronization alone is not
+an isolated causal effect. The experiment does not yet establish whether concurrency
+is material under plausible festival arrival rates. No new production pass/fail
+threshold, mitigation, SLA or MVP feasibility verdict is introduced.
 
 ## Roadmap, status and scope
 
-Sequence: Stage 5 realignment → this concurrency experiment → Late Large Groups
-with Reconfiguration → MVP Technical Feasibility Gate → proposal if supported.
-This experiment answers only the concurrency part; S3/S4, real traffic calibration
-and the formal stakeholder Gate remain in the later post-proposal phase.
+Sequence: reframe arrival-concurrency evidence (completed) → define Plausible
+Festival Arrival Concurrency → execute bounded Lean concurrency validation →
+define/execute Late Large Groups with Reconfiguration → MVP Technical Feasibility
+Gate → proposal if supported. S3/S4, real traffic calibration and the formal
+stakeholder Gate remain in the later post-proposal phase.
 
-**Production-like Arrival Concurrency = Defined / Pending Execution.**
-**Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.** No official
-or exploratory run, Simulation/production change, AssignmentEngine/fairness
-change, retry, locking, serialization, queue, reconfiguration, S3/S4 execution
-or final feasibility decision is performed here.
+**Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Pending.** Four valid initial-matrix
+runs were analyzed; the fifth actual execution is the retained stopped collection.
+Its observer-audit replacement was documented before execution and did not alter
+business execution, timing, conflict semantics or original outcomes. No conditional
+Seed 3001 or reference rerun occurred. Original stopped findings are not averaged
+away; no clean retrospective request-state audit is claimed for that package.
+**Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.** No production,
+AssignmentEngine/fairness change, retry, locking, serialization/queue mitigation,
+reconfiguration, S3/S4 execution or final feasibility decision occurred.
 
-Next task: **Implement and Execute Production-like Arrival Concurrency Experiment**.
+Next task: **Define Plausible Festival Arrival Concurrency Experiment**.
+Model plausible temporal dispersion from the business workload rather than deriving
+arrival rates primarily from API latency. Distinguish OfferedRequestRate,
+ActiveConcurrency and ConflictRate; avoid sustained offered load that automatically
+accumulates backlog without a small bound unless overload is the explicit objective.
+Final intervals, compression factors and run counts are not defined here.

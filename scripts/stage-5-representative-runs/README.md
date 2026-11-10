@@ -357,3 +357,92 @@ for all three levels. Missing denominators remain null/N/A. Analysis replay is
 deterministic for unchanged inputs and analyzer sources; outputs refuse overwrite
 and remain outside raw evidence. Regenerate to a fresh path, compare bytes, then
 select the reviewed JSON/report for repository history. Do not add raw packages.
+
+## Production-like Arrival Concurrency
+
+**Historical contract/command name retained. Open-loop High-rate Arrival Stress
+= Completed; Plausible Festival Arrival Concurrency = Pending.** Post-run analysis
+identified sustained overload: 40 / ≈ 61.5 offered req/s exceed the retained C1
+mean of ≈ 29.6 successful req/s. The [corrected interpretation](../../docs/stage-5/production-like-arrival-concurrency-analysis.md)
+preserves every measurement and the stopped collection/remediation history.
+The commands below document the original execution protocol; no new Moderate,
+Burst-like, Seed 3001 or C1/C4/C16 run is required for this correction. Next:
+**Define Plausible Festival Arrival Concurrency Experiment**, then bounded Lean
+validation before late-group reconfiguration.
+
+The [arrival contract](../../docs/stage-5/production-like-arrival-concurrency.md)
+uses exact S2 inputs, Moderate/25 ms and BurstLike/4 requests with 5 ms internal
+spacing and a 50 ms last-to-next-cluster gap. Build the solution and this harness,
+then pass the full automated suites before official execution:
+
+```bash
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- \
+  --arrival
+```
+
+This executes exactly Moderate/1001, Moderate/2001, BurstLike/1001 and
+BurstLike/2001, one five-day run each, with a new owned PostgreSQL container per
+run. It verifies retained C1/S2 package checksums and exact business inputs before
+dispatch; production Domain/Application/Infrastructure/API source hashes must
+match retained S8. Only simulation tooling changes are expected. The ledger
+fingerprints execution sources/harness, audits final persisted state and records
+all eight package checksums. Setup/harness failures stop the set with a retained
+failure record; no automatic retries or reference reruns occur.
+
+ArrivalDriven metadata retains the S2 ScenarioId and adds ArrivalSchedule;
+ConcurrencyLevel = 0 means no configured worker cap, not zero actual activity.
+Each attempt retains its scheduled run-relative offset and actual processing
+offset/duration. The first scheduled offset of each day is its observed origin.
+No redundant terminal-offset or scheduling-lag field is exported: derive both.
+
+```bash
+python3 -B scripts/stage-5-representative-runs/analyze_arrival_concurrency.py \
+  artifacts/simulations/<completed-arrival-set>/index.json \
+  --output artifacts/analysis/arrival-results.json
+```
+
+The analyzer verifies hashes, original S2 equivalence, schedule arithmetic,
+request/Assignment/path reconciliation, independent half-open overlap counts and
+unchanged conflict semantics. It reports actual peak/mean concurrency and lag
+separately from use-case latency, plus useful throughput/participation and retained
+C1/C4/C16 references. Outputs refuse overwrite and stay outside raw packages.
+The selected documentation JSON has an additive `interpretation` note for the
+post-run correction; the unchanged analyzer regenerates measurements/provenance,
+not this editorial metadata. All original fields remain unchanged.
+
+Only after analyzing the initial four, document a pattern-specific ambiguity
+before any conditional execution:
+
+```bash
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- \
+  --arrival-add <latest-completed-index.json> <Moderate-or-BurstLike> <reason-file>
+```
+
+An expansion adds Seed 3001 for that pattern only and chains the prior ledger
+by checksum. Reusing an already-expanded pattern is rejected; the planned total
+is capped at six. A confirmed integrity violation must be investigated, never
+averaged away. The hypotheses and results do not estimate production traffic.
+
+The completed [arrival analysis](../../docs/stage-5/production-like-arrival-concurrency-analysis.md)
+records a stopped collection exposing a post-commit observer-audit assumption.
+The [remediation record](../../docs/stage-5/arrival-observer-audit-remediation.md)
+was written before replacing that collection. Valid committed graphs whose
+observer read fails are correlated from the existing final snapshot, with no
+new DB read/retry and no change to attempt outcomes or business execution.
+
+```bash
+DOCKER_API_VERSION=1.43 FESTIVAL_SIMULATION_REPOSITORY_COMMIT_SHA=<sha> \
+  dotnet run --no-build --project scripts/stage-5-representative-runs/RepresentativeRuns.csproj -- \
+  --arrival-resume <stopped-index.json> docs/stage-5/arrival-observer-audit-remediation.md
+```
+
+This specific repair retains the two valid Moderate entries, preserves the
+stopped BurstLike/1001 entry/checksums/findings as excluded, and executes only
+its documented replacement plus BurstLike/2001. The new ledger links the stopped
+ledger by checksum and retains the original source phase. Existing src files
+must match byte-for-byte; only the read-only resolver is added. The completed
+matrix has four valid runs and five actual executions; neither pattern required
+Seed 3001. The cap includes excluded executions, so a later expansion cannot
+silently exceed six actual executions.

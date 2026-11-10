@@ -40,12 +40,21 @@ S1/S2/S5/S6/S7/S8 isolated evidence is now
 The [formal Decision Gate criteria](docs/stage-5/decision-gate-criteria.md)
 retain preparatory stakeholder decisions and S3/S4 evidence objectives for that
 later phase. S7 fragmentation and S8 synchronized-contention risks remain visible;
-the remaining pre-proposal experiments examine temporally distributed arrival
-concurrency and late large groups with reconfiguration. The
+the pre-proposal roadmap still requires plausible festival arrival concurrency
+and late large groups with reconfiguration. The original
 [arrival-concurrency contract](docs/stage-5/production-like-arrival-concurrency.md)
-is **Defined / Pending Execution**; it plans four initial runs and at most two
-conditional Seed 3001 additions. Stage 5 is not Evidence
-Complete. No final verdict or mitigation is selected.
+was intended as production-like; post-run analysis identified sustained overload.
+Its evidence is now **Open-loop High-rate Arrival Stress — Completed**, with [four valid initial-matrix results](docs/stage-5/production-like-arrival-concurrency-analysis.md)
+and five actual official executions, including a documented stopped observer-audit
+collection. No Seed 3001 was needed. Severe degradation persists without a
+start gate at offered rates of 40 / ≈ 61.5 req/s, above C1's retained mean of
+≈ 29.6 successful req/s. Valid-run audits have zero findings; the stopped
+collection's three original findings remain retained. These rates, failures,
+latencies and hundreds/thousands of active requests are not production predictions.
+**Plausible Festival Arrival Concurrency = Pending**: S2's busiest hourly bucket
+averages approximately 293 requests/hour (0.081 req/s), without excluding short
+bursts. Stage 5 is not Evidence Complete.
+No final Gate verdict or mitigation is selected.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
 grouping, arrivals and shared topology. Both use the initial Stage 5 baseline
@@ -70,11 +79,12 @@ the complete operational system.
 
 Immediate roadmap:
 
-1. Realign Stage 5 toward the MVP Technical Feasibility Gate — documented.
-2. Implement and execute Production-like Arrival Concurrency — contract defined.
-3. Test Late Large Groups with Reconfiguration.
-4. Perform the MVP Technical Feasibility Gate.
-5. If supported, prepare the proposal to the organization.
+1. Reframe arrival-concurrency evidence — completed as Open-loop High-rate Arrival Stress.
+2. **Define Plausible Festival Arrival Concurrency Experiment.**
+3. Execute bounded Lean concurrency validation under its separate contract.
+4. Define/execute Late Large Groups with Reconfiguration separately.
+5. Perform the MVP Technical Feasibility Gate.
+6. If supported, prepare the proposal to the organization.
 
 If the organization is interested, validate real operating assumptions and
 calibrate policies, finalize and execute/analyze S3/S4, evaluate applicable
@@ -96,7 +106,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
 * [Stage 5 — MVP Technical Feasibility Gate and Pre-Proposal Roadmap](docs/stage-5/mvp-technical-feasibility-gate.md)
-* [Stage 5 — Production-like Arrival Concurrency (Defined / Pending Execution)](docs/stage-5/production-like-arrival-concurrency.md)
+* [Stage 5 — Original Arrival Contract (reclassified as completed high-rate stress)](docs/stage-5/production-like-arrival-concurrency.md)
+* [Stage 5 — Open-loop High-rate Arrival Stress Results and Interpretation](docs/stage-5/production-like-arrival-concurrency-analysis.md)
 * [Stage 5 — Consolidated Isolated Evidence for Decision Gate (preparation in progress)](docs/stage-5/decision-gate-evidence.md)
 * [Stage 5 — Future Formal Decision Gate Criteria and Evidence Plan](docs/stage-5/decision-gate-criteria.md)
 * [Stage 5 — Simulation Architecture and Reproducibility](docs/stage-5/simulation-architecture.md)
