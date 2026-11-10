@@ -4,6 +4,15 @@
 
 Stage 5 evaluates whether the `v0.3.0 — Fair Assignment Engine` baseline is sufficiently fair, reliable, consistent, and performant to justify moving toward a real implementation proposal.
 
+The immediate decision is the internal
+[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md), after
+Production-like Arrival Concurrency and Late Large Groups with Reconfiguration.
+Technical feasibility for proposal is distinct from production readiness and
+organizational approval. Stakeholder calibration, real operating-data validation,
+S3/S4 refinement/execution and the formal stakeholder Decision Gate remain in a
+later phase if the organization shows interest; they do not precede the initial
+proposal. This framework continues to own metric/rubric definitions in both phases.
+
 The objective is not to prove that the current algorithm is optimal.
 
 The objective is to gather enough evidence to answer:
@@ -433,6 +442,15 @@ This is not a validated organizational requirement. Report all three categories
 separately. N/A does not satisfy or fail the quantitative hypothesis.
 The metrics calculator produces observations only; this hypothesis is not
 implemented as a threshold, pass/fail check or Decision Gate verdict.
+
+For the current internal pre-proposal Gate, use the strict
+`BalancedPathRate + AcceptablePathRate > 85%` criterion defined in the
+[MVP Gate](mvp-technical-feasibility-gate.md#internal-feasibility-criteria-and-gate-questions).
+The inclusive formula above records the earlier analytical hypothesis; exactly
+85% does not meet the current internal criterion. Neither formulation establishes
+an organizational SLA or changes historical measurements, classification or
+production fairness policy. Later stakeholder calibration remains required for
+organizational acceptance, not for making the initial proposal.
 
 ## 6.5 Attendee Recovery Observations
 
@@ -1219,7 +1237,9 @@ Initial Expected / Baseline hypothesis:
 P95AssignmentLatency < 1 second
 ```
 
-Classification: **Engineering acceptance hypothesis**. Isolated outliers should
+Classification: **Internal MVP analytical hypothesis**, not a production SLA.
+It evaluates the measured use-case flow; existing evidence excludes complete
+HTTP/network/frontend user experience. Isolated outliers should
 be investigated; the hypothesis does not require every request below one second.
 It does not override reliability or invariant criteria.
 
@@ -1829,7 +1849,11 @@ This supports causal interpretation.
 
 # 26. Initial Scenario Set v1
 
-The first complete Stage 5 evaluation should include:
+The initial complete evaluation set is retained below. S3/S4 are deferred to the
+post-proposal, data-informed phase if the organization shows interest; completion
+of all eight scenarios is not a prerequisite for the internal MVP Gate or initial
+proposal. The two immediate experiments are defined separately in the
+[MVP roadmap](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments).
 
 ```text
 S1 — Best Plausible
@@ -2083,6 +2107,12 @@ Requires stakeholder validation
 
 # 32. Decision Gate Interpretation
 
+This section and section 33 prepare the future formal stakeholder/production
+review. The earlier internal [MVP Gate](mvp-technical-feasibility-gate.md) instead
+asks whether the concept is technically feasible for proposal or needs further
+technical validation before proposal. Neither review automatically approves
+production or starts implementation.
+
 Scenario results must not be interpreted independently.
 
 The Decision Gate should consider both:
@@ -2101,10 +2131,10 @@ Possible conclusions:
 
 ## Continue
 
-Evidence supports proceeding to the next implementation/proposal phase.
-Stage 5 completes the technical MVP evaluation / Decision Gate; Continue does
-not automatically start another predefined implementation stage or imply
-organization approval or production readiness.
+Evidence supports the documented next step within the future formal review's
+validated scope. This is separate from the earlier internal pre-proposal Gate;
+Continue does not automatically start an implementation stage or imply
+organization approval, production readiness or permission to go live.
 
 ## Tune
 
@@ -2274,10 +2304,10 @@ Fairness classification
 → PathClassificationRubric v1; exhaustive quantitative matrix with provisional analytical thresholds
 
 Fairness threshold
-→ initial hypothesis
+→ internal MVP >85% criterion; later organizational calibration pending
 
 Performance threshold
-→ engineering hypothesis
+→ internal MVP analytical hypothesis, not a production SLA
 
 Critical invariant thresholds
 → hard technical criteria
@@ -2309,9 +2339,13 @@ for serialization, ordering and completion behavior.
 Official isolated S1/S2/S5/S6/S7/S8 empirical evidence is now
 [consolidated for Decision Gate review](decision-gate-evidence.md), with measured
 results, populations, evidence strength and architectural implications kept
-separate. Decision Gate preparation is in progress; S3/S4, stakeholder acceptance
-and the final verdict remain pending. The consolidation introduces no formula,
-threshold or mitigation change; the Stage 4 fairness-rule count remains 19.
+separate. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending;
+formal stakeholder Decision Gate = Pending / future phase. Immediate work is
+Production-like Arrival Concurrency, then Late Large Groups with Reconfiguration,
+then the internal Gate and proposal if supported. Stakeholder calibration and
+S3/S4 remain necessary in the later data-informed phase if the organization is
+interested. Measured evidence is unchanged; the internal fairness boundary is
+clarified in section 6.4. The Stage 4 fairness-rule count remains 19.
 
 The [simulation architecture and reproducibility strategy](simulation-architecture.md)
 defines the implemented Application/PostgreSQL execution and evidence flow around

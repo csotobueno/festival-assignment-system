@@ -3,7 +3,8 @@
 ## Status and Authority
 
 **Deterministic generation and the first six official representative runs completed;
-Stage 5 = In Progress; Decision Gate = Pending.**
+Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.**
+**Formal stakeholder Decision Gate = Pending / future phase.**
 S1 and S2 define simulation intent and provisional inputs materialized through
 the existing ScenarioDefinition → ScenarioMaterializer → ScenarioManifest flow.
 These definitions describe inputs and do not prescribe scenario pass/fail results.
@@ -37,11 +38,13 @@ counterfactual reversal of the exact S2 daily workload. The explicit transformat
 runner dispatch and evidence support are implemented; official S5 runs and paired
 analysis are [completed](s2-s5-order-sensitivity-results.md). S1/S2 inputs below
 are unchanged. Completed S1/S2/S5/S6/S7/S8 findings are
-[consolidated for Decision Gate review](decision-gate-evidence.md); preparation
-is in progress, with S3/S4 and the final Gate still pending.
-The [Decision Gate acceptance criteria and remaining evidence plan](decision-gate-criteria.md)
-define required decisions and S3/S4 evidence objectives. Criteria are defined;
-Stage 5 is not Evidence Complete.
+[consolidated for Decision Gate review](decision-gate-evidence.md).
+The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) defines the
+immediate pre-proposal roadmap: Production-like Arrival Concurrency, Late Large
+Groups with Reconfiguration and the internal Gate. The
+[formal criteria](decision-gate-criteria.md) preserve stakeholder validation and
+S3/S4 objectives for the later phase if the organization shows interest.
+Those are not initial-proposal prerequisites. Stage 5 is not Evidence Complete.
 
 ## Shared Baseline
 
@@ -437,8 +440,8 @@ scenarios retain only their high-level purposes here:
 
 | Scenario | Purpose |
 | --- | --- |
-| S3 — Stress | Examine behavior under operating pressure. |
-| S4 — Worst Plausible | Examine the practical operating boundary. |
+| S3 — Stress | Examine behavior under operating pressure; deferred to post-proposal, data-informed validation. |
+| S4 — Worst Plausible | Examine the practical operating boundary; deferred to post-proposal, data-informed validation. |
 | [S5 — Adverse Arrival Order](s5-adverse-arrival-order.md) | Reverse the exact S2 daily request processing order, preserving original timestamps and baseline sequence; official execution, paired analysis and reproduction completed. |
 | [S6 — Large Groups](s6-large-groups.md) | Baseline: S2. Changed dimension: group-size distribution; requests of size 6–10 increase from 7% → 25%. Definition/materialization and first official execution/analysis completed. |
 | [S7 — High Fragmentation](s7-high-fragmentation.md) | Primary baseline: S7-Control. Experimental variant: S7-Fragmented. Changed dimension: spatial distribution of equivalent pre-occupied capacity. Workload: exact paired S2. Processing: normal sequential order. Materialization, official runs, paired reproduction and analysis completed. |
@@ -450,13 +453,19 @@ scope isolation, correctness, performance, reproducibility and population-covera
 requirements; it adds no S6 group-size stress or S7 pre-occupation.
 
 S1/S2 evidence informs later calibration. The
-[Decision Gate criteria](decision-gate-criteria.md) define acceptance questions and
-remaining evidence objectives without changing these scenario inputs. Detailed
-S3/S4 parameters and stakeholder acceptance thresholds remain undefined.
+[formal Decision Gate criteria](decision-gate-criteria.md) define later acceptance
+questions and evidence objectives without changing these inputs. Detailed S3/S4
+parameters and stakeholder acceptance thresholds remain undefined for that
+post-proposal phase. The two pre-proposal experiments have separate purposes
+under the [MVP Gate](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments);
+this document fixes neither their arrival distribution nor reconfiguration policy.
 
 ## Assumptions Requiring Stakeholder Validation
 
 Every row below is **Simulation hypothesis — Requires stakeholder validation**.
+Validation/calibration belongs to the later phase if the organization is
+interested in the proposal, not to the initial-proposal prerequisites. These
+inputs remain explicitly provisional in the internal MVP review.
 
 | Hypothesis | Validation needed |
 | --- | --- |
@@ -491,8 +500,9 @@ offline derivations without modifying the experimental inputs or production rule
 S8 adds exact S2 workload reuse, deterministic windows, a pre-use-case readiness
 gate, isolated concurrent PostgreSQL execution and minimal compatible evidence.
 Small tests protect scheduling, persistence and export. The initial six-run
-execution/analysis is completed; its separate report recommends C1 as follow-up
-without dispatching it. No S3/S4 implementation or detailed design,
+execution/analysis and the three-run C1 follow-up are completed under the linked
+official report. The two remaining pre-proposal experiments are still undefined
+in detail and unexecuted. No S3/S4 implementation or detailed design,
 Decision Gate logic/thresholds, replay loading, generic comparison engine or
 performance optimization is added.
 Stakeholder hypotheses remain provisional; simulation observations are not

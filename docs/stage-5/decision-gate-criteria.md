@@ -1,12 +1,25 @@
 # Stage 5 — Decision Gate Acceptance Criteria and Remaining Evidence Plan
 
-**Stage 5 = In Progress. Decision Gate = Pending. Decision Gate criteria defined.**
-Stage 5 is not Evidence Complete and the overall Decision Gate is not ready.
+**Stage 5 = In Progress. MVP Technical Feasibility Gate = Pending.**
+**Formal stakeholder Decision Gate = Pending / future phase. Criteria defined.**
+Stage 5 is not Evidence Complete and the formal Decision Gate is not ready.
+
+## Phase boundary
+
+This document is preparatory evidence and criteria for the future formal
+stakeholder/production Decision Gate. All stakeholder, S3/S4, service-validation
+and mitigation prerequisites below apply to that later review, not to making
+the initial proposal. They remain necessary if the organization shows interest.
+The immediate pre-proposal roadmap and internal criteria are owned by the
+[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md): two remaining
+experiments, internal review, then proposal if technically supported. Technical
+feasibility for proposal is distinct from production readiness and organization
+approval; this repositioning changes no measured evidence or material risk status.
 
 ## Purpose and authority
 
 > What must be true, accepted or demonstrated before the current design can
-> advance through the Stage 5 Decision Gate?
+> advance through the future formal stakeholder Decision Gate?
 
 Persisted domain invariants must remain protected; stakeholders must decide
 whether the measured fairness and operating envelope are acceptable; combined
@@ -210,6 +223,12 @@ or decision, current evidence, one primary status and next action.
 
 ## Ordered remaining evidence plan
 
+This is the **post-proposal formal Gate plan**, conditional on organization
+interest. It does not precede the internal MVP Gate or initial proposal. The
+[immediate roadmap](mvp-technical-feasibility-gate.md#immediate-roadmap-and-gate-outcomes)
+first requires Production-like Arrival Concurrency and Late Large Groups with
+Reconfiguration, followed by the internal feasibility review.
+
 1. **Capture stakeholder acceptance decisions.** Resolve B1–B3/B8/B9, including
    thresholds or explicit qualitative boundaries, perceived fairness and
    user-visible failure expectations. Record owners, rationale and consequences;
@@ -238,7 +257,8 @@ or decision, current evidence, one primary status and next action.
 
 ## Evidence-Complete definition
 
-Stage 5 can be considered **Evidence Complete** only when:
+For the future formal Gate, the evidence pack can be considered **Evidence
+Complete** only when:
 
 - Stakeholder decisions needed to interpret results and define the evaluated
   operating envelope are recorded, including acceptance criteria and owners.
@@ -253,14 +273,16 @@ Stage 5 can be considered **Evidence Complete** only when:
   denominators, stakeholder decisions, accepted envelope, remaining limitations,
   mitigation/deferment records and readiness assessment.
 
-Evidence Complete means enough evidence and decisions exist for the formal
-review, not a positive Gate verdict, completion of Stage 5's final decision or
-production readiness. An explicit negative stakeholder answer is still a decision;
+This formal Evidence Complete definition does not set pre-proposal MVP completion
+requirements. It means enough evidence and decisions exist for the later formal
+review, not a positive Gate verdict or production readiness. An explicit negative
+stakeholder answer is still a decision;
 it may support a non-advancing outcome. Required mitigation deferral cannot waive
 T1/T5/T6 for advancement. None of these completion claims is made now.
 
 ## Decision Gate readiness matrix
 
+This matrix concerns the future formal stakeholder/production Gate only.
 Gate Ready? uses Yes / No / Conditional for each area. Yes accepts a scoped
 input; Conditional identifies an explicit remaining dependency. Neither makes
 the overall Gate ready while S3/S4 and stakeholder decisions remain unresolved.
@@ -282,9 +304,12 @@ the overall Gate ready while S3/S4 and stakeholder decisions remain unresolved.
 | Stakeholder validation | Decision Required | B1–B10 decisions and assumption validation recorded. | Confirm accountable participants and capture answers. | No |
 | Variability / generalization | Decision Required | E3: claim limits accepted or specific evidence gap scoped. | Preserve S8 sufficiency; no automatic repetitions. | Conditional |
 
-**Overall: not ready. Stage 5 = In Progress; Decision Gate = Pending.**
-The next concrete task is to capture stakeholder acceptance decisions and
-validate the fragmentation/concurrency/demand/eligibility assumptions, then
-finalize the S3/S4 scenario contracts before their separately scoped execution.
+**Formal Gate: not ready / future phase. Stage 5 = In Progress.**
+**MVP Technical Feasibility Gate = Pending.**
+The immediate next task is **Define and Execute Production-like Arrival
+Concurrency Experiment**, followed by Late Large Groups with Reconfiguration
+and the internal Gate. After proposal and organization interest, capture
+stakeholder acceptance decisions and validate operating assumptions, then
+finalize S3/S4 contracts for the later formal review.
 No S3/S4 execution, completed-scenario rerun, implementation change, mitigation
 selection or final go/no-go decision is authorized or performed by this document.

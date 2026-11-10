@@ -3,8 +3,9 @@
 ## Status, Purpose and Authority
 
 **Sequential/concurrent execution and official S1/S2/S5/S6/S7/S8 isolated
-evaluation implemented; evidence consolidated. Decision Gate preparation is in
-progress; S3/S4 and the broader Stage 5 evaluation remain pending.**
+evaluation implemented; evidence consolidated. Stage 5 = In Progress.**
+**MVP Technical Feasibility Gate = Pending; formal stakeholder Decision Gate =
+Pending / future phase.**
 This document defines the minimum planned architecture for evaluating
 `v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
 attempts, daily checkpoints, individual attendee-path reconstruction and
@@ -20,6 +21,14 @@ Gate. This document owns simulation architecture and evidence flow. The
 baseline and its acceptance evidence; the [glossary](../glossary.md) and
 [critical invariants](../critical-invariants.md) retain their responsibilities.
 The official fairness-rule count remains **19**.
+
+The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
+immediate pre-proposal sequence: Production-like Arrival Concurrency, Late Large
+Groups with Reconfiguration and an internal review before proposal. Neither
+experiment is implemented/executed by this documentation change. Stakeholder
+calibration, real operating-data validation, S3/S4 refinement/execution and the
+formal Gate belong to the later phase if the organization shows interest.
+This sequencing changes no execution or evidence contract.
 
 The [S1/S2 representative scenario contracts](representative-scenarios.md)
 document shared venue inputs, demand, participation continuity and simulated
@@ -809,12 +818,16 @@ is changed.
 
 The [S8 Concurrency / Operational Sensitivity contract](s8-concurrency-sensitivity.md)
 defines the controlled experiment; the concurrent runner is implemented and
-the initial six-run [execution/analysis](s8-concurrency-analysis.md) is completed.
-The report recommends a C1 follow-up baseline, not executed. S8 reuses exact S2 inputs with
+the [C1/C4/C16 analysis](s8-concurrency-analysis.md) is completed, including the
+three-run C1 follow-up. Its synchronized windows establish real contention
+sensitivity, not production conflict-rate estimates. The next pre-proposal
+experiment asks whether material contention persists with plausible temporal
+dispersion; its exact arrival distribution and scheduling remain undefined.
+S8 reuses exact S2 inputs with
 Concurrent / 4 and 16 as the initial comparison, RetryCount 0 and Seeds
 1001 / 2001 / 3001 once per level: six initial official five-day runs.
-Sequential / 1 remains supported as an optional same-environment operational
-baseline for latency/throughput/wall-clock comparison (+3 runs, one per Seed).
+Sequential / 1 supplied the same-environment operational baseline for
+latency/throughput/wall-clock comparison (+3 completed runs, one per Seed).
 Repeat affected C4/C16 configurations only when initial variability, inconsistency
 or ambiguity requires distinguishing Seed/workload effects from scheduler /
 PostgreSQL interleavings. One run per Seed does not fully characterize scheduling
@@ -905,9 +918,12 @@ rules, Domain policies, persistence statuses or Stage 4 acceptance evidence.
 
 Earlier design deferrals for deterministic materialization, JSON export,
 checkpoint projections and concurrent windows are now implemented in the slices
-documented above. Remaining work includes S3/S4 evidence, artifact
-retention/publication and any separately justified evaluation refinements;
-consolidation does not authorize a generic comparison platform or new scheduling.
+documented above. Immediate evidence work is the two
+[pre-proposal experiments](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments),
+then the internal MVP Gate. S3/S4 remain deferred to later data-informed
+validation after proposal and organization interest. Artifact retention/publication
+and separately justified evaluation refinements remain deferred; no generic
+comparison platform or new scheduling is authorized by this documentation.
 Rubric thresholds and real organization distributions follow the metrics
 framework's stakeholder calibration process, not new architecture rules.
 
