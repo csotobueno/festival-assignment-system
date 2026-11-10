@@ -41,7 +41,10 @@ The [formal Decision Gate criteria](docs/stage-5/decision-gate-criteria.md)
 retain preparatory stakeholder decisions and S3/S4 evidence objectives for that
 later phase. S7 fragmentation and S8 synchronized-contention risks remain visible;
 the remaining pre-proposal experiments examine temporally distributed arrival
-concurrency and late large groups with reconfiguration. Stage 5 is not Evidence
+concurrency and late large groups with reconfiguration. The
+[arrival-concurrency contract](docs/stage-5/production-like-arrival-concurrency.md)
+is **Defined / Pending Execution**; it plans four initial runs and at most two
+conditional Seed 3001 additions. Stage 5 is not Evidence
 Complete. No final verdict or mitigation is selected.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
@@ -68,7 +71,7 @@ the complete operational system.
 Immediate roadmap:
 
 1. Realign Stage 5 toward the MVP Technical Feasibility Gate — documented.
-2. Test Production-like Arrival Concurrency.
+2. Implement and execute Production-like Arrival Concurrency — contract defined.
 3. Test Late Large Groups with Reconfiguration.
 4. Perform the MVP Technical Feasibility Gate.
 5. If supported, prepare the proposal to the organization.
@@ -93,6 +96,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
 * [Stage 5 — MVP Technical Feasibility Gate and Pre-Proposal Roadmap](docs/stage-5/mvp-technical-feasibility-gate.md)
+* [Stage 5 — Production-like Arrival Concurrency (Defined / Pending Execution)](docs/stage-5/production-like-arrival-concurrency.md)
 * [Stage 5 — Consolidated Isolated Evidence for Decision Gate (preparation in progress)](docs/stage-5/decision-gate-evidence.md)
 * [Stage 5 — Future Formal Decision Gate Criteria and Evidence Plan](docs/stage-5/decision-gate-criteria.md)
 * [Stage 5 — Simulation Architecture and Reproducibility](docs/stage-5/simulation-architecture.md)

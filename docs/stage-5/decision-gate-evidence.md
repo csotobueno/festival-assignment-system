@@ -16,6 +16,8 @@ interested. Stakeholder validation remains necessary then, but does not precede
 the initial proposal. Stage 5 is not Evidence Complete; measured findings and
 risk classifications below remain unchanged. Earlier reports' next-task notes
 are historical; the linked MVP roadmap defines the current sequence.
+The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is Defined / Pending Execution; no new measured result is included here.
 
 ## Authority, evidence and comparison conventions
 
@@ -446,7 +448,7 @@ coordination or fragmentation-aware allocation. These are candidate areas only,
 with no preferred option, implementation or authorization to change policy.
 
 The [MVP roadmap](mvp-technical-feasibility-gate.md) now sets the immediate next
-task: **Define and Execute Production-like Arrival Concurrency Experiment**,
+task: **Implement and Execute Production-like Arrival Concurrency Experiment**,
 followed by Late Large Groups with Reconfiguration and the internal feasibility
 Gate. If a proposal attracts organization interest, the
 [formal criteria and evidence plan](decision-gate-criteria.md) govern stakeholder

@@ -45,6 +45,10 @@ Groups with Reconfiguration and the internal Gate. The
 [formal criteria](decision-gate-criteria.md) preserve stakeholder validation and
 S3/S4 objectives for the later phase if the organization shows interest.
 Those are not initial-proposal prerequisites. Stage 5 is not Evidence Complete.
+The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is Defined / Pending Execution: reuse exact S2 business input with deterministic
+distributed arrivals, no synchronized start gate and RetryCount = 0. Four initial
+runs use Seeds 1001/2001 per pattern; conditional 3001 expansion is capped at six.
 
 ## Shared Baseline
 
@@ -457,8 +461,10 @@ S1/S2 evidence informs later calibration. The
 questions and evidence objectives without changing these inputs. Detailed S3/S4
 parameters and stakeholder acceptance thresholds remain undefined for that
 post-proposal phase. The two pre-proposal experiments have separate purposes
-under the [MVP Gate](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments);
-this document fixes neither their arrival distribution nor reconfiguration policy.
+under the [MVP Gate](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments).
+The [arrival-concurrency contract](production-like-arrival-concurrency.md) now
+defines exploratory timing separately from unchanged S2 business timestamps.
+Late-group reconfiguration policy remains undefined.
 
 ## Assumptions Requiring Stakeholder Validation
 
@@ -501,8 +507,9 @@ S8 adds exact S2 workload reuse, deterministic windows, a pre-use-case readiness
 gate, isolated concurrent PostgreSQL execution and minimal compatible evidence.
 Small tests protect scheduling, persistence and export. The initial six-run
 execution/analysis and the three-run C1 follow-up are completed under the linked
-official report. The two remaining pre-proposal experiments are still undefined
-in detail and unexecuted. No S3/S4 implementation or detailed design,
+official report. Arrival concurrency is defined in its separate contract but
+unimplemented/unexecuted; late-group reconfiguration remains undefined in detail
+and unexecuted. No S3/S4 implementation or detailed design,
 Decision Gate logic/thresholds, replay loading, generic comparison engine or
 performance optimization is added.
 Stakeholder hypotheses remain provisional; simulation observations are not
