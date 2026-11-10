@@ -8,16 +8,19 @@ choosing Continue / Tune / Pivot / Stop or a mitigation architecture. S3/S4
 remain unresolved.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal roadmap: Production-like Arrival Concurrency, Late Large
-Groups with Reconfiguration, then the internal Gate and proposal if supported.
+immediate pre-proposal roadmap: define and validate Plausible Festival Arrival
+Concurrency, then Late Large Groups with Reconfiguration, then the internal Gate and proposal if supported.
 The [formal Decision Gate criteria](decision-gate-criteria.md) retain stakeholder
 decisions and S3/S4 objectives for the later phase if the organization is
 interested. Stakeholder validation remains necessary then, but does not precede
 the initial proposal. Stage 5 is not Evidence Complete; measured findings and
 risk classifications below remain unchanged. Earlier reports' next-task notes
 are historical; the linked MVP roadmap defines the current sequence.
-The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
-is Defined / Pending Execution; no new measured result is included here.
+The original [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is retained as **Open-loop High-rate Arrival Stress — Completed**; its [separate analysis](production-like-arrival-concurrency-analysis.md)
+supplements the historical isolated-scenario findings below. It records four valid
+runs and five actual executions including the stopped observer-audit collection.
+Neither pattern required Seed 3001; C1/C4/C16 were not rerun.
 
 ## Authority, evidence and comparison conventions
 
@@ -438,6 +441,50 @@ cannot make. Action labels are review dispositions, not a final Gate verdict.
 | Concurrent variability / extrapolation | One run per Seed/configuration; no multi-node/production traffic evidence | Limited | Exact interleaving variability remains unknown; does not reverse S8's scoped evidence decision | Unresolved Uncertainty | Monitor limits; Additional Evidence Required only for a newly justified variability/generalization question, no automatic repeats |
 | Pending S3/S4 | No combined/stress results or detailed validated parameters | Pending | Interaction effects and practical boundary unresolved | Unresolved Uncertainty | Additional Evidence Required after separately scoped design |
 
+## Pre-proposal arrival-concurrency supplement
+
+**Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival
+Concurrency = Pending.** The experiment was initially defined as production-like;
+post-run analysis identified sustained overload. Moderate offers 40 req/s and
+Burst-like ≈ 61.5 req/s, above the retained [S8](s8-concurrency-analysis.md#across-seed-aggregate-comparison)
+C1 mean of 29.593 successful req/s. The most direct interpretation is unfinished
+work accumulation, increasing active concurrency/contention and duration, then
+further backlog growth; this is not a proven queueing model. The finite workload
+drains daily. S2's busiest hourly bucket averages approximately 293 requests/hour
+(0.081 req/s); that average does not rule out short bursts. The observed conflicts,
+technical failures, latencies and hundreds/thousands of active requests are not
+production predictions. Plausible festival concurrency still requires evidence.
+
+The [high-rate arrival analysis](production-like-arrival-concurrency-analysis.md)
+preserves exact S2 inputs with 25 ms Moderate and deterministic 5/50 ms Burst-like
+arrivals. Severe degradation remains observable without a synchronized start
+barrier under these high-rate open-loop arrival patterns:
+Moderate p95 is 21.414–22.968 seconds and useful requests/s 4.946–5.100;
+Burst-like p95 is 41.404–50.179 seconds and useful requests/s 0.159–0.202.
+All valid runs include unexpected technical outcomes. Lower Burst-like conflict
+fractions coexist with more technical failures and worse useful delivery, not
+improved access. Actual peaks of 672–685 / 1,295–1,377 differ from S8's bounded
+4/16 windows; these comparisons do not isolate synchronization as a causal effect
+or estimate production behavior.
+
+Four valid-run audits report zero persisted/execution findings. The original
+stopped BurstLike/1001 retains three audit findings arising around two post-commit
+RECONCILIATION_FAILED observations. It is excluded from the clean comparison;
+its disposed database cannot now be independently re-audited for the unmatched
+request statuses. The [remediation record](arrival-observer-audit-remediation.md)
+documents the audit assumption, tests and replacement before execution. Original
+outcomes/findings are not overwritten or averaged away. Subsequent audits require
+real Completed requests and complete valid graphs for final-state correlation;
+observer errors remain UnexpectedTechnicalFailure. Generic measured-path failures
+retain their classification and their unavailable inner causes remain a limit.
+
+This completes the high-rate stress experiment with a clear operational concern;
+it does not establish whether concurrency is material under plausible festival
+arrival rates or make the MVP Gate decision. Next: **Define Plausible Festival
+Arrival Concurrency Experiment**, then execute bounded Lean validation before
+late-group reconfiguration. Stage 5 remains In Progress; the MVP Gate and future
+formal stakeholder Gate remain Pending.
+
 ## Mitigation boundary and next review task
 
 "Mitigation Required" identifies a supported risk to address in a defined
@@ -448,9 +495,10 @@ coordination or fragmentation-aware allocation. These are candidate areas only,
 with no preferred option, implementation or authorization to change policy.
 
 The [MVP roadmap](mvp-technical-feasibility-gate.md) now sets the immediate next
-task: **Implement and Execute Production-like Arrival Concurrency Experiment**,
-followed by Late Large Groups with Reconfiguration and the internal feasibility
-Gate. If a proposal attracts organization interest, the
+task: **Define Plausible Festival Arrival Concurrency Experiment**, followed by
+bounded Lean validation, definition/execution of Late Large Groups with
+Reconfiguration and the internal feasibility Gate. High-rate stress is completed;
+plausible festival concurrency is Pending. If a proposal attracts organization interest, the
 [formal criteria and evidence plan](decision-gate-criteria.md) govern stakeholder
 validation, data-informed S3/S4 and applicable mitigation evaluation before the
 eventual formal Continue / Tune / Pivot / Stop review.

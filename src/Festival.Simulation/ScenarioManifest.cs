@@ -24,6 +24,9 @@ public sealed record ScenarioMetadata(
     int ConcurrencyLevel)
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ArrivalSchedule? ArrivalSchedule { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Repetition { get; init; }
 
     public string? WorkloadSourceScenarioId { get; init; }

@@ -145,11 +145,23 @@ una propuesta a la organización del festival.
 
 Secuencia inmediata:
 
-1. Realinear Stage 5 hacia el MVP Technical Feasibility Gate — documentado.
-2. Definir y ejecutar Production-like Arrival Concurrency.
-3. Definir y ejecutar Late Large Groups with Reconfiguration.
-4. Realizar el MVP Technical Feasibility Gate.
-5. Preparar la propuesta si la evidencia técnica la sustenta.
+1. Corregir la interpretación de llegada concurrente — completado como
+   **Open-loop High-rate Arrival Stress**; véanse los
+   [resultados y límites de auditoría](stage-5/production-like-arrival-concurrency-analysis.md).
+   El objetivo original era Production-like Arrival Concurrency; el análisis
+   posterior identificó sobrecarga sostenida. Se conserva toda la evidencia.
+2. **Define Plausible Festival Arrival Concurrency Experiment** — pendiente.
+3. Ejecutar una validación Lean acotada de concurrencia bajo ese contrato separado.
+4. Definir/ejecutar Late Large Groups with Reconfiguration por separado.
+5. Realizar el MVP Technical Feasibility Gate.
+6. Preparar la propuesta si la evidencia técnica la sustenta.
+
+Las tasas ofrecidas de 40 / ≈ 61.5 solicitudes/s superaron la referencia C1 de
+≈ 29.6 solicitudes exitosas/s. La degradación severa sin barrera sincronizada
+sigue siendo un hallazgo válido de estrés; no predice condiciones del festival.
+La concurrencia bajo llegadas plausibles sigue pendiente. Su diseño debe partir
+de la dispersión temporal del negocio, no principalmente de la latencia de API;
+no se fijan intervalos, compresión ni cantidad de ejecuciones aquí.
 
 Si la organización muestra interés, obtener datos operativos reales y validar/
 calibrar demanda, llegadas, recinto, reservas/ocupación previa, grupos,

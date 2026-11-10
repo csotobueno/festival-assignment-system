@@ -23,20 +23,25 @@ baseline and its acceptance evidence; the [glossary](../glossary.md) and
 The official fairness-rule count remains **19**.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal sequence: Production-like Arrival Concurrency, Late Large
-Groups with Reconfiguration and an internal review before proposal. Neither
-experiment is implemented/executed by this documentation change. Stakeholder
+immediate pre-proposal sequence: define Plausible Festival Arrival Concurrency,
+execute bounded Lean validation, then define/execute Late Large Groups with
+Reconfiguration and perform the internal review before proposal. Open-loop
+High-rate Arrival Stress is [Completed and analyzed](production-like-arrival-concurrency-analysis.md);
+plausible festival concurrency is Pending. Its original production-like intent
+is retained, but post-run interpretation identified sustained overload. Stakeholder
 calibration, real operating-data validation, S3/S4 refinement/execution and the
 formal Gate belong to the later phase if the organization shows interest.
 This sequencing changes no execution or evidence contract.
 
 The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
-is now Defined / Pending Execution. Future arrival-driven tooling must reuse S2
-inputs and independent request scopes/DbContexts without S8's readiness gate.
-Its required ScheduledArrivalOffset is future evidence; ProcessingStartedOffset
-and Duration already provide actual use-case intervals. MaxActiveRequests is
-derived from those intervals, not a configured target concurrency. No scheduler,
-exporter or mode/configuration support is implemented by this contract definition.
+is implemented through ArrivalDriven execution over exact S2 inputs, independent
+request scopes/DbContexts and no S8 readiness gate. Attempts add optional
+ScheduledArrivalOffset; existing ProcessingStartedOffset and Duration provide
+actual use-case intervals. MaxActiveRequests is independently reconstructed from
+those intervals, not a configured target concurrency. Earlier packages omit the
+new optional schedule fields; fairness/recovery metric calculations are unchanged.
+Four valid runs and one retained stopped collection were executed; no Seed 3001
+or reference rerun occurred. Original observer-audit findings remain documented.
 
 The [S1/S2 representative scenario contracts](representative-scenarios.md)
 document shared venue inputs, demand, participation continuity and simulated
@@ -828,12 +833,15 @@ The [S8 Concurrency / Operational Sensitivity contract](s8-concurrency-sensitivi
 defines the controlled experiment; the concurrent runner is implemented and
 the [C1/C4/C16 analysis](s8-concurrency-analysis.md) is completed, including the
 three-run C1 follow-up. Its synchronized windows establish real contention
-sensitivity, not production conflict-rate estimates. The next pre-proposal
-experiment asks whether material contention persists with plausible temporal
-dispersion. Its [separate contract](production-like-arrival-concurrency.md)
-defines deterministic 25 ms Moderate spacing and 5/50 ms Burst-like clusters;
-implementation remains pending. These are exploratory hypotheses, not production
-traffic, and do not change S8's synchronized-window contract below.
+sensitivity, not production conflict-rate estimates. The completed pre-proposal
+experiment was intended to assess plausible temporal dispersion, but its
+[separate contract](production-like-arrival-concurrency.md) defined deterministic
+25 ms Moderate spacing and four-request 5/50 ms Burst-like clusters: 40 / ≈ 61.5
+offered req/s, above the C1 reference mean of ≈ 29.6 successful req/s. Its corrected
+interpretation is open-loop high-rate stress with accumulation while earlier work
+remains active, unlike S8's synchronized bounded windows. Neither experiment
+independently represents production; plausible festival concurrency remains Pending.
+This correction does not change the execution contracts or measured evidence.
 S8 reuses exact S2 inputs with
 Concurrent / 4 and 16 as the initial comparison, RetryCount 0 and Seeds
 1001 / 2001 / 3001 once per level: six initial official five-day runs.
@@ -913,6 +921,34 @@ cancellation behavior without new timeout policy; capture per-request failures
 when safe continuation and evidence integrity permit. Mitigation and Decision
 Gate decisions remain deferred.
 
+## Arrival-driven execution and observation limits
+
+ArrivalDrivenExecution changes S2 execution metadata only. ArrivalSchedule records
+the pattern/version and fixed timing parameters in manifest/run metadata;
+ConcurrencyLevel = 0 explicitly means no configured worker cap. The existing
+S2 definition, identities, business timestamps, catalog and daily plans remain
+the source input. ArrivalSimulationExecutor computes absolute monotonic deadlines
+from a day origin on the run clock and launches each due request independently.
+Request/cluster completion does not control subsequent release. Each day drains
+before its checkpoint and next day; existing scope isolation and RetryCount = 0
+remain. No readiness gate, custom queue, locking or admission throttle is added.
+
+ScheduledArrivalOffset and ProcessingStartedOffset expose start lag; terminal
+offset is start + Duration. SimulationOverlapAnalyzer uses actual half-open
+intervals, completing before starting at an equal offset. Timing includes the
+existing use-case boundary; observation/reconciliation remains outside it.
+
+The [observer-audit remediation record](arrival-observer-audit-remediation.md)
+documents an observed limitation: a successful use case can persist a complete
+graph before a later observer read fails. PostCommitObservationResolver performs
+read-only final-state correlation only for explicit RECONCILIATION_FAILED after
+a returned assignment. It requires a real Completed request and valid complete
+group before allowing audit correlation. The original UnexpectedTechnicalFailure
+outcome and timing stay unchanged; correlation is retained in the execution ledger.
+No observation query is removed, delayed or retried, and no request is retried.
+The original stopped package remains immutable and excluded from the clean
+comparison; its three original audit findings remain recorded.
+
 ## Accepted Trade-offs and Deferred Decisions
 
 One PostgreSQL path preserves persistence/conflict fidelity and accepts Docker
@@ -929,12 +965,16 @@ rules, Domain policies, persistence statuses or Stage 4 acceptance evidence.
 
 Earlier design deferrals for deterministic materialization, JSON export,
 checkpoint projections and concurrent windows are now implemented in the slices
-documented above. Immediate evidence work is the two
-[pre-proposal experiments](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments),
-then the internal MVP Gate. S3/S4 remain deferred to later data-informed
+documented above. Open-loop High-rate Arrival Stress is completed with material
+operational limitations and retained observer-audit findings. Immediate work is
+**Define Plausible Festival Arrival Concurrency Experiment**, followed by bounded
+Lean validation, late-group reconfiguration definition/execution and the internal
+MVP Gate. Plausible temporal dispersion must come from the business workload,
+not primarily API latency; OfferedRequestRate, ActiveConcurrency and ConflictRate
+remain distinct. No final intervals, compression factors or run counts are chosen. S3/S4 remain deferred to later data-informed
 validation after proposal and organization interest. Artifact retention/publication
 and separately justified evaluation refinements remain deferred; no generic
-comparison platform or new scheduling is authorized by this documentation.
+comparison platform or scheduling beyond the defined experiment is added.
 Rubric thresholds and real organization distributions follow the metrics
 framework's stakeholder calibration process, not new architecture rules.
 

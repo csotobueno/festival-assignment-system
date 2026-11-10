@@ -19,6 +19,9 @@ public sealed record SimulationRunMetadata(
     DateTimeOffset CompletedAt)
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ArrivalSchedule? ArrivalSchedule { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Repetition { get; init; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public SimulationEnvironmentMetadata? ExecutionEnvironment { get; init; }
@@ -43,8 +46,9 @@ public sealed record SimulationRunMetadata(
             startedAt, completedAt)
         {
             Repetition = manifest.Metadata.Repetition,
+            ArrivalSchedule = manifest.Metadata.ArrivalSchedule,
             ExecutionEnvironment = manifest.Metadata.Repetition.HasValue
-                || manifest.Metadata.ExecutionMode == SimulationExecutionMode.Concurrent
+                || manifest.Metadata.ExecutionMode != SimulationExecutionMode.Sequential
                 ? SimulationEnvironmentMetadata.Capture() : null,
             WorkloadSourceScenarioId = manifest.Metadata.WorkloadSourceScenarioId,
             OrderingTransformation = manifest.Metadata.OrderingTransformation,

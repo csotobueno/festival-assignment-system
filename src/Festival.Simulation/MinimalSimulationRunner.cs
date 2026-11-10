@@ -28,7 +28,7 @@ public static class MinimalSimulationRunner
     {
         ArgumentNullException.ThrowIfNull(manifest);
         var execution = new SimulationExecutionConfiguration(manifest.Metadata.ExecutionMode,
-            manifest.Metadata.ConcurrencyLevel, manifest.Metadata.Repetition);
+            manifest.Metadata.ConcurrencyLevel, manifest.Metadata.Repetition, manifest.Metadata.ArrivalSchedule);
 
         await using var container = new PostgreSqlBuilder(PostgreSqlImage)
             .WithDatabase("festival_simulation")
@@ -79,7 +79,7 @@ public static class MinimalSimulationRunner
         var attempts = new List<SimulationAttemptRecord>();
         var openingStates = new List<SimulationDayOpeningState>();
         var checkpoints = new List<DailySimulationCheckpoint>();
-        long? timingOrigin = execution.ExecutionMode == SimulationExecutionMode.Concurrent || execution.Repetition.HasValue
+        long? timingOrigin = execution.ExecutionMode != SimulationExecutionMode.Sequential || execution.Repetition.HasValue
             ? Stopwatch.GetTimestamp() : null;
         foreach (var day in manifest.DailyPlans.OrderBy(day => day.DayNumber))
         {
@@ -99,7 +99,13 @@ public static class MinimalSimulationRunner
             }
 
             var dayAttemptStart = attempts.Count;
-            if (execution.ExecutionMode == SimulationExecutionMode.Concurrent)
+            if (execution.ExecutionMode == SimulationExecutionMode.ArrivalDriven)
+            {
+                attempts.AddRange(await ArrivalSimulationExecutor.ExecuteDayAsync(day, execution.ArrivalSchedule!, timingOrigin!.Value,
+                    (request, scheduled, token) => ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
+                        day.FestivalDayId, request, token, timingOrigin: timingOrigin, scheduledArrivalOffset: scheduled), cancellationToken));
+            }
+            else if (execution.ExecutionMode == SimulationExecutionMode.Concurrent)
             {
                 attempts.AddRange(await ConcurrentSimulationExecutor.ExecuteDayAsync(day, execution,
                     (request, position, ready, token) => ExecuteAttemptAsync(services, manifest.Metadata.ScenarioId,
@@ -164,7 +170,7 @@ public static class MinimalSimulationRunner
         ServiceProvider services, string scenarioId, FestivalDayId dayId,
         DailyRequestPlan plan, CancellationToken cancellationToken = default,
         Func<Task>? waitForRelease = null, SimulationWindowPosition? windowPosition = null,
-        long? timingOrigin = null)
+        long? timingOrigin = null, TimeSpan? scheduledArrivalOffset = null)
     {
         var command = new ProcessAssignmentRequestCommand(dayId,
             plan.Members.Select(attendee => attendee.Code), plan.RequestedAt, plan.AssignedAt, plan.Eligibility);
@@ -288,6 +294,7 @@ public static class MinimalSimulationRunner
                 WindowNumber = windowPosition?.Number,
                 WindowPosition = windowPosition?.Position,
                 ProcessingStartedOffset = processingStartedOffset,
+                ScheduledArrivalOffset = scheduledArrivalOffset,
                 DatabaseSqlState = databaseSqlState
             };
     }

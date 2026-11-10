@@ -40,15 +40,21 @@ analysis are [completed](s2-s5-order-sensitivity-results.md). S1/S2 inputs below
 are unchanged. Completed S1/S2/S5/S6/S7/S8 findings are
 [consolidated for Decision Gate review](decision-gate-evidence.md).
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) defines the
-immediate pre-proposal roadmap: Production-like Arrival Concurrency, Late Large
-Groups with Reconfiguration and the internal Gate. The
+immediate pre-proposal roadmap: define and validate Plausible Festival Arrival
+Concurrency, then Late Large Groups with Reconfiguration and the internal Gate. The
 [formal criteria](decision-gate-criteria.md) preserve stakeholder validation and
 S3/S4 objectives for the later phase if the organization shows interest.
 Those are not initial-proposal prerequisites. Stage 5 is not Evidence Complete.
-The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
-is Defined / Pending Execution: reuse exact S2 business input with deterministic
-distributed arrivals, no synchronized start gate and RetryCount = 0. Four initial
-runs use Seeds 1001/2001 per pattern; conditional 3001 expansion is capped at six.
+The original [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is retained as **Open-loop High-rate Arrival Stress — Completed**: [four valid results](production-like-arrival-concurrency-analysis.md)
+reuse exact S2 input with distributed arrivals, no start gate and RetryCount = 0.
+Neither pattern required Seed 3001. Five actual executions include the retained
+stopped observer-audit collection and its documented replacement; its original
+findings remain explicit. Originally intended as production-like, its schedules
+were identified post-run as sustained overload: 40 / ≈ 61.5 offered req/s exceed
+C1's retained mean of ≈ 29.6 successful req/s. Observed conflicts, failures,
+latencies and active concurrency are not production predictions. **Plausible
+Festival Arrival Concurrency = Pending**. S2 business inputs below are unchanged.
 
 ## Shared Baseline
 
@@ -194,6 +200,26 @@ This models a strong morning peak, a secondary afternoon peak, lower request
 volume through the rest of the day and a small request tail during the event.
 The profile does not establish confirmed event times or production assignment
 windows. Resulting fragmentation develops naturally from real assignments.
+
+### Arrival-rate interpretation for concurrency validation
+
+Materialization produces exactly **1,464 requests per FestivalDay** (see the
+materialization/eligibility counts below). The highest average hourly request rate
+is in **15:00–16:00**: `1,464 × 20% = 292.8`, approximately **293 requests/hour**
+or **0.0813 req/s**. Retained manifests allocate exactly 293 requests to that
+bucket per day (`293 / 3,600 ≈ 0.0814 req/s`). The 40% morning share spans three
+hours and has a lower hourly average.
+
+These are business-scenario averages, not limits on possible short bursts or
+simultaneous user requests. The completed [arrival experiment](production-like-arrival-concurrency-analysis.md)
+preserved S2 business inputs but replaced elapsed arrival timing with sustained
+40 / ≈ 61.5 req/s schedules, roughly 490–756 times this bucket's average (about
+2.7–2.9 orders of magnitude). Those schedules are now interpreted as open-loop
+high-rate stress, not plausible festival traffic. Future validation must model
+plausible temporal dispersion from the business workload rather than deriving
+arrival rates primarily from API latency, while keeping OfferedRequestRate,
+ActiveConcurrency and ConflictRate distinct. No final interval, compression
+factor or run count is defined here; the business assumptions remain provisional.
 
 ## Shared Quality Capacity and Physical Topology
 
@@ -463,8 +489,11 @@ parameters and stakeholder acceptance thresholds remain undefined for that
 post-proposal phase. The two pre-proposal experiments have separate purposes
 under the [MVP Gate](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments).
 The [arrival-concurrency contract](production-like-arrival-concurrency.md) now
-defines exploratory timing separately from unchanged S2 business timestamps.
-Late-group reconfiguration policy remains undefined.
+retains the original timing contract separately from unchanged S2 business
+timestamps; its results are completed high-rate stress evidence. Next: **Define
+Plausible Festival Arrival Concurrency Experiment**, then bounded Lean validation,
+before late-group reconfiguration definition/execution. Both future contracts
+remain undefined in detail.
 
 ## Assumptions Requiring Stakeholder Validation
 
@@ -507,8 +536,9 @@ S8 adds exact S2 workload reuse, deterministic windows, a pre-use-case readiness
 gate, isolated concurrent PostgreSQL execution and minimal compatible evidence.
 Small tests protect scheduling, persistence and export. The initial six-run
 execution/analysis and the three-run C1 follow-up are completed under the linked
-official report. Arrival concurrency is defined in its separate contract but
-unimplemented/unexecuted; late-group reconfiguration remains undefined in detail
+official report. Open-loop high-rate arrival stress is implemented, executed and
+analyzed under its original contract; plausible festival concurrency is Pending.
+Late-group reconfiguration remains undefined in detail
 and unexecuted. No S3/S4 implementation or detailed design,
 Decision Gate logic/thresholds, replay loading, generic comparison engine or
 performance optimization is added.
