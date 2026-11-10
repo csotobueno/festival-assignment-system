@@ -30,6 +30,14 @@ calibration, real operating-data validation, S3/S4 refinement/execution and the
 formal Gate belong to the later phase if the organization shows interest.
 This sequencing changes no execution or evidence contract.
 
+The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is now Defined / Pending Execution. Future arrival-driven tooling must reuse S2
+inputs and independent request scopes/DbContexts without S8's readiness gate.
+Its required ScheduledArrivalOffset is future evidence; ProcessingStartedOffset
+and Duration already provide actual use-case intervals. MaxActiveRequests is
+derived from those intervals, not a configured target concurrency. No scheduler,
+exporter or mode/configuration support is implemented by this contract definition.
+
 The [S1/S2 representative scenario contracts](representative-scenarios.md)
 document shared venue inputs, demand, participation continuity and simulated
 arrival profiles, with explicit provisional hypotheses. Their deterministic
@@ -822,7 +830,10 @@ the [C1/C4/C16 analysis](s8-concurrency-analysis.md) is completed, including the
 three-run C1 follow-up. Its synchronized windows establish real contention
 sensitivity, not production conflict-rate estimates. The next pre-proposal
 experiment asks whether material contention persists with plausible temporal
-dispersion; its exact arrival distribution and scheduling remain undefined.
+dispersion. Its [separate contract](production-like-arrival-concurrency.md)
+defines deterministic 25 ms Moderate spacing and 5/50 ms Burst-like clusters;
+implementation remains pending. These are exploratory hypotheses, not production
+traffic, and do not change S8's synchronized-window contract below.
 S8 reuses exact S2 inputs with
 Concurrent / 4 and 16 as the initial comparison, RetryCount 0 and Seeds
 1001 / 2001 / 3001 once per level: six initial official five-day runs.

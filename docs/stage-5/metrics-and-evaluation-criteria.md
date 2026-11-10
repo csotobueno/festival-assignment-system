@@ -13,6 +13,16 @@ S3/S4 refinement/execution and the formal stakeholder Decision Gate remain in a
 later phase if the organization shows interest; they do not precede the initial
 proposal. This framework continues to own metric/rubric definitions in both phases.
 
+The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is Defined / Pending Execution and reuses these denominators and latency bounds.
+KnownConcurrencyConflictRate aliases ConcurrencyConflictRate;
+UnexpectedTechnicalFailureRate aliases TechnicalErrorRate. It requires scheduled
+arrival offsets plus existing actual processing offsets/durations to reconstruct
+MaxActiveRequests; offered arrival rate is not realized concurrency or conflict
+rate. Its WallClockDuration uses the existing measured workload interval, separate
+from broad runner lifecycle time. These are future experiment requirements,
+not new implemented telemetry, production thresholds or metric-calculator changes.
+
 The objective is not to prove that the current algorithm is optimal.
 
 The objective is to gather enough evidence to answer:

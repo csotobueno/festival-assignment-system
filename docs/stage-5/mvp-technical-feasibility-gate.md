@@ -128,11 +128,18 @@ experiment requirements, not implemented metrics.
 | **Production-like Arrival Concurrency** | Does severe synchronized S8 contention remain material with plausible temporal dispersion of arrivals? | PersistedInvariantViolationCount, KnownConcurrencyConflictRate, UnexpectedTechnicalFailureRate, p50/p95/p99, SuccessfulRequestThroughput, SuccessfulAssignmentThroughput and final participation. UnexpectedTechnicalFailureRate must retain the framework's TechnicalErrorRate outcome/denominator semantics. Keep terminal Attempts/s distinct from useful throughput. |
 | **Late Large Groups with Reconfiguration** | Does concentration of large groups late in daily processing cause fundamental avoidable capacity waste, or recoverable initial-request rejection? When capacity remains available, can affected Attendees ultimately obtain Assignments after allowed group reconfiguration? | InitialRequestSuccessRate, RejectedAttendees, ReconfiguredRequests, FinalAttendeeAllocationRate, UnassignedAttendees and RemainingCapacity, with independent persisted correctness checks and traceable initial-to-final outcomes. |
 
-Later experiment-definition tasks must specify exact workload/arrival timing,
-numeric concurrency, observation boundaries, metric cohorts/denominators and
-reproducibility. No exact arrival distribution, reconfiguration policy, number
-of follow-up requests, new numeric threshold or experimental result is invented
-here. Plausible temporal dispersion remains a hypothesis until real data exists.
+The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
+is **Defined / Pending Execution**: Moderate uses 25 ms intervals; Burst-like
+uses four-request clusters with 5 ms internal spacing and 50 ms between the last
+arrival and the next cluster. Initial Seeds 1001/2001 for both patterns give four
+runs; Seed 3001 is conditional per ambiguous pattern, at most six runs total.
+Arrival rate, realized active concurrency and conflict rate remain distinct.
+
+That contract defines timing/overlap evidence and metric boundaries for later
+implementation; it does not claim actual festival traffic. The late-group
+contract, reconfiguration policy and number of follow-up requests remain undefined.
+No new numeric acceptance threshold or experimental result is introduced here.
+Plausible temporal dispersion remains a hypothesis until real data exists.
 Reconfiguration must involve new requests for unassigned Attendees, preserving
 indivisibility/contiguity of each new AssignmentGroup and finality of existing
 Assignments. No production or Simulation behavior changes in this task.
@@ -140,7 +147,7 @@ Assignments. No production or Simulation behavior changes in this task.
 ## Immediate roadmap and Gate outcomes
 
 1. Realign Stage 5 toward the MVP Technical Feasibility Gate — documented here.
-2. Define and execute Production-like Arrival Concurrency in a separate task.
+2. Implement and execute Production-like Arrival Concurrency — contract defined.
 3. Define and execute Late Large Groups with Reconfiguration in a separate task.
 4. Perform the MVP Technical Feasibility Gate using both new experiments and
    completed evidence, explicitly reviewing fairness, reliability, performance,
@@ -170,8 +177,10 @@ accepts known risks for production or claims full Stage 5 evidence completeness.
 
 ## Current status
 
-Roadmap realignment is documented; both remaining experiments are unexecuted.
+Roadmap realignment and the arrival-concurrency contract are documented; both
+remaining experiments are unexecuted. Arrival concurrency is Defined / Pending
+Execution; late-group reconfiguration still needs its contract.
 Stage 5 remains In Progress; both Gates remain Pending. No final technical
 feasibility, stakeholder approval, production readiness or go/no-go decision is
-made here. Next task: **Define and Execute Production-like Arrival Concurrency
+made here. Next task: **Implement and Execute Production-like Arrival Concurrency
 Experiment**.

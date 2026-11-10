@@ -306,9 +306,10 @@ the overall Gate ready while S3/S4 and stakeholder decisions remain unresolved.
 
 **Formal Gate: not ready / future phase. Stage 5 = In Progress.**
 **MVP Technical Feasibility Gate = Pending.**
-The immediate next task is **Define and Execute Production-like Arrival
-Concurrency Experiment**, followed by Late Large Groups with Reconfiguration
-and the internal Gate. After proposal and organization interest, capture
+The [arrival-concurrency contract](production-like-arrival-concurrency.md) is
+Defined / Pending Execution. The immediate next task is **Implement and Execute
+Production-like Arrival Concurrency Experiment**, followed by Late Large Groups
+with Reconfiguration and the internal Gate. After proposal and organization interest, capture
 stakeholder acceptance decisions and validate operating assumptions, then
 finalize S3/S4 contracts for the later formal review.
 No S3/S4 execution, completed-scenario rerun, implementation change, mitigation
