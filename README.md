@@ -19,11 +19,17 @@ records the verified exit criteria and validation evidence, including seven
 deterministic integrated acceptance scenarios. The former five-day presimulation
 requirement is explicitly deferred to Stage 5 to avoid duplicating its evaluation.
 
-**Stage 5 — Simulation + Decision Gate: In Progress. Decision Gate: Pending.**
+**Stage 5: In Progress. MVP Technical Feasibility Gate: Pending.**
+**Formal stakeholder Decision Gate: Pending / future phase.**
 
-Stage 5 is evaluating the baseline through simulation and a technical decision
-gate, producing evidence for a proposal to the festival organization. Operational
-and business considerations will then be refined with the organization.
+Stage 5 is evaluating whether the concept is technically credible enough to
+present to the festival organization. The internal
+[MVP Technical Feasibility Gate](docs/stage-5/mvp-technical-feasibility-gate.md)
+reviews fairness, reliability, performance and capacity utilization.
+Technical feasibility for proposal differs from production readiness and
+organizational approval. Stakeholder calibration and real operating-data
+validation remain necessary after proposal if the organization shows interest;
+they are not prerequisites for making the initial proposal.
 The [Stage 5 evaluation framework](docs/stage-5/metrics-and-evaluation-criteria.md)
 defines the analytical rubric, populations, metrics and scenario requirements
 for evaluating `v0.3.0 — Fair Assignment Engine`. The
@@ -31,11 +37,12 @@ for evaluating `v0.3.0 — Fair Assignment Engine`. The
 implemented PostgreSQL execution, reproducibility and evidence flow. Official
 S1/S2/S5/S6/S7/S8 isolated evidence is now
 [consolidated for Decision Gate review](docs/stage-5/decision-gate-evidence.md).
-The [Decision Gate acceptance criteria and remaining evidence plan](docs/stage-5/decision-gate-criteria.md)
-map findings to technical requirements, stakeholder decisions and S3/S4 evidence
-objectives. Decision Gate criteria are defined; S3/S4, stakeholder validation
-and the broader evaluation remain pending. Stage 5 is not Evidence Complete.
-No final verdict or mitigation is selected.
+The [formal Decision Gate criteria](docs/stage-5/decision-gate-criteria.md)
+retain preparatory stakeholder decisions and S3/S4 evidence objectives for that
+later phase. S7 fragmentation and S8 synchronized-contention risks remain visible;
+the remaining pre-proposal experiments examine temporally distributed arrival
+concurrency and late large groups with reconfiguration. Stage 5 is not Evidence
+Complete. No final verdict or mitigation is selected.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
 grouping, arrivals and shared topology. Both use the initial Stage 5 baseline
@@ -48,15 +55,28 @@ The first official representative set now contains six completed runs using
 Seeds 1001, 2001 and 3001 for both scenarios. The
 [S1/S2 results report](docs/stage-5/s1-s2-representative-results.md) separates
 observed metrics, cross-seed comparisons and interpretation, with exact locally
-retained evidence paths. Stage 5 evaluation remains in progress; the Decision
-Gate remains pending.
+retained evidence paths. Stage 5 evaluation remains in progress; both Gates
+remain pending.
 The MVP validates technical feasibility and reliability; it does not deliver
 the complete operational system.
 
 ## Project status
 
-**Stage 4 Completed. Stage 5: In Progress. Decision Gate: Pending.**
+**Stage 4 Completed. Stage 5: In Progress. MVP Technical Feasibility Gate: Pending.**
+**Formal stakeholder Decision Gate: Pending / future phase.**
 
+Immediate roadmap:
+
+1. Realign Stage 5 toward the MVP Technical Feasibility Gate — documented.
+2. Test Production-like Arrival Concurrency.
+3. Test Late Large Groups with Reconfiguration.
+4. Perform the MVP Technical Feasibility Gate.
+5. If supported, prepare the proposal to the organization.
+
+If the organization is interested, validate real operating assumptions and
+calibrate policies, finalize and execute/analyze S3/S4, evaluate applicable
+mitigations, re-test material risks and perform the formal stakeholder Decision
+Gate before a pilot/production decision.
 
 ## Documentation
 
@@ -72,8 +92,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 — Assignment Engine and Fairness](docs/stage-4/README.md)
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
+* [Stage 5 — MVP Technical Feasibility Gate and Pre-Proposal Roadmap](docs/stage-5/mvp-technical-feasibility-gate.md)
 * [Stage 5 — Consolidated Isolated Evidence for Decision Gate (preparation in progress)](docs/stage-5/decision-gate-evidence.md)
-* [Stage 5 — Decision Gate Acceptance Criteria and Remaining Evidence Plan](docs/stage-5/decision-gate-criteria.md)
+* [Stage 5 — Future Formal Decision Gate Criteria and Evidence Plan](docs/stage-5/decision-gate-criteria.md)
 * [Stage 5 — Simulation Architecture and Reproducibility](docs/stage-5/simulation-architecture.md)
 * [Stage 5 — S1/S2 Representative Scenario Contracts](docs/stage-5/representative-scenarios.md)
 * [Stage 5 — S5 Processing-Order Sensitivity (official execution and analysis completed)](docs/stage-5/s5-adverse-arrival-order.md)

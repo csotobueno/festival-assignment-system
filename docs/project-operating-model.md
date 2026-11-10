@@ -19,7 +19,13 @@ a diferentes Attendees durante varios días. No tiene como objetivo entregar el
 sistema operativo completo ni una aplicación preparada para producción.
 Al terminar stage-5, la evidencia y sus limitaciones servirán para proponer el
 sistema a la organización y validar con ella las consideraciones operativas y
-de negocio pendientes.
+de negocio pendientes. El
+[MVP Technical Feasibility Gate](stage-5/mvp-technical-feasibility-gate.md)
+es la revisión interna previa a la propuesta. La viabilidad técnica para
+presentar la propuesta, la preparación para producción y la aprobación de la
+organización son decisiones distintas. La validación con stakeholders sigue
+siendo necesaria después de la propuesta si existe interés; no es un requisito
+para presentar la propuesta inicial.
 
 ## 3. Arquitectura objetivo
 
@@ -108,7 +114,8 @@ El MVP técnico estará terminado cuando exista evidencia de que:
 2. **Etapa 2 — Dominio y Application ejecutables: Completada.** Hito de versión: `v0.1.0`.
 3. **Etapa 3 — Persistencia, invariantes globales y concurrencia: Completada.** Hito de versión: `v0.2.0`.
 4. **Etapa 4 — Motor de asignación y fairness: Completada.** Véase el [cierre de stage-4](stage-4/completion.md).
-5. **Etapa 5 — Simulación y evaluación para la toma de decisiones: Pendiente.**
+5. **Etapa 5 — Simulación y evaluación para la toma de decisiones: En progreso.**
+   **MVP Technical Feasibility Gate: Pendiente. Decision Gate formal: Pendiente / fase futura.**
 
 ### Etapa 4 — Motor de asignación y fairness
 
@@ -123,16 +130,33 @@ los siete escenarios de aceptación integrados y las suites verificadas. Todos
 los criterios de salida vigentes están satisfechos. La presimulación de cinco
 días antes exigida por el paso 26 se difiere explícitamente a la etapa 5 para
 evitar duplicar preparación, escenarios e interpretación. La etapa 4 está
-Completada y la etapa 5 permanece Pendiente.
+Completada y la etapa 5 está En progreso.
 
-La calibración final y la evaluación cuantitativa de fairness corresponden a la
-etapa 5. El determinismo permite reproducir pruebas y comparar escenarios;
+La evaluación cuantitativa de fairness sustenta el Gate interno; la calibración
+organizacional final queda para después de la propuesta si existe interés.
+El determinismo permite reproducir pruebas y comparar escenarios;
 no garantiza por sí mismo el fairness.
 
 ### Etapa 5 — Simulación y evaluación para la toma de decisiones
 
-Objetivo: evaluar si la estrategia de la etapa 4 es suficientemente justa y
-técnicamente viable para justificar la construcción del sistema operativo completo.
+Objetivo: evaluar si la estrategia de la etapa 4 tiene evidencia técnica suficiente
+de fairness, fiabilidad, rendimiento y aprovechamiento de capacidad para justificar
+una propuesta a la organización del festival.
+
+Secuencia inmediata:
+
+1. Realinear Stage 5 hacia el MVP Technical Feasibility Gate — documentado.
+2. Definir y ejecutar Production-like Arrival Concurrency.
+3. Definir y ejecutar Late Large Groups with Reconfiguration.
+4. Realizar el MVP Technical Feasibility Gate.
+5. Preparar la propuesta si la evidencia técnica la sustenta.
+
+Si la organización muestra interés, obtener datos operativos reales y validar/
+calibrar demanda, llegadas, recinto, reservas/ocupación previa, grupos,
+elegibilidad, fairness y expectativas de servicio. Después, concretar y ejecutar/
+analizar S3/S4, evaluar mitigaciones aplicables, repetir las pruebas de riesgos
+afectados y realizar el Decision Gate formal antes de decidir sobre piloto o
+producción. S3/S4 se difieren a esa fase; no se eliminan.
 
 Esta etapa ejecutará escenarios de simulación deterministas, medirá el fairness
 y la distribución, examinará casos límite, comparará estrategias y registrará
@@ -153,7 +177,9 @@ nunca reciben Good, capacidad Good sin utilizar o consumida demasiado pronto,
 comportamiento patológico de grupos entre poblaciones, sensibilidad al orden de
 llegada y comportamiento inesperado del score entre días y poblaciones. También
 evalúa fairness estadístico, presión de capacidad, rendimiento y concurrencia/
-estrés antes del Decision Gate final. La [decisión Lean de cierre](stage-4/completion.md#lean-decision-on-five-day-evaluation)
+estrés. El Gate interno usa la evidencia completada y los dos experimentos
+pendientes; el estrés combinado S3/S4 y el Gate formal quedan para la fase
+posterior basada en datos reales. La [decisión Lean de cierre](stage-4/completion.md#lean-decision-on-five-day-evaluation)
 separa esta evaluación empírica de las pruebas funcionales que permanecen como
 evidencia de stage-4.
 
@@ -213,5 +239,8 @@ y capacidad por separado.
 
 Los siete escenarios de aceptación de stage-4 verifican comportamiento funcional
 determinista y conservan su evidencia histórica. La evaluación de cinco días y
-el Decision Gate completan la evaluación del MVP técnico; una conclusión Continue
-apoya la siguiente fase de propuesta o implementación, sin iniciarla automáticamente.
+el MVP Technical Feasibility Gate sustentan la conclusión interna sobre si procede
+presentar la propuesta o hace falta más validación técnica. El Decision Gate
+formal con stakeholders pertenece a la fase posterior si existe interés; ninguna
+conclusión interna implica aprobación organizacional, producción ni inicio
+automático de implementación.

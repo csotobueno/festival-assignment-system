@@ -1,14 +1,21 @@
 # Stage 5 — Isolated Scenario Evidence for Decision Gate
 
-**Isolated evidence consolidated; Decision Gate criteria defined. Stage 5 = In
-Progress; Decision Gate = Pending.** This assessment consolidates S1, S2,
+**Isolated evidence consolidated. Stage 5 = In Progress.**
+**MVP Technical Feasibility Gate = Pending; formal stakeholder Decision Gate =
+Pending / future phase.** This assessment consolidates S1, S2,
 S5, S6, S7 and S8. It records architectural findings and review actions, without
 choosing Continue / Tune / Pivot / Stop or a mitigation architecture. S3/S4
 remain unresolved.
 
-The [Decision Gate acceptance criteria and remaining evidence plan](decision-gate-criteria.md)
-map these findings to requirements, stakeholder decisions and S3/S4 objectives.
-Stage 5 is not Evidence Complete; this evidence assessment remains unchanged.
+The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
+immediate pre-proposal roadmap: Production-like Arrival Concurrency, Late Large
+Groups with Reconfiguration, then the internal Gate and proposal if supported.
+The [formal Decision Gate criteria](decision-gate-criteria.md) retain stakeholder
+decisions and S3/S4 objectives for the later phase if the organization is
+interested. Stakeholder validation remains necessary then, but does not precede
+the initial proposal. Stage 5 is not Evidence Complete; measured findings and
+risk classifications below remain unchanged. Earlier reports' next-task notes
+are historical; the linked MVP roadmap defines the current sequence.
 
 ## Authority, evidence and comparison conventions
 
@@ -358,8 +365,9 @@ scaling claim follows.
 
 ## Stakeholder-dependent assumptions and unresolved acceptance
 
-All rows below remain **Stakeholder Validation Required**; this consolidation
-does not supply their answers.
+All rows below remain **Stakeholder Validation Required** for the post-proposal
+organizational phase; they are not prerequisites for the initial proposal.
+This consolidation does not supply their answers.
 
 | Topic | Decision or validation needed |
 | --- | --- |
@@ -374,6 +382,9 @@ does not supply their answers.
 | Service expectations | Agree acceptable rejection, latency and successful delivery for the intended workload/environment; no fairness, conflict or production SLA threshold is invented here. |
 
 ## Pending combined/stress evidence: S3 and S4
+
+S3/S4 are retained for the later data-informed phase after proposal and
+organization interest. They do not block the internal pre-proposal Gate.
 
 **S3 — Stress** remains unimplemented/unexecuted. Its documented purpose is to
 assess controlled degradation under credible combined pressure: higher demand,
@@ -390,11 +401,16 @@ graceful and whether invariants remain protected.
 Detailed parameters and validated acceptance criteria remain undefined; the
 high-level envelope comes from framework sections 23–24, not a newly designed
 matrix. Isolated effects cannot be added or extrapolated into S3/S4 results.
-Action: **Additional Evidence Required**, with credible inputs and acceptance
-questions agreed before a separately authorized design/execution task. S8's
-evidence-sufficient decision does not close either scenario or the Decision Gate.
+Action for the future formal Gate: **Additional Evidence Required**, with real
+operating-data validation and credible inputs/acceptance questions agreed before
+separate design/execution tasks. S8's evidence-sufficient decision does not close
+either scenario or either Gate.
 
 ## Decision Gate evidence matrix
+
+This matrix prepares the future formal stakeholder/production Gate. Its risk
+findings also inform the internal MVP review, without making later stakeholder
+or S3/S4 prerequisites mandatory before proposal.
 
 Each finding has one primary classification. **Validated Behavior** means
 observed within the tested envelope. **Acceptable Sensitivity** here means bounded
@@ -429,10 +445,12 @@ inventory reservation/locking, queueing, different assignment-selection
 coordination or fragmentation-aware allocation. These are candidate areas only,
 with no preferred option, implementation or authorization to change policy.
 
-The [criteria and ordered remaining evidence plan](decision-gate-criteria.md)
-now define the questions and required decisions. Next task: **Capture stakeholder
-acceptance decisions and validate operating assumptions before finalizing S3/S4
-contracts.** Keep business acceptance, evidence gaps and future mitigation
-evaluation explicit before the eventual Continue / Tune / Pivot / Stop decision.
+The [MVP roadmap](mvp-technical-feasibility-gate.md) now sets the immediate next
+task: **Define and Execute Production-like Arrival Concurrency Experiment**,
+followed by Late Large Groups with Reconfiguration and the internal feasibility
+Gate. If a proposal attracts organization interest, the
+[formal criteria and evidence plan](decision-gate-criteria.md) govern stakeholder
+validation, data-informed S3/S4 and applicable mitigation evaluation before the
+eventual formal Continue / Tune / Pivot / Stop review.
 No scenario rerun or final architecture/go-no-go decision is made by this
 consolidation.
