@@ -4,13 +4,16 @@
 
 Stage 5 evaluates whether the `v0.3.0 — Fair Assignment Engine` baseline is sufficiently fair, reliable, consistent, and performant to justify moving toward a real implementation proposal.
 
-The immediate decision is the internal
-[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md), using existing
-evidence next. The [scope decision](pre-proposal-validation-scope.md) records
+The internal [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md)
+is **Completed — Technically Feasible for Proposal**; the
+[decision record](mvp-technical-feasibility-gate-result.md) evaluates existing
+evidence without changing this framework's thresholds or measurements. Next:
+**Prepare Organization Proposal**. The [scope decision](pre-proposal-validation-scope.md) records
 that current evidence is sufficient to proceed to review without mandatory
 execution of Plausible Festival Arrival Concurrency or Late Large Groups with
 Reconfiguration. Both remain conditional post-proposal validations; their
-relevance increasingly depends on real operational inputs. No Gate verdict is made.
+relevance increasingly depends on real operational inputs. No formal production
+Gate verdict or organizational acceptance follows from the internal decision.
 Technical feasibility for proposal is distinct from production readiness and
 organizational approval. Stakeholder calibration, real operating-data validation,
 S3/S4 refinement/execution and the formal stakeholder Decision Gate remain in a
@@ -2374,17 +2377,19 @@ for serialization, ordering and completion behavior.
 Official isolated S1/S2/S5/S6/S7/S8 empirical evidence is now
 [consolidated for Decision Gate review](decision-gate-evidence.md), with measured
 results, populations, evidence strength and architectural implications kept
-separate. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending;
+separate. Stage 5 = In Progress; MVP Technical Feasibility Gate = Completed;
 formal stakeholder Decision Gate = Pending / future phase. Open-loop High-rate
 Arrival Stress is Completed; its operational findings and observer-audit limitations
 remain Gate inputs. Plausible Festival Arrival Concurrency is Defined / Pending
 Execution; late-group reconfiguration is Pending Definition / Execution. Both
 are conditional post-proposal validations, not mandatory pre-proposal blockers.
-Immediate work is **Perform MVP Technical Feasibility Gate**, then proposal if
-supported. The four areas remain Fairness, Reliability, Performance and Capacity
+Immediate work is **Prepare Organization Proposal**, supported by the
+[completed Gate](mvp-technical-feasibility-gate-result.md). The four areas remain
+Fairness, Reliability, Performance and Capacity
 Utilization, with existing definitions and thresholds unchanged. Known risks,
 plausible mitigation paths and missing operational data inform whether unresolved
-items block proposal or require later validation; no decision is made here.
+items block proposal or require later validation; the result is recorded separately,
+with no production acceptance implied.
 Stakeholder calibration and
 S3/S4 remain necessary in the later data-informed phase if the organization is
 interested. Measured evidence is unchanged; the internal fairness boundary is

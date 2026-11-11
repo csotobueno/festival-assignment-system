@@ -1,9 +1,14 @@
 # Stage 5 — Plausible Festival Arrival Concurrency Experiment
 
 **Defined / Pending Execution. Conditional Post-Proposal Validation. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending / Next.** This contract defines future work;
+**MVP Technical Feasibility Gate = Completed.** This contract defines future work;
 no implementation or experimental execution is included in this documentation task.
 Open-loop High-rate Arrival Stress remains Completed with all evidence retained.
+
+The [completed internal Gate](mvp-technical-feasibility-gate-result.md) concludes
+**Technically Feasible for Proposal**; next task: **Prepare Organization Proposal**.
+This does not validate plausible festival concurrency. This experiment's status,
+conditional role, technical schedule and planned matrix remain unchanged.
 
 **Roadmap update — 2026-11-11:** the [pre-proposal scope decision](pre-proposal-validation-scope.md)
 moves this experiment to conditional post-proposal validation if real request-arrival
@@ -285,9 +290,10 @@ that sequence: internal Gate → proposal if supported → organization review/d
 and architecture calibration → data-informed S3/S4 → formal stakeholder/production
 Gate → pilot/production decision. This contract remains **Defined / Pending Execution**;
 implementation and evidence collection are conditional future work. Stage 5 is
-**In Progress**; the MVP Gate is **Pending / Next**, with no feasibility verdict.
+**In Progress**; the MVP Gate is **Completed — Technically Feasible for Proposal**,
+without production readiness or organizational approval.
 
-Next task: **Perform MVP Technical Feasibility Gate** using existing evidence.
+Next task: **Prepare Organization Proposal** using the completed Gate and its limits.
 This definition changes no code, S2 business inputs, fairness, AssignmentEngine,
 Application or PostgreSQL behavior. No retry, Semaphore, locks, queue, serialization,
 advisory/pessimistic locking, inventory partitioning or selection-dispersion logic

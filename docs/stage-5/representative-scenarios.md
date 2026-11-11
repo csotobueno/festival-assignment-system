@@ -3,7 +3,7 @@
 ## Status and Authority
 
 **Deterministic generation and the first six official representative runs completed;
-Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending / Next.**
+Stage 5 = In Progress; MVP Technical Feasibility Gate = Completed.**
 **Formal stakeholder Decision Gate = Pending / future phase.**
 S1 and S2 define simulation intent and provisional inputs materialized through
 the existing ScenarioDefinition → ScenarioMaterializer → ScenarioManifest flow.
@@ -40,8 +40,9 @@ analysis are [completed](s2-s5-order-sensitivity-results.md). S1/S2 inputs below
 are unchanged. Completed S1/S2/S5/S6/S7/S8 findings are
 [consolidated for Decision Gate review](decision-gate-evidence.md).
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) defines the
-immediate pre-proposal roadmap: perform the internal Gate using existing evidence,
-then proposal if supported. The [scope decision](pre-proposal-validation-scope.md)
+immediate roadmap: **Prepare Organization Proposal**, supported by the
+[completed result, Technically Feasible for Proposal](mvp-technical-feasibility-gate-result.md).
+The [scope decision](pre-proposal-validation-scope.md)
 records that Plausible Festival Arrival Concurrency and Late Large Groups with
 Reconfiguration are conditional post-proposal validations, not mandatory Gate
 prerequisites. Their relevance depends on actual operational inputs. The
@@ -501,7 +502,7 @@ The [arrival-concurrency contract](production-like-arrival-concurrency.md) now
 retains the original timing contract separately from unchanged S2 business
 timestamps; its results are completed high-rate stress evidence. The new
 [bounded contract](plausible-festival-arrival-concurrency.md) is Defined / Pending Execution.
-Next: **Perform MVP Technical Feasibility Gate**. Plausible arrival execution
+Next: **Prepare Organization Proposal**. Plausible arrival execution
 depends on real arrival behavior indicating meaningful concurrency risk;
 late-group validation depends on actual group sizes and accepted split/resubmission
 rules making fragmentation/capacity utilization material. The late-group contract

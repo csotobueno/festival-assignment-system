@@ -1,5 +1,12 @@
 # Stage 5 — Pre-Proposal Validation Scope
 
+**Historical scope decision, recorded before the internal Gate.** Its pending
+statuses and next-task notes below describe that decision point. The subsequent
+[2026-11-11 Gate result](mvp-technical-feasibility-gate-result.md) is
+**Completed — Technically Feasible for Proposal**; next task: **Prepare Organization
+Proposal**. Stage 5 remains In Progress and all conditional-validation roles below
+are preserved. The scope decision itself did not preselect the Gate outcome.
+
 Decision recorded: **2026-11-11 (America/Lima)**.
 **Stage 5 = In Progress. MVP Technical Feasibility Gate = Pending / Next.**
 **Formal stakeholder / production Decision Gate = Pending / future phase.**

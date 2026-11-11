@@ -4,14 +4,16 @@
 
 **Sequential/concurrent execution and official S1/S2/S5/S6/S7/S8 isolated
 evaluation implemented; evidence consolidated. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending / Next; formal stakeholder Decision Gate =
+**MVP Technical Feasibility Gate = Completed; formal stakeholder Decision Gate =
 Pending / future phase.**
 This document defines the minimum planned architecture for evaluating
 `v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
 attempts, daily checkpoints, individual attendee-path reconstruction and
 classification, attendee recovery observations and aggregate fairness/recovery
 metrics, with a completed-run JSON evidence exporter. Other metric families and
-Decision Gate verdicts remain deferred. No simulation analysis changes production behavior.
+formal stakeholder/production Gate verdicts remain deferred. The
+[internal Gate result](mvp-technical-feasibility-gate-result.md) is **Technically
+Feasible for Proposal**. No simulation analysis changes production behavior.
 
 The [Stage 5 metrics and evaluation framework](metrics-and-evaluation-criteria.md)
 is authoritative for analytical outcomes, populations, denominators,
@@ -23,8 +25,8 @@ baseline and its acceptance evidence; the [glossary](../glossary.md) and
 The official fairness-rule count remains **19**.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal sequence: review existing evidence at the internal Gate,
-then proposal if supported. Under the [scope decision](pre-proposal-validation-scope.md),
+immediate sequence: **Prepare Organization Proposal** after the completed internal
+Gate. Under the [scope decision](pre-proposal-validation-scope.md),
 Plausible Festival Arrival Concurrency and Late Large Groups with Reconfiguration
 are conditional post-proposal validations, dependent on real operational inputs,
 not mandatory prerequisites. Open-loop
@@ -922,8 +924,9 @@ Existing transaction rollback and no-retry semantics remain unchanged.
 Local PostgreSQL/Testcontainers is sufficient; performance evidence
 is environment-specific and EC2 is optional. Preserve current transaction and
 cancellation behavior without new timeout policy; capture per-request failures
-when safe continuation and evidence integrity permit. Mitigation and Decision
-Gate decisions remain deferred.
+when safe continuation and evidence integrity permit. Mitigation and formal
+stakeholder/production Gate decisions remain deferred; the internal Gate result
+is recorded separately.
 
 ## Plausible festival arrival concurrency — defined, not implemented
 
@@ -997,7 +1000,8 @@ Earlier design deferrals for deterministic materialization, JSON export,
 checkpoint projections and concurrent windows are now implemented in the slices
 documented above. Open-loop High-rate Arrival Stress is completed with material
 operational limitations and retained observer-audit findings. Immediate work is
-**Perform MVP Technical Feasibility Gate**, using existing evidence and known
+**Prepare Organization Proposal**, using the
+[completed Gate decision](mvp-technical-feasibility-gate-result.md) and known
 risks. Plausible arrival and late-group reconfiguration experiments are conditional
 post-proposal validations, pending actual operational data. Additional simulation
 based on unvalidated assumptions has diminishing pre-proposal value; this does
