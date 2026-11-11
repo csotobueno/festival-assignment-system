@@ -361,14 +361,16 @@ select the reviewed JSON/report for repository history. Do not add raw packages.
 ## Production-like Arrival Concurrency
 
 **Historical contract/command name retained. Open-loop High-rate Arrival Stress
-= Completed; Plausible Festival Arrival Concurrency = Pending.** Post-run analysis
+= Completed; Plausible Festival Arrival Concurrency = Defined / Pending Execution.** Post-run analysis
 identified sustained overload: 40 / ≈ 61.5 offered req/s exceed the retained C1
 mean of ≈ 29.6 successful req/s. The [corrected interpretation](../../docs/stage-5/production-like-arrival-concurrency-analysis.md)
 preserves every measurement and the stopped collection/remediation history.
 The commands below document the original execution protocol; no new Moderate,
 Burst-like, Seed 3001 or C1/C4/C16 run is required for this correction. Next:
-**Define Plausible Festival Arrival Concurrency Experiment**, then bounded Lean
-validation before late-group reconfiguration.
+**Implement and Execute Plausible Festival Arrival Concurrency Experiment** under
+the [new bounded contract](../../docs/stage-5/plausible-festival-arrival-concurrency.md),
+before late-group reconfiguration. That contract is defined only; the commands
+below remain the historical stress harness, not a way to execute the new patterns.
 
 The [arrival contract](../../docs/stage-5/production-like-arrival-concurrency.md)
 uses exact S2 inputs, Moderate/25 ms and BurstLike/4 requests with 5 ms internal

@@ -51,9 +51,12 @@ start gate at offered rates of 40 / ≈ 61.5 req/s, above C1's retained mean of
 ≈ 29.6 successful req/s. Valid-run audits have zero findings; the stopped
 collection's three original findings remain retained. These rates, failures,
 latencies and hundreds/thousands of active requests are not production predictions.
-**Plausible Festival Arrival Concurrency = Pending**: S2's busiest hourly bucket
+**Plausible Festival Arrival Concurrency = Defined / Pending Execution**: S2's busiest hourly bucket
 averages approximately 293 requests/hour (0.081 req/s), without excluding short
-bursts. Stage 5 is not Evidence Complete.
+bursts. The [new bounded contract](docs/stage-5/plausible-festival-arrival-concurrency.md)
+defines 120× compression, evenly spaced Plausible arrivals and three-request
+PlausibleBurst clusters at the same bucket averages (peak 9.767 req/s). It is
+not implemented or executed. Stage 5 is not Evidence Complete.
 No final Gate verdict or mitigation is selected.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
@@ -80,8 +83,8 @@ the complete operational system.
 Immediate roadmap:
 
 1. Reframe arrival-concurrency evidence — completed as Open-loop High-rate Arrival Stress.
-2. **Define Plausible Festival Arrival Concurrency Experiment.**
-3. Execute bounded Lean concurrency validation under its separate contract.
+2. Define Plausible Festival Arrival Concurrency — completed; execution pending.
+3. **Implement and Execute Plausible Festival Arrival Concurrency Experiment.**
 4. Define/execute Late Large Groups with Reconfiguration separately.
 5. Perform the MVP Technical Feasibility Gate.
 6. If supported, prepare the proposal to the organization.
@@ -106,6 +109,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
 * [Stage 5 — MVP Technical Feasibility Gate and Pre-Proposal Roadmap](docs/stage-5/mvp-technical-feasibility-gate.md)
+* [Stage 5 — Plausible Festival Arrival Concurrency (Defined / Pending Execution)](docs/stage-5/plausible-festival-arrival-concurrency.md)
 * [Stage 5 — Original Arrival Contract (reclassified as completed high-rate stress)](docs/stage-5/production-like-arrival-concurrency.md)
 * [Stage 5 — Open-loop High-rate Arrival Stress Results and Interpretation](docs/stage-5/production-like-arrival-concurrency-analysis.md)
 * [Stage 5 — Consolidated Isolated Evidence for Decision Gate (preparation in progress)](docs/stage-5/decision-gate-evidence.md)

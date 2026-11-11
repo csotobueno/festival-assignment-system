@@ -23,8 +23,12 @@ unexpected outcomes. Initially intended as Production-like Arrival Concurrency,
 its 40 / ≈ 61.5 offered req/s exceed the retained C1 mean of ≈ 29.6 successful
 req/s. Post-run analysis corrected its interpretation to sustained overload;
 measurements are unchanged. Conflicts, failures, latencies and active concurrency
-are not production predictions. **Plausible Festival Arrival Concurrency = Pending**;
-additional evidence is required before the internal Gate. Four valid-run audits
+are not production predictions. **Plausible Festival Arrival Concurrency = Defined / Pending Execution**;
+the [bounded contract](plausible-festival-arrival-concurrency.md) defines 120× S2
+compression and equal-average Plausible/PlausibleBurst schedules (peak 9.767 req/s).
+Four initial runs, up to six with conditional Seed 3001, remain unexecuted;
+boundedness/fidelity must be checked before interpreting conflict results.
+Additional evidence is required before the internal Gate. Four valid-run audits
 are zero; the original stopped collection's three findings remain retained as an observer-audit evidence limit.
 No clean retrospective audit is claimed for that package. Read T6 with this new
 evidence; its applicable-envelope requirement still holds. T8 and readiness notes
@@ -126,7 +130,7 @@ audiences, not newly assigned positions or named decision makers.
 | B2 — Processing-order sensitivity | Is this level of distributive sensitivity to request processing order acceptable? | Similar aggregate fairness can allocate unfavorable outcomes to different people. | S5 approximately 59% attendee/day quality changes, zero exact attendee/day Bad overlap and only 46.90–47.48% classifiable paths retaining classification; aggregate rates relatively stable. | Accept the measured sensitivity and intended arrival/priority semantics explicitly, or require mitigation evaluation with an agreed outcome. Stakeholder threshold required; no arbitrary sensitivity percentage. Validate actual peaks/late-request behavior through B7. | Stakeholder / Festival organizers, Product/business stakeholders | Decision Required |
 | B3 — Large-group behavior | Are group-size prevalence, composition and fairness/feasibility effects acceptable? | S6 technical feasibility does not approve different experience distributions for groups. | T4: full placement with modest fairness worsening; larger-group Bad associations retain timing/history/eligibility interactions. | Validate request-level group distributions/composition and acceptable effects; define the accepted envelope and monitor T4. Stakeholder threshold required. Do not authorize splitting groups or changing contiguity. | Stakeholder / Festival organizers, Product/business stakeholders | Decision Required |
 | B4 — Fragmentation realism and venue | Is the tested fragmentation/preoccupation pattern representative enough of real festival operations? | Determines applicability of T5; aggregate capacity cannot validate geometry. | S7 synthetic approximately 20% preoccupation (1,000 Spots) and dispersed pattern are provisional. Venue topology, capacity and quality shares are also hypotheses. | Validate occupancy amount/positions and plausible block patterns, usable Zone/Row capacities, physical contiguity, 35%/45%/20% quality-capacity shares, 12-row/+1 grandstand approximation and FrontStanding 10 × 75 logical discretization. Record whether comparable fragmentation belongs in the operating envelope and the basis for any exclusion. | Joint / Technical, Festival organizers, Operations | Decision Required |
-| B5 — Expected production concurrency | What bursts and overlapping requests must the intended operating model support? | C4/C16 synchronized bounded windows and unsynchronized open-loop high-rate arrivals are stress experiments, not measured production traffic; C1 superiority does not validate a production model. Plausible festival concurrency remains Pending. | S8 severe contention under synchronized windows; sequential C1 full useful delivery. | Agree numeric in-flight/load and arrival/burst assumptions with their operational basis. If relying on avoiding the tested envelope, require E4 demonstration; otherwise carry T6/M2. No scheduling solution is selected. | Joint / Technical, Operations, Product/business stakeholders | Decision Required |
+| B5 — Expected production concurrency | What bursts and overlapping requests must the intended operating model support? | C4/C16 synchronized bounded windows and unsynchronized open-loop high-rate arrivals are stress experiments, not measured production traffic; C1 superiority does not validate a production model. The plausible festival concurrency contract is Defined / Pending Execution; evidence remains pending. | S8 severe contention under synchronized windows; sequential C1 full useful delivery. | Agree numeric in-flight/load and arrival/burst assumptions with their operational basis. If relying on avoiding the tested envelope, require E4 demonstration; otherwise carry T6/M2. No scheduling solution is selected. | Joint / Technical, Operations, Product/business stakeholders | Decision Required |
 | B6 — Realistic demand and continuity | Which population, daily participation and historical horizon are credible? | Input realism governs generalization of every completed result and S3/S4 design. | 5,500 registrations versus approximately 5,000 physical capacity (4,998 modeled); S1/S2 daily requesters 3,300/4,400; five days; 90% daily requester continuity. | Validate each assumption separately, including returning requester replacement, initial history and five-day applicability. Keep registered population distinct from physical capacity and requests from Attendees. Simulated dates are fixtures. | Stakeholder / Festival organizers, Operations | Decision Required |
 | B7 — Arrivals and assignment window | Are the modeled peaks, late requests and daily window credible? | Simulated time controls ordering; it does not replay actual traffic overlap. | S1 smoother arrivals, S2 peaks/tail and provisional 07:00–23:00 window; S5 reverses processing while retaining original timestamps. | Validate arrival profiles, event/assignment window and late-request/priority expectations; feed B2/B5 and S3/S4 input definitions. | Joint / Technical, Operations, Festival organizers | Decision Required |
 | B8 — Response-time expectations | What response-time expectation is acceptable for the user-facing assignment flow? | Local engine/use-case timing is only part of the user experience. | S8 C1 p95 46.382–51.821 ms; every C4/C16 p95 exceeds one second. p95 < 1 second remains a provisional analytical hypothesis, not an SLA. | Agree the service target, measurement boundary, workload/environment and applicable percentile. Stakeholder threshold required. Identify any additional end-to-end evidence needed; do not convert the provisional hypothesis into a hard Gate criterion. | Joint / Technical, Product/business stakeholders, Operations | Decision Required |
@@ -240,8 +244,8 @@ or decision, current evidence, one primary status and next action.
 This is the **post-proposal formal Gate plan**, conditional on organization
 interest. It does not precede the internal MVP Gate or initial proposal. The
 [immediate roadmap](mvp-technical-feasibility-gate.md#immediate-roadmap-and-gate-outcomes)
-first requires definition and bounded Lean validation of Plausible Festival Arrival
-Concurrency, then definition/execution of Late Large Groups with Reconfiguration,
+first requires implementation/execution of the defined Plausible Festival Arrival
+Concurrency contract, then definition/execution of Late Large Groups with Reconfiguration,
 followed by the internal feasibility review. Open-loop High-rate Arrival Stress
 is Completed and remains risk evidence.
 
@@ -324,8 +328,8 @@ the overall Gate ready while S3/S4 and stakeholder decisions remain unresolved.
 **MVP Technical Feasibility Gate = Pending.**
 The [Open-loop High-rate Arrival Stress experiment](production-like-arrival-concurrency-analysis.md)
 is Completed with material findings and retained observer-audit limits. Plausible
-Festival Arrival Concurrency is Pending. The next task is **Define Plausible
-Festival Arrival Concurrency Experiment**, followed by bounded Lean validation,
+Festival Arrival Concurrency is Defined / Pending Execution. The next task is
+**Implement and Execute Plausible Festival Arrival Concurrency Experiment**, then
 late-group reconfiguration definition/execution and the internal Gate. After proposal and organization interest, capture
 stakeholder acceptance decisions and validate operating assumptions, then
 finalize S3/S4 contracts for the later formal review.

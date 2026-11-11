@@ -62,7 +62,7 @@ provisional rather than an organization-validated forecast.
 | S7 fragmentation | Known material access risk; operational realism unresolved. Sufficient eligible raw capacity can coexist with no valid contiguous block. | [S7 results](s7-fragmentation-impact-results.md) |
 | Synchronized concurrency stress | Severe degradation demonstrated: S8 C4/C16 use synchronized bounded windows. Their conflict, latency and useful-delivery findings remain unchanged and are not production predictions. | [S8](s8-concurrency-analysis.md) |
 | Open-loop high-rate arrival stress | Severe degradation demonstrated without a synchronized gate at offered rates of 40 / ≈ 61.5 req/s, above the local C1 mean of ≈ 29.6 successful req/s. PersistedInvariantViolationCount = 0 in all four valid runs; the stopped collection's three original findings and remediation remain retained. | [Arrival analysis](production-like-arrival-concurrency-analysis.md) |
-| Plausible festival arrival concurrency | **Additional Evidence Required / Pending.** The completed high-rate schedules do not establish whether concurrency is material at plausible festival arrival rates. | [S2 timing context](representative-scenarios.md#s2--expected-baseline), [interpretation correction](production-like-arrival-concurrency-analysis.md#post-run-interpretation-correction--2026-11-10) |
+| Plausible festival arrival concurrency | **Additional Evidence Required; contract Defined / Pending Execution.** The completed high-rate schedules do not establish whether concurrency is material at plausible festival arrival rates. | [Bounded contract](plausible-festival-arrival-concurrency.md), [interpretation correction](production-like-arrival-concurrency-analysis.md#post-run-interpretation-correction--2026-11-10) |
 | Late large-group final allocation | Additional evidence required: S6 demonstrates full placement for its group mix, not late concentrated large groups followed by reconfiguration. | [S6 results](s2-s6-large-group-sensitivity-results.md) |
 
 This supports individual feasibility dimensions, not a final feasibility verdict.
@@ -139,12 +139,12 @@ experiment requirements, not implemented metrics.
 ## Remaining pre-proposal experiments
 
 Open-loop High-rate Arrival Stress is Completed. Plausible Festival Arrival
-Concurrency and late-group reconfiguration require definition and execution
-before the overall Gate.
+Concurrency is **Defined / Pending Execution**; late-group reconfiguration still
+requires definition/execution afterward, before the overall Gate.
 
 | Experiment | Decision-relevant uncertainty | Required future evidence |
 | --- | --- | --- |
-| **Plausible Festival Arrival Concurrency — Pending** | Is concurrency material with plausible temporal dispersion derived from the business workload? The completed high-rate stress experiment does not answer this. | Define a small bounded Lean validation that distinguishes OfferedRequestRate, ActiveConcurrency and ConflictRate, retaining integrity, complete outcome mix, latency, useful delivery and participation. Model business workload timing rather than choosing arrival rates primarily from API latency; avoid sustained load that automatically accumulates backlog without a small bound unless overload is the objective. Final intervals, compression factors and run counts remain undefined. |
+| **[Plausible Festival Arrival Concurrency](plausible-festival-arrival-concurrency.md) — Defined / Pending Execution** | Is concurrency material with plausible temporal dispersion derived from the business workload? The completed high-rate stress experiment does not answer this. | Implement/execute the defined S2-derived 120× schedules: evenly spaced Plausible and three-request PlausibleBurst at 0/10/20 ms, with identical bucket average rates and a peak of 9.767 req/s. Four initial runs, up to six with pattern-specific conditional Seed 3001. Verify boundedness before interpreting conflicts; retain integrity, full outcome mix, latency, useful delivery, participation and timing evidence. No result or mitigation is implied by definition. |
 | **Late Large Groups with Reconfiguration** | Does concentration of large groups late in daily processing cause fundamental avoidable capacity waste, or recoverable initial-request rejection? When capacity remains available, can affected Attendees ultimately obtain Assignments after allowed group reconfiguration? | InitialRequestSuccessRate, RejectedAttendees, ReconfiguredRequests, FinalAttendeeAllocationRate, UnassignedAttendees and RemainingCapacity, with independent persisted correctness checks and traceable initial-to-final outcomes. |
 
 The original [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
@@ -171,8 +171,8 @@ Assignments. No production or Simulation behavior changes in this task.
 ## Immediate roadmap and Gate outcomes
 
 1. Reframe arrival-concurrency evidence — completed as Open-loop High-rate Arrival Stress.
-2. **Define Plausible Festival Arrival Concurrency Experiment.**
-3. Execute bounded Lean concurrency validation under that separately defined contract.
+2. Define Plausible Festival Arrival Concurrency — completed; execution pending.
+3. **Implement and Execute Plausible Festival Arrival Concurrency Experiment.**
 4. Define and execute Late Large Groups with Reconfiguration separately.
 5. Perform the MVP Technical Feasibility Gate using the additional experiments and
    completed evidence, explicitly reviewing fairness, reliability, performance,
@@ -203,8 +203,8 @@ accepts known risks for production or claims full Stage 5 evidence completeness.
 ## Current status
 
 Open-loop High-rate Arrival Stress is Completed with four valid analyzed runs and
-a documented stopped collection. Plausible Festival Arrival Concurrency is Pending;
+a documented stopped collection. Plausible Festival Arrival Concurrency is Defined / Pending Execution;
 late-group reconfiguration still needs its contract/execution afterward.
 Stage 5 remains In Progress; both Gates remain Pending. No final technical
 feasibility, stakeholder approval, production readiness or go/no-go decision is
-made here. Next task: **Define Plausible Festival Arrival Concurrency Experiment**.
+made here. Next task: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**.

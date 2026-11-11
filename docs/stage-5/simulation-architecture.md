@@ -23,15 +23,17 @@ baseline and its acceptance evidence; the [glossary](../glossary.md) and
 The official fairness-rule count remains **19**.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal sequence: define Plausible Festival Arrival Concurrency,
-execute bounded Lean validation, then define/execute Late Large Groups with
+immediate pre-proposal sequence: implement/execute the defined Plausible Festival
+Arrival Concurrency contract, then define/execute Late Large Groups with
 Reconfiguration and perform the internal review before proposal. Open-loop
 High-rate Arrival Stress is [Completed and analyzed](production-like-arrival-concurrency-analysis.md);
-plausible festival concurrency is Pending. Its original production-like intent
-is retained, but post-run interpretation identified sustained overload. Stakeholder
+plausible festival concurrency is Defined / Pending Execution. The high-rate
+experiment's original production-like intent is retained; post-run interpretation
+identified sustained overload. Stakeholder
 calibration, real operating-data validation, S3/S4 refinement/execution and the
 formal Gate belong to the later phase if the organization shows interest.
-This sequencing changes no execution or evidence contract.
+The new contract defines future scheduling only; existing execution and evidence
+behavior remain unchanged.
 
 The [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
 is implemented through ArrivalDriven execution over exact S2 inputs, independent
@@ -840,7 +842,7 @@ experiment was intended to assess plausible temporal dispersion, but its
 offered req/s, above the C1 reference mean of ≈ 29.6 successful req/s. Its corrected
 interpretation is open-loop high-rate stress with accumulation while earlier work
 remains active, unlike S8's synchronized bounded windows. Neither experiment
-independently represents production; plausible festival concurrency remains Pending.
+independently represents production; plausible festival concurrency remains Defined / Pending Execution.
 This correction does not change the execution contracts or measured evidence.
 S8 reuses exact S2 inputs with
 Concurrent / 4 and 16 as the initial comparison, RetryCount 0 and Seeds
@@ -921,6 +923,25 @@ cancellation behavior without new timeout policy; capture per-request failures
 when safe continuation and evidence integrity permit. Mitigation and Decision
 Gate decisions remain deferred.
 
+## Plausible festival arrival concurrency — defined, not implemented
+
+The [dedicated contract](plausible-festival-arrival-concurrency.md) is
+**Defined / Pending Execution**. Reuse exact S2 requests and business timestamps,
+mapping their original bucket membership to 120× compressed elapsed time.
+Plausible uses uniform bucket spacing; PlausibleBurst clusters three requests at
+0/10/20 ms, with starts and partial-burst idle budget derived from the same
+bucket count/duration. Peak offered rate is 293/30 = 9.767 req/s for both.
+The contract owns exact offset/rounding formulas, the full 480-second daily
+horizon, four initial runs and maximum six with conditional Seed 3001.
+
+Future dispatch must use absolute monotonic deadlines without a readiness gate,
+completion-based admission, worker cap, or drains between bursts/buckets. Keep
+independent scopes/DbContexts; drain at daily horizon before checkpoint/next day.
+Reuse existing actual timing and derive CompletionOffset, SchedulingLag and overlap
+progression offline. Growing active work/lag or backlog-dominated elapsed time
+limits interpretation; no concurrency cap or production threshold is introduced.
+This section records requirements, not implemented support or executed evidence.
+
 ## Arrival-driven execution and observation limits
 
 ArrivalDrivenExecution changes S2 execution metadata only. ArrivalSchedule records
@@ -967,11 +988,12 @@ Earlier design deferrals for deterministic materialization, JSON export,
 checkpoint projections and concurrent windows are now implemented in the slices
 documented above. Open-loop High-rate Arrival Stress is completed with material
 operational limitations and retained observer-audit findings. Immediate work is
-**Define Plausible Festival Arrival Concurrency Experiment**, followed by bounded
-Lean validation, late-group reconfiguration definition/execution and the internal
+**Implement and Execute Plausible Festival Arrival Concurrency Experiment**, then
+late-group reconfiguration definition/execution and the internal
 MVP Gate. Plausible temporal dispersion must come from the business workload,
 not primarily API latency; OfferedRequestRate, ActiveConcurrency and ConflictRate
-remain distinct. No final intervals, compression factors or run counts are chosen. S3/S4 remain deferred to later data-informed
+remain distinct. The linked bounded contract now defines timing and run counts;
+implementation/execution remain pending. S3/S4 remain deferred to later data-informed
 validation after proposal and organization interest. Artifact retention/publication
 and separately justified evaluation refinements remain deferred; no generic
 comparison platform or scheduling beyond the defined experiment is added.
