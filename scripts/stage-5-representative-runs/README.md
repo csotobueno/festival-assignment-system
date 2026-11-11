@@ -367,7 +367,9 @@ mean of ≈ 29.6 successful req/s. The [corrected interpretation](../../docs/sta
 preserves every measurement and the stopped collection/remediation history.
 The commands below document the original execution protocol; no new Moderate,
 Burst-like, Seed 3001 or C1/C4/C16 run is required for this correction. Next:
-**Perform MVP Technical Feasibility Gate** using existing evidence. The
+**Prepare Organization Proposal** after the
+[completed internal Gate: Technically Feasible for Proposal](../../docs/stage-5/mvp-technical-feasibility-gate-result.md).
+No new experimental execution is required by that decision. The
 [scope decision](../../docs/stage-5/pre-proposal-validation-scope.md) moves Plausible
 Festival Arrival Concurrency and Late Large Groups with Reconfiguration to
 conditional post-proposal validations, dependent on actual operational inputs.

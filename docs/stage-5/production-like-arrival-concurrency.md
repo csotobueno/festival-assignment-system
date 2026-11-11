@@ -1,7 +1,9 @@
 # Stage 5 — Production-like Arrival Concurrency Experiment
 
 **Original contract name retained for traceability. Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Defined / Pending Execution. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending.** The
+**MVP Technical Feasibility Gate = Completed — Technically Feasible for Proposal.**
+The [Gate result](mvp-technical-feasibility-gate-result.md) preserves all findings
+below; next task: **Prepare Organization Proposal**. The
 [official analysis](production-like-arrival-concurrency-analysis.md) records four
 valid initial-matrix runs and five actual executions including a documented
 stopped collection. No Seed 3001 was needed. The timing/metric contract below
@@ -244,8 +246,8 @@ threshold, mitigation, SLA or MVP feasibility verdict is introduced.
 
 ## Roadmap, status and scope
 
-Current sequence: **Perform MVP Technical Feasibility Gate** using existing
-evidence → proposal if supported → organization review/data → relevant conditional
+Current sequence: **Prepare Organization Proposal** after the completed internal
+Gate → organization review/data → relevant conditional
 validations → applicable mitigation evaluation/validation and architecture
 calibration → data-informed S3/S4 → formal stakeholder/production Gate →
 pilot/production decision. The [scope decision](pre-proposal-validation-scope.md)
@@ -258,9 +260,10 @@ Its observer-audit replacement was documented before execution and did not alter
 business execution, timing, conflict semantics or original outcomes. No conditional
 Seed 3001 or reference rerun occurred. Original stopped findings are not averaged
 away; no clean retrospective request-state audit is claimed for that package.
-**Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.** No production,
+**Stage 5 = In Progress; MVP Technical Feasibility Gate = Completed.** No production,
 AssignmentEngine/fairness change, retry, locking, serialization/queue mitigation,
-reconfiguration, S3/S4 execution or final feasibility decision occurred.
+reconfiguration or S3/S4 execution occurred. The subsequent proposal-feasibility
+decision is recorded separately in the linked Gate result; no production decision follows.
 
 The successor [Plausible Festival Arrival Concurrency contract](plausible-festival-arrival-concurrency.md)
 is **Defined / Pending Execution**: 120× compressed S2 buckets, Plausible uniform
@@ -271,4 +274,4 @@ original stress schedules, measurements or remediation history above.
 Its execution is conditional on actual request-arrival behavior indicating
 meaningful concurrency risk. Late-group reconfiguration remains Pending
 Definition / Execution, conditional on real group behavior and reconfiguration rules.
-Next task: **Perform MVP Technical Feasibility Gate — Pending / Next**.
+Next task: **Prepare Organization Proposal**.

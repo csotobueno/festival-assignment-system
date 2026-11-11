@@ -2,6 +2,14 @@
 
 Execution/analysis: **2026-11-09 (America/Lima)**. Runtime timestamps/directory labels use UTC; simulated 2026-08-15–19 dates remain fixtures.
 
+**Subsequent Gate decision — 2026-11-11:** the
+[MVP Technical Feasibility Gate result](mvp-technical-feasibility-gate-result.md)
+is **Completed — Technically Feasible for Proposal**. Next: **Prepare Organization
+Proposal**. Stage 5 remains In Progress; the formal stakeholder/production Gate
+remains future work. Statuses, roadmap notes and absence of a Gate decision below
+describe the earlier execution/scope decisions; all stress findings, counts and
+observer-audit limitations remain unchanged. No scenario was rerun for this Gate.
+
 **Open-loop High-rate Arrival Stress = Completed: 4 valid initial-matrix runs; 5 actual official executions including one retained stopped collection. Plausible Festival Arrival Concurrency = Defined / Pending Execution. No Seed 3001 or C1/C4/C16 reference rerun. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.**
 
 **Roadmap update — 2026-11-11:** the [pre-proposal scope decision](pre-proposal-validation-scope.md)

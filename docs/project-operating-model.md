@@ -32,7 +32,10 @@ registra que la evidencia actual es suficiente para pasar al Gate interno sin
 exigir los dos experimentos pendientes como prerrequisitos. Plausible Festival
 Arrival Concurrency y Late Large Groups with Reconfiguration pasan a validaciones
 condicionales posteriores a la propuesta, dependientes de datos operativos reales.
-El Gate sigue pendiente y es la próxima actividad; no se emite su veredicto aquí.
+El [Gate interno completado](stage-5/mvp-technical-feasibility-gate-result.md)
+concluye **Technically Feasible for Proposal** el 2026-11-11. La siguiente tarea
+es **Prepare Organization Proposal**. El resultado no acepta el comportamiento
+de estrés para producción ni sustituye la aprobación organizacional.
 
 ## 3. Arquitectura objetivo
 
@@ -122,7 +125,7 @@ El MVP técnico estará terminado cuando exista evidencia de que:
 3. **Etapa 3 — Persistencia, invariantes globales y concurrencia: Completada.** Hito de versión: `v0.2.0`.
 4. **Etapa 4 — Motor de asignación y fairness: Completada.** Véase el [cierre de stage-4](stage-4/completion.md).
 5. **Etapa 5 — Simulación y evaluación para la toma de decisiones: En progreso.**
-   **MVP Technical Feasibility Gate: Pendiente / siguiente actividad. Decision Gate formal: Pendiente / fase futura.**
+   **MVP Technical Feasibility Gate: Completado — Technically Feasible for Proposal. Decision Gate formal: Pendiente / fase futura.**
 
 ### Etapa 4 — Motor de asignación y fairness
 
@@ -152,13 +155,16 @@ una propuesta a la organización del festival.
 
 Secuencia inmediata:
 
-1. Actualizar el alcance prepropuesta — completado; véase la
-   [decisión y secuencia completa](stage-5/pre-proposal-validation-scope.md#updated-roadmap).
-2. **Perform MVP Technical Feasibility Gate** con la evidencia existente.
-3. Preparar y presentar/revisar la propuesta con la organización, si el Gate la sustenta.
-4. Obtener restricciones y reglas reales; ejecutar solo las validaciones condicionales pertinentes.
-5. Evaluar/implementar mitigaciones aplicables y validar sus efectos; calibrar arquitectura/despliegue cloud.
-6. Concretar y ejecutar/analizar S3/S4 con datos reales; realizar el Gate formal antes de decidir sobre piloto/producción.
+1. **Prepare Organization Proposal**, con el respaldo y los límites del Gate completado.
+2. Presentar/revisar con la organización; obtener restricciones y reglas reales.
+3. Ejecutar solo las validaciones condicionales pertinentes.
+4. Evaluar/validar mitigaciones aplicables; calibrar arquitectura/despliegue cloud.
+5. Concretar y ejecutar/analizar S3/S4 con datos reales; realizar el Gate formal antes de decidir sobre piloto/producción.
+
+La [secuencia posterior al Gate](stage-5/mvp-technical-feasibility-gate-result.md#post-gate-roadmap)
+conserva cada paso. Stage 5 permanece **En progreso**: la evaluación formal más
+amplia todavía requiere datos y decisiones organizacionales, tratamiento de
+riesgos aplicables y S3/S4. El cierre del Gate interno no declara completa esa evidencia.
 
 Las tasas ofrecidas de 40 / ≈ 61.5 solicitudes/s superaron la referencia C1 de
 ≈ 29.6 solicitudes exitosas/s. La degradación severa sin barrera sincronizada
@@ -249,8 +255,9 @@ Más simulación prepropuesta basada en supuestos tiene valor decreciente frente
 a validar esos supuestos con la organización. La evidencia representativa de
 fairness, integridad persistida y rendimiento C1 permite avanzar al Gate, llevando
 los riesgos conocidos de concurrencia, fragmentación, grupos grandes y orden.
-No se ha establecido un bloqueo técnico fundamental; esta posición no sustituye
-el veredicto del Gate ni afirma que toda utilización de capacidad esté validada.
+No se ha establecido un bloqueo técnico fundamental; el
+[resultado del Gate](stage-5/mvp-technical-feasibility-gate-result.md) sustenta la
+propuesta sin afirmar que toda utilización de capacidad esté validada.
 Las categorías de mitigación y sus límites se registran en la
 [decisión](stage-5/pre-proposal-validation-scope.md), sin seleccionar ni probar una solución.
 

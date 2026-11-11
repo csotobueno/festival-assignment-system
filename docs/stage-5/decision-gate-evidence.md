@@ -1,19 +1,22 @@
 # Stage 5 — Isolated Scenario Evidence for Decision Gate
 
 **Isolated evidence consolidated. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending / Next; formal stakeholder Decision Gate =
+**MVP Technical Feasibility Gate = Completed; formal stakeholder Decision Gate =
 Pending / future phase.** This assessment consolidates S1, S2,
 S5, S6, S7 and S8. It records architectural findings and review actions, without
 choosing Continue / Tune / Pivot / Stop or a mitigation architecture. S3/S4
 remain unresolved.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal roadmap: perform the internal Gate using existing evidence,
-then prepare/present the proposal if supported. The
+immediate roadmap: **Prepare Organization Proposal** under the
+[completed Gate outcome, Technically Feasible for Proposal](mvp-technical-feasibility-gate-result.md).
+The four-dimension decision does not change this consolidation's measurements
+or historical material-risk classifications. The
 [scope decision](pre-proposal-validation-scope.md) moves Plausible Festival Arrival
 Concurrency and Late Large Groups with Reconfiguration to conditional post-proposal
 validation. Current evidence is sufficient to proceed to review without mandatory
-execution of either experiment; no feasibility verdict is made here.
+execution of either experiment. The subsequent Gate result is recorded separately;
+this consolidation does not decide the formal stakeholder/production Gate.
 The [formal Decision Gate criteria](decision-gate-criteria.md) retain stakeholder
 decisions and S3/S4 objectives for the later phase if the organization is
 interested. Stakeholder validation remains necessary then, but does not precede
@@ -493,9 +496,9 @@ retain their classification and their unavailable inner causes remain a limit.
 
 This completes the high-rate stress experiment with a clear operational concern;
 it does not establish whether concurrency is material under plausible festival
-arrival rates or make the MVP Gate decision. Next: **Perform MVP Technical
-Feasibility Gate** using the existing evidence and known limits. Stage 5 remains
-In Progress; the MVP Gate is Pending / Next and the formal stakeholder Gate
+arrival rates. The [completed internal Gate](mvp-technical-feasibility-gate-result.md)
+uses these findings and limits; next task: **Prepare Organization Proposal**.
+Stage 5 remains In Progress; the MVP Gate is Completed and the formal stakeholder Gate
 remains Pending / future phase.
 
 ## Mitigation boundary and next review task
@@ -508,12 +511,13 @@ coordination or fragmentation-aware allocation. These are candidate areas only,
 with no preferred option, implementation or authorization to change policy.
 
 The [MVP roadmap](mvp-technical-feasibility-gate.md) now sets the immediate next
-task: **Perform MVP Technical Feasibility Gate**. Representative fairness,
+task: **Prepare Organization Proposal**, supported by the
+[completed internal Gate](mvp-technical-feasibility-gate-result.md). Representative fairness,
 persisted integrity and strong C1 reference performance support proceeding to
 review. Severe S8/high-rate stress degradation, fragmentation, large groups and
 order sensitivity remain material review inputs; they are not solved.
 Current evidence has not established a fundamental technical blocker, which
-does not decide the Gate outcome. Current evidence does not reveal a fundamental
+does not imply production readiness. Current evidence does not reveal a fundamental
 capacity-utilization blocker, but final allocation across reconfiguration cases
 and operational realism remain unvalidated.
 

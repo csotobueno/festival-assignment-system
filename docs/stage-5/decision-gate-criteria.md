@@ -1,6 +1,6 @@
 # Stage 5 — Decision Gate Acceptance Criteria and Remaining Evidence Plan
 
-**Stage 5 = In Progress. MVP Technical Feasibility Gate = Pending / Next.**
+**Stage 5 = In Progress. MVP Technical Feasibility Gate = Completed.**
 **Formal stakeholder Decision Gate = Pending / future phase. Criteria defined.**
 Stage 5 is not Evidence Complete and the formal Decision Gate is not ready.
 
@@ -11,8 +11,11 @@ stakeholder/production Decision Gate. All stakeholder, S3/S4, service-validation
 and mitigation prerequisites below apply to that later review, not to making
 the initial proposal. They remain necessary if the organization shows interest.
 The immediate pre-proposal roadmap and internal criteria are owned by the
-[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md): internal
-review of existing evidence next, then proposal if supported. The
+[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md):
+**Completed — Technically Feasible for Proposal**, as recorded in the
+[evidence-only assessment](mvp-technical-feasibility-gate-result.md). Next:
+**Prepare Organization Proposal**. This does not satisfy or waive any formal
+readiness requirement below. The
 [scope decision](pre-proposal-validation-scope.md) records that current evidence
 is sufficient to proceed to that review without mandatory execution of plausible
 festival concurrency or late-group reconfiguration. Both remain conditional
@@ -247,7 +250,9 @@ or decision, current evidence, one primary status and next action.
 This is the **post-proposal formal Gate plan**, conditional on organization
 interest. It does not precede the internal MVP Gate or initial proposal. The
 [immediate roadmap](mvp-technical-feasibility-gate.md#immediate-roadmap-and-gate-outcomes)
-now proceeds directly to the internal feasibility review of existing evidence.
+now proceeds to **Prepare Organization Proposal** after the completed internal
+review of existing evidence. The [Gate result](mvp-technical-feasibility-gate-result.md)
+retains all applicable T1/T5/T6/T8 requirements for later formal acceptance.
 Plausible Festival Arrival Concurrency and Late Large Groups with Reconfiguration
 remain unexecuted conditional post-proposal validations, as recorded in the
 [scope decision](pre-proposal-validation-scope.md#conditional-post-proposal-validations).
@@ -341,16 +346,17 @@ the overall Gate ready while S3/S4 and stakeholder decisions remain unresolved.
 | Variability / generalization | Decision Required | E3: claim limits accepted or specific evidence gap scoped. | Preserve S8 sufficiency; no automatic repetitions. | Conditional |
 
 **Formal Gate: not ready / future phase. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending / Next.**
+**MVP Technical Feasibility Gate = Completed — Technically Feasible for Proposal.**
 The [Open-loop High-rate Arrival Stress experiment](production-like-arrival-concurrency-analysis.md)
 is Completed with material findings and retained observer-audit limits. Plausible
 Festival Arrival Concurrency is Defined / Pending Execution; Late Large Groups
 with Reconfiguration is Pending Definition / Execution. Both are conditional
 post-proposal validations, not prerequisites for the internal Gate. The next task
-is **Perform MVP Technical Feasibility Gate**. It retains Fairness, Reliability,
+is **Prepare Organization Proposal**. The
+[completed assessment](mvp-technical-feasibility-gate-result.md) retains Fairness, Reliability,
 Performance and Capacity Utilization, considering known risks, plausible mitigation
 paths and missing organization data when distinguishing proposal blockers from
-later validation items. No new thresholds or verdict are introduced. After
+later validation items. No thresholds or formal production verdict are changed. After
 proposal and organization interest, capture
 stakeholder acceptance decisions and validate operating assumptions, then
 finalize S3/S4 contracts for the later formal review.
