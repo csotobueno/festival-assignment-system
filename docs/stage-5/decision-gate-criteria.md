@@ -1,6 +1,6 @@
 # Stage 5 — Decision Gate Acceptance Criteria and Remaining Evidence Plan
 
-**Stage 5 = In Progress. MVP Technical Feasibility Gate = Pending.**
+**Stage 5 = In Progress. MVP Technical Feasibility Gate = Pending / Next.**
 **Formal stakeholder Decision Gate = Pending / future phase. Criteria defined.**
 Stage 5 is not Evidence Complete and the formal Decision Gate is not ready.
 
@@ -11,9 +11,12 @@ stakeholder/production Decision Gate. All stakeholder, S3/S4, service-validation
 and mitigation prerequisites below apply to that later review, not to making
 the initial proposal. They remain necessary if the organization shows interest.
 The immediate pre-proposal roadmap and internal criteria are owned by the
-[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md): two remaining
-experiments (plausible festival concurrency and late-group reconfiguration),
-internal review, then proposal if technically supported. Technical
+[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md): internal
+review of existing evidence next, then proposal if supported. The
+[scope decision](pre-proposal-validation-scope.md) records that current evidence
+is sufficient to proceed to that review without mandatory execution of plausible
+festival concurrency or late-group reconfiguration. Both remain conditional
+post-proposal validations, dependent on actual operational data. Technical
 feasibility for proposal is distinct from production readiness and organization
 approval; this repositioning changes no measured evidence or material risk status.
 
@@ -28,7 +31,7 @@ the [bounded contract](plausible-festival-arrival-concurrency.md) defines 120× 
 compression and equal-average Plausible/PlausibleBurst schedules (peak 9.767 req/s).
 Four initial runs, up to six with conditional Seed 3001, remain unexecuted;
 boundedness/fidelity must be checked before interpreting conflict results.
-Additional evidence is required before the internal Gate. Four valid-run audits
+That conditional evidence is not a prerequisite for the internal Gate. Four valid-run audits
 are zero; the original stopped collection's three findings remain retained as an observer-audit evidence limit.
 No clean retrospective audit is claimed for that package. Read T6 with this new
 evidence; its applicable-envelope requirement still holds. T8 and readiness notes
@@ -244,10 +247,15 @@ or decision, current evidence, one primary status and next action.
 This is the **post-proposal formal Gate plan**, conditional on organization
 interest. It does not precede the internal MVP Gate or initial proposal. The
 [immediate roadmap](mvp-technical-feasibility-gate.md#immediate-roadmap-and-gate-outcomes)
-first requires implementation/execution of the defined Plausible Festival Arrival
-Concurrency contract, then definition/execution of Late Large Groups with Reconfiguration,
-followed by the internal feasibility review. Open-loop High-rate Arrival Stress
-is Completed and remains risk evidence.
+now proceeds directly to the internal feasibility review of existing evidence.
+Plausible Festival Arrival Concurrency and Late Large Groups with Reconfiguration
+remain unexecuted conditional post-proposal validations, as recorded in the
+[scope decision](pre-proposal-validation-scope.md#conditional-post-proposal-validations).
+Open-loop High-rate Arrival Stress is Completed and remains risk evidence.
+Confirm operational inputs, execute only relevant conditional validations,
+evaluate/implement applicable mitigations and validate effects, then calibrate
+production architecture/deployment before the S3/S4 and formal-review steps below.
+No solution or architecture is selected by this sequencing update.
 
 1. **Capture stakeholder acceptance decisions.** Resolve B1–B3/B8/B9, including
    thresholds or explicit qualitative boundaries, perceived fairness and
@@ -257,21 +265,29 @@ is Completed and remains risk evidence.
    venue/quality geometry, demand/continuity, eligibility, arrivals and concurrency.
    Review E3 limits and determine whether E4 is needed. Document which material
    risks apply; exclusion requires a supported operating boundary.
-3. **Finalize S3/S4 contracts.** Use E1/E2's existing framework dimensions to agree
+3. **Execute only relevant conditional validations.** Use actual arrival behavior
+   to determine the relevance of Plausible Festival Arrival Concurrency; use real
+   group-size, split acceptability and resubmission rules to determine the
+   relevance of Late Large Groups with Reconfiguration. Preserve their contracts
+   and evidence requirements; do not assume results or operational answers.
+4. **Evaluate and implement applicable mitigations, then validate effects.** Apply
+   M1/M2 and any consequent B2 requirement. Record validation or explicit justified
+   deferral; do not treat deferral as technical acceptance of the affected envelope.
+   This roadmap selects no mitigation or architecture.
+5. **Calibrate production architecture / cloud deployment.** Base later decisions
+   on validated operational constraints; no infrastructure is defined here.
+6. **Finalize S3/S4 contracts.** Use E1/E2's existing framework dimensions to agree
    exact credible inputs, reproducibility, observation/measurement boundaries,
    acceptance questions and interpretation of controlled degradation/survivability.
    Stakeholder/architectural definition precedes implementation/execution.
-4. **Execute and analyze S3 in a separate task.** Review combined interactions
+7. **Execute and analyze S3 in a separate task.** Review combined interactions
    against agreed criteria, retain evidence and update risk dispositions.
-5. **Execute and analyze S4 in a separate task.** Review S3 first to confirm the
+8. **Execute and analyze S4 in a separate task.** Review S3 first to confirm the
    still-credible worst-plausible envelope; identify boundary and degradation mode.
-6. **Evaluate mitigation candidates for applicable material risks.** Apply M1/M2
-   and any consequent B2 requirement. Record validation or explicit justified
-   deferral; do not treat deferral as technical acceptance of the affected envelope.
-7. **Re-test affected risks only where required.** Identify the exact changed claim,
+9. **Re-test affected risks only where required.** Identify the exact changed claim,
    architecture or unanswered question and validate it with targeted evidence,
    including correctness. Completed scenarios are not blanket rerun requirements.
-8. **Perform the formal Decision Gate.** Review the completed input pack, accepted
+10. **Perform the formal Decision Gate.** Review the completed input pack, accepted
    scope, unresolved/deferred risks and all readiness rows, then separately record
    Continue / Tune / Pivot / Stop and the justified next action.
 
@@ -325,12 +341,17 @@ the overall Gate ready while S3/S4 and stakeholder decisions remain unresolved.
 | Variability / generalization | Decision Required | E3: claim limits accepted or specific evidence gap scoped. | Preserve S8 sufficiency; no automatic repetitions. | Conditional |
 
 **Formal Gate: not ready / future phase. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending.**
+**MVP Technical Feasibility Gate = Pending / Next.**
 The [Open-loop High-rate Arrival Stress experiment](production-like-arrival-concurrency-analysis.md)
 is Completed with material findings and retained observer-audit limits. Plausible
-Festival Arrival Concurrency is Defined / Pending Execution. The next task is
-**Implement and Execute Plausible Festival Arrival Concurrency Experiment**, then
-late-group reconfiguration definition/execution and the internal Gate. After proposal and organization interest, capture
+Festival Arrival Concurrency is Defined / Pending Execution; Late Large Groups
+with Reconfiguration is Pending Definition / Execution. Both are conditional
+post-proposal validations, not prerequisites for the internal Gate. The next task
+is **Perform MVP Technical Feasibility Gate**. It retains Fairness, Reliability,
+Performance and Capacity Utilization, considering known risks, plausible mitigation
+paths and missing organization data when distinguishing proposal blockers from
+later validation items. No new thresholds or verdict are introduced. After
+proposal and organization interest, capture
 stakeholder acceptance decisions and validate operating assumptions, then
 finalize S3/S4 contracts for the later formal review.
 No S3/S4 execution, completed-scenario rerun, implementation change, mitigation

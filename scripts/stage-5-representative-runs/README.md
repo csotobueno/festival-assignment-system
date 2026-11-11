@@ -367,9 +367,12 @@ mean of ≈ 29.6 successful req/s. The [corrected interpretation](../../docs/sta
 preserves every measurement and the stopped collection/remediation history.
 The commands below document the original execution protocol; no new Moderate,
 Burst-like, Seed 3001 or C1/C4/C16 run is required for this correction. Next:
-**Implement and Execute Plausible Festival Arrival Concurrency Experiment** under
-the [new bounded contract](../../docs/stage-5/plausible-festival-arrival-concurrency.md),
-before late-group reconfiguration. That contract is defined only; the commands
+**Perform MVP Technical Feasibility Gate** using existing evidence. The
+[scope decision](../../docs/stage-5/pre-proposal-validation-scope.md) moves Plausible
+Festival Arrival Concurrency and Late Large Groups with Reconfiguration to
+conditional post-proposal validations, dependent on actual operational inputs.
+The [bounded contract](../../docs/stage-5/plausible-festival-arrival-concurrency.md)
+remains defined, unimplemented/unexecuted and technically useful; the commands
 below remain the historical stress harness, not a way to execute the new patterns.
 
 The [arrival contract](../../docs/stage-5/production-like-arrival-concurrency.md)

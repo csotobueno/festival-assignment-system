@@ -1,9 +1,18 @@
 # Stage 5 — Plausible Festival Arrival Concurrency Experiment
 
-**Defined / Pending Execution. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending.** This contract defines future work;
+**Defined / Pending Execution. Conditional Post-Proposal Validation. Stage 5 = In Progress.**
+**MVP Technical Feasibility Gate = Pending / Next.** This contract defines future work;
 no implementation or experimental execution is included in this documentation task.
 Open-loop High-rate Arrival Stress remains Completed with all evidence retained.
+
+**Roadmap update — 2026-11-11:** the [pre-proposal scope decision](pre-proposal-validation-scope.md)
+moves this experiment to conditional post-proposal validation if real request-arrival
+behavior indicates meaningful concurrency risk. Current evidence is sufficient
+to proceed to the internal Gate without this experiment as a mandatory prerequisite.
+It remains unimplemented/unexecuted, technically useful and not obsolete. Its
+schedules, evidence requirements and planned matrix below are preserved; confirm
+their relevance against actual operational inputs before separately authorizing
+execution. Plausible festival concurrency has not been validated.
 
 ## Purpose and authority
 
@@ -11,9 +20,12 @@ Open-loop High-rate Arrival Stress remains Completed with all evidence retained.
 > concurrency conflicts when average offered load remains comfortably below the
 > reference service rate?
 
-This is the remaining bounded concurrency validation before Late Large Groups with
-Reconfiguration. It supports only concurrency, reliability and performance review
-at the [internal MVP Gate](mvp-technical-feasibility-gate.md), not a Gate verdict.
+This is a conditional bounded concurrency validation after proposal and
+organization review, alongside conditional Late Large Groups with Reconfiguration.
+It can inform concurrency, reliability and performance review; it is not a
+prerequisite for the [internal MVP Gate](mvp-technical-feasibility-gate.md) or a
+Gate verdict. Real arrival timing, gradual/simultaneous opening and FestivalDay
+request windows determine its operational relevance; no answers are assumed.
 The [S2 contract](representative-scenarios.md#s2--expected-baseline) owns business
 inputs; the [metrics framework](metrics-and-evaluation-criteria.md) owns populations
 and denominators; [simulation architecture](simulation-architecture.md) owns
@@ -265,13 +277,17 @@ do not isolate synchronization as the sole cause or establish production behavio
 
 ## Status, next task and scope
 
-Sequence: Stage 5 realignment → S8 synchronized stress → open-loop high-rate stress
-→ Plausible Festival Arrival Concurrency → Late Large Groups with Reconfiguration
-→ MVP Technical Feasibility Gate. The new contract is **Defined / Pending Execution**;
-implementation and evidence collection remain future work. Stage 5 is **In Progress**;
-the MVP Gate is **Pending**, with no feasibility decision or production claim.
+The earlier roadmap placed this experiment and Late Large Groups with
+Reconfiguration before the internal Gate. The
+[2026-11-11 decision](pre-proposal-validation-scope.md#updated-roadmap) supersedes
+that sequence: internal Gate → proposal if supported → organization review/data
+→ relevant conditional validations → applicable mitigation evaluation/validation
+and architecture calibration → data-informed S3/S4 → formal stakeholder/production
+Gate → pilot/production decision. This contract remains **Defined / Pending Execution**;
+implementation and evidence collection are conditional future work. Stage 5 is
+**In Progress**; the MVP Gate is **Pending / Next**, with no feasibility verdict.
 
-Next task: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**.
+Next task: **Perform MVP Technical Feasibility Gate** using existing evidence.
 This definition changes no code, S2 business inputs, fairness, AssignmentEngine,
 Application or PostgreSQL behavior. No retry, Semaphore, locks, queue, serialization,
 advisory/pessimistic locking, inventory partitioning or selection-dispersion logic

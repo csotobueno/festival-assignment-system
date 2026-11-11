@@ -1,15 +1,19 @@
 # Stage 5 — Isolated Scenario Evidence for Decision Gate
 
 **Isolated evidence consolidated. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending; formal stakeholder Decision Gate =
+**MVP Technical Feasibility Gate = Pending / Next; formal stakeholder Decision Gate =
 Pending / future phase.** This assessment consolidates S1, S2,
 S5, S6, S7 and S8. It records architectural findings and review actions, without
 choosing Continue / Tune / Pivot / Stop or a mitigation architecture. S3/S4
 remain unresolved.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal roadmap: implement/execute the defined Plausible Festival Arrival
-Concurrency, then Late Large Groups with Reconfiguration, then the internal Gate and proposal if supported.
+immediate pre-proposal roadmap: perform the internal Gate using existing evidence,
+then prepare/present the proposal if supported. The
+[scope decision](pre-proposal-validation-scope.md) moves Plausible Festival Arrival
+Concurrency and Late Large Groups with Reconfiguration to conditional post-proposal
+validation. Current evidence is sufficient to proceed to review without mandatory
+execution of either experiment; no feasibility verdict is made here.
 The [formal Decision Gate criteria](decision-gate-criteria.md) retain stakeholder
 decisions and S3/S4 objectives for the later phase if the organization is
 interested. Stakeholder validation remains necessary then, but does not precede
@@ -441,7 +445,7 @@ cannot make. Action labels are review dispositions, not a final Gate verdict.
 | Concurrent variability / extrapolation | One run per Seed/configuration; no multi-node/production traffic evidence | Limited | Exact interleaving variability remains unknown; does not reverse S8's scoped evidence decision | Unresolved Uncertainty | Monitor limits; Additional Evidence Required only for a newly justified variability/generalization question, no automatic repeats |
 | Pending S3/S4 | No combined/stress results or detailed validated parameters | Pending | Interaction effects and practical boundary unresolved | Unresolved Uncertainty | Additional Evidence Required after separately scoped design |
 
-## Pre-proposal arrival-concurrency supplement
+## Arrival-concurrency supplement and conditional validation
 
 **Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival
 Concurrency = Defined / Pending Execution.** The high-rate experiment was initially
@@ -460,6 +464,9 @@ The [bounded contract](plausible-festival-arrival-concurrency.md) is now defined
 of three at 0/10/20 ms with equal bucket averages. Peak offered load is 9.767 req/s;
 collection must verify absence of sustained accumulation. Four initial runs and
 at most two pattern-specific conditional Seed 3001 runs are planned, not executed.
+The entire experiment is now a conditional post-proposal validation, triggered
+if actual arrival behavior indicates meaningful concurrency risk. Neither it
+nor pending late-group reconfiguration is an immediate internal-Gate blocker.
 
 The [high-rate arrival analysis](production-like-arrival-concurrency-analysis.md)
 preserves exact S2 inputs with 25 ms Moderate and deterministic 5/50 ms Burst-like
@@ -486,10 +493,10 @@ retain their classification and their unavailable inner causes remain a limit.
 
 This completes the high-rate stress experiment with a clear operational concern;
 it does not establish whether concurrency is material under plausible festival
-arrival rates or make the MVP Gate decision. Next: **Implement and Execute Plausible
-Festival Arrival Concurrency Experiment** under the defined contract, before
-late-group reconfiguration. Stage 5 remains In Progress; the MVP Gate and future
-formal stakeholder Gate remain Pending.
+arrival rates or make the MVP Gate decision. Next: **Perform MVP Technical
+Feasibility Gate** using the existing evidence and known limits. Stage 5 remains
+In Progress; the MVP Gate is Pending / Next and the formal stakeholder Gate
+remains Pending / future phase.
 
 ## Mitigation boundary and next review task
 
@@ -501,10 +508,22 @@ coordination or fragmentation-aware allocation. These are candidate areas only,
 with no preferred option, implementation or authorization to change policy.
 
 The [MVP roadmap](mvp-technical-feasibility-gate.md) now sets the immediate next
-task: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**,
-followed by definition/execution of Late Large Groups with
-Reconfiguration and the internal feasibility Gate. High-rate stress is completed;
-plausible festival concurrency is Defined / Pending Execution. If a proposal attracts organization interest, the
+task: **Perform MVP Technical Feasibility Gate**. Representative fairness,
+persisted integrity and strong C1 reference performance support proceeding to
+review. Severe S8/high-rate stress degradation, fragmentation, large groups and
+order sensitivity remain material review inputs; they are not solved.
+Current evidence has not established a fundamental technical blocker, which
+does not decide the Gate outcome. Current evidence does not reveal a fundamental
+capacity-utilization blocker, but final allocation across reconfiguration cases
+and operational realism remain unvalidated.
+
+High-rate stress is completed; plausible festival concurrency is Defined /
+Pending Execution; Late Large Groups with Reconfiguration is Pending Definition /
+Execution. Both are conditional post-proposal validations under the
+[scope decision](pre-proposal-validation-scope.md). Their value depends on actual
+arrivals, opening rules, group sizes/splitting/resubmission and inventory rules;
+further assumption-driven pre-proposal simulation has diminishing value.
+If a proposal attracts organization interest, the
 [formal criteria and evidence plan](decision-gate-criteria.md) govern stakeholder
 validation, data-informed S3/S4 and applicable mitigation evaluation before the
 eventual formal Continue / Tune / Pivot / Stop review.

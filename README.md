@@ -19,7 +19,7 @@ records the verified exit criteria and validation evidence, including seven
 deterministic integrated acceptance scenarios. The former five-day presimulation
 requirement is explicitly deferred to Stage 5 to avoid duplicating its evaluation.
 
-**Stage 5: In Progress. MVP Technical Feasibility Gate: Pending.**
+**Stage 5: In Progress. MVP Technical Feasibility Gate: Pending / Next.**
 **Formal stakeholder Decision Gate: Pending / future phase.**
 
 Stage 5 is evaluating whether the concept is technically credible enough to
@@ -39,9 +39,14 @@ S1/S2/S5/S6/S7/S8 isolated evidence is now
 [consolidated for Decision Gate review](docs/stage-5/decision-gate-evidence.md).
 The [formal Decision Gate criteria](docs/stage-5/decision-gate-criteria.md)
 retain preparatory stakeholder decisions and S3/S4 evidence objectives for that
-later phase. S7 fragmentation and S8 synchronized-contention risks remain visible;
-the pre-proposal roadmap still requires plausible festival arrival concurrency
-and late large groups with reconfiguration. The original
+later phase. The [pre-proposal scope decision](docs/stage-5/pre-proposal-validation-scope.md)
+records that current evidence is sufficient to proceed to the internal Gate
+without mandatory execution of Plausible Festival Arrival Concurrency or Late
+Large Groups with Reconfiguration. Both become conditional post-proposal
+validations, dependent on real operational information. Representative fairness,
+persisted integrity and strong C1 reference performance support proceeding to
+review; concurrency, fragmentation, large groups and order sensitivity remain
+known risks. No feasibility verdict is made. The original
 [arrival-concurrency contract](docs/stage-5/production-like-arrival-concurrency.md)
 was intended as production-like; post-run analysis identified sustained overload.
 Its evidence is now **Open-loop High-rate Arrival Stress — Completed**, with [four valid initial-matrix results](docs/stage-5/production-like-arrival-concurrency-analysis.md)
@@ -56,7 +61,11 @@ averages approximately 293 requests/hour (0.081 req/s), without excluding short
 bursts. The [new bounded contract](docs/stage-5/plausible-festival-arrival-concurrency.md)
 defines 120× compression, evenly spaced Plausible arrivals and three-request
 PlausibleBurst clusters at the same bucket averages (peak 9.767 req/s). It is
-not implemented or executed. Stage 5 is not Evidence Complete.
+not implemented or executed; its role is **Conditional Post-Proposal Validation**.
+Late Large Groups with Reconfiguration is **Pending Definition / Execution** in
+that same conditional phase. Further assumption-driven simulation has diminishing
+pre-proposal value compared with obtaining actual arrival, group, inventory and
+service rules from the organization. Stage 5 is not Evidence Complete.
 No final Gate verdict or mitigation is selected.
 The [S1/S2 contracts](docs/stage-5/representative-scenarios.md) now have
 deterministic manifest generation for exact daily populations, continuity,
@@ -77,22 +86,23 @@ the complete operational system.
 
 ## Project status
 
-**Stage 4 Completed. Stage 5: In Progress. MVP Technical Feasibility Gate: Pending.**
+**Stage 4 Completed. Stage 5: In Progress. MVP Technical Feasibility Gate: Pending / Next.**
 **Formal stakeholder Decision Gate: Pending / future phase.**
 
 Immediate roadmap:
 
-1. Reframe arrival-concurrency evidence — completed as Open-loop High-rate Arrival Stress.
-2. Define Plausible Festival Arrival Concurrency — completed; execution pending.
-3. **Implement and Execute Plausible Festival Arrival Concurrency Experiment.**
-4. Define/execute Late Large Groups with Reconfiguration separately.
-5. Perform the MVP Technical Feasibility Gate.
-6. If supported, prepare the proposal to the organization.
+1. Update pre-proposal validation scope — completed; see the [decision and full roadmap](docs/stage-5/pre-proposal-validation-scope.md#updated-roadmap).
+2. **Perform MVP Technical Feasibility Gate** using existing evidence.
+3. Prepare and present/review the proposal with the organization, if supported by the Gate.
+4. Obtain real operational constraints; execute only relevant conditional validations.
+5. Evaluate/implement applicable mitigations and validate effects; calibrate production architecture/cloud deployment.
+6. Finalize and execute/analyze S3/S4 with real inputs; perform the formal stakeholder/production Gate before a pilot/production decision.
 
-If the organization is interested, validate real operating assumptions and
-calibrate policies, finalize and execute/analyze S3/S4, evaluate applicable
-mitigations, re-test material risks and perform the formal stakeholder Decision
-Gate before a pilot/production decision.
+The later phase depends on organization interest and actual operational data.
+The future proposal should disclose demonstrated capabilities, current evidence,
+known risks, interpretation limits, open questions and next validations.
+Technical feasibility for proposal ≠ production readiness ≠ organization approval.
+No SLA, final architecture or resolved concurrency/fragmentation is claimed.
 
 ## Documentation
 
@@ -109,7 +119,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 * [Stage 4 Completion](docs/stage-4/completion.md)
 * [Stage 5 — Metrics and Evaluation Criteria](docs/stage-5/metrics-and-evaluation-criteria.md)
 * [Stage 5 — MVP Technical Feasibility Gate and Pre-Proposal Roadmap](docs/stage-5/mvp-technical-feasibility-gate.md)
-* [Stage 5 — Plausible Festival Arrival Concurrency (Defined / Pending Execution)](docs/stage-5/plausible-festival-arrival-concurrency.md)
+* [Stage 5 — Pre-Proposal Validation Scope Decision](docs/stage-5/pre-proposal-validation-scope.md)
+* [Stage 5 — Plausible Festival Arrival Concurrency (Defined / Pending Execution; conditional post-proposal)](docs/stage-5/plausible-festival-arrival-concurrency.md)
 * [Stage 5 — Original Arrival Contract (reclassified as completed high-rate stress)](docs/stage-5/production-like-arrival-concurrency.md)
 * [Stage 5 — Open-loop High-rate Arrival Stress Results and Interpretation](docs/stage-5/production-like-arrival-concurrency-analysis.md)
 * [Stage 5 — Consolidated Isolated Evidence for Decision Gate (preparation in progress)](docs/stage-5/decision-gate-evidence.md)
