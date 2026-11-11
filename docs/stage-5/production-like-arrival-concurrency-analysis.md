@@ -2,7 +2,7 @@
 
 Execution/analysis: **2026-11-09 (America/Lima)**. Runtime timestamps/directory labels use UTC; simulated 2026-08-15–19 dates remain fixtures.
 
-**Open-loop High-rate Arrival Stress = Completed: 4 valid initial-matrix runs; 5 actual official executions including one retained stopped collection. Plausible Festival Arrival Concurrency = Pending. No Seed 3001 or C1/C4/C16 reference rerun. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.**
+**Open-loop High-rate Arrival Stress = Completed: 4 valid initial-matrix runs; 5 actual official executions including one retained stopped collection. Plausible Festival Arrival Concurrency = Defined / Pending Execution. No Seed 3001 or C1/C4/C16 reference rerun. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.**
 
 ## Result and interpretation
 
@@ -162,9 +162,21 @@ Solution and harness builds passed with zero warnings/errors. The full solution 
 
 Changes are confined to simulation scheduling/evidence, task-specific execution/auditing/offline analysis, tests and documentation. No production Domain/Application/Infrastructure/API, AssignmentEngine, fairness/quality/eligibility policy, S2 input, retry, locking, queue/serialization mitigation, late-group reconfiguration, S3/S4, stakeholder contact or final MVP/production decision changed or occurred.
 
-**Next task: Define Plausible Festival Arrival Concurrency Experiment.** Model plausible temporal dispersion from the business workload rather than deriving arrival rates primarily from API latency. Distinguish OfferedRequestRate, ActiveConcurrency and ConflictRate; avoid sustained offered load that automatically accumulates backlog without a small bound unless overload is the explicit objective. Final intervals, compression factors and run counts remain undefined.
+**Historical next task at interpretation correction: Define Plausible Festival Arrival Concurrency Experiment.** Model plausible temporal dispersion from the business workload rather than deriving arrival rates primarily from API latency. Distinguish OfferedRequestRate, ActiveConcurrency and ConflictRate; avoid sustained offered load that automatically accumulates backlog without a small bound unless overload is the explicit objective. Final intervals, compression factors and run counts remain undefined.
 
-Roadmap: reframe arrival-concurrency evidence (completed) → define Plausible Festival Arrival Concurrency → execute bounded Lean concurrency validation → define/execute Late Large Groups with Reconfiguration → MVP Technical Feasibility Gate. Stage 5 remains In Progress; the MVP Technical Feasibility Gate remains Pending. The observed stress limitations and original observer-audit evidence gap remain Gate inputs, while plausible festival concurrency is Pending.
+Current roadmap: reframe arrival-concurrency evidence (completed) → define Plausible Festival Arrival Concurrency (completed) → implement/execute bounded Lean concurrency validation → define/execute Late Large Groups with Reconfiguration → MVP Technical Feasibility Gate. Stage 5 remains In Progress; the MVP Technical Feasibility Gate remains Pending. The observed stress limitations and original observer-audit evidence gap remain Gate inputs, while plausible festival concurrency is Defined / Pending Execution.
+
+### Subsequent contract definition — 2026-11-10
+
+[Plausible Festival Arrival Concurrency](plausible-festival-arrival-concurrency.md)
+is now **Defined / Pending Execution**: 120× S2 bucket compression, uniform
+Plausible arrivals and three-request PlausibleBurst at 0/10/20 ms with the same
+bucket averages (peak 9.767 req/s). Four initial runs, maximum six with conditional
+Seed 3001, are defined but not executed. The preceding next-task/undefined-parameter
+note and selected JSON interpretation record describe the earlier correction;
+the new contract owns current parameters/status. All stress measurements and
+remediation history remain unchanged. Current next task: **Implement and Execute
+Plausible Festival Arrival Concurrency Experiment**, before late-group reconfiguration.
 
 ## Interpretation-correction validation — 2026-11-10
 

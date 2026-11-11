@@ -8,7 +8,7 @@ choosing Continue / Tune / Pivot / Stop or a mitigation architecture. S3/S4
 remain unresolved.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal roadmap: define and validate Plausible Festival Arrival
+immediate pre-proposal roadmap: implement/execute the defined Plausible Festival Arrival
 Concurrency, then Late Large Groups with Reconfiguration, then the internal Gate and proposal if supported.
 The [formal Decision Gate criteria](decision-gate-criteria.md) retain stakeholder
 decisions and S3/S4 objectives for the later phase if the organization is
@@ -444,7 +444,8 @@ cannot make. Action labels are review dispositions, not a final Gate verdict.
 ## Pre-proposal arrival-concurrency supplement
 
 **Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival
-Concurrency = Pending.** The experiment was initially defined as production-like;
+Concurrency = Defined / Pending Execution.** The high-rate experiment was initially
+defined as production-like;
 post-run analysis identified sustained overload. Moderate offers 40 req/s and
 Burst-like ≈ 61.5 req/s, above the retained [S8](s8-concurrency-analysis.md#across-seed-aggregate-comparison)
 C1 mean of 29.593 successful req/s. The most direct interpretation is unfinished
@@ -454,6 +455,11 @@ drains daily. S2's busiest hourly bucket averages approximately 293 requests/hou
 (0.081 req/s); that average does not rule out short bursts. The observed conflicts,
 technical failures, latencies and hundreds/thousands of active requests are not
 production predictions. Plausible festival concurrency still requires evidence.
+The [bounded contract](plausible-festival-arrival-concurrency.md) is now defined:
+120× S2 bucket compression, Plausible uniform spacing and PlausibleBurst groups
+of three at 0/10/20 ms with equal bucket averages. Peak offered load is 9.767 req/s;
+collection must verify absence of sustained accumulation. Four initial runs and
+at most two pattern-specific conditional Seed 3001 runs are planned, not executed.
 
 The [high-rate arrival analysis](production-like-arrival-concurrency-analysis.md)
 preserves exact S2 inputs with 25 ms Moderate and deterministic 5/50 ms Burst-like
@@ -480,8 +486,8 @@ retain their classification and their unavailable inner causes remain a limit.
 
 This completes the high-rate stress experiment with a clear operational concern;
 it does not establish whether concurrency is material under plausible festival
-arrival rates or make the MVP Gate decision. Next: **Define Plausible Festival
-Arrival Concurrency Experiment**, then execute bounded Lean validation before
+arrival rates or make the MVP Gate decision. Next: **Implement and Execute Plausible
+Festival Arrival Concurrency Experiment** under the defined contract, before
 late-group reconfiguration. Stage 5 remains In Progress; the MVP Gate and future
 formal stakeholder Gate remain Pending.
 
@@ -495,10 +501,10 @@ coordination or fragmentation-aware allocation. These are candidate areas only,
 with no preferred option, implementation or authorization to change policy.
 
 The [MVP roadmap](mvp-technical-feasibility-gate.md) now sets the immediate next
-task: **Define Plausible Festival Arrival Concurrency Experiment**, followed by
-bounded Lean validation, definition/execution of Late Large Groups with
+task: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**,
+followed by definition/execution of Late Large Groups with
 Reconfiguration and the internal feasibility Gate. High-rate stress is completed;
-plausible festival concurrency is Pending. If a proposal attracts organization interest, the
+plausible festival concurrency is Defined / Pending Execution. If a proposal attracts organization interest, the
 [formal criteria and evidence plan](decision-gate-criteria.md) govern stakeholder
 validation, data-informed S3/S4 and applicable mitigation evaluation before the
 eventual formal Continue / Tune / Pivot / Stop review.

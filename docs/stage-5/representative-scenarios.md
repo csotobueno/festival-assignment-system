@@ -40,7 +40,7 @@ analysis are [completed](s2-s5-order-sensitivity-results.md). S1/S2 inputs below
 are unchanged. Completed S1/S2/S5/S6/S7/S8 findings are
 [consolidated for Decision Gate review](decision-gate-evidence.md).
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) defines the
-immediate pre-proposal roadmap: define and validate Plausible Festival Arrival
+immediate pre-proposal roadmap: implement/execute the defined Plausible Festival Arrival
 Concurrency, then Late Large Groups with Reconfiguration and the internal Gate. The
 [formal criteria](decision-gate-criteria.md) preserve stakeholder validation and
 S3/S4 objectives for the later phase if the organization shows interest.
@@ -54,7 +54,7 @@ findings remain explicit. Originally intended as production-like, its schedules
 were identified post-run as sustained overload: 40 / ≈ 61.5 offered req/s exceed
 C1's retained mean of ≈ 29.6 successful req/s. Observed conflicts, failures,
 latencies and active concurrency are not production predictions. **Plausible
-Festival Arrival Concurrency = Pending**. S2 business inputs below are unchanged.
+Festival Arrival Concurrency = Defined / Pending Execution**. S2 business inputs below are unchanged.
 
 ## Shared Baseline
 
@@ -219,7 +219,13 @@ high-rate stress, not plausible festival traffic. Future validation must model
 plausible temporal dispersion from the business workload rather than deriving
 arrival rates primarily from API latency, while keeping OfferedRequestRate,
 ActiveConcurrency and ConflictRate distinct. No final interval, compression
-factor or run count is defined here; the business assumptions remain provisional.
+factor or run count is defined by S2 itself; the business assumptions remain provisional.
+The separate [Plausible Festival Arrival Concurrency contract](plausible-festival-arrival-concurrency.md)
+now defines 120× compression and both schedules without changing these business
+inputs: peak 293 requests/30 seconds = 9.767 req/s, uniform Plausible spacing or
+three-request PlausibleBurst at 0/10/20 ms with the same bucket average. Status:
+**Defined / Pending Execution**; four initial runs, maximum six with conditional
+Seed 3001. Its warning checks distinguish bounded overlap from accidental overload.
 
 ## Shared Quality Capacity and Physical Topology
 
@@ -490,10 +496,11 @@ post-proposal phase. The two pre-proposal experiments have separate purposes
 under the [MVP Gate](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments).
 The [arrival-concurrency contract](production-like-arrival-concurrency.md) now
 retains the original timing contract separately from unchanged S2 business
-timestamps; its results are completed high-rate stress evidence. Next: **Define
-Plausible Festival Arrival Concurrency Experiment**, then bounded Lean validation,
-before late-group reconfiguration definition/execution. Both future contracts
-remain undefined in detail.
+timestamps; its results are completed high-rate stress evidence. The new
+[bounded contract](plausible-festival-arrival-concurrency.md) is Defined / Pending Execution.
+Next: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**,
+before late-group reconfiguration definition/execution. The late-group contract
+remains undefined in detail.
 
 ## Assumptions Requiring Stakeholder Validation
 
@@ -537,7 +544,7 @@ gate, isolated concurrent PostgreSQL execution and minimal compatible evidence.
 Small tests protect scheduling, persistence and export. The initial six-run
 execution/analysis and the three-run C1 follow-up are completed under the linked
 official report. Open-loop high-rate arrival stress is implemented, executed and
-analyzed under its original contract; plausible festival concurrency is Pending.
+analyzed under its original contract; plausible festival concurrency is Defined / Pending Execution.
 Late-group reconfiguration remains undefined in detail
 and unexecuted. No S3/S4 implementation or detailed design,
 Decision Gate logic/thresholds, replay loading, generic comparison engine or

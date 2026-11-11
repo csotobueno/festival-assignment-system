@@ -1,6 +1,6 @@
 # Stage 5 — Production-like Arrival Concurrency Experiment
 
-**Original contract name retained for traceability. Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Pending. Stage 5 = In Progress.**
+**Original contract name retained for traceability. Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Defined / Pending Execution. Stage 5 = In Progress.**
 **MVP Technical Feasibility Gate = Pending.** The
 [official analysis](production-like-arrival-concurrency-analysis.md) records four
 valid initial-matrix runs and five actual executions including a documented
@@ -243,12 +243,12 @@ threshold, mitigation, SLA or MVP feasibility verdict is introduced.
 ## Roadmap, status and scope
 
 Sequence: reframe arrival-concurrency evidence (completed) → define Plausible
-Festival Arrival Concurrency → execute bounded Lean concurrency validation →
+Festival Arrival Concurrency (completed) → implement/execute bounded Lean validation →
 define/execute Late Large Groups with Reconfiguration → MVP Technical Feasibility
 Gate → proposal if supported. S3/S4, real traffic calibration and the formal
 stakeholder Gate remain in the later post-proposal phase.
 
-**Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Pending.** Four valid initial-matrix
+**Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Defined / Pending Execution.** Four valid initial-matrix
 runs were analyzed; the fifth actual execution is the retained stopped collection.
 Its observer-audit replacement was documented before execution and did not alter
 business execution, timing, conflict semantics or original outcomes. No conditional
@@ -258,9 +258,10 @@ away; no clean retrospective request-state audit is claimed for that package.
 AssignmentEngine/fairness change, retry, locking, serialization/queue mitigation,
 reconfiguration, S3/S4 execution or final feasibility decision occurred.
 
-Next task: **Define Plausible Festival Arrival Concurrency Experiment**.
-Model plausible temporal dispersion from the business workload rather than deriving
-arrival rates primarily from API latency. Distinguish OfferedRequestRate,
-ActiveConcurrency and ConflictRate; avoid sustained offered load that automatically
-accumulates backlog without a small bound unless overload is the explicit objective.
-Final intervals, compression factors and run counts are not defined here.
+The successor [Plausible Festival Arrival Concurrency contract](plausible-festival-arrival-concurrency.md)
+is **Defined / Pending Execution**: 120× compressed S2 buckets, Plausible uniform
+spacing and PlausibleBurst triples at 0/10/20 ms, equal average bucket rates and
+peak 9.767 req/s. It defines four initial runs, maximum six with conditional Seed
+3001, and explicit warnings for sustained accumulation. This does not alter the
+original stress schedules, measurements or remediation history above.
+Next task: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**.

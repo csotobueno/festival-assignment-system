@@ -150,8 +150,9 @@ Secuencia inmediata:
    [resultados y límites de auditoría](stage-5/production-like-arrival-concurrency-analysis.md).
    El objetivo original era Production-like Arrival Concurrency; el análisis
    posterior identificó sobrecarga sostenida. Se conserva toda la evidencia.
-2. **Define Plausible Festival Arrival Concurrency Experiment** — pendiente.
-3. Ejecutar una validación Lean acotada de concurrencia bajo ese contrato separado.
+2. Plausible Festival Arrival Concurrency — **Defined / Pending Execution**;
+   véase el [contrato](stage-5/plausible-festival-arrival-concurrency.md).
+3. **Implement and Execute Plausible Festival Arrival Concurrency Experiment**.
 4. Definir/ejecutar Late Large Groups with Reconfiguration por separado.
 5. Realizar el MVP Technical Feasibility Gate.
 6. Preparar la propuesta si la evidencia técnica la sustenta.
@@ -159,9 +160,13 @@ Secuencia inmediata:
 Las tasas ofrecidas de 40 / ≈ 61.5 solicitudes/s superaron la referencia C1 de
 ≈ 29.6 solicitudes exitosas/s. La degradación severa sin barrera sincronizada
 sigue siendo un hallazgo válido de estrés; no predice condiciones del festival.
-La concurrencia bajo llegadas plausibles sigue pendiente. Su diseño debe partir
-de la dispersión temporal del negocio, no principalmente de la latencia de API;
-no se fijan intervalos, compresión ni cantidad de ejecuciones aquí.
+La evidencia de concurrencia bajo llegadas plausibles sigue pendiente. El contrato
+ya definido conserva las franjas S2 con compresión 120×: Plausible distribuye
+solicitudes uniformemente y PlausibleBurst usa grupos de tres a 0/10/20 ms sin
+cambiar la tasa media por franja. El pico de 293 solicitudes en 30 segundos
+(9.767/s) queda por debajo de la referencia C1. Se prevén cuatro ejecuciones
+iniciales (Seeds 1001/2001 por patrón), hasta seis con Seed 3001 condicional.
+No se implementa ni ejecuta aquí; siguen siendo hipótesis exploratorias.
 
 Si la organización muestra interés, obtener datos operativos reales y validar/
 calibrar demanda, llegadas, recinto, reservas/ocupación previa, grupos,

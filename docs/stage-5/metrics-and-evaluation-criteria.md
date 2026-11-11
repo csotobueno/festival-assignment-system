@@ -6,7 +6,7 @@ Stage 5 evaluates whether the `v0.3.0 — Fair Assignment Engine` baseline is su
 
 The immediate decision is the internal
 [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md), after
-definition/bounded Lean validation of Plausible Festival Arrival Concurrency
+implementation/execution of the defined Plausible Festival Arrival Concurrency contract
 and then Late Large Groups with Reconfiguration.
 Technical feasibility for proposal is distinct from production readiness and
 organizational approval. Stakeholder calibration, real operating-data validation,
@@ -20,7 +20,16 @@ and [analyzed](production-like-arrival-concurrency-analysis.md), reusing these
 denominators and latency bounds. Post-run analysis identified sustained overload:
 40 / ≈ 61.5 offered req/s exceed C1's retained mean of ≈ 29.6 successful req/s.
 Conflicts, technical failures, latencies and active concurrency are not production
-predictions. **Plausible Festival Arrival Concurrency = Pending**.
+predictions. **Plausible Festival Arrival Concurrency = Defined / Pending Execution**.
+The [new bounded contract](plausible-festival-arrival-concurrency.md) defines
+120× S2 bucket compression and Plausible/PlausibleBurst schedules with identical
+bucket average rates; its peak is 9.767 req/s. It requires the same accounting,
+integrity, latency, delivery and participation metrics, plus reconstructed overlap
+and lag progression to assess boundedness before interpreting conflicts. Completion
+and lag derive from existing timing fields. Its scheduled bucket rate uses full
+bucket duration; common-interval useful throughput retains the existing boundary
+and includes pacing gaps, so it is not an unpaced capacity benchmark. No new
+production threshold or calculation is implemented.
 KnownConcurrencyConflictRate aliases ConcurrencyConflictRate;
 UnexpectedTechnicalFailureRate aliases TechnicalErrorRate. It requires scheduled
 arrival offsets plus existing actual processing offsets/durations to reconstruct
@@ -2361,9 +2370,9 @@ results, populations, evidence strength and architectural implications kept
 separate. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending;
 formal stakeholder Decision Gate = Pending / future phase. Open-loop High-rate
 Arrival Stress is Completed; its operational findings and observer-audit limitations
-remain Gate inputs. Plausible Festival Arrival Concurrency is Pending. Immediate
-work is **Define Plausible Festival Arrival Concurrency Experiment**, then bounded
-Lean validation, late-group reconfiguration definition/execution, the internal Gate
+remain Gate inputs. Plausible Festival Arrival Concurrency is Defined / Pending Execution. Immediate
+work is **Implement and Execute Plausible Festival Arrival Concurrency Experiment**,
+then late-group reconfiguration definition/execution, the internal Gate
 and proposal if supported. Stakeholder calibration and
 S3/S4 remain necessary in the later data-informed phase if the organization is
 interested. Measured evidence is unchanged; the internal fairness boundary is
