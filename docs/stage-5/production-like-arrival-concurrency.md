@@ -29,8 +29,10 @@ preserves the design → implementation → official runs → large active popul
 overload recognition → corrected interpretation sequence without changing evidence.
 
 **Observed conflicts, technical failures, latencies and active-concurrency levels
-are not production predictions.** Plausible festival concurrency validation is
-still required before the internal Gate; organization calibration remains later.
+are not production predictions.** Under the
+[2026-11-11 scope decision](pre-proposal-validation-scope.md), plausible festival
+concurrency validation is conditional post-proposal work, not a mandatory internal
+Gate prerequisite. Its defined contract remains unimplemented/unexecuted.
 
 The [S2 contract](representative-scenarios.md#s2--expected-baseline) owns business
 inputs; the [metrics framework](metrics-and-evaluation-criteria.md) owns outcome
@@ -242,11 +244,13 @@ threshold, mitigation, SLA or MVP feasibility verdict is introduced.
 
 ## Roadmap, status and scope
 
-Sequence: reframe arrival-concurrency evidence (completed) → define Plausible
-Festival Arrival Concurrency (completed) → implement/execute bounded Lean validation →
-define/execute Late Large Groups with Reconfiguration → MVP Technical Feasibility
-Gate → proposal if supported. S3/S4, real traffic calibration and the formal
-stakeholder Gate remain in the later post-proposal phase.
+Current sequence: **Perform MVP Technical Feasibility Gate** using existing
+evidence → proposal if supported → organization review/data → relevant conditional
+validations → applicable mitigation evaluation/validation and architecture
+calibration → data-informed S3/S4 → formal stakeholder/production Gate →
+pilot/production decision. The [scope decision](pre-proposal-validation-scope.md)
+preserves Plausible Festival Arrival Concurrency and Late Large Groups with
+Reconfiguration as conditional post-proposal validations, not mandatory blockers.
 
 **Open-loop High-rate Arrival Stress = Completed; Plausible Festival Arrival Concurrency = Defined / Pending Execution.** Four valid initial-matrix
 runs were analyzed; the fifth actual execution is the retained stopped collection.
@@ -264,4 +268,7 @@ spacing and PlausibleBurst triples at 0/10/20 ms, equal average bucket rates and
 peak 9.767 req/s. It defines four initial runs, maximum six with conditional Seed
 3001, and explicit warnings for sustained accumulation. This does not alter the
 original stress schedules, measurements or remediation history above.
-Next task: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**.
+Its execution is conditional on actual request-arrival behavior indicating
+meaningful concurrency risk. Late-group reconfiguration remains Pending
+Definition / Execution, conditional on real group behavior and reconfiguration rules.
+Next task: **Perform MVP Technical Feasibility Gate — Pending / Next**.

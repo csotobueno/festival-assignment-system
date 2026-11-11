@@ -1,6 +1,6 @@
 # Stage 5 — MVP Technical Feasibility Gate
 
-**Stage 5 = In Progress. MVP Technical Feasibility Gate = Pending.**
+**Stage 5 = In Progress. MVP Technical Feasibility Gate = Pending / Next.**
 **Formal stakeholder Decision Gate = Pending / future phase.**
 
 ## Purpose and decision boundary
@@ -22,13 +22,19 @@ preserves official findings. The [formal Decision Gate criteria](decision-gate-c
 remain preparatory requirements for the future stakeholder/production review;
 their S3/S4 and stakeholder prerequisites do not apply to this internal Gate.
 
+The [2026-11-11 scope decision](pre-proposal-validation-scope.md) records that
+current evidence is sufficient to proceed to this internal Gate without requiring
+Plausible Festival Arrival Concurrency or Late Large Groups with Reconfiguration
+as mandatory prerequisites. They remain unexecuted conditional post-proposal
+validations. Proceeding to the Gate does not decide its outcome.
+
 ## Internal feasibility criteria and Gate questions
 
 | Dimension | Internal criterion / decision question | Interpretation boundary |
 | --- | --- | --- |
 | Fairness | Does the MVP demonstrate **BalancedPathRate + AcceptablePathRate > 85%** in representative comparable scenarios? | Internal MVP feasibility criterion only, using ClassifiablePaths and the recorded rubric. Report each scenario, coverage and all path categories separately; no pooling or survivor-only shortcut. No organizational SLA or production policy follows. |
 | Reliability | Are persisted invariants protected, unexpected technical failures absent or minimal, and non-success outcomes understandable and technically manageable? | Require zero confirmed persisted invariant violations. Categorize/investigate any unexpected failure; no new numerical allowance for failures is defined. Safe rollback protects correctness but does not itself establish acceptable delivery. |
-| Performance | Does the representative operating flow satisfy **p95 < 1 second**? | **Internal MVP analytical hypothesis**, not a production SLA. Existing evidence measures Application/Domain/persistence use-case processing, not complete browser/HTTP/network experience. Open-loop high-rate stress exceeds this hypothesis in every valid run; plausible festival arrival performance still requires evidence. |
+| Performance | Does the representative operating flow satisfy **p95 < 1 second**? | **Internal MVP analytical hypothesis**, not a production SLA. Existing evidence measures Application/Domain/persistence use-case processing, not complete browser/HTTP/network experience. Open-loop high-rate stress exceeds this hypothesis in every valid run; plausible festival arrival performance remains unvalidated and is a conditional post-proposal question. |
 | Capacity utilization | When sufficient capacity exists, can the system ultimately allocate nearly all requesting Attendees without leaving a material population unassigned solely because of avoidable algorithmic inefficiency? | Qualitative technical sanity check, not an organization-approved requirement. No numeric FinalAttendeeAllocationRate, conflict, residual-capacity or spatial-rejection threshold is defined. Distinguish physical/eligible capacity, valid group feasibility and durable final allocation. |
 
 The framework originally recorded the inclusive fairness hypothesis `>= 85%`.
@@ -47,6 +53,11 @@ Registered population, daily requesting Attendees, request count and available
 Spot capacity remain distinct. Aggregate sufficiency also cannot guarantee a
 valid eligible contiguous block for every current AssignmentGroup.
 
+Current evidence does not reveal a fundamental capacity-utilization blocker,
+but organization-specific validation may still be required. This does not claim
+complete allocation under every group/reconfiguration scenario or dismiss S7's
+demonstrated spatial loss. No percentage target is introduced.
+
 ## Evidence already available
 
 The S2 reference serves 4,400 requesting Attendees per day over five FestivalDays
@@ -62,8 +73,8 @@ provisional rather than an organization-validated forecast.
 | S7 fragmentation | Known material access risk; operational realism unresolved. Sufficient eligible raw capacity can coexist with no valid contiguous block. | [S7 results](s7-fragmentation-impact-results.md) |
 | Synchronized concurrency stress | Severe degradation demonstrated: S8 C4/C16 use synchronized bounded windows. Their conflict, latency and useful-delivery findings remain unchanged and are not production predictions. | [S8](s8-concurrency-analysis.md) |
 | Open-loop high-rate arrival stress | Severe degradation demonstrated without a synchronized gate at offered rates of 40 / ≈ 61.5 req/s, above the local C1 mean of ≈ 29.6 successful req/s. PersistedInvariantViolationCount = 0 in all four valid runs; the stopped collection's three original findings and remediation remain retained. | [Arrival analysis](production-like-arrival-concurrency-analysis.md) |
-| Plausible festival arrival concurrency | **Additional Evidence Required; contract Defined / Pending Execution.** The completed high-rate schedules do not establish whether concurrency is material at plausible festival arrival rates. | [Bounded contract](plausible-festival-arrival-concurrency.md), [interpretation correction](production-like-arrival-concurrency-analysis.md#post-run-interpretation-correction--2026-11-10) |
-| Late large-group final allocation | Additional evidence required: S6 demonstrates full placement for its group mix, not late concentrated large groups followed by reconfiguration. | [S6 results](s2-s6-large-group-sensitivity-results.md) |
+| Plausible festival arrival concurrency | **Defined / Pending Execution; Conditional Post-Proposal Validation.** The completed high-rate schedules do not establish whether concurrency is material at plausible festival arrival rates. This gap is not a mandatory prerequisite for this Gate. | [Bounded contract](plausible-festival-arrival-concurrency.md), [scope decision](pre-proposal-validation-scope.md) |
+| Late large-group final allocation | **Pending Definition / Execution; Conditional Post-Proposal Validation.** S6 demonstrates full placement for its group mix, not late concentrated large groups followed by reconfiguration. This gap is not a mandatory prerequisite for this Gate. | [S6 results](s2-s6-large-group-sensitivity-results.md), [scope decision](pre-proposal-validation-scope.md) |
 
 This supports individual feasibility dimensions, not a final feasibility verdict.
 S7/S8 fairness rates among selected survivors do not establish equivalent overall
@@ -115,11 +126,28 @@ requests, approximately 293/hour or 0.081 req/s on average. Short bursts remain
 possible; that average is not a bound on real-user concurrency. Neither stress
 experiment independently represents production.
 
-These risks are not automatic blockers to presenting a technically credible
-concept. They remain proposal disclosures and later validation inputs. The two
-pending experiments below remain inputs to review: plausible festival concurrency
-and late-group final allocation still require evidence. The stress finding remains
-material; its interpretation boundary is corrected without selecting mitigation.
+These risks remain proposal disclosures and later validation inputs. The two
+pending experiments below are conditional post-proposal validations, not mandatory
+pre-proposal blockers. The stress finding remains material; no mitigation is
+selected and plausible festival concurrency remains unvalidated.
+
+### Known risk versus fundamental blocker
+
+A known technical risk is a demonstrated sensitivity or unresolved operating
+condition requiring disclosure and disposition. Potential fundamental blockers
+include persistent invariant violations, representative fairness consistently
+failing the internal criterion, sequential/reference throughput clearly
+insufficient for expected scale, unavoidable large-scale capacity waste, or no
+technically plausible mitigation path for a material failure. These examples
+are not exhaustive. Current evidence has not established such a fundamental
+blocker; that project position supports proceeding to review, not a Gate verdict.
+
+The Gate may consider unresolved risks, plausible mitigation paths and absent
+organization-specific data when distinguishing proposal blockers from
+post-proposal validation items across all four evaluation areas. High-level
+possibilities include serialization/coordination, database-level coordination,
+retry strategies, queueing, group reconfiguration and inventory/selection
+changes. No category is selected, recommended or proven effective here.
 
 ## Unsuccessful requests and final Attendee allocation
 
@@ -136,16 +164,19 @@ ultimately assigned for the FestivalDay. Existing SuccessRate denominators and
 analytical outcomes remain unchanged; the new analytical labels below are future
 experiment requirements, not implemented metrics.
 
-## Remaining pre-proposal experiments
+## Conditional post-proposal validations
 
 Open-loop High-rate Arrival Stress is Completed. Plausible Festival Arrival
-Concurrency is **Defined / Pending Execution**; late-group reconfiguration still
-requires definition/execution afterward, before the overall Gate.
+Concurrency is **Defined / Pending Execution**; late-group reconfiguration is
+**Pending Definition / Execution**. Neither is required before this internal
+Gate or initial proposal. Their value increasingly depends on organization data:
+further pre-proposal simulation has diminishing value compared with direct
+validation of business/operational assumptions. Technical uncertainty remains.
 
-| Experiment | Decision-relevant uncertainty | Required future evidence |
+| Experiment | Decision-relevant uncertainty / conditional trigger | Evidence if relevant after organization review |
 | --- | --- | --- |
-| **[Plausible Festival Arrival Concurrency](plausible-festival-arrival-concurrency.md) — Defined / Pending Execution** | Is concurrency material with plausible temporal dispersion derived from the business workload? The completed high-rate stress experiment does not answer this. | Implement/execute the defined S2-derived 120× schedules: evenly spaced Plausible and three-request PlausibleBurst at 0/10/20 ms, with identical bucket average rates and a peak of 9.767 req/s. Four initial runs, up to six with pattern-specific conditional Seed 3001. Verify boundedness before interpreting conflicts; retain integrity, full outcome mix, latency, useful delivery, participation and timing evidence. No result or mitigation is implied by definition. |
-| **Late Large Groups with Reconfiguration** | Does concentration of large groups late in daily processing cause fundamental avoidable capacity waste, or recoverable initial-request rejection? When capacity remains available, can affected Attendees ultimately obtain Assignments after allowed group reconfiguration? | InitialRequestSuccessRate, RejectedAttendees, ReconfiguredRequests, FinalAttendeeAllocationRate, UnassignedAttendees and RemainingCapacity, with independent persisted correctness checks and traceable initial-to-final outcomes. |
+| **[Plausible Festival Arrival Concurrency](plausible-festival-arrival-concurrency.md) — Defined / Pending Execution** | Real request-arrival behavior indicates meaningful concurrency risk. Is concurrency material with plausible temporal dispersion? The completed high-rate stress experiment does not answer this. | Assess the defined S2-derived 120× schedules against actual arrivals/opening rules before separate execution: evenly spaced Plausible and three-request PlausibleBurst at 0/10/20 ms, identical bucket averages, peak 9.767 req/s. The retained contract defines four initial runs, up to six with conditional Seed 3001. Verify boundedness before interpreting conflicts; retain integrity, outcome mix, latency, delivery, participation and timing. No result is implied. |
+| **Late Large Groups with Reconfiguration — Pending Definition / Execution** | Real group behavior and reconfiguration rules make fragmentation/capacity utilization material. Do initial rejections become final unassigned Attendees? Confirm actual group sizes, practical maximum, split acceptability and resubmission rules first. | Retain planned InitialRequestSuccessRate, RejectedAttendees, ReconfiguredRequests, FinalAttendeeAllocationRate, UnassignedAttendees and RemainingCapacity, with independent persisted correctness checks and traceable initial-to-final outcomes. No reconfiguration policy or result is assumed. |
 
 The original [Production-like Arrival Concurrency contract](production-like-arrival-concurrency.md)
 is retained by name for traceability; its executed evidence is **Open-loop High-rate
@@ -170,14 +201,21 @@ Assignments. No production or Simulation behavior changes in this task.
 
 ## Immediate roadmap and Gate outcomes
 
-1. Reframe arrival-concurrency evidence — completed as Open-loop High-rate Arrival Stress.
-2. Define Plausible Festival Arrival Concurrency — completed; execution pending.
-3. **Implement and Execute Plausible Festival Arrival Concurrency Experiment.**
-4. Define and execute Late Large Groups with Reconfiguration separately.
-5. Perform the MVP Technical Feasibility Gate using the additional experiments and
-   completed evidence, explicitly reviewing fairness, reliability, performance,
-   capacity utilization and remaining risks.
-6. If technically supported, prepare the proposal to the festival organization.
+1. Update pre-proposal validation scope — completed by the [decision record](pre-proposal-validation-scope.md).
+2. **Perform MVP Technical Feasibility Gate** using existing evidence, reviewing
+   fairness, reliability, performance, capacity utilization and remaining risks.
+3. Prepare and present/review the proposal with the organization, if supported.
+4. Obtain operational constraints; execute relevant conditional validations;
+   evaluate/implement applicable mitigations and validate effects; calibrate
+   production architecture/cloud deployment.
+5. Finalize and execute/analyze S3/S4 with real inputs; perform the formal
+   stakeholder/production Gate before deciding on pilot/production.
+
+The [full roadmap](pre-proposal-validation-scope.md#updated-roadmap) retains each
+post-proposal step. A future proposal should disclose demonstrated capabilities,
+evidence, risks, interpretation limits, open questions and next validation steps.
+It must not claim a guaranteed SLA, final architecture, validated production
+traffic, or resolved concurrency/fragmentation. No proposal is created here.
 
 The internal review may conclude **Technically feasible for proposal** or
 **Further technical validation required before proposal**. It does not conclude
@@ -188,10 +226,12 @@ outcome is selected now; the Gate remains pending after roadmap realignment.
 
 If organization review shows interest: obtain real operating data; validate and
 calibrate demand, arrivals, venue topology, reservations/preoccupation, groups,
-eligibility, fairness expectations and latency/service expectations; finalize
-S3/S4 contracts and execute/analyze them with data-informed inputs; evaluate
-applicable mitigations; re-test material risks; then perform the formal
-stakeholder Decision Gate before any pilot/production decision.
+eligibility, fairness and service expectations. Confirm gradual/simultaneous
+opening, FestivalDay request windows, group rejection/resubmission, split rules,
+staff/volunteer allocations and manual reassignment behavior without inventing
+answers. Execute only relevant conditional validations, evaluate/implement
+applicable mitigations and validate effects, calibrate architecture/deployment,
+then finalize and execute/analyze S3/S4 for the formal stakeholder/production Gate.
 
 S3/S4 are deferred to this later phase, not removed. Existing
 [formal criteria and readiness requirements](decision-gate-criteria.md)
@@ -203,8 +243,10 @@ accepts known risks for production or claims full Stage 5 evidence completeness.
 ## Current status
 
 Open-loop High-rate Arrival Stress is Completed with four valid analyzed runs and
-a documented stopped collection. Plausible Festival Arrival Concurrency is Defined / Pending Execution;
-late-group reconfiguration still needs its contract/execution afterward.
-Stage 5 remains In Progress; both Gates remain Pending. No final technical
+a documented stopped collection. Plausible Festival Arrival Concurrency is
+Defined / Pending Execution; late-group reconfiguration is Pending Definition /
+Execution. Both are conditional post-proposal validations. Stage 5 remains
+In Progress; the MVP Gate is Pending / Next, and the formal Gate remains
+Pending / future phase. No final technical
 feasibility, stakeholder approval, production readiness or go/no-go decision is
-made here. Next task: **Implement and Execute Plausible Festival Arrival Concurrency Experiment**.
+made here. Next task: **Perform MVP Technical Feasibility Gate**.

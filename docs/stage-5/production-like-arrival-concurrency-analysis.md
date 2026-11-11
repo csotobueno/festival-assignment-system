@@ -4,6 +4,18 @@ Execution/analysis: **2026-11-09 (America/Lima)**. Runtime timestamps/directory 
 
 **Open-loop High-rate Arrival Stress = Completed: 4 valid initial-matrix runs; 5 actual official executions including one retained stopped collection. Plausible Festival Arrival Concurrency = Defined / Pending Execution. No Seed 3001 or C1/C4/C16 reference rerun. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending.**
 
+**Roadmap update — 2026-11-11:** the [pre-proposal scope decision](pre-proposal-validation-scope.md)
+records that current evidence is sufficient to proceed to **Perform MVP Technical
+Feasibility Gate — Pending / Next** without mandatory execution of Plausible
+Festival Arrival Concurrency or Late Large Groups with Reconfiguration. Both
+remain unexecuted conditional post-proposal validations, dependent on actual
+operational information. Plausible concurrency remains Defined / Pending Execution;
+late-group reconfiguration remains Pending Definition / Execution. The severe
+stress degradation, all measurements/run counts and original observer-audit
+findings below are unchanged. Earlier roadmap/next-task notes and the selected
+JSON interpretation metadata record the preceding decisions, not today's sequence.
+No plausible festival concurrency validation or Gate verdict is claimed.
+
 ## Result and interpretation
 
 Severe degradation remains observable without a synchronized start barrier under the tested high-rate open-loop arrival patterns. The current implementation degrades severely under sustained offered load above its reference useful processing rate. Both Burst-like runs show much lower useful delivery and participation alongside many unexpected technical outcomes. Conflict percentage alone cannot describe that degradation: it must be read with technical-failure counts, durable delivery, latency and coverage.
@@ -164,7 +176,7 @@ Changes are confined to simulation scheduling/evidence, task-specific execution/
 
 **Historical next task at interpretation correction: Define Plausible Festival Arrival Concurrency Experiment.** Model plausible temporal dispersion from the business workload rather than deriving arrival rates primarily from API latency. Distinguish OfferedRequestRate, ActiveConcurrency and ConflictRate; avoid sustained offered load that automatically accumulates backlog without a small bound unless overload is the explicit objective. Final intervals, compression factors and run counts remain undefined.
 
-Current roadmap: reframe arrival-concurrency evidence (completed) → define Plausible Festival Arrival Concurrency (completed) → implement/execute bounded Lean concurrency validation → define/execute Late Large Groups with Reconfiguration → MVP Technical Feasibility Gate. Stage 5 remains In Progress; the MVP Technical Feasibility Gate remains Pending. The observed stress limitations and original observer-audit evidence gap remain Gate inputs, while plausible festival concurrency is Defined / Pending Execution.
+Historical roadmap at the 2026-11-10 correction (superseded by the 2026-11-11 scope decision): reframe arrival-concurrency evidence (completed) → define Plausible Festival Arrival Concurrency (completed) → implement/execute bounded Lean concurrency validation → define/execute Late Large Groups with Reconfiguration → MVP Technical Feasibility Gate. Stage 5 remains In Progress; the MVP Technical Feasibility Gate remains Pending. The observed stress limitations and original observer-audit evidence gap remain Gate inputs, while plausible festival concurrency is Defined / Pending Execution.
 
 ### Subsequent contract definition — 2026-11-10
 
@@ -175,8 +187,16 @@ bucket averages (peak 9.767 req/s). Four initial runs, maximum six with conditio
 Seed 3001, are defined but not executed. The preceding next-task/undefined-parameter
 note and selected JSON interpretation record describe the earlier correction;
 the new contract owns current parameters/status. All stress measurements and
-remediation history remain unchanged. Current next task: **Implement and Execute
+remediation history remain unchanged. Historical next task at contract definition: **Implement and Execute
 Plausible Festival Arrival Concurrency Experiment**, before late-group reconfiguration.
+
+The [2026-11-11 scope decision](pre-proposal-validation-scope.md) now governs the
+next activity: **Perform MVP Technical Feasibility Gate** using existing evidence.
+The conditional experiments retain technical value if real arrivals or actual
+group/reconfiguration rules justify them; further pre-proposal simulation against
+unconfirmed operational assumptions has diminishing value. S3/S4 and the formal
+stakeholder/production Gate remain later data-informed work. This sequencing
+update neither weakens the severe stress findings nor decides technical feasibility.
 
 ## Interpretation-correction validation — 2026-11-10
 

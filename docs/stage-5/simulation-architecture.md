@@ -4,7 +4,7 @@
 
 **Sequential/concurrent execution and official S1/S2/S5/S6/S7/S8 isolated
 evaluation implemented; evidence consolidated. Stage 5 = In Progress.**
-**MVP Technical Feasibility Gate = Pending; formal stakeholder Decision Gate =
+**MVP Technical Feasibility Gate = Pending / Next; formal stakeholder Decision Gate =
 Pending / future phase.**
 This document defines the minimum planned architecture for evaluating
 `v0.3.0 — Fair Assignment Engine`. The current slice includes immutable manifests,
@@ -23,9 +23,11 @@ baseline and its acceptance evidence; the [glossary](../glossary.md) and
 The official fairness-rule count remains **19**.
 
 The [MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md) owns the
-immediate pre-proposal sequence: implement/execute the defined Plausible Festival
-Arrival Concurrency contract, then define/execute Late Large Groups with
-Reconfiguration and perform the internal review before proposal. Open-loop
+immediate pre-proposal sequence: review existing evidence at the internal Gate,
+then proposal if supported. Under the [scope decision](pre-proposal-validation-scope.md),
+Plausible Festival Arrival Concurrency and Late Large Groups with Reconfiguration
+are conditional post-proposal validations, dependent on real operational inputs,
+not mandatory prerequisites. Open-loop
 High-rate Arrival Stress is [Completed and analyzed](production-like-arrival-concurrency-analysis.md);
 plausible festival concurrency is Defined / Pending Execution. The high-rate
 experiment's original production-like intent is retained; post-run interpretation
@@ -934,6 +936,13 @@ bucket count/duration. Peak offered rate is 293/30 = 9.767 req/s for both.
 The contract owns exact offset/rounding formulas, the full 480-second daily
 horizon, four initial runs and maximum six with conditional Seed 3001.
 
+Its role is **Conditional Post-Proposal Validation**, if actual request-arrival
+behavior indicates meaningful concurrency risk. The technical contract is
+preserved for that decision; no support has been implemented or scenario run.
+Late-group reconfiguration also remains Pending Definition / Execution, conditional
+on real group behavior and accepted reconfiguration rules. Neither blocks the
+internal Gate. Review relevance against organization data before separate execution.
+
 Future dispatch must use absolute monotonic deadlines without a readiness gate,
 completion-based admission, worker cap, or drains between bursts/buckets. Keep
 independent scopes/DbContexts; drain at daily horizon before checkpoint/next day.
@@ -988,9 +997,12 @@ Earlier design deferrals for deterministic materialization, JSON export,
 checkpoint projections and concurrent windows are now implemented in the slices
 documented above. Open-loop High-rate Arrival Stress is completed with material
 operational limitations and retained observer-audit findings. Immediate work is
-**Implement and Execute Plausible Festival Arrival Concurrency Experiment**, then
-late-group reconfiguration definition/execution and the internal
-MVP Gate. Plausible temporal dispersion must come from the business workload,
+**Perform MVP Technical Feasibility Gate**, using existing evidence and known
+risks. Plausible arrival and late-group reconfiguration experiments are conditional
+post-proposal validations, pending actual operational data. Additional simulation
+based on unvalidated assumptions has diminishing pre-proposal value; this does
+not resolve all technical uncertainty. If later relevant, plausible temporal
+dispersion must come from the business workload,
 not primarily API latency; OfferedRequestRate, ActiveConcurrency and ConflictRate
 remain distinct. The linked bounded contract now defines timing and run counts;
 implementation/execution remain pending. S3/S4 remain deferred to later data-informed

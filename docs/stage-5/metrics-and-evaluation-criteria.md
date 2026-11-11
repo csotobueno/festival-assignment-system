@@ -5,9 +5,12 @@
 Stage 5 evaluates whether the `v0.3.0 — Fair Assignment Engine` baseline is sufficiently fair, reliable, consistent, and performant to justify moving toward a real implementation proposal.
 
 The immediate decision is the internal
-[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md), after
-implementation/execution of the defined Plausible Festival Arrival Concurrency contract
-and then Late Large Groups with Reconfiguration.
+[MVP Technical Feasibility Gate](mvp-technical-feasibility-gate.md), using existing
+evidence next. The [scope decision](pre-proposal-validation-scope.md) records
+that current evidence is sufficient to proceed to review without mandatory
+execution of Plausible Festival Arrival Concurrency or Late Large Groups with
+Reconfiguration. Both remain conditional post-proposal validations; their
+relevance increasingly depends on real operational inputs. No Gate verdict is made.
 Technical feasibility for proposal is distinct from production readiness and
 organizational approval. Stakeholder calibration, real operating-data validation,
 S3/S4 refinement/execution and the formal stakeholder Decision Gate remain in a
@@ -20,7 +23,9 @@ and [analyzed](production-like-arrival-concurrency-analysis.md), reusing these
 denominators and latency bounds. Post-run analysis identified sustained overload:
 40 / ≈ 61.5 offered req/s exceed C1's retained mean of ≈ 29.6 successful req/s.
 Conflicts, technical failures, latencies and active concurrency are not production
-predictions. **Plausible Festival Arrival Concurrency = Defined / Pending Execution**.
+predictions. **Plausible Festival Arrival Concurrency = Defined / Pending Execution;
+Conditional Post-Proposal Validation**. Late Large Groups with Reconfiguration
+is **Pending Definition / Execution** in the same conditional phase.
 The [new bounded contract](plausible-festival-arrival-concurrency.md) defines
 120× S2 bucket compression and Plausible/PlausibleBurst schedules with identical
 bucket average rates; its peak is 9.767 req/s. It requires the same accounting,
@@ -1880,8 +1885,10 @@ This supports causal interpretation.
 The initial complete evaluation set is retained below. S3/S4 are deferred to the
 post-proposal, data-informed phase if the organization shows interest; completion
 of all eight scenarios is not a prerequisite for the internal MVP Gate or initial
-proposal. The two immediate experiments are defined separately in the
-[MVP roadmap](mvp-technical-feasibility-gate.md#remaining-pre-proposal-experiments).
+proposal. Plausible arrival concurrency and late-group reconfiguration remain
+conditional post-proposal validations in the
+[MVP roadmap](mvp-technical-feasibility-gate.md#conditional-post-proposal-validations),
+not mandatory prerequisites for the internal Gate.
 
 ```text
 S1 — Best Plausible
@@ -2370,10 +2377,15 @@ results, populations, evidence strength and architectural implications kept
 separate. Stage 5 = In Progress; MVP Technical Feasibility Gate = Pending;
 formal stakeholder Decision Gate = Pending / future phase. Open-loop High-rate
 Arrival Stress is Completed; its operational findings and observer-audit limitations
-remain Gate inputs. Plausible Festival Arrival Concurrency is Defined / Pending Execution. Immediate
-work is **Implement and Execute Plausible Festival Arrival Concurrency Experiment**,
-then late-group reconfiguration definition/execution, the internal Gate
-and proposal if supported. Stakeholder calibration and
+remain Gate inputs. Plausible Festival Arrival Concurrency is Defined / Pending
+Execution; late-group reconfiguration is Pending Definition / Execution. Both
+are conditional post-proposal validations, not mandatory pre-proposal blockers.
+Immediate work is **Perform MVP Technical Feasibility Gate**, then proposal if
+supported. The four areas remain Fairness, Reliability, Performance and Capacity
+Utilization, with existing definitions and thresholds unchanged. Known risks,
+plausible mitigation paths and missing operational data inform whether unresolved
+items block proposal or require later validation; no decision is made here.
+Stakeholder calibration and
 S3/S4 remain necessary in the later data-informed phase if the organization is
 interested. Measured evidence is unchanged; the internal fairness boundary is
 clarified in section 6.4. The Stage 4 fairness-rule count remains 19.

@@ -27,6 +27,13 @@ organización son decisiones distintas. La validación con stakeholders sigue
 siendo necesaria después de la propuesta si existe interés; no es un requisito
 para presentar la propuesta inicial.
 
+La [decisión de alcance prepropuesta](stage-5/pre-proposal-validation-scope.md)
+registra que la evidencia actual es suficiente para pasar al Gate interno sin
+exigir los dos experimentos pendientes como prerrequisitos. Plausible Festival
+Arrival Concurrency y Late Large Groups with Reconfiguration pasan a validaciones
+condicionales posteriores a la propuesta, dependientes de datos operativos reales.
+El Gate sigue pendiente y es la próxima actividad; no se emite su veredicto aquí.
+
 ## 3. Arquitectura objetivo
 
 Las dependencias seguirán esta dirección:
@@ -115,7 +122,7 @@ El MVP técnico estará terminado cuando exista evidencia de que:
 3. **Etapa 3 — Persistencia, invariantes globales y concurrencia: Completada.** Hito de versión: `v0.2.0`.
 4. **Etapa 4 — Motor de asignación y fairness: Completada.** Véase el [cierre de stage-4](stage-4/completion.md).
 5. **Etapa 5 — Simulación y evaluación para la toma de decisiones: En progreso.**
-   **MVP Technical Feasibility Gate: Pendiente. Decision Gate formal: Pendiente / fase futura.**
+   **MVP Technical Feasibility Gate: Pendiente / siguiente actividad. Decision Gate formal: Pendiente / fase futura.**
 
 ### Etapa 4 — Motor de asignación y fairness
 
@@ -145,35 +152,38 @@ una propuesta a la organización del festival.
 
 Secuencia inmediata:
 
-1. Corregir la interpretación de llegada concurrente — completado como
-   **Open-loop High-rate Arrival Stress**; véanse los
-   [resultados y límites de auditoría](stage-5/production-like-arrival-concurrency-analysis.md).
-   El objetivo original era Production-like Arrival Concurrency; el análisis
-   posterior identificó sobrecarga sostenida. Se conserva toda la evidencia.
-2. Plausible Festival Arrival Concurrency — **Defined / Pending Execution**;
-   véase el [contrato](stage-5/plausible-festival-arrival-concurrency.md).
-3. **Implement and Execute Plausible Festival Arrival Concurrency Experiment**.
-4. Definir/ejecutar Late Large Groups with Reconfiguration por separado.
-5. Realizar el MVP Technical Feasibility Gate.
-6. Preparar la propuesta si la evidencia técnica la sustenta.
+1. Actualizar el alcance prepropuesta — completado; véase la
+   [decisión y secuencia completa](stage-5/pre-proposal-validation-scope.md#updated-roadmap).
+2. **Perform MVP Technical Feasibility Gate** con la evidencia existente.
+3. Preparar y presentar/revisar la propuesta con la organización, si el Gate la sustenta.
+4. Obtener restricciones y reglas reales; ejecutar solo las validaciones condicionales pertinentes.
+5. Evaluar/implementar mitigaciones aplicables y validar sus efectos; calibrar arquitectura/despliegue cloud.
+6. Concretar y ejecutar/analizar S3/S4 con datos reales; realizar el Gate formal antes de decidir sobre piloto/producción.
 
 Las tasas ofrecidas de 40 / ≈ 61.5 solicitudes/s superaron la referencia C1 de
 ≈ 29.6 solicitudes exitosas/s. La degradación severa sin barrera sincronizada
 sigue siendo un hallazgo válido de estrés; no predice condiciones del festival.
-La evidencia de concurrencia bajo llegadas plausibles sigue pendiente. El contrato
+La evidencia de concurrencia bajo llegadas plausibles sigue pendiente como
+validación condicional posterior a la propuesta. El contrato
 ya definido conserva las franjas S2 con compresión 120×: Plausible distribuye
 solicitudes uniformemente y PlausibleBurst usa grupos de tres a 0/10/20 ms sin
 cambiar la tasa media por franja. El pico de 293 solicitudes en 30 segundos
 (9.767/s) queda por debajo de la referencia C1. Se prevén cuatro ejecuciones
 iniciales (Seeds 1001/2001 por patrón), hasta seis con Seed 3001 condicional.
 No se implementa ni ejecuta aquí; siguen siendo hipótesis exploratorias.
+Late Large Groups with Reconfiguration permanece **Pending Definition / Execution**
+en esa misma fase condicional. Ninguno bloquea obligatoriamente el Gate interno.
 
 Si la organización muestra interés, obtener datos operativos reales y validar/
 calibrar demanda, llegadas, recinto, reservas/ocupación previa, grupos,
-elegibilidad, fairness y expectativas de servicio. Después, concretar y ejecutar/
-analizar S3/S4, evaluar mitigaciones aplicables, repetir las pruebas de riesgos
-afectados y realizar el Decision Gate formal antes de decidir sobre piloto o
-producción. S3/S4 se difieren a esa fase; no se eliminan.
+elegibilidad, fairness y expectativas de servicio. Aclarar apertura gradual o
+simultánea, ventanas de FestivalDay, tamaño máximo práctico, división de grupos,
+reenvío tras rechazo, asignaciones de personal/voluntarios y reasignación manual,
+sin asumir respuestas ni cambiar la finalidad de Assignments existentes.
+Ejecutar las validaciones condicionales pertinentes, evaluar/implementar
+mitigaciones y validar sus efectos, calibrar arquitectura/despliegue y concretar
+y ejecutar/analizar S3/S4 para el Decision Gate formal antes de decidir sobre
+piloto o producción. S3/S4 se difieren a esa fase; no se eliminan.
 
 Esta etapa ejecutará escenarios de simulación deterministas, medirá el fairness
 y la distribución, examinará casos límite, comparará estrategias y registrará
@@ -194,8 +204,8 @@ nunca reciben Good, capacidad Good sin utilizar o consumida demasiado pronto,
 comportamiento patológico de grupos entre poblaciones, sensibilidad al orden de
 llegada y comportamiento inesperado del score entre días y poblaciones. También
 evalúa fairness estadístico, presión de capacidad, rendimiento y concurrencia/
-estrés. El Gate interno usa la evidencia completada y los dos experimentos
-pendientes; el estrés combinado S3/S4 y el Gate formal quedan para la fase
+estrés. El Gate interno usa la evidencia completada y considera los riesgos
+pendientes; los dos experimentos condicionales, S3/S4 y el Gate formal quedan para la fase
 posterior basada en datos reales. La [decisión Lean de cierre](stage-4/completion.md#lean-decision-on-five-day-evaluation)
 separa esta evaluación empírica de las pruebas funcionales que permanecen como
 evidencia de stage-4.
@@ -232,6 +242,17 @@ Cada artefacto, tarea o decisión debe contribuir al menos a uno de estos objeti
 * consolidar aprendizaje aplicable.
 
 Lo que no contribuya a alguno de estos objetivos se pospondrá o eliminará.
+
+La simulación ya redujo incertidumbre técnica; la incertidumbre restante es cada
+vez más de negocio/operación, sin que toda incertidumbre técnica esté resuelta.
+Más simulación prepropuesta basada en supuestos tiene valor decreciente frente
+a validar esos supuestos con la organización. La evidencia representativa de
+fairness, integridad persistida y rendimiento C1 permite avanzar al Gate, llevando
+los riesgos conocidos de concurrencia, fragmentación, grupos grandes y orden.
+No se ha establecido un bloqueo técnico fundamental; esta posición no sustituye
+el veredicto del Gate ni afirma que toda utilización de capacidad esté validada.
+Las categorías de mitigación y sus límites se registran en la
+[decisión](stage-5/pre-proposal-validation-scope.md), sin seleccionar ni probar una solución.
 
 ## 9. Métricas de éxito
 
