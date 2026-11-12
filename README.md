@@ -24,7 +24,8 @@ requirement is explicitly deferred to Stage 5 to avoid duplicating its evaluatio
 
 **Gate outcome: Technically Feasible for Proposal** — see the
 [2026-11-11 assessment and decision](docs/stage-5/mvp-technical-feasibility-gate-result.md).
-Next task: **Prepare Organization Proposal**. Known concurrency, fragmentation,
+**Public Technical Proposal: Drafted. Organization Review: Pending.**
+Next task: **Prepare Organization-Facing Proposal Package**. Known concurrency, fragmentation,
 group/reconfiguration and order risks remain explicit; this is not production
 readiness, organizational approval or a go-live decision.
 
@@ -97,7 +98,7 @@ the complete operational system.
 
 Immediate roadmap:
 
-1. **Prepare Organization Proposal**, supported by the completed internal Gate.
+1. **Prepare Organization-Facing Proposal Package** from the drafted public proposal, supported by the completed internal Gate.
 2. Present/review with the organization; obtain real operational constraints.
 3. Execute only relevant conditional validations.
 4. Evaluate/validate applicable mitigations; calibrate production/cloud architecture.
@@ -112,6 +113,16 @@ The future proposal should disclose demonstrated capabilities, current evidence,
 known risks, interpretation limits, open questions and next validations.
 Technical feasibility for proposal ≠ production readiness ≠ organization approval.
 No SLA, final architecture or resolved concurrency/fragmentation is claimed.
+
+## Technical proposal
+
+The [public technical proposal](docs/proposal/technical-proposal.md) introduces
+the concept, existing evidence, known risks and organization inputs needed before
+considering a pilot. Its [technical appendix](docs/proposal/technical-appendix.md)
+links the architecture and authoritative validation reports. **Public Technical
+Proposal = Drafted; Organization Review = Pending.** It is a generic public
+technical document; organization-specific and commercial material belongs in a
+separate future private document.
 
 ## Documentation
 
