@@ -24,8 +24,10 @@ requirement is explicitly deferred to Stage 5 to avoid duplicating its evaluatio
 
 **Gate outcome: Technically Feasible for Proposal** — see the
 [2026-11-11 assessment and decision](docs/stage-5/mvp-technical-feasibility-gate-result.md).
-**Public Technical Proposal: Drafted. Organization Review: Pending.**
-Next task: **Prepare Organization-Facing Proposal Package**. Known concurrency, fragmentation,
+**Public Technical Proposal: Drafted. Organization-Facing Proposal Package: Drafted.**
+**Organization Review: Pending.**
+Next preparation task: **Prepare Spanish Organization Meeting Package**, privately
+outside this public repository. Known concurrency, fragmentation,
 group/reconfiguration and order risks remain explicit; this is not production
 readiness, organizational approval or a go-live decision.
 
@@ -98,7 +100,7 @@ the complete operational system.
 
 Immediate roadmap:
 
-1. **Prepare Organization-Facing Proposal Package** from the drafted public proposal, supported by the completed internal Gate.
+1. **Prepare Spanish Organization Meeting Package** privately from the drafted English public package, adapting it to the actual meeting context outside this repository.
 2. Present/review with the organization; obtain real operational constraints.
 3. Execute only relevant conditional validations.
 4. Evaluate/validate applicable mitigations; calibrate production/cloud architecture.
@@ -109,20 +111,25 @@ retains each step. Stage 5 remains In Progress because the broader formal
 evaluation still requires organization input, risk disposition and S3/S4.
 
 The later phase depends on organization interest and actual operational data.
-The future proposal should disclose demonstrated capabilities, current evidence,
+The drafted proposal package discloses demonstrated capabilities, current evidence,
 known risks, interpretation limits, open questions and next validations.
 Technical feasibility for proposal ≠ production readiness ≠ organization approval.
 No SLA, final architecture or resolved concurrency/fragmentation is claimed.
 
-## Technical proposal
+## Proposal package
 
-The [public technical proposal](docs/proposal/technical-proposal.md) introduces
-the concept, existing evidence, known risks and organization inputs needed before
-considering a pilot. Its [technical appendix](docs/proposal/technical-appendix.md)
-links the architecture and authoritative validation reports. **Public Technical
-Proposal = Drafted; Organization Review = Pending.** It is a generic public
-technical document; organization-specific and commercial material belongs in a
-separate future private document.
+**Public Technical Proposal: Drafted. Organization-Facing Proposal Package: Drafted.**
+**Organization Review: Pending.**
+
+* [Organization-Facing Proposal](docs/proposal/organization-facing-proposal.md) — executive stakeholder document.
+* [Meeting Narrative](docs/proposal/meeting-narrative.md) — guide for a 10–15 minute conversation.
+* [Stakeholder Questions](docs/proposal/stakeholder-questions.md) — operating-assumption discovery guide.
+* [Technical Proposal](docs/proposal/technical-proposal.md) — deeper public concept, evidence and validation approach.
+* [Technical Appendix](docs/proposal/technical-appendix.md) — engineering evidence and references.
+
+The public package is generic and in English. Future Spanish meeting material
+will be adapted privately outside this repository; organization-specific and
+commercial material also belongs outside the public package.
 
 ## Documentation
 
